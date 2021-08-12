@@ -74,4 +74,26 @@ namespace Atlas.Tabs
 			return bookmark;
 		}
 	}
+
+	// Display Class
+	public class ViewBookmark
+	{
+		/*public event EventHandler<EventArgs> OnDelete;
+
+		[ButtonColumn("-")]
+		public void Delete()
+		{
+
+		}*/
+
+		[Name("Bookmark")]
+		public string Name => Bookmark.Name;
+		[HiddenColumn]
+		public Bookmark Bookmark { get; set; }
+
+		public ViewBookmark(Bookmark bookmark)
+		{
+			Bookmark = bookmark;
+		}
+	}
 }

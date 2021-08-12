@@ -5,7 +5,7 @@ namespace Atlas.Network
 {
     public class HttpCacheManager
     {
-        public HttpMemoryCache MemoryCache { get; set; } = new HttpMemoryCache();
+        public HttpMemoryCache MemoryCache { get; set; } = null;// new HttpMemoryCache();
 
         private Dictionary<string, HttpCache> _httpCaches = new Dictionary<string, HttpCache>();
 

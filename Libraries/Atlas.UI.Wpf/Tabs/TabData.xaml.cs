@@ -208,7 +208,7 @@ namespace Atlas.UI.Wpf
 				if (dataGrid.ActualWidth > MaxDefaultWidth)
 					dataGrid.Width = MaxDefaultWidth;
 			}
-			if (tabModel.AutoLoad)
+			if (tabModel.AutoSelect != AutoSelectType.None)
 			{
 				LoadSettings();
 				if (autoSelectFirst)
@@ -405,7 +405,7 @@ namespace Atlas.UI.Wpf
 
 				if (value is TabView tabView)
 				{
-					if (tabView.tabModel.AutoLoad == false)
+					if (tabView.tabModel.AutoSelect == AutoSelectType.None)
 						continue;
 				}
 				if (firstValidObject == null)
