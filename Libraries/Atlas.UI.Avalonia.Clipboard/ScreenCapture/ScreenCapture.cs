@@ -1,5 +1,4 @@
 ﻿using Atlas.Core;
-using Atlas.UI.Avalonia.Utilities;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
@@ -14,7 +13,7 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 
-namespace Atlas.UI.Avalonia
+namespace Atlas.UI.Avalonia.Clipboard
 {
 	public class ScreenCapture : Grid
 	{
@@ -179,7 +178,7 @@ namespace Atlas.UI.Avalonia
 
 		private void Close(Call call)
 		{
-			TabViewer.CloseSnapshot(call);
+			TabViewer.ClearContent();
 		}
 
 		private void AddBackgroundImage(IVisual visual)

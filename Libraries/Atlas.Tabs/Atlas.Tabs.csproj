@@ -5,6 +5,9 @@
     <AssemblyName>Atlas.Tabs</AssemblyName>
     <RootNamespace>Atlas.Tabs</RootNamespace>
     <Configurations>Debug;Release;DebugX86</Configurations>
+    <Version>$(AtlasVersion)</Version>
+    <TargetsForTfmSpecificBuildOutput>$(TargetsForTfmSpecificBuildOutput);CopyProjectReferencesToPackage</TargetsForTfmSpecificBuildOutput>
+    <PackageId>Atlas.Tabs</PackageId>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -16,18 +19,46 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="5.0.0" />
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
     <PackageReference Include="System.Json" Version="4.7.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Atlas.Core\Atlas.Core.csproj" />
-    <ProjectReference Include="..\Atlas.Network\Atlas.Network.csproj" />
-    <ProjectReference Include="..\Atlas.Serialize\Atlas.Serialize.csproj" />
+    <ProjectReference Include="..\Atlas.Core\Atlas.Core.csproj">
+      <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
+      <IncludeAssets>Atlas.Core.dll</IncludeAssets>
+    </ProjectReference>
+    <ProjectReference Include="..\Atlas.Network\Atlas.Network.csproj">
+      <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
+      <IncludeAssets>Atlas.Network.dll</IncludeAssets>
+    </ProjectReference>
+    <ProjectReference Include="..\Atlas.Resources\Atlas.Resources.csproj">
+      <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
+      <IncludeAssets>Atlas.Resources.dll</IncludeAssets>
+    </ProjectReference>
+    <ProjectReference Include="..\Atlas.Serialize\Atlas.Serialize.csproj">
+      <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
+      <IncludeAssets>Atlas.Serialize.dll</IncludeAssets>
+    </ProjectReference>
   </ItemGroup>
+
+  <!--ItemGroup>
+    <BuildOutputInPackage Include="$(OutputPath)Atlas.Core.dll" />
+    <BuildOutputInPackage Include="$(OutputPath)Atlas.Network.dll" />
+    <BuildOutputInPackage Include="$(OutputPath)Atlas.Resources.dll" />
+    <BuildOutputInPackage Include="$(OutputPath)Atlas.Serialize.dll" />
+  </ItemGroup-->
 
   <ItemGroup>
     <Service Include="{82a7f48d-3b50-4b1e-b82e-3ada8210c358}" />
   </ItemGroup>
+
+  <Target DependsOnTargets="ResolveReferences" Name="CopyProjectReferencesToPackage">
+    <ItemGroup>
+      <BuildOutputInPackage Include="@(ReferenceCopyLocalPaths-&gt;WithMetadataValue('ReferenceSourceTarget', 'ProjectReference'))" />
+    </ItemGroup>
+  </Target>
 
 </Project>

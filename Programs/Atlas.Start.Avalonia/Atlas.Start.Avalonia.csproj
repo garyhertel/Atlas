@@ -5,6 +5,7 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <EnableDefaultCompileItems>False</EnableDefaultCompileItems>
     <Configurations>Debug;Release;DebugX86</Configurations>
+    <Version>$(AtlasVersion)</Version>
     <ApplicationIcon />
     <StartupObject />
   </PropertyGroup>
@@ -37,6 +38,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Imports\AvaloniaUI\OxyPlot.Avalonia\Source\OxyPlot.Avalonia\OxyPlot.Avalonia.csproj" />
+    <ProjectReference Include="..\..\Libraries\Atlas.UI.Avalonia.Clipboard\Atlas.UI.Avalonia.Clipboard.csproj" />
     <ProjectReference Include="..\..\Libraries\Atlas.UI.Avalonia\Atlas.UI.Avalonia.csproj" />
     <ProjectReference Include="..\..\Libraries\Atlas.Resources\Atlas.Resources.csproj" />
     <ProjectReference Include="..\..\Libraries\Atlas.Tabs\Atlas.Tabs.csproj" />

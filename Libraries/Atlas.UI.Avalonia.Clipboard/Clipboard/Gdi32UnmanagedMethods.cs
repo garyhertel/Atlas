@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
-namespace Atlas.UI.Avalonia
+namespace Atlas.UI.Avalonia.Clipboard
 {
 	public static class Gdi32UnmanagedMethods
 	{
