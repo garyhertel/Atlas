@@ -82,7 +82,7 @@ namespace Atlas.UI.Avalonia.Controls
 			{
 				IsReadOnly = !Property.Editable,
 				Watermark = "15:30:45",
-				Margin = new Thickness(6, 0, 0, 0),
+				Margin = new Thickness(10, 0, 0, 0),
 				MinWidth = 75,
 				MaxWidth = 300,
 				Focusable = true, // already set?

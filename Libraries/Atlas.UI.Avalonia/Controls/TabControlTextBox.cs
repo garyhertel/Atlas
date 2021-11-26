@@ -46,6 +46,10 @@ namespace Atlas.UI.Avalonia.Controls
 		// Workaround: Move the Padding into the inner controls Margin
 		private void InitializeBorder()
 		{
+			return;
+
+			// read Padding in and use for margins?
+
 			Padding = new Thickness(0);
 
 			var style = new Style(x => x.OfType<TextPresenter>())

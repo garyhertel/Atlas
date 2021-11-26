@@ -31,6 +31,8 @@ namespace Atlas.UI.Avalonia
 		protected override IControl GenerateElement(DataGridCell cell, object dataItem)
 		{
 			cell.MaxHeight = 100; // don't let them have more than a few lines each
+			cell.BorderBrush = Brushes.Black;
+			cell.BorderThickness = new Thickness(1);
 
 			TextBlock textBlock = CreateTextBlock(cell, dataItem);
 			//TextBlock textBlock = (TextBlock)base.GenerateElement(cell, dataItem);

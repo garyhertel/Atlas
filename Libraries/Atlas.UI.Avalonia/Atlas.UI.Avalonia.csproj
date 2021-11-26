@@ -39,6 +39,7 @@
     <None Remove="StyleResources.xaml" />
     <None Remove="Theme\Accents\BaseLight.xaml" />
     <None Remove="Theme\Accents\BaseDark.xaml" />
+    <None Remove="Theme\FluentTheme.xaml" />
     <None Remove="Theme\TabButton.xaml" />
     <None Remove="View\TabAvalonEdit.xaml" />
   </ItemGroup>
@@ -60,6 +61,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Update="Theme\FluentTheme.xaml.cs">
+      <DependentUpon>FluentTheme.xaml</DependentUpon>
+    </Compile>
     <Compile Update="Theme\DefaultTheme.xaml.cs">
       <DependentUpon>%(Filename)</DependentUpon>
     </Compile>
@@ -74,6 +78,9 @@
       <Generator>MSBuild:Compile</Generator>
     </EmbeddedResource>
     <EmbeddedResource Update="Theme\Accents\BaseDark.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Theme\FluentTheme.xaml">
       <Generator>MSBuild:Compile</Generator>
     </EmbeddedResource>
     <EmbeddedResource Update="Theme\TabButton.xaml">

@@ -1,6 +1,8 @@
 using Atlas.Core;
 using Atlas.UI.Avalonia.Controls;
+using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Media;
 using System.Reflection;
 
 namespace Atlas.UI.Avalonia
@@ -16,6 +18,7 @@ namespace Atlas.UI.Avalonia
 			MethodInfo = methodInfo;
 			VisiblePropertyName = methodInfo.GetCustomAttribute<ButtonColumnAttribute>()?.VisiblePropertyName;
 			ButtonText = buttonText;
+			MinWidth = 12;
 		}
 
 		// This doesn't get called when reusing cells
@@ -24,7 +27,15 @@ namespace Atlas.UI.Avalonia
 			//cell.Background = GetCellBrush(cell, dataItem);
 			//cell.MaxHeight = 100; // don't let them have more than a few lines each
 
-			var button = new TabControlButton(ButtonText);
+			var button = new TabControlButton(ButtonText)
+			{
+				Padding = new Thickness(0),
+				Margin = new Thickness(0),
+				MinWidth = 10,
+				BorderThickness = new Thickness(1),
+				BorderBrush = Brushes.Black,
+			};
+			button.Resources.Add("ButtonPadding", new Thickness(2, 5));
 			if (VisiblePropertyName != null)
 				button.BindVisible(VisiblePropertyName);
 			button.Click += Button_Click;

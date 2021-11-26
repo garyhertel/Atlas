@@ -163,10 +163,16 @@ namespace Atlas.UI.Avalonia
 
 		protected TextBlock CreateTextBlock(DataGridCell cell)
 		{
-			var textBlockElement = new TextBlockElement(this, PropertyInfo);
+			var textBlockElement = new TextBlockElement(this, PropertyInfo)
+			{	
+				//BorderBrush = Brushes.Black,
+				//BorderThickness = new Thickness(1),
+			};
 
 			cell.IsHitTestVisible = true;
 			cell.Focusable = true;
+			cell.BorderBrush = Brushes.Blue;
+			cell.BorderThickness = new Thickness(1);
 
 			if (Binding != null)
 			{

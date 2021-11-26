@@ -532,6 +532,7 @@ namespace Atlas.UI.Avalonia.View
 				Foreground = Theme.ToolbarButtonBackground,
 				Background = Theme.TabBackground,
 				HorizontalAlignment = HorizontalAlignment.Left,
+				VerticalAlignment = VerticalAlignment.Stretch,
 			};
 
 			Children.Add(progressBar);

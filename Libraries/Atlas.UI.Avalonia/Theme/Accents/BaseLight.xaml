@@ -4,7 +4,20 @@
 
     <Style.Resources>
 
-        <!-- Background -->
+      <Color x:Key="SystemAccentColor">#88ff88</Color> <!-- DataGridRow Selected -->
+      <Color x:Key="SystemListLowColor">#88ff88</Color> <!-- DataGridRow Hover -->
+      <Color x:Key="SystemAccentColorDark1">#005A9E</Color>
+      <Color x:Key="SystemAccentColorDark2">#004275</Color>
+      <Color x:Key="SystemAccentColorDark3">#002642</Color>
+      <Color x:Key="SystemAccentColorLight1">#429CE3</Color>
+      <Color x:Key="SystemAccentColorLight2">#76B9ED</Color>
+      <Color x:Key="SystemAccentColorLight3">#A6D8FF</Color>
+
+      
+
+
+
+      <!-- Background -->
         <SolidColorBrush x:Key="ThemeBackgroundBrush">#ffffff</SolidColorBrush>
         <SolidColorBrush x:Key="ThemeBackgroundHoverBrush">#ddffdd</SolidColorBrush>
         <SolidColorBrush x:Key="ThemeBackgroundTextBrush">#e3e3e3</SolidColorBrush>

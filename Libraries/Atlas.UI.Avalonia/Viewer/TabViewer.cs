@@ -245,6 +245,8 @@ namespace Atlas.UI.Avalonia
 				Foreground = Theme.ToolbarLabelForeground,
 				BorderBrush = new SolidColorBrush(Colors.Black),
 				BorderThickness = new Thickness(1),
+				VerticalAlignment = VerticalAlignment.Stretch,
+				VerticalContentAlignment = VerticalAlignment.Center,
 				[ToolTip.ShowDelayProperty] = 5,
 				[ToolTip.TipProperty] = "Scroll Right ( -> )",
 				[Grid.RowProperty] = 0,
@@ -261,6 +263,8 @@ namespace Atlas.UI.Avalonia
 				Foreground = Theme.ToolbarLabelForeground,
 				BorderBrush = new SolidColorBrush(Colors.Black),
 				BorderThickness = new Thickness(1),
+				VerticalAlignment = VerticalAlignment.Stretch,
+				VerticalContentAlignment = VerticalAlignment.Center,
 				[ToolTip.TipProperty] = "Scroll Left ( <- )",
 				[Grid.RowProperty] = 1,
 			};

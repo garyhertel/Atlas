@@ -1,0 +1,156 @@
+﻿<Styles 
+  xmlns="https://github.com/avaloniaui"
+  xmlns:dg="clr-namespace:Avalonia.Controls;assembly=Avalonia.Controls.DataGrid"
+  xmlns:prim="clr-namespace:Avalonia.Controls.Primitives;assembly=Avalonia.Controls.DataGrid"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:sys="clr-namespace:System;assembly=mscorlib">
+
+    <StyleInclude Source="resm:Atlas.UI.Avalonia.Theme.TabButton.xaml?assembly=Atlas.UI.Avalonia"/>
+
+  <Style Selector="dg|DataGridColumnHeader">
+        <Setter Property="Background" Value="{DynamicResource GridColumnHeaderBackgroundBrush}"/>
+        <Setter Property="Foreground" Value="{DynamicResource GridColumnHeaderForegroundBrush}" />
+        <Setter Property="HorizontalContentAlignment" Value="Left" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="AreSeparatorsVisible" Value="false" />
+        <Setter Property="AreSeparatorsVisible" Value="true" />
+        <Setter Property="Padding" Value="4" />
+        <Setter Property="FontSize" Value="14" />
+    </Style>
+
+    <Style Selector="dg|DataGridColumnHeader /template/ Rectangle#VerticalSeparator">
+        <Setter Property="Stroke" Value="Black"/>
+        <Setter Property="StrokeThickness" Value="1"/>
+    </Style>
+
+    <!--Style Selector="dg|DataGridRow /template/ Rectangle#BackgroundRectangle">
+        <Setter Property="Fill" Value="{DynamicResource ThemeGridHighBrush}" />
+    </Style-->
+
+    <Style Selector="dg|DataGrid">
+        <Setter Property="Background" Value="Transparent" />
+    </Style>
+
+    <Style Selector="dg|DataGridRow:selected">
+        <Setter Property="Foreground" Value="{DynamicResource ThemeGridForegroundSelectedBrush}" />
+    </Style>
+
+    <Style Selector="ToolTip">
+        <Setter Property="Background" Value="{DynamicResource ToolTipBackgroundBrush}"/>
+        <Setter Property="Foreground" Value="{DynamicResource ToolTipForegroundBrush}"/>
+        <Setter Property="BorderBrush" Value="#FF000000" />
+        <Setter Property="BorderThickness" Value="1" />
+    </Style>
+
+    <Style Selector="ScrollBar /template/ Border">
+        <Setter Property="Background" Value="{DynamicResource ThemeScrollBarBackgroundBrush}"/>
+        <Setter Property="BorderBrush" Value="#FF000000"/>
+        <Setter Property="BorderThickness" Value="1"/>
+    </Style>
+
+    <Style Selector="ScrollBar /template/ Thumb#thumb">
+        <Setter Property="Background" Value="{DynamicResource ThemeScrollBarThumbBrush}"/>
+    </Style>
+    <Style Selector="ScrollBar /template/ Thumb#thumb /template/ Border:pointerover">
+        <Setter Property="Background" Value="{DynamicResource ThemeScrollBarThumbHoverBrush}"/>
+    </Style>
+
+    <Style Selector="ScrollBar /template/ RepeatButton.repeat">
+        <Setter Property="Margin" Value="0"/>
+        <Setter Property="Padding" Value="4"/>
+        <Setter Property="BorderThickness" Value="0"/>
+    </Style>
+    
+    <!--Style Selector="TextBox">
+        <Setter Property="SelectionBrush" Value="{DynamicResource ToolbarButtonBackgroundHoverBrush}"/>
+    </Style-->
+    <!--Style Selector="TextBox:pointerover">
+        <Setter Property="BorderBrush" Value="{DynamicResource ThemeBorderHighBrush}"/>
+    </Style>
+    <Style Selector="TextBox[IsReadOnly=false] /template/ Border#border:pointerover">
+        <Setter Property="Background" Value="{DynamicResource ThemeBackgroundHoverBrush}"/>
+    </Style-->
+
+  <!--Style Selector="CheckBox:pointerover /template/ Border#border">
+        <Setter Property="Background" Value="{DynamicResource ThemeBackgroundHoverBrush}"/>
+    </Style-->
+
+    <Style Selector="ComboBox">
+        <Setter Property="Background" Value="{DynamicResource ThemeBackgroundBrush}"/>
+    </Style>
+    <Style Selector="ComboBox /template/ Border#border:pointerover">
+        <Setter Property="Background" Value="{DynamicResource ThemeBackgroundHoverBrush}"/>
+    </Style>
+    <!--Style Selector="ComboBoxItem:pointerover /template/ ContentPresenter">
+        <Setter Property="Foreground" Value="{DynamicResource ThemeBackgroundTextBrush}"/>
+    </Style-->
+
+    <Style Selector="ListBoxItem /template/ ContentPresenter">
+        <Setter Property="Background" Value="#FF086F9E"/>
+    </Style>
+    <Style Selector="ListBoxItem:pointerover /template/ ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource ThemeBackgroundHoverBrush}"/>
+    </Style>
+
+    <Style Selector="RadioButton">
+        <Setter Property="BorderBrush" Value="{DynamicResource ThemeRadioButtonBorderBrush}"/>
+    </Style>
+    <Style Selector="RadioButton:pointerover /template/ Ellipse#border">
+        <Setter Property="Stroke" Value="{DynamicResource ThemeBorderHighRadioBrush}"/>
+    </Style>
+
+    <Style Selector="RadioButton /template/ Ellipse#checkMark">
+        <Setter Property="Fill" Value="{DynamicResource ThemeBorderHighRadioBrush}"/>
+    </Style>
+
+    <Style Selector="CalendarDayButton">
+      <Setter Property="FontSize" Value="{DynamicResource FontSizeNormal}"/>
+    </Style>
+  
+    <Style Selector="CalendarDatePicker /template/ Button.CalendarDropDown /template/ Border#Background">
+      <Setter Property="Background" Value="#e3e3e3"/>
+    </Style>
+  
+    <Style Selector="GridSplitter">
+      <Setter Property="Focusable" Value="false" />
+    </Style>
+
+  <Style Selector="ScrollBar /template/ Thumb.thumb">
+    <Setter Property="Transitions">
+      <Transitions>
+        <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.01" />
+      </Transitions>
+    </Setter>
+  </Style>
+  
+  <Style Selector="ScrollBar /template/ Rectangle#TrackRect">
+    <Setter Property="Transitions">
+      <Transitions>
+        <DoubleTransition Property="Opacity" Duration="0:0:0.01" />
+      </Transitions>
+    </Setter>
+  </Style>
+  
+  <Style Selector="ScrollBar /template/ RepeatButton.line">
+    <Setter Property="Transitions">
+      <Transitions>
+        <DoubleTransition Property="Opacity" Duration="0:0:0.01" />
+      </Transitions>
+    </Setter>
+  </Style>
+
+  <Style Selector="ScrollBar /template/ Rectangle#TrackRect">
+    <Setter Property="Transitions">
+      <Transitions>
+        <DoubleTransition Property="Opacity" Duration="0:0:0.01" />
+      </Transitions>
+    </Setter>
+  </Style>
+
+  <Style Selector="ScrollBar">
+    <!-- Slightly above zero to all moving mouse across without triggering -->
+    <Setter Property="ShowDelay" Value="0:0:0.1"/>
+    <Setter Property="HideDelay" Value="0:0:0.5"/>
+  </Style>
+
+</Styles>
