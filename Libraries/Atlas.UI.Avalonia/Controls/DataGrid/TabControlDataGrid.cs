@@ -18,6 +18,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Diagnostics;
+using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 
@@ -280,15 +281,17 @@ namespace Atlas.UI.Avalonia.Controls
 			if (DataGrid == null || HorizontalAlignment != HorizontalAlignment.Stretch)
 				return;
 
+			var textColumns = DataGrid.Columns.Where(c => c is DataGridTextColumn);
+
 			// The star column widths will change as other column widths are changed
 			var originalWidths = new Dictionary<DataGridColumn, DataGridLength>();
-			foreach (DataGridColumn column in DataGrid.Columns)
+			foreach (DataGridColumn column in textColumns)
 			{
 				originalWidths[column] = column.Width;
 				column.Width = new DataGridLength(column.ActualWidth, DataGridLengthUnitType.Auto); // remove Star sizing so columns don't interfere with each other
 			}
 
-			foreach (DataGridColumn column in DataGrid.Columns)
+			foreach (DataGridColumn column in textColumns)
 			{
 				if (!column.IsVisible)
 					continue;
