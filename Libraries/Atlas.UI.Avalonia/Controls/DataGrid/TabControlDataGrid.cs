@@ -281,7 +281,7 @@ namespace Atlas.UI.Avalonia.Controls
 			if (DataGrid == null || HorizontalAlignment != HorizontalAlignment.Stretch)
 				return;
 
-			var textColumns = DataGrid.Columns.Where(c => c is DataGridTextColumn);
+			var textColumns = DataGrid.Columns.Where(c => c is DataGridTextColumn || c is DataGridCheckBoxColumn);
 
 			// The star column widths will change as other column widths are changed
 			var originalWidths = new Dictionary<DataGridColumn, DataGridLength>();

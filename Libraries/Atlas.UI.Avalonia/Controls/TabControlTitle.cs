@@ -55,7 +55,7 @@ namespace Atlas.UI.Avalonia.Controls
 			TextBlock = new TextBlock()
 			{
 				Text = Label,
-				FontSize = 15,
+				FontSize = 16,
 				//Margin = new Thickness(2), // Shows as black, Need Padding so Border not needed
 				Foreground = Theme.TitleForeground,
 				HorizontalAlignment = HorizontalAlignment.Stretch,

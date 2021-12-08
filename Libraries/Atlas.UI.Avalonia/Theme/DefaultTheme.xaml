@@ -6,6 +6,7 @@
   xmlns:sys="clr-namespace:System;assembly=mscorlib">
 
     <StyleInclude Source="resm:Atlas.UI.Avalonia.Theme.TabButton.xaml?assembly=Atlas.UI.Avalonia"/>
+    <StyleInclude Source="resm:Atlas.UI.Avalonia.Theme.ToolbarButton.xaml?assembly=Atlas.UI.Avalonia"/>
     
     <Style Selector="dg|DataGridColumnHeader">
         <Setter Property="Background" Value="{DynamicResource GridColumnHeaderBackgroundBrush}"/>

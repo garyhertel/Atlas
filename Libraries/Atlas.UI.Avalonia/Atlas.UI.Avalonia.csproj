@@ -41,6 +41,7 @@
     <None Remove="Theme\Accents\BaseDark.xaml" />
     <None Remove="Theme\FluentTheme.xaml" />
     <None Remove="Theme\TabButton.xaml" />
+    <None Remove="Theme\ToolbarButton.xaml" />
     <None Remove="View\TabAvalonEdit.xaml" />
   </ItemGroup>
 
@@ -81,6 +82,9 @@
       <Generator>MSBuild:Compile</Generator>
     </EmbeddedResource>
     <EmbeddedResource Update="Theme\FluentTheme.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Theme\ToolbarButton.xaml">
       <Generator>MSBuild:Compile</Generator>
     </EmbeddedResource>
     <EmbeddedResource Update="Theme\TabButton.xaml">

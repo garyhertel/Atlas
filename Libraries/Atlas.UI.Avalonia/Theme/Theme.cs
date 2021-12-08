@@ -20,6 +20,7 @@ namespace Atlas.UI.Avalonia
 		// Links
 		public static SolidColorBrush HasLinksBackground => Get("ThemeHasLinksBrush");
 		public static SolidColorBrush NoLinksBackground => Get("ThemeNoLinksBrush");
+		public static SolidColorBrush StyleLineBackground => Get("ThemeStyleLineBrush");
 
 		// Button
 		public static SolidColorBrush ButtonBackground => Get("ThemeButtonBackgroundBrush");

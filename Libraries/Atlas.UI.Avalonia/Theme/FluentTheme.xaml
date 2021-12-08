@@ -5,7 +5,8 @@
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:sys="clr-namespace:System;assembly=mscorlib">
 
-    <StyleInclude Source="resm:Atlas.UI.Avalonia.Theme.TabButton.xaml?assembly=Atlas.UI.Avalonia"/>
+  <StyleInclude Source="resm:Atlas.UI.Avalonia.Theme.TabButton.xaml?assembly=Atlas.UI.Avalonia"/>
+  <StyleInclude Source="resm:Atlas.UI.Avalonia.Theme.ToolbarButton.xaml?assembly=Atlas.UI.Avalonia"/>
 
   <Style Selector="dg|DataGridColumnHeader">
         <Setter Property="Background" Value="{DynamicResource GridColumnHeaderBackgroundBrush}"/>
@@ -78,9 +79,9 @@
     <Style Selector="ComboBox">
         <Setter Property="Background" Value="{DynamicResource ThemeBackgroundBrush}"/>
     </Style>
-    <Style Selector="ComboBox /template/ Border#border:pointerover">
+  <!--Style Selector="ComboBox /template/ Border#border:pointerover">
         <Setter Property="Background" Value="{DynamicResource ThemeBackgroundHoverBrush}"/>
-    </Style>
+    </Style-->
     <!--Style Selector="ComboBoxItem:pointerover /template/ ContentPresenter">
         <Setter Property="Foreground" Value="{DynamicResource ThemeBackgroundTextBrush}"/>
     </Style-->

@@ -12,9 +12,15 @@
       <Color x:Key="SystemAccentColorLight1">#429CE3</Color>
       <Color x:Key="SystemAccentColorLight2">#76B9ED</Color>
       <Color x:Key="SystemAccentColorLight3">#A6D8FF</Color>
+      <!--Color x:Key="SystemAltMediumColor">#FFFFFFFF</Color-->
 
-      
 
+
+      <SolidColorBrush x:Key="TextControlBackgroundPointerOver" Color="#FFFFFFFF" />
+      <SolidColorBrush x:Key="TextControlBorderBrushPointerOver" Color="#88ff88" />
+
+      <SolidColorBrush x:Key="ComboBoxBackgroundPointerOver" Color="#FFFFFFFF" />
+      <SolidColorBrush x:Key="ComboBoxBorderBrushPointerOver" Color="#88ff88" />
 
 
       <!-- Background -->
@@ -28,7 +34,6 @@
         <SolidColorBrush x:Key="ThemeForegroundLowBrush">#5860CA</SolidColorBrush>
 
         <!-- Border -->
-        <SolidColorBrush x:Key="ThemeBorderLightBrush">#1e1e1e</SolidColorBrush> <!-- DataGrid Lines -->
         <SolidColorBrush x:Key="ThemeBorderLowBrush">#000000</SolidColorBrush>
         <SolidColorBrush x:Key="ThemeBorderMidBrush">#000000</SolidColorBrush>
         <SolidColorBrush x:Key="ThemeBorderHighBrush">#000000</SolidColorBrush> <!-- RadioButton circle border -->
@@ -139,8 +144,8 @@
         <sys:Double x:Key="ThemeDisabledOpacity">0.75</sys:Double>
 
         <!-- Fonts -->
-        <sys:Double x:Key="FontSizeSmall">12</sys:Double>
-        <sys:Double x:Key="FontSizeNormal">14</sys:Double>
+        <sys:Double x:Key="FontSizeSmall">14</sys:Double>
+        <sys:Double x:Key="FontSizeNormal">16</sys:Double>
         <sys:Double x:Key="FontSizeLarge">18</sys:Double>
 
         <!-- ScrollBar -->

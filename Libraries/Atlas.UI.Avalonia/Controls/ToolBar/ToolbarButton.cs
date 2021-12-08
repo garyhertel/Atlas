@@ -12,11 +12,11 @@ using Avalonia.Media.Imaging;
 using Avalonia.Styling;
 using Avalonia.Threading;
 
-namespace Atlas.UI.Avalonia.Tabs
+namespace Atlas.UI.Avalonia.Controls
 {
 	public class ToolbarButton : Button, IStyleable, ILayoutable, IDisposable
 	{
-		Type IStyleable.StyleKey => typeof(Button);
+		Type IStyleable.StyleKey => typeof(ToolbarButton);
 
 		public TabControlToolbar Toolbar;
 		public string Label { get; set; }
@@ -205,6 +205,7 @@ namespace Atlas.UI.Avalonia.Tabs
 			base.OnPointerEnter(e);
 			BorderBrush = new SolidColorBrush(Colors.Black); // can't overwrite hover border :(
 			Background = Theme.ToolbarButtonBackgroundHover;
+			InvalidateVisual();
 		}
 
 		protected override void OnPointerLeave(PointerEventArgs e)
@@ -212,6 +213,7 @@ namespace Atlas.UI.Avalonia.Tabs
 			base.OnPointerLeave(e);
 			Background = Theme.ToolbarButtonBackground;
 			BorderBrush = Background;
+			InvalidateVisual();
 		}
 
 		private void DispatcherTimer_Tick(object sender, EventArgs e)
