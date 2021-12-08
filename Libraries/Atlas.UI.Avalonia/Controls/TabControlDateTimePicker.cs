@@ -24,7 +24,7 @@ namespace Atlas.UI.Avalonia.Controls
 
 		private DateTimeValueConverter _dateTimeConverter;
 		private CalendarDatePicker _datePicker;
-		private TabControlTextBox _textBox;
+		private TabControlTextBox _timeTextBox;
 
 		public TabDateTimePicker(ListProperty property)
 		{
@@ -49,7 +49,7 @@ namespace Atlas.UI.Avalonia.Controls
 			};
 
 			AddDatePicker();
-			AddTextBox();
+			AddTimeTextBox();
 
 			Button buttonImport = AddButton("Import Clipboard", Icons.Streams.Paste);
 			buttonImport.Click += ButtonImport_Click;
@@ -76,9 +76,9 @@ namespace Atlas.UI.Avalonia.Controls
 			Children.Add(_datePicker);
 		}
 
-		private void AddTextBox()
+		private void AddTimeTextBox()
 		{
-			_textBox = new TabControlTextBox()
+			_timeTextBox = new TabControlTextBox()
 			{
 				IsReadOnly = !Property.Editable,
 				Watermark = "15:30:45",
@@ -90,10 +90,10 @@ namespace Atlas.UI.Avalonia.Controls
 			};
 
 			if (!Property.Editable)
-				_textBox.Background = Theme.TextBackgroundDisabled;
+				_timeTextBox.Background = Theme.TextBackgroundDisabled;
 
-			_textBox.Bind(TextBlock.TextProperty, Binding);
-			Children.Add(_textBox);
+			_timeTextBox.Bind(TextBlock.TextProperty, Binding);
+			Children.Add(_timeTextBox);
 		}
 
 		private void ButtonImport_Click(object sender, global::Avalonia.Interactivity.RoutedEventArgs e)
@@ -104,7 +104,7 @@ namespace Atlas.UI.Avalonia.Controls
 			{
 				DateTime? newDateTime = _dateTimeConverter.Convert(timeSpan, typeof(string), null, null) as DateTime?;
 				Property.PropertyInfo.SetValue(Property.Object, newDateTime);
-				_textBox.Text = timeSpan.ToString();
+				_timeTextBox.Text = timeSpan.ToString();
 				e.Handled = true;
 			}
 			else
@@ -114,7 +114,7 @@ namespace Atlas.UI.Avalonia.Controls
 				{
 					Property.PropertyInfo.SetValue(Property.Object, dateTime);
 					_datePicker.SelectedDate = dateTime;
-					_textBox.Text = (string)_dateTimeConverter.Convert(dateTime, typeof(string), null, null);
+					_timeTextBox.Text = (string)_dateTimeConverter.Convert(dateTime, typeof(string), null, null);
 					e.Handled = true;
 				}
 			}

@@ -89,6 +89,8 @@ namespace Atlas.UI.Avalonia.Controls
 
 					if (AutoSelect == AutoSelectType.None)
 						ClearSelection();
+					else
+						LoadSettings();
 
 					Dispatcher.UIThread.Post(AutoSizeColumns, DispatcherPriority.Background);
 				}
@@ -568,9 +570,18 @@ namespace Atlas.UI.Avalonia.Controls
 				propertyColumns[0].Label = itemCollection.ColumnName;
 			}
 
+			bool styleCells = methodColumns.Count > 0 || 
+				propertyColumns
+				.Select(p => p.IsStyled())
+				.Max();
+
+			// Styling lines adds a performance hit, so only add it if necessary
+			if (styleCells)
+				DataGrid.GridLinesVisibility = DataGridGridLinesVisibility.Vertical;
+
 			foreach (TabDataSettings.PropertyColumn propertyColumn in propertyColumns)
 			{
-				AddColumn(propertyColumn.Label, propertyColumn.PropertyInfo);
+				AddColumn(propertyColumn.Label, propertyColumn.PropertyInfo, styleCells);
 			}
 
 			// 1 column should take up entire grid
@@ -583,13 +594,13 @@ namespace Atlas.UI.Avalonia.Controls
 				DataGrid.HeadersVisibility = DataGridHeadersVisibility.None;
 		}
 
-		public void AddColumn(string label, string propertyName)
+		public void AddColumn(string label, string propertyName, bool styleCells = false)
 		{
 			PropertyInfo propertyInfo = _elementType.GetProperty(propertyName);
-			AddColumn(label, propertyInfo);
+			AddColumn(label, propertyInfo, styleCells);
 		}
 
-		public void AddColumn(string label, PropertyInfo propertyInfo)
+		public void AddColumn(string label, PropertyInfo propertyInfo, bool styleCells = false)
 		{
 			MinWidthAttribute attributeMinWidth = propertyInfo.GetCustomAttribute<MinWidthAttribute>();
 			MaxWidthAttribute attributeMaxWidth = propertyInfo.GetCustomAttribute<MaxWidthAttribute>();
@@ -613,13 +624,19 @@ namespace Atlas.UI.Avalonia.Controls
 				if (propertyInfo.PropertyType == typeof(bool))
 				{
 					isReadOnly = (propertyInfo.GetCustomAttribute<EditingAttribute>() == null);
-					var checkBoxColumn = new DataGridPropertyCheckBoxColumn(propertyInfo, isReadOnly);
+					var checkBoxColumn = new DataGridPropertyCheckBoxColumn(propertyInfo, isReadOnly)
+					{
+						StyleCells = styleCells,
+					};
 					column = checkBoxColumn;
 					column.Binding = new Binding(propertyInfo.Name);
 				}
 				else
 				{
-					var textColumn = new DataGridPropertyTextColumn(DataGrid, propertyInfo, isReadOnly, maxDesiredWidth);
+					var textColumn = new DataGridPropertyTextColumn(DataGrid, propertyInfo, isReadOnly, maxDesiredWidth)
+					{
+						StyleCells = styleCells,
+					};
 
 					if (attributeMinWidth != null)
 						textColumn.MinDesiredWidth = attributeMinWidth.MinWidth;
@@ -662,19 +679,7 @@ namespace Atlas.UI.Avalonia.Controls
 			if (TabInstance.Project.UserSettings.AutoLoad)
 			{
 				SortSavedColumn();
-
-				if (TabModel.ShowSearch || (TabDataSettings.Filter != null && TabDataSettings.Filter.Length > 0))
-				{
-					SearchControl.Text = TabDataSettings.Filter;
-					FilterText = SearchControl.Text; // change to databinding?
-					SearchControl.IsVisible = true;
-				}
-				else
-				{
-					SearchControl.Text = "";
-					//FilterText = textBoxSearch.Text;
-					SearchControl.IsVisible = false;
-				}
+				LoadSearch();
 
 				if (!SelectSavedItems()) // sorting must happen before this
 					SelectDefaultItems();
@@ -682,6 +687,25 @@ namespace Atlas.UI.Avalonia.Controls
 				//UpdateSelection(); // datagrid not fully loaded yet
 			}
 			OnSelectionChanged?.Invoke(this, null);
+		}
+
+		private void LoadSearch()
+		{
+			if (SearchControl == null)
+				return;
+
+			if (TabModel.ShowSearch || (TabDataSettings.Filter != null && TabDataSettings.Filter.Length > 0))
+			{
+				SearchControl.Text = TabDataSettings.Filter;
+				FilterText = SearchControl.Text; // change to databinding?
+				SearchControl.IsVisible = true;
+			}
+			else
+			{
+				SearchControl.Text = "";
+				//FilterText = textBoxSearch.Text;
+				SearchControl.IsVisible = false;
+			}
 		}
 
 		public List<object> GetMatchingRowObjects()
@@ -725,7 +749,8 @@ namespace Atlas.UI.Avalonia.Controls
 						continue;
 					listItem = List[rowIndex];
 				}
-				if (TabInstance.IsOwnerObject(listItem.GetInnerValue())) // stops self referencing loops
+				if (TabDataSettings.SelectionType != SelectionType.User &&
+					TabInstance.IsOwnerObject(listItem.GetInnerValue())) // stops self referencing loops
 					continue;
 
 				/*if (item.pinned)
@@ -1064,13 +1089,9 @@ namespace Atlas.UI.Avalonia.Controls
 		private SelectedRow GetSelectedRow(object obj)
 		{
 			Type type = obj.GetType();
-			var selectedRow = new SelectedRow()
+			var selectedRow = new SelectedRow(obj)
 			{
-				Label = obj.ToUniqueString(),
 				RowIndex = List.IndexOf(obj),
-				DataKey = DataUtils.GetDataKey(obj), // overrides label
-				DataValue = DataUtils.GetDataValue(obj),
-				Object = obj,
 			};
 
 			// Use the DataValue's DataKey if no DataKey found

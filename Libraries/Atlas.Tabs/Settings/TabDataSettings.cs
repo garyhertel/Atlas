@@ -101,6 +101,12 @@ namespace Atlas.Tabs
 				PropertyInfo = propertyInfo;
 				Label = label;
 			}
+
+			public bool IsStyled()
+			{
+				return PropertyInfo.IsDefined(typeof(StyleValueAttribute)) ||
+					typeof(DictionaryEntry).IsAssignableFrom(PropertyInfo.DeclaringType);
+			}
 		}
 
 		private List<PropertyInfo> GetPropertyColumns(Type elementType)
@@ -172,5 +178,16 @@ namespace Atlas.Tabs
 		public List<string> SelectedColumns = new List<string>();
 
 		public override string ToString() => Label;
+
+		public SelectedRow() { }
+
+		public SelectedRow(object obj)
+		{
+			Object = obj;
+
+			Label = obj.ToString();
+			DataKey = DataUtils.GetDataKey(obj); // overrides label
+			DataValue = DataUtils.GetDataValue(obj);
+		}
 	}
 }
