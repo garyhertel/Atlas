@@ -1,4 +1,4 @@
-﻿using Atlas.Core;
+using Atlas.Core;
 using Atlas.UI.Avalonia;
 using Avalonia.Controls;
 using Avalonia.Data;
@@ -170,9 +170,13 @@ namespace Atlas.Extensions
 			{
 				var columnInfo = new ColumnInfo((string)dataColumn.Header);
 				if (dataColumn is DataGridPropertyTextColumn propertyColumn)
+				{
 					columnInfo.RightAlign = GetTextAlignment(propertyColumn.PropertyInfo.PropertyType);
+				}
 				else if (dataColumn is DataGridBoundTextColumn boundColumn)
+				{
 					columnInfo.RightAlign = GetTextAlignment(boundColumn.DataColumn.DataType);
+				}
 				columns.Add(columnInfo);
 			}
 

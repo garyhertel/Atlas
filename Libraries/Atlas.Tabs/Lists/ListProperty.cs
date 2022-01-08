@@ -1,4 +1,4 @@
-﻿using Atlas.Core;
+using Atlas.Core;
 using Atlas.Extensions;
 using System;
 using System.Collections.Generic;
@@ -77,10 +77,10 @@ namespace Atlas.Tabs
 
 					PropertyInfo.SetValue(Object, value);
 
-					if (Object is INotifyPropertyChanged notifyPropertyChanged)
+					/*if (Object is INotifyPropertyChanged notifyPropertyChanged)
 					{
 						//notifyPropertyChanged.PropertyChanged?.Invoke(obj, new PropertyChangedEventArgs(propertyName));
-					}
+					}*/
 				}
 			}
 		}
@@ -90,7 +90,7 @@ namespace Atlas.Tabs
 
 		public override string ToString() => Name;
 
-		public ListProperty(object obj, PropertyInfo propertyInfo, bool cachable = true) : 
+		public ListProperty(object obj, PropertyInfo propertyInfo, bool cachable = true) :
 			base(obj, propertyInfo)
 		{
 			PropertyInfo = propertyInfo;

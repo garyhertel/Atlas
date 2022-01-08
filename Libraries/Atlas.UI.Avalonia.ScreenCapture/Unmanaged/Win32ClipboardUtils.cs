@@ -1,4 +1,4 @@
-﻿using Avalonia.Media.Imaging;
+using Avalonia.Media.Imaging;
 using System;
 using System.IO;
 using System.Runtime.InteropServices;
@@ -25,11 +25,11 @@ namespace Atlas.UI.Avalonia.ScreenCapture
 
 			// Convert from Avalonia Bitmap to System Bitmap
 			using var memoryStream = new MemoryStream(1000000);
-			
+
 			bitmap.Save(memoryStream); // this returns a png from Skia
 
 			using var systemBitmap = new System.Drawing.Bitmap(memoryStream);
-			
+
 			await SetBitmapAsync(systemBitmap);
 		}
 
@@ -41,28 +41,28 @@ namespace Atlas.UI.Avalonia.ScreenCapture
 
 			var hBitmap = systemBitmap.GetHbitmap();
 
-			var screenDC = Win32UnmanagedMethods.GetDC(IntPtr.Zero);
+			IntPtr screenDC = Win32UnmanagedMethods.GetDC(IntPtr.Zero);
 
 			using var sourceDC = Gdi32UnmanagedMethods.CreateCompatibleDCScoped(screenDC);
-			
+
 			if (sourceDC.HDC == IntPtr.Zero)
 				return;
 
-			var sourceBitmapSelection = Gdi32UnmanagedMethods.SelectObject(sourceDC, hBitmap);
-			if (sourceBitmapSelection == null)
+			IntPtr sourceBitmapSelection = Gdi32UnmanagedMethods.SelectObject(sourceDC, hBitmap);
+			if (sourceBitmapSelection == IntPtr.Zero)
 				return;
 
 			using var destDC = Gdi32UnmanagedMethods.CreateCompatibleDCScoped(screenDC);
-				
+
 			if (destDC.HDC == IntPtr.Zero)
 				return;
-					
-			var compatibleBitmap = Gdi32UnmanagedMethods.CreateCompatibleBitmap(screenDC, systemBitmap.Width, systemBitmap.Height);
+
+			IntPtr compatibleBitmap = Gdi32UnmanagedMethods.CreateCompatibleBitmap(screenDC, systemBitmap.Width, systemBitmap.Height);
 			if (compatibleBitmap == IntPtr.Zero)
 				return;
 
-			var destinationBitmapSelection = Gdi32UnmanagedMethods.SelectObject(destDC, compatibleBitmap);
-			if (destinationBitmapSelection == null)
+			IntPtr destinationBitmapSelection = Gdi32UnmanagedMethods.SelectObject(destDC, compatibleBitmap);
+			if (destinationBitmapSelection == IntPtr.Zero)
 				return;
 
 			if (!Gdi32UnmanagedMethods.BitBlt(

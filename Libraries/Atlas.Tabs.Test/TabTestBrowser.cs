@@ -1,4 +1,4 @@
-﻿using Atlas.Core;
+using Atlas.Core;
 using System;
 using System.Collections.Generic;
 
@@ -14,7 +14,7 @@ namespace Atlas.Tabs.Test
 			{
 				model.Items = new List<ListItem>()
 				{
-					new ListItem("Uri", new Uri("https://wikipedia.org")),
+					new("Uri", new Uri("https://wikipedia.org")),
 				};
 
 				model.Actions = new List<TaskCreator>()

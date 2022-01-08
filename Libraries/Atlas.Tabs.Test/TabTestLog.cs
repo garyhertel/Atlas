@@ -1,4 +1,4 @@
-﻿using Atlas.Core;
+using Atlas.Core;
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -22,12 +22,12 @@ namespace Atlas.Tabs.Test
 				_sampleCall = new Call(Label);
 				_counter = 0;
 
-				model.Items = new ItemCollection<ListItem>()
+				model.Items = new List<ListItem>()
 				{
-					new ListItem("Task Instance Log", TaskInstance.Log),
-					new ListItem("Sample Call", _sampleCall),
-					new ListItem("Sample Call Log", _sampleCall.Log),
-					new ListItem("Log Entry", new LogEntry(null, LogLevel.Info, "test", null)),
+					new("Task Instance Log", TaskInstance.Log),
+					new("Sample Call", _sampleCall),
+					new("Sample Call Log", _sampleCall.Log),
+					new("Log Entry", new LogEntry(null, LogLevel.Info, "test", null)),
 				};
 
 				model.Actions = new List<TaskCreator>()
@@ -40,7 +40,7 @@ namespace Atlas.Tabs.Test
 					new TaskDelegate("Reset", Reset),
 					// Tests different threading contexts
 					new TaskAction("System.Timer: Log 1 Entry / second", () => StartSystemTimer()),
-					new TaskAction("Threading.Timer: Log 1 Entry / second", () => StartThreadTimer()),
+					//new TaskAction("Threading.Timer: Log 1 Entry / second", () => StartThreadTimer()),
 					new TaskDelegate("Task Delegate Thread:  Log 1 Entry / second", SubTaskInstances, true),
 				};
 				//actions.Add(new TaskAction("Add Child Entry", () => AddChildEntry()));
@@ -91,12 +91,12 @@ namespace Atlas.Tabs.Test
 				}
 			}
 
-			private Timer _timer;
+			/*private Timer _timer;
 			private void StartThreadTimer()
 			{
 				// would be nice to be able cancel this through the task (Start/Stop) Methods
 				_timer ??= new Timer(TimerCallback, null, 0, 1000);
-			}
+			}*/
 
 			public void TimerCallback(object state)
 			{
@@ -108,10 +108,10 @@ namespace Atlas.Tabs.Test
 				AddEntries(1);
 			}
 
-			private void AddChildEntry()
+			/*private void AddChildEntry()
 			{
 				//log.items[log.items.Count - 1].Add("Child Message");
-			}
+			}*/
 		}
 	}
 }

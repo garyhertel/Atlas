@@ -1,4 +1,4 @@
-﻿using Atlas.Core;
+using Atlas.Core;
 using Atlas.Extensions;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -41,11 +41,6 @@ namespace Atlas.Tabs
 		{
 			Key = key;
 			Value = value;
-		}
-
-		public static implicit operator ListItem((object key, object value) pair)
-		{
-			return new ListItem(pair.key, pair.value);
 		}
 
 		// todo: move into IListItem after upgrading to .Net Standard 2.1

@@ -1,4 +1,4 @@
-﻿using Atlas.Core;
+using Atlas.Core;
 using Atlas.Extensions;
 using Atlas.Serialize;
 using System;
@@ -86,14 +86,13 @@ namespace Atlas.Tabs
 
 		public Project Project { get; set; }
 		public ITab iTab; // Collision with derived Tab
-		//public Log Log => TaskInstance.Log;
-		public TaskInstance TaskInstance { get; set; } = new TaskInstance();
-		public TabModel Model { get; set; } = new TabModel();
+		public TaskInstance TaskInstance { get; set; } = new();
+		public TabModel Model { get; set; } = new();
 		public string Label { get { return Model.Name; } set { Model.Name = value; } }
 
 		public DataRepo DataApp => Project.DataApp;
 
-		public TabViewSettings TabViewSettings = new TabViewSettings();
+		public TabViewSettings TabViewSettings = new();
 		public TabBookmark TabBookmark { get; set; }
 		public SelectedRow SelectedRow { get; set; } // The parent selection that points to this tab
 
@@ -109,7 +108,7 @@ namespace Atlas.Tabs
 		}
 
 		public TabInstance ParentTabInstance { get; set; }
-		public Dictionary<object, TabInstance> ChildTabInstances { get; set; } = new Dictionary<object, TabInstance>();
+		public Dictionary<object, TabInstance> ChildTabInstances { get; set; } = new();
 
 		public SynchronizationContext UiContext;
 		public TabBookmark FilterBookmarkNode;
@@ -264,17 +263,6 @@ namespace Atlas.Tabs
 		{
 			TaskDelegateParams taskDelegate = (TaskDelegateParams)state;
 			StartTask(taskDelegate, false);
-		}
-
-		// make generic? not useful yet, causes flickering
-		public void ScheduleTask(int milliSeconds, Action action)
-		{
-			Task.Delay(milliSeconds).ContinueWith(t => action());
-		}
-
-		public void ScheduleTask(TimeSpan timeSpan, Action action)
-		{
-			Task.Delay(timeSpan).ContinueWith(t => action());
 		}
 
 		public void Invoke(Action action)
@@ -586,7 +574,7 @@ namespace Atlas.Tabs
 
 				var skippableAttribute = Model.ItemList[0][0].GetType().GetCustomAttribute<SkippableAttribute>();
 				if (skippableAttribute == null && Model.Actions != null && Model.Actions.Count > 0)
-					return false; 
+					return false;
 
 				return Model.Skippable;
 			}
@@ -744,7 +732,7 @@ namespace Atlas.Tabs
 		{
 			if (_settingLoaded && !reload && TabViewSettings != null)
 				return TabViewSettings;
-			
+
 			if (TabBookmark != null && TabBookmark.ViewSettings != null)
 			{
 				TabViewSettings = TabBookmark.ViewSettings;
@@ -943,7 +931,7 @@ namespace Atlas.Tabs
 		{
 			if (TabBookmark == null)
 				return null;
-			
+
 			// FindMatches uses bookmarks
 			if (TabBookmark.ChildBookmarks.TryGetValue(name, out TabBookmark tabChildBookmark))
 			{

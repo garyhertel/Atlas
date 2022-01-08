@@ -1,4 +1,4 @@
-﻿using Atlas.Core;
+using Atlas.Core;
 using Atlas.Tabs.Test.DataGrid;
 using System;
 using System.Collections.Generic;
@@ -24,9 +24,9 @@ namespace Atlas.Tabs.Test
 
 				model.Items = new ItemCollection<ListItem>("Items")
 				{
-					("Sample Items", _sampleItems),
-					("Collections", new TabTestGridCollectionSize()),
-					("Recursive Copy", new TabSample()),
+					new("Sample Items", _sampleItems),
+					new("Collections", new TabTestGridCollectionSize()),
+					new("Recursive Copy", new TabSample()),
 				};
 
 				model.Actions = new List<TaskCreator>()

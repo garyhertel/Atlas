@@ -1,4 +1,4 @@
-﻿using Atlas.Core;
+using Atlas.Core;
 using Atlas.Extensions;
 using System;
 using System.Collections;
@@ -63,11 +63,11 @@ namespace Atlas.Tabs
 		public int MaxDesiredWidth { get; set; } = 1500;
 
 		public IList Actions { get; set; }
-		public TaskInstanceCollection Tasks { get; set; } = new TaskInstanceCollection();
+		public TaskInstanceCollection Tasks { get; set; } = new();
 
-		public List<IList> ItemList { get; set; } = new List<IList>();
+		public List<IList> ItemList { get; set; } = new();
 
-		public List<TabObject> Objects { get; set; } = new List<TabObject>();
+		public List<TabObject> Objects { get; set; } = new();
 		//public List<ITabControl> CustomTabControls { get; set; } = new List<ITabControl>(); // should everything be a custom control? tabControls?
 
 		public IList Items
@@ -109,7 +109,7 @@ namespace Atlas.Tabs
 
 		public static TabModel Create(string name, object obj)
 		{
-			if (TabUtils.ObjectHasLinks(obj) == false && !(obj is Enum))
+			if (TabUtils.ObjectHasLinks(obj) == false && obj is not Enum)
 				return null;
 
 			var tabModel = new TabModel(name);
@@ -200,10 +200,10 @@ namespace Atlas.Tabs
 
 			// Can only set one set of columns for Items, so we have to choose
 			// Should we always show fields and properties?
-			if (typeof(IDictionary).IsAssignableFrom(type))
+			if (obj is IDictionary dictionary)
 			{
 				// Show as Key/Value columns, change to keys only?
-				AddDictionary(type);
+				AddDictionary(dictionary);
 			}
 			else if (obj is IEnumerable enumerable)
 			{
@@ -243,7 +243,7 @@ namespace Atlas.Tabs
 				{
 					Skippable = skippableAttribute.Value;
 				}
-				else if (!(firstItem is ITab) && TabDataSettings.GetVisibleProperties(elementType).Count > 1)
+				else if (firstItem is not ITab && TabDataSettings.GetVisibleProperties(elementType).Count > 1)
 				{
 					Skippable = true;
 				}
@@ -252,12 +252,12 @@ namespace Atlas.Tabs
 			}
 		}
 
-		private void AddDictionary(Type type)
+		private void AddDictionary(IDictionary dictionary)
 		{
 			var sortedList = new List<DictionaryEntry>(); // can't sort ItemCollection
 			try
 			{
-				foreach (DictionaryEntry item in (IDictionary)Object)
+				foreach (DictionaryEntry item in dictionary)
 				{
 					sortedList.Add(item);
 				}
@@ -273,7 +273,7 @@ namespace Atlas.Tabs
 			ItemList.Add(new ItemCollection<DictionaryEntry>(sortedList));
 		}
 
-		public Type[] GetInterfaceGenericArguments(Type type, Type genericType)
+		public static Type[] GetInterfaceGenericArguments(Type type, Type genericType)
 		{
 			foreach (Type iType in type.GetInterfaces())
 			{
@@ -305,7 +305,7 @@ namespace Atlas.Tabs
 		}
 
 		// merge with GetElementTypeForAll?
-		private Type GetElementType(Type type)
+		private static Type GetElementType(Type type)
 		{
 			Type elementType;
 			if (type.IsAssignableToGenericType(typeof(IEnumerable<>)))

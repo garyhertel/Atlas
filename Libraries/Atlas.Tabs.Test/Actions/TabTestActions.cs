@@ -1,4 +1,4 @@
-﻿using Atlas.Core;
+using Atlas.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,10 +16,10 @@ namespace Atlas.Tabs.Test.Actions
 			{
 				model.MinDesiredWidth = 250;
 
-				model.Items = new ItemCollection<ListItem>()
+				model.Items = new List<ListItem>()
 				{
-					new ListItem("Parameters", new TabParamsDataGrid()),
-					new ListItem("Async Load", new TabTestLoadAsync()),
+					new("Parameters", new TabParamsDataGrid()),
+					new("Async Load", new TabTestLoadAsync()),
 				};
 
 				model.Actions = new List<TaskCreator>()
@@ -55,11 +55,11 @@ Actions add Buttons to the tab. When clicked, it will:
 				call.Log.AddError("This should show the task");
 			}
 
-			private void PassParams(int param1, string param2)
+			private static void PassParams(int param1, string param2)
 			{
-				Log log = new Log();
-				log.Add("If you log and no one's listening, are you really logging?", 
-					new Tag("param1", param1), 
+				Log log = new();
+				log.Add("If you log and no one's listening, are you really logging?",
+					new Tag("param1", param1),
 					new Tag("param2", param2));
 			}
 
@@ -80,7 +80,7 @@ Actions add Buttons to the tab. When clicked, it will:
 				Parallel.ForEach(downloads, new ParallelOptions() { MaxDegreeOfParallelism = 10 }, i =>
 				{
 					using CallTimer sleepCall = call.Timer(i.ToString());
-					
+
 					sleepCall.AddSubTask();
 					sleepCall.TaskInstance.ProgressMax = i;
 					for (int j = 0; j < i; j++)
@@ -103,20 +103,20 @@ Actions add Buttons to the tab. When clicked, it will:
 			public static async Task<int> DoTask(Call call, int id)
 			{
 				using CallTimer callTimer = call.Timer("Task", new Tag(id));
-				
+
 				for (int i = 0; i < id && !callTimer.TaskInstance.CancelToken.IsCancellationRequested; i++)
 				{
 					callTimer.Log.Add("Sleeping");
 					await Task.Delay(1000, callTimer.TaskInstance.CancelToken);
 				}
-				
+
 				return id;
 			}
 
 			private async Task SleepAsync(Call call)
 			{
 				using CallTimer callTimer = call.Timer("long op");
-				
+
 				await Task.Delay(1000);
 			}
 		}

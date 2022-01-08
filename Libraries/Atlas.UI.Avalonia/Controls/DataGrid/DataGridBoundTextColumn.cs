@@ -34,7 +34,7 @@ namespace Atlas.UI.Avalonia
 			cell.BorderBrush = Brushes.Black;
 			cell.BorderThickness = new Thickness(1);
 
-			TextBlock textBlock = CreateTextBlock(cell, dataItem);
+			TextBlock textBlock = CreateTextBlock();
 			//TextBlock textBlock = (TextBlock)base.GenerateElement(cell, dataItem);
 			textBlock.TextAlignment = DataGridUtils.GetTextAlignment(DataColumn.DataType);
 			AddTextBlockContextMenu(textBlock);
@@ -58,7 +58,7 @@ namespace Atlas.UI.Avalonia
 			}
 		}
 
-		protected TextBlock CreateTextBlock(DataGridCell cell, object dataItem)
+		protected TextBlock CreateTextBlock()
 		{
 			var textBlockElement = new TextBlockElement()
 			{

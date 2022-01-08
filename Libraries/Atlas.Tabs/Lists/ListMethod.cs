@@ -1,4 +1,4 @@
-﻿using Atlas.Core;
+using Atlas.Core;
 using Atlas.Extensions;
 using System;
 using System.Collections.Generic;
@@ -48,7 +48,7 @@ namespace Atlas.Tabs
 
 		public override string ToString() => Name;
 
-		public ListMethod(object obj, MethodInfo methodInfo, bool cached = true) : 
+		public ListMethod(object obj, MethodInfo methodInfo, bool cached = true) :
 			base(obj, methodInfo)
 		{
 			MethodInfo = methodInfo;
@@ -79,7 +79,7 @@ namespace Atlas.Tabs
 
 		private object GetValue()
 		{
-			var parameters = new object[] { };
+			var parameters = Array.Empty<object>();
 			ParameterInfo[] parameterInfos = MethodInfo.GetParameters();
 			if (parameterInfos.Length == 1 && parameterInfos[0].ParameterType == typeof(Call))
 			{

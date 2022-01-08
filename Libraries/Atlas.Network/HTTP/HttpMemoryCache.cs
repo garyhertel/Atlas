@@ -1,4 +1,4 @@
-﻿using Atlas.Core;
+using Atlas.Core;
 using Microsoft.Extensions.Caching.Memory;
 using Newtonsoft.Json;
 using System;
@@ -59,7 +59,7 @@ namespace Atlas.Network
 				return true;
 			}
 
-			string text = HttpClient.GetString(call, uri);
+			string text = HttpUtils.GetString(call, uri);
 			if (text != null)
 			{
 				try
