@@ -18,14 +18,14 @@ namespace Atlas.Extensions
 			}
 		}
 
-		public static List<TimeUnit> TimeUnits = new List<TimeUnit>()
+		public static List<TimeUnit> TimeUnits { get; set; } = new()
 		{
-			new TimeUnit(TimeSpan.FromDays(7), "Week"),
-			new TimeUnit(TimeSpan.FromDays(1), "Day"),
-			new TimeUnit(TimeSpan.FromHours(1), "Hour"),
-			new TimeUnit(TimeSpan.FromMinutes(1), "Minute"),
-			new TimeUnit(TimeSpan.FromSeconds(1), "Second"),
-			new TimeUnit(TimeSpan.FromMilliseconds(1), "Millisecond"),
+			new(TimeSpan.FromDays(7), "Week"),
+			new(TimeSpan.FromDays(1), "Day"),
+			new(TimeSpan.FromHours(1), "Hour"),
+			new(TimeSpan.FromMinutes(1), "Minute"),
+			new(TimeSpan.FromSeconds(1), "Second"),
+			new(TimeSpan.FromMilliseconds(1), "Millisecond"),
 		};
 
 		public static string FormattedDecimal(this TimeSpan timeSpan)
@@ -48,7 +48,7 @@ namespace Atlas.Extensions
 			return timeSpan.TotalSeconds + " Seconds";
 		}
 
-		public static List<TimeSpan> CommonTimeSpans { get; set; } = new List<TimeSpan>()
+		public static List<TimeSpan> CommonTimeSpans { get; set; } = new()
 		{
 			TimeSpan.FromSeconds(1),
 			TimeSpan.FromSeconds(5),

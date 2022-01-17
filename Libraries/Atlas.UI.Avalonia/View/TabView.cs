@@ -30,7 +30,7 @@ namespace Atlas.UI.Avalonia.View
 		private const int MinDesiredSplitterDistance = 50;
 
 		// Model.Objects
-		public static Dictionary<Type, IControlCreator> ControlCreators = new();
+		public static Dictionary<Type, IControlCreator> ControlCreators { get; set; } = new();
 
 		// Maybe this control should own it's own settings?
 		//private TabViewSettings _tabViewSettings = new TabViewSettings();
@@ -61,7 +61,7 @@ namespace Atlas.UI.Avalonia.View
 		public TabControlActions TabActions;
 		public TabControlTasks TabTasks;
 		public List<TabControlDataGrid> TabDatas = new();
-		public List<ITabSelector> CustomTabControls { get; set; } = new List<ITabSelector>(); // should everything use this?
+		public List<ITabSelector> CustomTabControls { get; set; } = new(); // should everything use this?
 
 		// Layout Controls
 		private Grid _containerGrid;
@@ -240,6 +240,7 @@ namespace Atlas.UI.Avalonia.View
 				Width = Theme.SplitterSize,
 			};
 			_containerGrid.Children.Add(_parentChildGridSplitter);
+
 			_parentChildGridSplitter.DragDelta += GridSplitter_DragDelta;
 			_parentChildGridSplitter.DragStarted += GridSplitter_DragStarted;
 			_parentChildGridSplitter.DragCompleted += GridSplitter_DragCompleted; // bug, this is firing when double clicking splitter
@@ -682,7 +683,7 @@ namespace Atlas.UI.Avalonia.View
 				_fillerPanel.Width = GetFillerPanelWidth();
 		}
 
-		private void UpdateChildControls()
+		private void UpdateChildControls(bool recreate = false)
 		{
 			// These need to be set regardless of if the children show
 			if (TabDatas.Count > 0)
@@ -706,7 +707,7 @@ namespace Atlas.UI.Avalonia.View
 			//Dictionary<object, Control> oldChildControls = tabChildControls.gridControls;
 			//tabChildControls.gridControls = new Dictionary<object, Control>();
 
-			List<Control> orderedChildControls = CreateAllChildControls(out Dictionary<object, Control> newChildControls);
+			List<Control> orderedChildControls = CreateAllChildControls(recreate, out Dictionary<object, Control> newChildControls);
 
 			_fillerPanel = null;
 
@@ -724,13 +725,16 @@ namespace Atlas.UI.Avalonia.View
 			UpdateSelectedTabInstances();
 
 			if (Instance.TabBookmark != null)
+			{
 				Instance.SaveTabSettings();
-			Instance.TabBookmark = null; // clear so user can navigate and save prefs
+				Instance.TabBookmarkLoaded = Instance.TabBookmark;
+				Instance.TabBookmark = null; // clear so user can navigate and save prefs
+			}
 		}
 
-		private List<Control> CreateAllChildControls(out Dictionary<object, Control> newChildControls)
+		private List<Control> CreateAllChildControls(bool recreate, out Dictionary<object, Control> newChildControls)
 		{
-			Dictionary<object, Control> oldChildControls = _tabChildControls.GridControls;
+			Dictionary<object, Control> oldChildControls = recreate ? new() : _tabChildControls.GridControls;
 			newChildControls = new Dictionary<object, Control>();
 			var orderedChildControls = new List<Control>();
 			//AddNotes(newChildControls, oldChildControls, orderedChildControls);
@@ -765,10 +769,6 @@ namespace Atlas.UI.Avalonia.View
 
 		internal void CreateChildControls(IEnumerable newList, Dictionary<object, Control> oldChildControls, Dictionary<object, Control> newChildControls, List<Control> orderedChildControls, ITabSelector tabControl = null)
 		{
-			//var collection = newList as DataGridSelectedItemsCollection;
-			//if (collection != null && collection.)
-			//	newList.
-
 			foreach (object obj in newList)
 			{
 				if (newChildControls.Count >= Instance.Project.UserSettings.VerticalTabLimit)
@@ -780,10 +780,6 @@ namespace Atlas.UI.Avalonia.View
 
 		private void GetOrCreateChildControl(Dictionary<object, Control> oldChildControls, Dictionary<object, Control> newChildControls, List<Control> orderedChildControls, object obj, string label = null, ITabSelector tabControl = null)
 		{
-			//var collection = newList as DataGridSelectedItemsCollection;
-			//if (collection != null && collection.)
-			//	newList.
-
 			// duplicate work
 			//object value = obj.GetInnerValue(); // performance issues? cache this?
 			//if (value == null)
@@ -850,9 +846,11 @@ namespace Atlas.UI.Avalonia.View
 			}
 		}
 
-		private void ParentListSelectionChanged(object sender, EventArgs e)
+		private void ParentListSelectionChanged(object sender, TabSelectionChangedEventArgs e)
 		{
-			UpdateChildControls();
+			e ??= new TabSelectionChangedEventArgs();
+
+			UpdateChildControls(e.Recreate);
 
 			Instance.SelectionChanged(sender, e);
 

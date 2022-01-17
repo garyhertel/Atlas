@@ -11,7 +11,7 @@ namespace Atlas.Serialize
 {
 	public class TypeSchema
 	{
-		public static HashSet<Type> PublicTypes = new HashSet<Type>()
+		public static HashSet<Type> PublicTypes = new()
 		{
 			typeof(string),
 			typeof(DateTime),
@@ -22,12 +22,12 @@ namespace Atlas.Serialize
 			typeof(object),
 		};
 
-		public static HashSet<Type> PrivateTypes = new HashSet<Type>()
+		public static HashSet<Type> PrivateTypes = new()
 		{
 			typeof(MemoryStream),
 		};
 
-		public static HashSet<Type> PublicGenericTypes = new HashSet<Type>()
+		public static HashSet<Type> PublicGenericTypes = new()
 		{
 			typeof(List<>),
 			typeof(Dictionary<,>),
@@ -40,8 +40,8 @@ namespace Atlas.Serialize
 		public bool CanReference { get; set; } // whether the object can reference other types
 		public bool IsCollection;
 
-		public List<FieldSchema> FieldSchemas { get; set; } = new List<FieldSchema>();
-		public List<PropertySchema> PropertySchemas { get; set; } = new List<PropertySchema>();
+		public List<FieldSchema> FieldSchemas { get; set; } = new();
+		public List<PropertySchema> PropertySchemas { get; set; } = new();
 
 		// not really schema, could break out into a records class
 		public int TypeIndex; // -1 if null
@@ -65,7 +65,7 @@ namespace Atlas.Serialize
 		public bool HasSubType;
 
 		// Type lookup can take a long time, especially when there's missing types
-		private static readonly Dictionary<string, Type> _typeCache = new Dictionary<string, Type>();
+		private static readonly Dictionary<string, Type> _typeCache = new();
 
 		private static readonly BindingFlags _bindingFlags = BindingFlags.Public | BindingFlags.Instance | BindingFlags.FlattenHierarchy;
 

@@ -15,7 +15,7 @@ namespace Atlas.Tabs
 		public virtual ProjectSettings ProjectSettings { get; set; } = new();
 		public virtual UserSettings UserSettings { get; set; } = new();
 
-		public Linker Linker { get; set; } = new Linker();
+		public Linker Linker { get; set; } = new();
 
 		public DataRepo DataShared => new(DataSharedPath, DataRepoName);
 		public DataRepo DataApp => new(DataAppPath, DataRepoName);
@@ -85,7 +85,7 @@ namespace Atlas.Tabs
 
 	public class TypeObjectStore
 	{
-		public Dictionary<Type, object> Items { get; set; } = new Dictionary<Type, object>();
+		public Dictionary<Type, object> Items { get; set; } = new();
 
 		public void Add(object obj)
 		{

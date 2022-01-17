@@ -8,18 +8,30 @@ namespace Atlas.Extensions
 {
 	public static class TypeExtensions
 	{
-		private static readonly HashSet<Type> NumericTypes = new HashSet<Type>
+		private static readonly HashSet<Type> NumericTypes = new()
 		{
-			typeof(byte), typeof(sbyte),
-			typeof(short), typeof(ushort),
-			typeof(int), typeof(uint),
-			typeof(long), typeof(ulong),
-			typeof(float), typeof(double), typeof(decimal),
+			typeof(byte),
+			typeof(sbyte),
+
+			typeof(short),
+			typeof(ushort),
+
+			typeof(int),
+			typeof(uint),
+
+			typeof(long),
+			typeof(ulong),
+
+			typeof(float),
+			typeof(double),
+			typeof(decimal),
 		};
 
-		private static readonly HashSet<Type> DecimalTypes = new HashSet<Type>
+		private static readonly HashSet<Type> DecimalTypes = new()
 		{
-			typeof(float), typeof(double), typeof(decimal),
+			typeof(float),
+			typeof(double),
+			typeof(decimal),
 		};
 
 		public static bool IsNumeric(this Type type)

@@ -26,8 +26,8 @@ namespace Atlas.Tabs
 
 		public SelectedRow SelectedRow { get; set; } // The parent selection that created this bookmark
 
-		public TabViewSettings ViewSettings = new TabViewSettings(); // list selections, doesn't know about children
-		public Dictionary<string, TabBookmark> ChildBookmarks { get; set; } = new Dictionary<string, TabBookmark>(); // doesn't know which tabData to use, maps id to child info
+		public TabViewSettings ViewSettings = new(); // list selections, doesn't know about children
+		public Dictionary<string, TabBookmark> ChildBookmarks { get; set; } = new(); // doesn't know which tabData to use, maps id to child info
 		public Dictionary<string, object> BookmarkData { get; set; }
 
 		public string Address
@@ -58,12 +58,12 @@ namespace Atlas.Tabs
 			}
 		}
 
-		//public List<DataRepoItem> DataRepoItems { get; set; } = new List<DataRepoItem>();
+		//public List<DataRepoItem> DataRepoItems { get; set; } = new();
 		public string DataRepoGroupId { get; set; }
 
 		// Temporary, Only FindMatches() uses, refactor these out?
 		[NonSerialized]
-		public HashSet<object> SelectedObjects = new HashSet<object>(); // does this work with multiple TabDatas?
+		public HashSet<object> SelectedObjects = new(); // does this work with multiple TabDatas?
 
 		[NonSerialized]
 		public TabModel TabModel;

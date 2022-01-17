@@ -45,20 +45,20 @@ namespace Atlas.UI.Avalonia.Controls
 		public DataGrid DataGrid;
 		public TabControlSearch SearchControl;
 
-		//private HashSet<int> pinnedItems = new HashSet<int>(); // starred items?
+		//private HashSet<int> pinnedItems = new(); // starred items?
 		public DataGridCollectionView CollectionView;
 
-		private Dictionary<string, DataGridColumn> _columnObjects = new Dictionary<string, DataGridColumn>();
-		private Dictionary<DataGridColumn, string> _columnNames = new Dictionary<DataGridColumn, string>();
-		private List<PropertyInfo> _columnProperties = new List<PropertyInfo>(); // makes filtering faster, could change other Dictionaries strings to PropertyInfo
+		public event EventHandler<TabSelectionChangedEventArgs> OnSelectionChanged;
 
-		public event EventHandler<EventArgs> OnSelectionChanged;
+		private Dictionary<string, DataGridColumn> _columnObjects = new();
+		private Dictionary<DataGridColumn, string> _columnNames = new();
+		private List<PropertyInfo> _columnProperties = new(); // makes filtering faster, could change other Dictionaries strings to PropertyInfo
 
 		private int _disableSaving = 0; // enables saving if > 0
 		private int _isAutoSelecting = 0; // enables auto selecting if > 0
 		private bool _ignoreSelectionChanged = false;
 
-		private readonly Stopwatch _notifyItemChangedStopwatch = new Stopwatch();
+		private readonly Stopwatch _notifyItemChangedStopwatch = new();
 		private DispatcherTimer _dispatcherTimer;  // delays auto selection to throttle updates
 		private object _autoSelectItem = null;
 
@@ -590,7 +590,7 @@ namespace Atlas.UI.Avalonia.Controls
 
 			// Styling lines adds a performance hit, so only add it if necessary
 			if (styleCells)
-				DataGrid.GridLinesVisibility = DataGridGridLinesVisibility.Vertical;
+				DataGrid.GridLinesVisibility = DataGridGridLinesVisibility.None;
 
 			foreach (TabDataSettings.PropertyColumn propertyColumn in propertyColumns)
 			{
@@ -727,11 +727,14 @@ namespace Atlas.UI.Avalonia.Controls
 			if (TabDataSettings.SelectedRows.Count == 0)
 				return rowObjects;
 
-			var keys = new Dictionary<string, object>(); // todo: change to unordered?
+			var objects = new HashSet<object>();
+			var keys = new Dictionary<string, object>();
 			foreach (object listItem in CollectionView) // collectionView takes filters into account
 			{
 				if (listItem == null)
 					continue;
+
+				objects.Add(objects);
 
 				string id = DataUtils.GetItemId(listItem);
 				if (id != null)
@@ -740,19 +743,19 @@ namespace Atlas.UI.Avalonia.Controls
 
 			foreach (SelectedRow selectedRow in TabDataSettings.SelectedRows)
 			{
-				object listItem;
-				if (selectedRow.Object != null)
+				object selectedObject;
+				if (selectedRow.Object != null && objects.Contains(selectedRow.Object))
 				{
-					listItem = selectedRow.Object;
+					selectedObject = selectedRow.Object;
 				}
 				else if (selectedRow.DataKey != null)
 				{
-					if (!keys.TryGetValue(selectedRow.DataKey, out listItem))
+					if (!keys.TryGetValue(selectedRow.DataKey, out selectedObject))
 						continue;
 				}
 				else if (selectedRow.Label != null)
 				{
-					if (!keys.TryGetValue(selectedRow.Label, out listItem))
+					if (!keys.TryGetValue(selectedRow.Label, out selectedObject))
 						continue;
 				}
 				else
@@ -760,18 +763,14 @@ namespace Atlas.UI.Avalonia.Controls
 					int rowIndex = selectedRow.RowIndex;
 					if (rowIndex < 0 || rowIndex >= List.Count) // some items might be filtered or have changed
 						continue;
-					listItem = List[rowIndex];
+					selectedObject = List[rowIndex];
 				}
 
 				if (TabDataSettings.SelectionType != SelectionType.User &&
-					TabInstance.IsOwnerObject(listItem.GetInnerValue())) // stops self referencing loops
+					TabInstance.IsOwnerObject(selectedObject.GetInnerValue())) // stops self referencing loops
 					continue;
 
-				/*if (item.pinned)
-				{
-					pinnedItems.Add(rowIndex);
-				}*/
-				rowObjects.Add(listItem);
+				rowObjects.Add(selectedObject);
 			}
 
 			if (TabInstance.TabBookmark?.Bookmark?.Imported == true && rowObjects.Count != TabDataSettings.SelectedRows.Count)
@@ -1023,13 +1022,13 @@ namespace Atlas.UI.Avalonia.Controls
 			}
 		}
 
-		private void UpdateSelection()
+		private void UpdateSelection(bool recreate = false)
 		{
 			//SelectPinnedItems();
 			TabDataSettings.SelectedRows = SelectedRows;
 			TabDataSettings.SelectionType = SelectionType.User; // todo: place earlier with more accurate type
 
-			OnSelectionChanged?.Invoke(this, null);
+			OnSelectionChanged?.Invoke(this, new TabSelectionChangedEventArgs(recreate));
 		}
 
 		public HashSet<SelectedRow> SelectedRows
@@ -1114,6 +1113,10 @@ namespace Atlas.UI.Avalonia.Controls
 			{
 				TabDataSettings.Filter = value;
 				_filter = new Filter(value);
+				if (TabModel.SearchFilter != null)
+				{
+					TabModel.SearchFilter.Filter = _filter;
+				}
 
 				if (_filter.FilterExpressions.Count > 0)
 				{
@@ -1135,6 +1138,12 @@ namespace Atlas.UI.Avalonia.Controls
 				else
 				{
 					CollectionView.Filter = null;
+				}
+
+				if (TabModel.SearchFilter != null)
+				{
+					// Update Child Controls in case children use same search filter
+					UpdateSelection(true);
 				}
 			}
 		}

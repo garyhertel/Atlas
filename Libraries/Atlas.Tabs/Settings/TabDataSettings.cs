@@ -19,9 +19,9 @@ namespace Atlas.Tabs
 	[PublicData]
 	public class TabDataSettings
 	{
-		public HashSet<SelectedRow> SelectedRows { get; set; } = new HashSet<SelectedRow>(); // needs to be nullable or we need another initialized value
+		public HashSet<SelectedRow> SelectedRows { get; set; } = new(); // needs to be nullable or we need another initialized value
 		public SelectionType SelectionType { get; set; } = SelectionType.None;
-		public List<string> ColumnNameOrder { get; set; } = new List<string>(); // Order to show the columns in, users can drag columns around to reorder these
+		public List<string> ColumnNameOrder { get; set; } = new(); // Order to show the columns in, users can drag columns around to reorder these
 		public int TotalColumns { get; set; } // unused, use to detect changes?
 
 		public string SortColumnName { get; set; } // Currently sorted column
@@ -159,43 +159,6 @@ namespace Atlas.Tabs
 				propertyColumns.Add(new PropertyColumn(propertyInfo, label));
 			}
 			return propertyColumns;
-		}
-	}
-
-	[PublicData]
-	public class SelectedRow
-	{
-		public string Label; // null if ToString() returns type
-		public int RowIndex;
-
-		[NonSerialized]
-		public object Object; // used for bookmark searches, dangerous to keep these references around otherwise
-
-		public string DataKey;
-		public object DataValue;
-
-		//public bool Pinned;
-		public List<string> SelectedColumns = new();
-
-		public override string ToString() => Label;
-
-		public SelectedRow() { }
-
-		public SelectedRow(object obj)
-		{
-			Object = obj;
-
-			Label = obj.ToString();
-			DataKey = DataUtils.GetDataKey(obj); // overrides label
-			DataValue = DataUtils.GetDataValue(obj);
-
-			// Use the DataValue's DataKey if no DataKey found
-			if (DataKey == null && DataValue != null)
-				DataKey = DataUtils.GetDataKey(DataValue);
-
-			Type type = obj.GetType();
-			if (Label == type.FullName)
-				Label = null;
 		}
 	}
 }
