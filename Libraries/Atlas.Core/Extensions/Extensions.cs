@@ -8,8 +8,6 @@ using System.Xml;
 
 namespace Atlas.Extensions; // rename to Core?
 
-
-
 public static class AtlasExtensions
 {
 	public static XmlNode[] Elements(this XmlDocument xmlDoc, string name)

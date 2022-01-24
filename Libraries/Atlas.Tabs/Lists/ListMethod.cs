@@ -130,7 +130,7 @@ public class ListMethod : ListMember
 			methodInfo.GetCustomAttribute<HiddenAttribute>() != null || // [Hidden]
 			methodInfo.GetCustomAttribute<HiddenRowAttribute>() != null || // [HiddenRow]
 			methodInfo.GetCustomAttribute<ItemAttribute>() == null // These are treated as Data Members
-		   )
+			)
 			return false;
 
 #if !DEBUG

@@ -117,3 +117,4 @@ public class TabViewContextMenu : ContextMenu, IStyleable, ILayoutable, IDisposa
 		Items = null;
 	}
 }
+

@@ -306,7 +306,7 @@ public class TypeRepoObject : TypeRepo
 			TypeRepo typeRepo;
 			if (!serializer.idxTypeToInstances.TryGetValue(propertyType, out typeRepo))
 				continue;
-			
+
 			propertySchema.typeIndex = typeRepo.typeIndex;
 			propertySchema.fileDataOffset = writer.BaseStream.Position;
 			foreach (object obj in objects)

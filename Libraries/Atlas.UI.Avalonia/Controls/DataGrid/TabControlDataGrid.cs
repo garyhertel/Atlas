@@ -348,8 +348,8 @@ public class TabControlDataGrid : Grid, IDisposable, ITabSelector, IItemSelector
 		{
 			// Group up any new items after the 1st one
 			if ((AutoSelectNew ||
-				 TabModel.AutoSelect == AutoSelectType.AnyNewOrSaved ||
-				 TabModel.AutoSelect == AutoSelectType.FirstSavedOrNew)
+				TabModel.AutoSelect == AutoSelectType.AnyNewOrSaved ||
+				TabModel.AutoSelect == AutoSelectType.FirstSavedOrNew)
 				&& (SearchControl.Text == null || SearchControl.Text.Length == 0))
 			{
 				_selectItemEnabled = true;
@@ -584,9 +584,9 @@ public class TabControlDataGrid : Grid, IDisposable, ITabSelector, IItemSelector
 		}
 
 		bool styleCells = methodColumns.Count > 0 ||
-						  propertyColumns
-							  .Select(p => p.IsStyled())
-							  .Max();
+			propertyColumns
+			.Select(p => p.IsStyled())
+			.Max();
 
 		// Styling lines adds a performance hit, so only add it if necessary
 		if (styleCells)

@@ -159,7 +159,7 @@ public class ListProperty : ListMember, IPropertyEditable
 #endif
 
 		return propertyInfo.GetCustomAttribute<HiddenAttribute>() == null && // [Hidden]
-			   propertyInfo.GetCustomAttribute<HiddenRowAttribute>() == null; // [HiddenRow]
+			propertyInfo.GetCustomAttribute<HiddenRowAttribute>() == null; // [HiddenRow]
 	}
 
 	// This can be slow due to lazy property loading

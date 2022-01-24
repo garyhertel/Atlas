@@ -96,6 +96,6 @@ public class ListField : ListMember, IPropertyEditable
 #endif
 
 		return fieldInfo.GetCustomAttribute<HiddenAttribute>() == null && // [Hidden]
-			   fieldInfo.GetCustomAttribute<HiddenRowAttribute>() == null; // [HiddenRow]
+			fieldInfo.GetCustomAttribute<HiddenRowAttribute>() == null; // [HiddenRow]
 	}
 }

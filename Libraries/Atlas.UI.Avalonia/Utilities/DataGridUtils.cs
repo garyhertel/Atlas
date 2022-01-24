@@ -39,10 +39,10 @@ public class DataGridUtils
 			foreach (string value in row)
 			{
 				string text = value?
-								  .Replace("\n", " ")
-								  .Replace("\r", "")
-								  .Replace("\t", "    ")
-							  ?? "";
+					.Replace("\n", " ")
+					.Replace("\r", "")
+					.Replace("\t", "    ")
+					?? "";
 				rowValues.Add(text);
 			}
 

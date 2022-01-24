@@ -36,7 +36,7 @@ public class TabSample : ITab
 			};
 
 			model.Notes =
-				@"
+@"
 This is a sample tab that shows some of the different tab features
 
 Actions

@@ -29,7 +29,7 @@ public class Compression
 			new Tag("File", fileToCompress.Name),
 			new Tag("Original Size", fileToCompress.Length),
 			new Tag("Compressed Size", compressedFileStream.Length)
-		);
+			);
 	}
 
 	public static void Decompress(Call call, FileInfo fileToDecompress)
@@ -62,7 +62,7 @@ public class Compression
 				new Tag("File", fileToDecompress.Name),
 				new Tag("Original Size", fileToDecompress.Length),
 				new Tag("Compressed Size", decompressedFileStream.Length)
-			);
+				);
 		}
 	}
 }

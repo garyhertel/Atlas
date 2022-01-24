@@ -154,7 +154,7 @@ public abstract class TypeRepo : IDisposable
 		// primitives get loaded first
 		if (type.IsEnum == false && this is TypePrimitive)
 			return;
-		
+
 		for (int i = 0; i < typeSchema.numObjects; i++)
 		{
 			objects.Add(Activator.CreateInstance(type, true));
@@ -269,7 +269,7 @@ public abstract class TypeRepo : IDisposable
 				new Tag("Count", typeSchema.numObjects),
 				new Tag("Offset", typeSchema.fileDataOffset),
 				new Tag("Bytes", typeSchema.dataSize));
-			
+
 			reader.BaseStream.Position = typeSchema.fileDataOffset;
 
 			long start = reader.BaseStream.Position;
