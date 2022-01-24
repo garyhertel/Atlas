@@ -1,48 +1,47 @@
 using Atlas.Core;
 using System.Collections.Generic;
 
-namespace Atlas.Tabs.Test.DataGrid
+namespace Atlas.Tabs.Test.DataGrid;
+
+public class TabTestGridDictionary : ITab
 {
-	public class TabTestGridDictionary : ITab
+	public TabInstance Create() => new Instance();
+
+	public class Instance : TabInstance
 	{
-		public TabInstance Create() => new Instance();
+		private Dictionary<string, TestItem> _items;
 
-		public class Instance : TabInstance
+		public override void Load(Call call, TabModel model)
 		{
-			private Dictionary<string, TestItem> _items;
+			_items = new Dictionary<string, TestItem>();
+			AddEntries(null);
+			model.AddData(_items);
 
-			public override void Load(Call call, TabModel model)
+			model.Actions = new List<TaskCreator>()
 			{
-				_items = new Dictionary<string, TestItem>();
-				AddEntries(null);
-				model.AddData(_items);
+				new TaskDelegate("Add Entries", AddEntries),
+			};
+		}
 
-				model.Actions = new List<TaskCreator>()
+		private void AddEntries(Call call)
+		{
+			for (int i = 0; i < 20; i++)
+			{
+				var testItem = new TestItem()
 				{
-					new TaskDelegate("Add Entries", AddEntries),
+					Name = i.ToString(),
+					Value = i * 100,
 				};
-			}
-
-			private void AddEntries(Call call)
-			{
-				for (int i = 0; i < 20; i++)
-				{
-					var testItem = new TestItem()
-					{
-						Name = i.ToString(),
-						Value = i * 100,
-					};
-					_items.Add(testItem.Name, testItem);
-				}
+				_items.Add(testItem.Name, testItem);
 			}
 		}
+	}
 
-		public class TestItem
-		{
-			public string Name { get; set; }
-			public int Value { get; set; }
+	public class TestItem
+	{
+		public string Name { get; set; }
+		public int Value { get; set; }
 
-			public override string ToString() => Name;
-		}
+		public override string ToString() => Name;
 	}
 }

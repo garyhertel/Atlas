@@ -6,33 +6,33 @@ using Avalonia.Controls;
 using Avalonia.Media;
 using System;
 
-namespace Atlas.UI.Avalonia
+namespace Atlas.UI.Avalonia;
+
+/*public class TabNotes : TabView
 {
-	/*public class TabNotes : TabView
+	public TabNotes(TabInstance tabInstance) : base(tabInstance)
 	{
-		public TabNotes(TabInstance tabInstance) : base(tabInstance)
-		{
-			InitializeControls();
-		}
+		InitializeControls();
+	}
 
-		private void InitializeControls()
-		{
-			Background = new SolidColorBrush(Theme.NotesBackgroundColor);
-			MaxWidth = double.MaxValue;
+	private void InitializeControls()
+	{
+		Background = new SolidColorBrush(Theme.NotesBackgroundColor);
+		MaxWidth = double.MaxValue;
 
-			//HorizontalAlignment = global::Avalonia.Layout.HorizontalAlignment.Left;
-			//HorizontalAlignment = HorizontalAlignment.Stretch;
-			//VerticalAlignment = VerticalAlignment.Stretch;
-			//Width = 1000;
-			//Height = 500;
-			//MaxWidth = 2000;
+		//HorizontalAlignment = global::Avalonia.Layout.HorizontalAlignment.Left;
+		//HorizontalAlignment = HorizontalAlignment.Stretch;
+		//VerticalAlignment = VerticalAlignment.Stretch;
+		//Width = 1000;
+		//Height = 500;
+		//MaxWidth = 2000;
 
-			//textEditor.TextBlock.FontSize = 30;
-			//Background = Brushes.Transparent;
-			/*ShowLineNumbers = true;
-			SyntaxHighlighting = HighlightingManager.Instance.GetDefinition("C#");
-			TextArea.TextEntering += textEditor_TextArea_TextEntering;
-			TextArea.IndentationStrategy = new Indentation.CSharp.CSharpIndentationStrategy();*//*
+		//textEditor.TextBlock.FontSize = 30;
+		//Background = Brushes.Transparent;
+		/*ShowLineNumbers = true;
+		SyntaxHighlighting = HighlightingManager.Instance.GetDefinition("C#");
+		TextArea.TextEntering += textEditor_TextArea_TextEntering;
+		TextArea.IndentationStrategy = new Indentation.CSharp.CSharpIndentationStrategy();*//*
 
 			TabControlAvaloniaEdit tabAvaloniaEdit = new TabControlAvaloniaEdit(tabInstance);
 			tabAvaloniaEdit.textEditor.Background = new SolidColorBrush(Theme.NotesBackgroundColor);
@@ -86,7 +86,6 @@ namespace Atlas.UI.Avalonia
 			button.BorderBrush = button.Background;
 		}
 	}*/
-}
 /*
 Markdown ?
 */

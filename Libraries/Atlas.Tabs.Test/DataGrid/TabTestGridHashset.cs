@@ -1,39 +1,38 @@
 using Atlas.Core;
 using System.Collections.Generic;
 
-namespace Atlas.Tabs.Test.DataGrid
+namespace Atlas.Tabs.Test.DataGrid;
+
+public class TabTestGridHashSet : ITab
 {
-	public class TabTestGridHashSet : ITab
+	public TabInstance Create() => new Instance();
+
+	public class Instance : TabInstance
 	{
-		public TabInstance Create() => new Instance();
+		private HashSet<TabTestGridCollectionSize.TestItem> items;
 
-		public class Instance : TabInstance
+		public override void Load(Call call, TabModel model)
 		{
-			private HashSet<TabTestGridCollectionSize.TestItem> items;
+			items = new HashSet<TabTestGridCollectionSize.TestItem>();
+			AddEntries(null);
+			model.AddData(items);
 
-			public override void Load(Call call, TabModel model)
+			model.Actions = new List<TaskCreator>()
 			{
-				items = new HashSet<TabTestGridCollectionSize.TestItem>();
-				AddEntries(null);
-				model.AddData(items);
+				new TaskDelegate("Add Entries", AddEntries),
+			};
+		}
 
-				model.Actions = new List<TaskCreator>()
+		private void AddEntries(Call call)
+		{
+			for (int i = 0; i < 20; i++)
+			{
+				var testItem = new TabTestGridCollectionSize.TestItem
 				{
-					new TaskDelegate("Add Entries", AddEntries),
+					SmallNumber = i
 				};
-			}
-
-			private void AddEntries(Call call)
-			{
-				for (int i = 0; i < 20; i++)
-				{
-					var testItem = new TabTestGridCollectionSize.TestItem
-					{
-						SmallNumber = i
-					};
-					testItem.BigNumber += i;
-					items.Add(testItem);
-				}
+				testItem.BigNumber += i;
+				items.Add(testItem);
 			}
 		}
 	}
