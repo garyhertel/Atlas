@@ -1,4 +1,4 @@
-﻿using Avalonia.Markup.Xaml;
+using Avalonia.Markup.Xaml;
 using Avalonia.Styling;
 
 namespace Atlas.UI.Avalonia.Themes;

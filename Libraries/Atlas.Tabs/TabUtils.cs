@@ -26,11 +26,11 @@ public class TabUtils
 
 		Type type = value.GetType();
 		if (type.IsPrimitive ||
-		    type.IsEnum ||
-		    type.Equals(typeof(string)) ||
-		    type.Equals(typeof(decimal)) ||
-		    type.Equals(typeof(DateTime)) ||
-		    type.Equals(typeof(TimeSpan)))
+			type.IsEnum ||
+			type.Equals(typeof(string)) ||
+			type.Equals(typeof(decimal)) ||
+			type.Equals(typeof(DateTime)) ||
+			type.Equals(typeof(TimeSpan)))
 		{
 			return false;
 		}

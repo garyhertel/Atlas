@@ -511,7 +511,7 @@ public class Serializer : IDisposable
 			else
 			{
 				if (type != baseType)
-					//if (typeRepo.typeSchema.hasSubType) // sealed classes can't have sub-classes
+				//if (typeRepo.typeSchema.hasSubType) // sealed classes can't have sub-classes
 				{
 					writer.Write((short)typeRepo.TypeIndex); // could compress by storing Base Class subtype offset only
 					if (type.IsPrimitive)
@@ -567,9 +567,9 @@ public class Serializer : IDisposable
 		TypeRepo typeRepo = GetOrCreateRepo(log, type);
 
 		if (typeRepo is TypeRepoPrimitive ||
-		    typeRepo is TypeRepoString ||
-		    typeRepo is TypeRepoEnum ||
-		    typeRepo is TypeRepoType)
+			typeRepo is TypeRepoString ||
+			typeRepo is TypeRepoEnum ||
+			typeRepo is TypeRepoType)
 		{
 			Clones[obj] = obj; // optional
 			return obj;

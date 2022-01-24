@@ -17,7 +17,7 @@ public class FilterExpression
 	{
 		int index = valueUppercase.IndexOf(TextUppercase);
 		if (index >= 0)
-			//if (valueText != null && valueText.CaseInsensitiveContains(filter))
+		//if (valueText != null && valueText.CaseInsensitiveContains(filter))
 		{
 			if (MatchWord)
 			{

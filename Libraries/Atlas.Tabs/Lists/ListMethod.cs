@@ -126,10 +126,10 @@ public class ListMethod : ListMember
 	public static bool IsVisible(MethodInfo methodInfo)
 	{
 		if (methodInfo.DeclaringType.IsNotPublic ||
-		    methodInfo.ReturnType == null ||
-		    methodInfo.GetCustomAttribute<HiddenAttribute>() != null || // [Hidden]
-		    methodInfo.GetCustomAttribute<HiddenRowAttribute>() != null || // [HiddenRow]
-		    methodInfo.GetCustomAttribute<ItemAttribute>() == null // These are treated as Data Members
+			methodInfo.ReturnType == null ||
+			methodInfo.GetCustomAttribute<HiddenAttribute>() != null || // [Hidden]
+			methodInfo.GetCustomAttribute<HiddenRowAttribute>() != null || // [HiddenRow]
+			methodInfo.GetCustomAttribute<ItemAttribute>() == null // These are treated as Data Members
 		   )
 			return false;
 

@@ -39,10 +39,10 @@ public class DataGridUtils
 			foreach (string value in row)
 			{
 				string text = value?
-					              .Replace("\n", " ")
-					              .Replace("\r", "")
-					              .Replace("\t", "    ")
-				              ?? "";
+								  .Replace("\n", " ")
+								  .Replace("\r", "")
+								  .Replace("\t", "    ")
+							  ?? "";
 				rowValues.Add(text);
 			}
 
@@ -127,11 +127,11 @@ public class DataGridUtils
 	{
 		type = type.GetNonNullableType();
 		if (type.IsPrimitive ||
-		    type.IsEnum ||
-		    type == typeof(decimal) ||
-		    type == typeof(string) ||
-		    type == typeof(DateTime) ||
-		    type == typeof(TimeSpan))
+			type.IsEnum ||
+			type == typeof(decimal) ||
+			type == typeof(string) ||
+			type == typeof(DateTime) ||
+			type == typeof(TimeSpan))
 			return true;
 
 		return false;
@@ -145,11 +145,11 @@ public class DataGridUtils
 			return false;
 
 		if (type.IsPrimitive ||
-		    type.IsEnum ||
-		    type == typeof(decimal) ||
-		    type == typeof(DateTime) ||
-		    type == typeof(TimeSpan) ||
-		    typeof(IList).IsAssignableFrom(type))
+			type.IsEnum ||
+			type == typeof(decimal) ||
+			type == typeof(DateTime) ||
+			type == typeof(TimeSpan) ||
+			typeof(IList).IsAssignableFrom(type))
 			return true;
 
 		return false;
@@ -163,8 +163,8 @@ public class DataGridUtils
 			return TextAlignment.Left;
 
 		if (type.IsNumeric() ||
-		    type == typeof(TimeSpan) ||
-		    typeof(IEnumerable).IsAssignableFrom(type))
+			type == typeof(TimeSpan) ||
+			typeof(IEnumerable).IsAssignableFrom(type))
 		{
 			return TextAlignment.Right;
 		}

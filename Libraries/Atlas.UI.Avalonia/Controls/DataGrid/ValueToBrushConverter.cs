@@ -116,7 +116,7 @@ public class ValueToForegroundBrushConverter : IValueConverter
 		try
 		{
 			if (value is DictionaryEntry ||
-			    PropertyInfo.IsDefined(typeof(StyleValueAttribute)))
+				PropertyInfo.IsDefined(typeof(StyleValueAttribute)))
 			{
 				bool hasLinks = TabUtils.ObjectHasLinks(value, true);
 				if (hasLinks)

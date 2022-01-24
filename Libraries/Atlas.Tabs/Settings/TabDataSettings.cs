@@ -105,7 +105,7 @@ public class TabDataSettings
 		public bool IsStyled()
 		{
 			return PropertyInfo.IsDefined(typeof(StyleValueAttribute)) ||
-			       typeof(DictionaryEntry).IsAssignableFrom(PropertyInfo.DeclaringType);
+				   typeof(DictionaryEntry).IsAssignableFrom(PropertyInfo.DeclaringType);
 		}
 	}
 

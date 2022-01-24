@@ -66,15 +66,15 @@ public static class Win32ClipboardUtils
 			return;
 
 		if (!Gdi32UnmanagedMethods.BitBlt(
-			    destDC,
-			    0,
-			    0,
-			    systemBitmap.Width,
-			    systemBitmap.Height,
-			    sourceDC,
-			    0,
-			    0,
-			    SRCCOPY))
+				destDC,
+				0,
+				0,
+				systemBitmap.Width,
+				systemBitmap.Height,
+				sourceDC,
+				0,
+				0,
+				SRCCOPY))
 		{
 			throw new Exception("BitBlt failed");
 		}

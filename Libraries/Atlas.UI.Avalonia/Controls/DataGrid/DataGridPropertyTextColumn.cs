@@ -147,7 +147,7 @@ public class DataGridPropertyTextColumn : DataGridTextColumn
 		};
 
 		if (PropertyInfo.IsDefined(typeof(StyleValueAttribute)) ||
-		    (DisplayIndex == 1 && typeof(DictionaryEntry).IsAssignableFrom(PropertyInfo.DeclaringType)))
+			(DisplayIndex == 1 && typeof(DictionaryEntry).IsAssignableFrom(PropertyInfo.DeclaringType)))
 		{
 			// Update the cell color based on the object
 			var binding = new Binding()
@@ -182,7 +182,7 @@ public class DataGridPropertyTextColumn : DataGridTextColumn
 	protected TextBlock CreateTextBlock(DataGridCell cell)
 	{
 		var textBlockElement = new TextBlockElement(this, PropertyInfo)
-		{	
+		{
 			//BorderBrush = Brushes.Black,
 			//BorderThickness = new Thickness(1),
 		};

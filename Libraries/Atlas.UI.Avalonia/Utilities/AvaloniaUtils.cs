@@ -112,9 +112,9 @@ public class AvaloniaUtils
 				parentBounds = parentBounds.WithY(parentBounds.Y + parentControl.Bounds.Y);
 
 				if (parentBounds.X > parentControl.Bounds.Right ||
-				    parentBounds.Y > parentControl.Bounds.Bottom ||
-				    parentBounds.Right < parentControl.Bounds.X ||
-				    parentBounds.Bottom < parentControl.Bounds.Y)
+					parentBounds.Y > parentControl.Bounds.Bottom ||
+					parentBounds.Right < parentControl.Bounds.X ||
+					parentBounds.Bottom < parentControl.Bounds.Y)
 					return false;
 			}
 

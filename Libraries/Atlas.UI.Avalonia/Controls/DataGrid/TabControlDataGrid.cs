@@ -348,9 +348,9 @@ public class TabControlDataGrid : Grid, IDisposable, ITabSelector, IItemSelector
 		{
 			// Group up any new items after the 1st one
 			if ((AutoSelectNew ||
-			     TabModel.AutoSelect == AutoSelectType.AnyNewOrSaved ||
-			     TabModel.AutoSelect == AutoSelectType.FirstSavedOrNew)
-			    && (SearchControl.Text == null || SearchControl.Text.Length == 0))
+				 TabModel.AutoSelect == AutoSelectType.AnyNewOrSaved ||
+				 TabModel.AutoSelect == AutoSelectType.FirstSavedOrNew)
+				&& (SearchControl.Text == null || SearchControl.Text.Length == 0))
 			{
 				_selectItemEnabled = true;
 				object item = e.NewItems[0];
@@ -584,9 +584,9 @@ public class TabControlDataGrid : Grid, IDisposable, ITabSelector, IItemSelector
 		}
 
 		bool styleCells = methodColumns.Count > 0 ||
-		                  propertyColumns
-			                  .Select(p => p.IsStyled())
-			                  .Max();
+						  propertyColumns
+							  .Select(p => p.IsStyled())
+							  .Max();
 
 		// Styling lines adds a performance hit, so only add it if necessary
 		if (styleCells)
@@ -767,7 +767,7 @@ public class TabControlDataGrid : Grid, IDisposable, ITabSelector, IItemSelector
 			}
 
 			if (TabDataSettings.SelectionType != SelectionType.User &&
-			    TabInstance.IsOwnerObject(selectedObject.GetInnerValue())) // stops self referencing loops
+				TabInstance.IsOwnerObject(selectedObject.GetInnerValue())) // stops self referencing loops
 				continue;
 
 			rowObjects.Add(selectedObject);

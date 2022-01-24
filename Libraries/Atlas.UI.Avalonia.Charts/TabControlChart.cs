@@ -152,7 +152,7 @@ public class TabControlChart : Grid, IDisposable
 	public static OxyColor GetColor(int index) => Colors[index % Colors.Length];
 
 	private bool UseDateTimeAxis => (xAxisPropertyInfo?.PropertyType == typeof(DateTime)) ||
-	                                (ListGroup.TimeWindow != null);
+									(ListGroup.TimeWindow != null);
 
 	public bool IsTitleSelectable { get; set; }
 
