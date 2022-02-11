@@ -46,7 +46,7 @@ public class TabControl : Grid
 	{
 		OnSelectionChanged?.Invoke(this, null);
 	}
-	
+
 	*/
 }
 
