@@ -126,7 +126,6 @@ public class TabControlTextBox : TextBox, IStyleable, ILayoutable
 			{
 				Watermark = fieldInfo.GetValue(property.Object)?.ToString();
 			}
-
 		}
 		Watermark ??= attribute.Text;
 	}
