@@ -427,7 +427,7 @@ public class TestClone : TestSerializeBase
 
 	public class DictionaryTest
 	{
-		public Dictionary<Parent, Child> items = new();
+		public Dictionary<Parent, Child> Items = new();
 
 		public DictionaryTest()
 		{
@@ -435,7 +435,7 @@ public class TestClone : TestSerializeBase
 			Child child = new();
 			parent.Child = child;
 			child.Parent = parent;
-			items[parent] = child;
+			Items[parent] = child;
 		}
 	}
 

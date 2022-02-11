@@ -7,7 +7,6 @@ using Avalonia.Media;
 using System;
 
 namespace Atlas.UI.Avalonia;
-
 /*
 Markdown ?
 */
