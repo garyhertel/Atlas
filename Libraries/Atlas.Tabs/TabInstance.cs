@@ -31,7 +31,7 @@ public interface IInnerTab
 
 public class TabInstanceLoadAsync : TabInstance, ITabAsync
 {
-	public ILoadAsync LoadMethod;
+	public readonly ILoadAsync LoadMethod;
 
 	public TabInstanceLoadAsync(ILoadAsync loadAsync)
 	{
@@ -49,7 +49,7 @@ public class TabInstanceLoadAsync : TabInstance, ITabAsync
 
 public class TabCreatorAsync : TabInstance, ITabAsync
 {
-	public ITabCreatorAsync CreatorAsync;
+	public readonly ITabCreatorAsync CreatorAsync;
 
 	private TabInstance _innerChildInstance;
 
@@ -88,7 +88,11 @@ public class TabInstance : IDisposable
 	public ITab iTab; // Collision with derived Tab
 	public TaskInstance TaskInstance { get; set; } = new();
 	public TabModel Model { get; set; } = new();
-	public string Label { get { return Model.Name; } set { Model.Name = value; } }
+	public string Label
+	{ 
+		get => Model.Name;
+		set => Model.Name = value;
+	}
 
 	public DataRepo DataApp => Project.DataApp;
 
@@ -201,37 +205,7 @@ public class TabInstance : IDisposable
 		//tabInstance.taskInstance.call.Log =
 		//tabInstance.taskInstance = taskInstance.AddSubTask(taskInstance.call); // too slow?
 		//tabInstance.tabBookmark = tabBookmark;
-		FillInheritables(tabInstance);
 		return tabInstance;
-	}
-
-	// Incomplete, we don't ever set the ObjectStore values, what do we set them to?
-	private void FillInheritables(TabInstance tabInstance)
-	{
-		Type type = tabInstance.GetType();
-		FieldInfo[] fieldInfos = type.GetFields().OrderBy(x => x.MetadataToken).ToArray();
-		PropertyInfo[] propertyInfos = type.GetProperties().OrderBy(x => x.MetadataToken).ToArray();
-
-		foreach (FieldInfo fieldInfo in fieldInfos)
-		{
-			if (fieldInfo.GetCustomAttribute<InheritAttribute>() == null)
-				continue;
-
-			object obj = Project.TypeObjectStore.Get(fieldInfo.FieldType);
-			fieldInfo.SetValue(tabInstance, obj);
-		}
-
-		foreach (PropertyInfo propertyInfo in propertyInfos)
-		{
-			//if (!propertyInfo.DeclaringType.IsNotPublic)
-			{
-				if (propertyInfo.GetCustomAttribute<InheritAttribute>() == null)
-					continue;
-
-				object obj = Project.TypeObjectStore.Get(propertyInfo.PropertyType);
-				propertyInfo.SetValue(tabInstance, obj);
-			}
-		}
 	}
 
 	public virtual void Dispose()
@@ -345,10 +319,10 @@ public class TabInstance : IDisposable
 		{
 			Type type = GetType(); // gets derived type
 			return type.GetMethods()
-				.Where(m => m.Name == name)
-				.Where(m => m.DeclaringType != typeof(TabInstance))
-				.Where(m => m.GetParameters().Length == paramCount)
-				.FirstOrDefault();
+				.FirstOrDefault(m => 
+					m.Name == name &&
+					m.DeclaringType != typeof(TabInstance) &&
+					m.GetParameters().Length == paramCount);
 		}
 		catch (Exception)
 		{
@@ -367,7 +341,7 @@ public class TabInstance : IDisposable
 	{
 	}
 
-	public void Reintialize(bool force)
+	public void Reinitialize(bool force)
 	{
 		if (!force && IsLoaded)
 			return;
@@ -375,10 +349,10 @@ public class TabInstance : IDisposable
 		IsLoaded = true;
 		LoadCalled = false; // allow TabView to reload
 
-		StartAsync(ReintializeAsync, TaskInstance.Call);
+		StartAsync(ReinitializeAsync, TaskInstance.Call);
 	}
 
-	public async Task ReintializeAsync(Call call)
+	public async Task ReinitializeAsync(Call call)
 	{
 		_settingLoaded = false;
 		TabModel model = Model;
@@ -416,7 +390,7 @@ public class TabInstance : IDisposable
 				model.AddData(e);
 				//tabModel.Tasks.Add(call.taskInstance);
 			}
-			//StartAsync(ReintializeAsync);
+			//StartAsync(ReinitializeAsync);
 		}
 
 		if (HasLoadMethod)
@@ -497,7 +471,7 @@ public class TabInstance : IDisposable
 		}
 
 		LoadSettings(false);
-		OnModelChanged?.Invoke(this, new EventArgs());
+		OnModelChanged?.Invoke(this, EventArgs.Empty);
 
 		IsLoaded = true;
 	}
@@ -516,9 +490,9 @@ public class TabInstance : IDisposable
 		if (OnReload != null)
 		{
 			if (this is ITabAsync tabAsync)
-				OnReload.Invoke(this, new EventArgs());
+				OnReload.Invoke(this, EventArgs.Empty);
 			else
-				UiContext.Send(_ => OnReload(this, new EventArgs()), null);
+				UiContext.Send(_ => OnReload(this, EventArgs.Empty), null);
 		}
 		// todo: this needs to actually wait for reload
 	}
@@ -531,7 +505,7 @@ public class TabInstance : IDisposable
 		if (OnRefresh != null)
 		{
 			var onRefresh = OnRefresh; // create temporary copy since this gets delayed
-			UiContext.Send(_ => onRefresh(this, new EventArgs()), null);
+			UiContext.Send(_ => onRefresh(this, EventArgs.Empty), null);
 			// todo: this needs to actually wait for refresh?
 		}
 	}
@@ -541,7 +515,7 @@ public class TabInstance : IDisposable
 		if (OnResize != null)
 		{
 			var onResize = OnResize; // create temporary copy since this gets delayed
-			UiContext.Send(_ => onResize(this, new EventArgs()), null);
+			UiContext.Send(_ => onResize(this, EventArgs.Empty), null);
 		}
 	}
 
@@ -588,7 +562,7 @@ public class TabInstance : IDisposable
 	public void ClearSelection()
 	{
 		if (OnClearSelection != null)
-			UiContext.Send(_ => OnClearSelection(this, new EventArgs()), null);
+			UiContext.Send(_ => OnClearSelection(this, EventArgs.Empty), null);
 	}
 
 	public bool IsLinkable
@@ -691,7 +665,7 @@ public class TabInstance : IDisposable
 		TabViewSettings = tabBookmark.ViewSettings;
 
 		if (OnLoadBookmark != null)
-			UiContext.Send(_ => OnLoadBookmark(this, new EventArgs()), null);
+			UiContext.Send(_ => OnLoadBookmark(this, EventArgs.Empty), null);
 
 		SaveTabSettings();
 	}
@@ -881,7 +855,7 @@ public class TabInstance : IDisposable
 					if (objKey == tabKey)
 						return true;
 
-					if (objKey.GetType() == typeof(string) && propertyInfo.PropertyType == type && Equals(objKey, tabKey))
+					if (objKey is string && propertyInfo.PropertyType == type && Equals(objKey, tabKey))
 						return true;
 				}
 			}

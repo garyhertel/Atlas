@@ -57,7 +57,7 @@ public class ItemCollectionUI<T> : ObservableCollection<T>, IList, IItemCollecti
 		else if (PostOnly || Context != SynchronizationContext.Current)
 		{
 			// Add later so we don't insert at the same index for multiple Adds()
-			Context.Post(new SendOrPostCallback(AddItemCallback), item);
+			Context.Post(AddItemCallback, item);
 		}
 		else
 		{
@@ -89,16 +89,10 @@ public class ItemCollectionUI<T> : ObservableCollection<T>, IList, IItemCollecti
 		//OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset)); // need ui thread
 	}
 
-	struct ItemLocation
+	record struct ItemLocation(int Index, T Item)
 	{
-		public int Index;
-		public T Item;
-
-		public ItemLocation(int index, T item)
-		{
-			Index = index;
-			Item = item;
-		}
+		public readonly int Index = Index;
+		public readonly T Item = Item;
 	}
 
 	// Overriding InsertItem() has out of order issues, so override this instead
@@ -113,7 +107,7 @@ public class ItemCollectionUI<T> : ObservableCollection<T>, IList, IItemCollecti
 		else if (PostOnly || Context != SynchronizationContext.Current)
 		{
 			// Debug.Print("InsertItem -> Post -> InsertItemCallback: Index = " + index + ", Item = " + item.ToString());
-			Context.Post(new SendOrPostCallback(InsertItemCallback), location); // default context inserts multiple items in wrong order, AvaloniaUI doesn't
+			Context.Post(InsertItemCallback, location); // default context inserts multiple items in wrong order, AvaloniaUI doesn't
 		}
 		else
 		{
@@ -141,7 +135,7 @@ public class ItemCollectionUI<T> : ObservableCollection<T>, IList, IItemCollecti
 		}
 		else
 		{
-			Context.Post(new SendOrPostCallback(ClearCallback), null);
+			Context.Post(ClearCallback, null);
 		}
 	}
 
@@ -162,7 +156,7 @@ public class ItemCollectionUI<T> : ObservableCollection<T>, IList, IItemCollecti
 		}
 		else if (PostOnly || Context != SynchronizationContext.Current)
 		{
-			Context.Post(new SendOrPostCallback(RemoveItemCallback), index);
+			Context.Post(RemoveItemCallback, index);
 		}
 		else
 		{

@@ -1,6 +1,5 @@
 using System;
 using System.ComponentModel;
-using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -8,7 +7,8 @@ namespace Atlas.Core;
 
 public abstract class TaskCreator : INotifyPropertyChanged
 {
-	public event PropertyChangedEventHandler PropertyChanged;
+	public event PropertyChangedEventHandler PropertyChanged; // Used only for INotifyPropertyChanged memory leak fix?
+
 	public Action OnComplete;
 
 	[HiddenColumn]
@@ -17,7 +17,7 @@ public abstract class TaskCreator : INotifyPropertyChanged
 	[HiddenColumn]
 	public string Description { get; set; } // Button hint text
 
-	public string Info { get { return Description != null ? ">" : null; } } // Button hint text
+	public string Info => Description != null ? ">" : null; // Button hint text
 
 	[HiddenColumn]
 	public bool ShowTask { get; set; }
@@ -27,7 +27,6 @@ public abstract class TaskCreator : INotifyPropertyChanged
 
 	public int TimesRun { get; set; }
 
-	[HiddenColumn]
 	public SynchronizationContext Context;
 
 	protected abstract Action CreateAction(Call call);
@@ -47,7 +46,7 @@ public abstract class TaskCreator : INotifyPropertyChanged
 		Context = SynchronizationContext.Current ?? new SynchronizationContext();
 		call.Log.Settings.Context = Context;
 
-		var taskInstance = new TaskInstance()
+		var taskInstance = new TaskInstance
 		{
 			Call = call,
 			Creator = this,
@@ -70,36 +69,6 @@ public abstract class TaskCreator : INotifyPropertyChanged
 
 		return taskInstance;
 	}
-
-	public void NotifyPropertyChanged([CallerMemberName] string propertyName = "")
-	{
-		Context.Post(new SendOrPostCallback(NotifyPropertyChangedContext), propertyName);
-		//PropertyChanged?.BeginInvoke(this, new PropertyChangedEventArgs(propertyName), EndAsyncEvent, null);
-		//PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-	}
-
-	private void NotifyPropertyChangedContext(object state)
-	{
-		string propertyName = state as string;
-		PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-		//PropertyChanged?.BeginInvoke(this, new PropertyChangedEventArgs(propertyName), EndAsyncEvent, null);
-	}
-
-	/*protected void EndAsyncEvent(IAsyncResult iar)
-	{
-		var ar = (System.Runtime.Remoting.Messaging.AsyncResult)iar;
-		var invokedMethod = (PropertyChangedEventHandler)ar.AsyncDelegate;
-
-		try
-		{
-			invokedMethod.EndInvoke(iar);
-		}
-		catch
-		{
-			// Handle any exceptions that were thrown by the invoked method
-			Console.WriteLine("An event listener went kaboom!");
-		}
-	}*/
 }
 
 /*
