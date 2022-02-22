@@ -5,10 +5,14 @@
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:sys="clr-namespace:System;assembly=mscorlib">
 
-  <StyleInclude Source="resm:Atlas.UI.Avalonia.Theme.TabButton.xaml?assembly=Atlas.UI.Avalonia"/>
-  <StyleInclude Source="resm:Atlas.UI.Avalonia.Theme.ToolbarButton.xaml?assembly=Atlas.UI.Avalonia"/>
+  <StyleInclude Source="resm:Atlas.UI.Avalonia.Theme.Controls.TabButton.xaml?assembly=Atlas.UI.Avalonia"/>
+    <StyleInclude Source="resm:Atlas.UI.Avalonia.Theme.Controls.ToolbarButton.xaml?assembly=Atlas.UI.Avalonia"/>
+    <StyleInclude Source="resm:Atlas.UI.Avalonia.Theme.Fluent.Controls.ScrollBar.xaml?assembly=Atlas.UI.Avalonia"/>
 
-  <Style Selector="dg|DataGridColumnHeader">
+
+    <!--StyleInclude Source="avares://Atlas.UI.Avalonia/Theme/Controls/ScrollBar.xaml" /-->
+
+    <Style Selector="dg|DataGridColumnHeader">
         <Setter Property="Background" Value="{DynamicResource GridColumnHeaderBackgroundBrush}"/>
         <Setter Property="Foreground" Value="{DynamicResource GridColumnHeaderForegroundBrush}" />
         <Setter Property="HorizontalContentAlignment" Value="Left" />
@@ -41,25 +45,6 @@
         <Setter Property="Foreground" Value="{DynamicResource ToolTipForegroundBrush}"/>
         <Setter Property="BorderBrush" Value="#FF000000" />
         <Setter Property="BorderThickness" Value="1" />
-    </Style>
-
-    <Style Selector="ScrollBar /template/ Border">
-        <Setter Property="Background" Value="{DynamicResource ThemeScrollBarBackgroundBrush}"/>
-        <Setter Property="BorderBrush" Value="#FF000000"/>
-        <Setter Property="BorderThickness" Value="1"/>
-    </Style>
-
-    <Style Selector="ScrollBar /template/ Thumb#thumb">
-        <Setter Property="Background" Value="{DynamicResource ThemeScrollBarThumbBrush}"/>
-    </Style>
-    <Style Selector="ScrollBar /template/ Thumb#thumb /template/ Border:pointerover">
-        <Setter Property="Background" Value="{DynamicResource ThemeScrollBarThumbHoverBrush}"/>
-    </Style>
-
-    <Style Selector="ScrollBar /template/ RepeatButton.repeat">
-        <Setter Property="Margin" Value="0"/>
-        <Setter Property="Padding" Value="4"/>
-        <Setter Property="BorderThickness" Value="0"/>
     </Style>
     
     <!--Style Selector="TextBox">
@@ -115,43 +100,4 @@
     <Style Selector="GridSplitter">
       <Setter Property="Focusable" Value="false" />
     </Style>
-
-  <Style Selector="ScrollBar /template/ Thumb.thumb">
-    <Setter Property="Transitions">
-      <Transitions>
-        <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.01" />
-      </Transitions>
-    </Setter>
-  </Style>
-  
-  <Style Selector="ScrollBar /template/ Rectangle#TrackRect">
-    <Setter Property="Transitions">
-      <Transitions>
-        <DoubleTransition Property="Opacity" Duration="0:0:0.01" />
-      </Transitions>
-    </Setter>
-  </Style>
-  
-  <Style Selector="ScrollBar /template/ RepeatButton.line">
-    <Setter Property="Transitions">
-      <Transitions>
-        <DoubleTransition Property="Opacity" Duration="0:0:0.01" />
-      </Transitions>
-    </Setter>
-  </Style>
-
-  <Style Selector="ScrollBar /template/ Rectangle#TrackRect">
-    <Setter Property="Transitions">
-      <Transitions>
-        <DoubleTransition Property="Opacity" Duration="0:0:0.01" />
-      </Transitions>
-    </Setter>
-  </Style>
-
-  <Style Selector="ScrollBar">
-    <!-- Slightly above zero to all moving mouse across without triggering -->
-    <Setter Property="ShowDelay" Value="0:0:0.1"/>
-    <Setter Property="HideDelay" Value="0:0:0.5"/>
-  </Style>
-
 </Styles>
