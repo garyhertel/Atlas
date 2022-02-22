@@ -39,9 +39,10 @@
     <None Remove="StyleResources.xaml" />
     <None Remove="Theme\Accents\BaseLight.xaml" />
     <None Remove="Theme\Accents\BaseDark.xaml" />
-    <None Remove="Theme\FluentTheme.xaml" />
-    <None Remove="Theme\TabButton.xaml" />
-    <None Remove="Theme\ToolbarButton.xaml" />
+    <None Remove="Theme\Controls\TabButton.xaml" />
+    <None Remove="Theme\Controls\ToolbarButton.xaml" />
+    <None Remove="Theme\Fluent\FluentTheme.xaml" />
+    <None Remove="Theme\Fluent\Controls\ScrollBar.xaml" />
     <None Remove="View\TabAvalonEdit.xaml" />
   </ItemGroup>
 
@@ -62,7 +63,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Update="Theme\FluentTheme.xaml.cs">
+    <Compile Update="Theme\Controls\FluentTheme.xaml.cs">
       <DependentUpon>FluentTheme.xaml</DependentUpon>
     </Compile>
     <Compile Update="Theme\DefaultTheme.xaml.cs">
@@ -81,13 +82,16 @@
     <EmbeddedResource Update="Theme\Accents\BaseDark.xaml">
       <Generator>MSBuild:Compile</Generator>
     </EmbeddedResource>
-    <EmbeddedResource Update="Theme\FluentTheme.xaml">
+    <EmbeddedResource Update="Theme\Fluent\Controls\ScrollBar.xaml">
       <Generator>MSBuild:Compile</Generator>
     </EmbeddedResource>
-    <EmbeddedResource Update="Theme\ToolbarButton.xaml">
+    <EmbeddedResource Update="Theme\Fluent\FluentTheme.xaml">
       <Generator>MSBuild:Compile</Generator>
     </EmbeddedResource>
-    <EmbeddedResource Update="Theme\TabButton.xaml">
+    <EmbeddedResource Update="Theme\Controls\ToolbarButton.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Theme\Controls\TabButton.xaml">
       <Generator>MSBuild:Compile</Generator>
     </EmbeddedResource>
   </ItemGroup>

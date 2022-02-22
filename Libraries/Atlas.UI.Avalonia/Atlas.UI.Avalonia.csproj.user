@@ -2,7 +2,10 @@
 <Project ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup />
   <ItemGroup>
-    <EmbeddedResource Update="Theme\TabButton.xaml">
+    <EmbeddedResource Update="Theme\Fluent\Controls\ScrollBar.xaml">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Theme\Controls\TabButton.xaml">
       <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
