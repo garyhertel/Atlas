@@ -21,7 +21,8 @@ public class DataKeyAttribute : Attribute
 {
 }
 
-// DataGrids use this as a unique key when matching rows
+// [DataValue] sets an inner value whose [DataKey] will be used if one is not set on the referencing class
+// If the TabInstance.DataRepoInstance is set with elements that implement [DataValue], this value can also be passed in a bookmark 
 [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
 public class DataValueAttribute : Attribute
 {
@@ -51,13 +52,7 @@ public class HiddenRowAttribute : Attribute
 {
 }
 
-// Don't show row if value is null
-[AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
-public class HideNullAttribute : Attribute
-{
-}
-
-// Don't show row if value matches
+// Don't show row or column if any value matches
 [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
 public class HideAttribute : Attribute
 {
@@ -65,6 +60,40 @@ public class HideAttribute : Attribute
 
 	// passing a null param passes a null array :(
 	public HideAttribute(object value, params object[] additonalValues)
+	{
+		// Combine both params into a single list
+		Values = new List<object>(additonalValues)
+		{
+			value
+		};
+	}
+}
+
+// Don't show row if any value matches
+[AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
+public class HideRowAttribute : Attribute
+{
+	public readonly List<object> Values;
+
+	// passing a null param passes a null array :(
+	public HideRowAttribute(object value, params object[] additonalValues)
+	{
+		// Combine both params into a single list
+		Values = new List<object>(additonalValues)
+		{
+			value
+		};
+	}
+}
+
+// Don't show row if any value matches
+[AttributeUsage(AttributeTargets.Property)]
+public class HideColumnAttribute : Attribute
+{
+	public readonly List<object> Values;
+
+	// passing a null param passes a null array :(
+	public HideColumnAttribute(object value, params object[] additonalValues)
 	{
 		// Combine both params into a single list
 		Values = new List<object>(additonalValues)
@@ -102,6 +131,18 @@ public class StyleValueAttribute : Attribute
 [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
 public class FormattedAttribute : Attribute
 {
+}
+
+// Displayed string formatter
+[AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
+public class FormatterAttribute : Attribute
+{
+	public readonly Type Type;
+
+	public FormatterAttribute(Type type)
+	{
+		Type = type;
+	}
 }
 
 // Adds spaces between words in a string

@@ -5,6 +5,7 @@ using System.Collections.Generic;
 
 namespace Atlas.Tabs;
 
+// Overrides default ObjectHasLinks()
 public interface IHasLinks
 {
 	bool HasLinks { get; }
@@ -26,11 +27,8 @@ public static class TabUtils
 		if (value == null)
 			return false;
 
-		if (value is ListItem listItem)
+		if (value is IListItem listItem)
 			value = listItem.Value;
-
-		if (value is ListMember listMember)
-			value = listMember.Value;
 
 		Type type = value.GetType();
 		if (type.IsPrimitive ||
@@ -50,9 +48,10 @@ public static class TabUtils
 				if (collection.Count == 0)
 					return false;
 
-				Type elementType = collection.GetType().GetElementTypeForAll();
-				if (elementType != null && elementType.IsPrimitive)
-					return false;
+				// Remove? This is skipping byte arrays
+				// Type elementType = collection.GetType().GetElementTypeForAll();
+				// if (elementType != null && elementType.IsPrimitive)
+				// 		return false;
 			}
 
 			foreach (Type ignoreType in IgnoreHighlightTypes)

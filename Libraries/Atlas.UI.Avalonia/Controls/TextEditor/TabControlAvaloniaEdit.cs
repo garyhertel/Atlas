@@ -1,15 +1,16 @@
+using Atlas.Core;
 using Atlas.Tabs;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
-using Avalonia.Media;
-using AvaloniaEdit.Highlighting;
 using Avalonia.Layout;
+using Avalonia.Media;
+using Avalonia.Styling;
+using AvaloniaEdit.Editing;
+using AvaloniaEdit.Highlighting;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using Avalonia.Styling;
-using Atlas.Core;
 
 namespace Atlas.UI.Avalonia.Controls;
 
@@ -53,6 +54,8 @@ public class TabControlAvaloniaEdit : Grid
 	private void InitializeControls()
 	{
 		Background = Brushes.Transparent;
+
+		MinWidth = 50; // WordWrap causes freezing below certain values
 		MaxWidth = 3000;
 
 		ColumnDefinitions = new ColumnDefinitions("*");
@@ -70,9 +73,8 @@ public class TabControlAvaloniaEdit : Grid
 			MaxHeight = 2000,
 			Foreground = Theme.GridForeground,
 			Background = Theme.GridBackground,
-			// WordWrap = true, // Doesn't work yet
-			// HorizontalScrollBarVisibility = ScrollBarVisibility.Disabled, // WordWrap requires Disabled
-			HorizontalScrollBarVisibility = ScrollBarVisibility.Auto,
+			WordWrap = true,
+			HorizontalScrollBarVisibility = ScrollBarVisibility.Disabled, // WordWrap requires Disabled
 			VerticalScrollBarVisibility = ScrollBarVisibility.Auto,
 			Padding = new Thickness(6),
 			FontSize = 14,
@@ -89,6 +91,7 @@ public class TabControlAvaloniaEdit : Grid
 	public void Load(string path)
 	{
 		Path = path;
+
 		var fileInfo = new FileInfo(path);
 		if (fileInfo.Length > MaxAutoLoadSize)
 		{
@@ -97,12 +100,15 @@ public class TabControlAvaloniaEdit : Grid
 
 			var buffer = new char[MaxAutoLoadSize];
 			streamReader.Read(buffer, 0, buffer.Length);
-			TextEditor.Text = new string(buffer);
+			Text = new string(buffer);
 		}
 		else
 		{
-			TextEditor.Load(path);
+			Text = File.ReadAllText(path);
+			//TextEditor.Load(path); // Doesn't work
 		}
+
+		UpdateLineNumbers();
 	}
 
 	public string Text
@@ -110,17 +116,34 @@ public class TabControlAvaloniaEdit : Grid
 		get => TextEditor.Text;
 		set
 		{
-			if (value is string s && s.StartsWith("{") && !s.Contains("\n"))
+			if (value is string s && s.StartsWith("{") && !s.Contains('\n'))
 			{
 				TextEditor.FontFamily = new FontFamily("Courier New"); // Use monospaced font for Json
 			}
 			TextEditor.Text = value;
+			// UpdateLineNumbers(); // Enable for all?
 		}
 	}
 
 	public void SetFormattedJson(string text)
 	{
 		Text = JsonUtils.Format(text);
+	}
+
+	private void UpdateLineNumbers()
+	{
+		if (TextEditor.LineCount <= 1)
+			return;
+		
+		TextEditor.ShowLineNumbers = true;
+
+		foreach (IControl control in TextEditor.TextArea.LeftMargins)
+		{
+			if (control is LineNumberMargin margin)
+			{
+				margin.Opacity = 0.5;
+			}
+		}
 	}
 
 	public void EnableEditing(ListMember listMember)

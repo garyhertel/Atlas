@@ -310,7 +310,7 @@ public class TabInstance : IDisposable
 
 	protected ItemCollection<IListItem> GetListItems()
 	{
-		return ListItem.Create(this, false);
+		return IListItem.Create(this, false);
 	}
 
 	private MethodInfo GetDerivedLoadMethod(string name, int paramCount)
@@ -405,8 +405,10 @@ public class TabInstance : IDisposable
 				model.AddData(e);
 			}
 
+			// Posted Log messages won't have taken affect here yet
 			// Task.OnFinished hasn't always been called by this point
-			if (call.Log.Level >= LogLevel.Error && !Model.Tasks.Contains(call.TaskInstance))
+			if ((model.ShowTasks || call.Log.Level >= LogLevel.Error)
+				&& !Model.Tasks.Contains(call.TaskInstance))
 				Model.Tasks.Add(call.TaskInstance);
 		}
 		return model;
@@ -742,28 +744,6 @@ public class TabInstance : IDisposable
 		T data = Project.DataApp.Load<T>(directory, name, TaskInstance.Call, createIfNeeded);
 		return data;
 	}
-
-	/*private void LoadBookmark2()
-	{
-		LoadTabSettings();
-		int index = 0;
-		foreach (TabData tabData in tabDatas)
-		{
-			tabData.tabDataSettings = tabSettings.GetData(index++);
-			tabData.LoadSavedSettings();
-
-			//if (tabInstance.bookmarkNode != null)
-			foreach (TabInstance childTabInstance in children)
-			{
-				BookmarkNode childBookmarkNode = null;
-				if (bookmarkNode.Nodes.TryGetValue(childTabInstance.Label, out childBookmarkNode))
-				{
-					//child.bookmarkNode = bookmarkNode;
-					childTabInstance.SelectBookmark(childBookmarkNode);
-				}
-			}
-		}
-	}*/
 
 	public TabViewSettings LoadDefaultTabSettings()
 	{

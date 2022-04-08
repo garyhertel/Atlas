@@ -88,6 +88,9 @@ public class ListProperty : ListMember, IPropertyEditable
 	[Hidden]
 	public Type UnderlyingType => PropertyInfo.PropertyType.GetNonNullableType();
 
+	[Hidden]
+	public bool IsPropertyVisible => PropertyInfo.IsRowVisible();
+
 	public override string ToString() => Name;
 
 	public ListProperty(object obj, PropertyInfo propertyInfo, bool cachable = true) :
@@ -96,8 +99,9 @@ public class ListProperty : ListMember, IPropertyEditable
 		PropertyInfo = propertyInfo;
 		Cachable = cachable;
 
-		var accessors = propertyInfo.GetAccessors(true);
-		AutoLoad = !accessors[0].IsStatic;
+		// [ListItem] uses static properties, remove?
+		// var accessors = propertyInfo.GetAccessors(true);
+		// AutoLoad = !accessors[0].IsStatic;
 
 		NameAttribute attribute = propertyInfo.GetCustomAttribute<NameAttribute>();
 
@@ -111,7 +115,7 @@ public class ListProperty : ListMember, IPropertyEditable
 	{
 		// this doesn't work for virtual methods (or any method modifier?)
 		var propertyInfos = obj.GetType().GetProperties()
-			.Where(p => IsVisible(p))
+			.Where(p => p.IsRowVisible())
 			.Where(p => includeBaseTypes || p.DeclaringType == obj.GetType())
 			.OrderBy(p => p.MetadataToken);
 
@@ -120,20 +124,8 @@ public class ListProperty : ListMember, IPropertyEditable
 		foreach (PropertyInfo propertyInfo in propertyInfos)
 		{
 			var listProperty = new ListProperty(obj, propertyInfo);
-
-			// move this to later?
-			if (propertyInfo.GetCustomAttribute<HideNullAttribute>() != null)
-			{
-				if (listProperty.Value == null)
-					continue;
-			}
-
-			var hideAttribute = propertyInfo.GetCustomAttribute<HideAttribute>();
-			if (hideAttribute != null && hideAttribute.Values != null)
-			{
-				if (hideAttribute.Values.Contains(listProperty.Value))
-					continue;
-			}
+			if (!listProperty.IsRowVisible())
+				continue;
 
 			if (propertyToIndex.TryGetValue(propertyInfo.Name, out int index))
 			{
@@ -148,18 +140,41 @@ public class ListProperty : ListMember, IPropertyEditable
 		}
 		return listProperties;
 	}
-	public static bool IsVisible(PropertyInfo propertyInfo)
+
+	public bool IsRowVisible()
 	{
-		if (propertyInfo.DeclaringType.IsNotPublic)
-			return false;
-
-#if !DEBUG
-			if (propertyInfo.GetCustomAttribute<DebugOnlyAttribute>() != null)
+		var hideAttribute = PropertyInfo.GetCustomAttribute<HideAttribute>();
+		if (hideAttribute?.Values != null)
+		{
+			if (hideAttribute.Values.Any(v => ObjectUtils.AreEqual(Value, v)))
 				return false;
-#endif
+		}
 
-		return propertyInfo.GetCustomAttribute<HiddenAttribute>() == null && // [Hidden]
-			propertyInfo.GetCustomAttribute<HiddenRowAttribute>() == null; // [HiddenRow]
+		var hideRowAttribute = PropertyInfo.GetCustomAttribute<HideRowAttribute>();
+		if (hideRowAttribute?.Values != null)
+		{
+			if (hideRowAttribute.Values.Any(v => ObjectUtils.AreEqual(Value, v)))
+				return false;
+		}
+		return true;
+	}
+
+	public bool IsColumnVisible()
+	{
+		var hideAttribute = PropertyInfo.GetCustomAttribute<HideAttribute>();
+		if (hideAttribute?.Values != null)
+		{
+			if (hideAttribute.Values.Any(v => ObjectUtils.AreEqual(Value, v)))
+				return false;
+		}
+
+		var hideColumnAttribute = PropertyInfo.GetCustomAttribute<HideColumnAttribute>();
+		if (hideColumnAttribute?.Values != null)
+		{
+			if (hideColumnAttribute.Values.Any(v => ObjectUtils.AreEqual(Value, v)))
+				return false;
+		}
+		return true;
 	}
 
 	// This can be slow due to lazy property loading

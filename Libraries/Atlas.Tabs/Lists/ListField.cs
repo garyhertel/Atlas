@@ -42,6 +42,9 @@ public class ListField : ListMember, IPropertyEditable
 		}
 	}
 
+	[Hidden]
+	public bool IsFieldVisible => FieldInfo.IsRowVisible();
+
 	public override string ToString() => Name;
 
 	public ListField(object obj, FieldInfo fieldInfo) :
@@ -61,7 +64,7 @@ public class ListField : ListMember, IPropertyEditable
 	public static new ItemCollection<ListField> Create(object obj, bool includeBaseTypes = true)
 	{
 		var fieldInfos = obj.GetType().GetFields()
-			.Where(f => IsVisible(f))
+			.Where(f => f.IsRowVisible())
 			.Where(f => includeBaseTypes || f.DeclaringType == obj.GetType())
 			.OrderBy(f => f.MetadataToken);
 
@@ -70,22 +73,10 @@ public class ListField : ListMember, IPropertyEditable
 		var fieldToIndex = new Dictionary<string, int>();
 		foreach (FieldInfo fieldInfo in fieldInfos)
 		{
-			if (fieldInfo.GetCustomAttribute<HideNullAttribute>() != null)
-			{
-				object fieldValue = fieldInfo.GetValue(obj);
-				if (fieldValue == null)
-					continue;
-			}
-
-			var hideAttribute = fieldInfo.GetCustomAttribute<HideAttribute>();
-			if (hideAttribute != null && hideAttribute.Values != null)
-			{
-				object fieldValue = fieldInfo.GetValue(obj);
-				if (hideAttribute.Values.Contains(fieldValue))
-					continue;
-			}
-
 			var listField = new ListField(obj, fieldInfo);
+			if (!listField.IsRowVisible())
+				continue;
+
 			if (fieldToIndex.TryGetValue(fieldInfo.Name, out int index))
 			{
 				listFields.RemoveAt(index);
@@ -100,17 +91,21 @@ public class ListField : ListMember, IPropertyEditable
 		return listFields;
 	}
 
-	public static bool IsVisible(FieldInfo fieldInfo)
+	public bool IsRowVisible()
 	{
-		if (fieldInfo.IsLiteral && !fieldInfo.IsInitOnly)
-			return false;
-
-#if !DEBUG
-			if (fieldInfo.GetCustomAttribute<DebugOnlyAttribute>() != null)
+		var hideAttribute = FieldInfo.GetCustomAttribute<HideAttribute>();
+		if (hideAttribute?.Values != null)
+		{
+			if (hideAttribute.Values.Any(v => ObjectUtils.AreEqual(Value, v)))
 				return false;
-#endif
+		}
 
-		return fieldInfo.GetCustomAttribute<HiddenAttribute>() == null && // [Hidden]
-			fieldInfo.GetCustomAttribute<HiddenRowAttribute>() == null; // [HiddenRow]
+		var hideRowAttribute = FieldInfo.GetCustomAttribute<HideRowAttribute>();
+		if (hideRowAttribute?.Values != null)
+		{
+			if (hideRowAttribute.Values.Any(v => ObjectUtils.AreEqual(Value, v)))
+				return false;
+		}
+		return true;
 	}
 }

@@ -107,6 +107,27 @@ public class TabDataSettings
 			return PropertyInfo.IsDefined(typeof(StyleValueAttribute)) ||
 				typeof(DictionaryEntry).IsAssignableFrom(PropertyInfo.DeclaringType);
 		}
+
+		public bool IsVisible(IList list)
+		{
+			if (PropertyInfo.GetCustomAttribute<HideAttribute>() == null &&
+				PropertyInfo.GetCustomAttribute<HideColumnAttribute>() == null)
+				return true;
+
+			foreach (object obj in list)
+			{
+				try
+				{
+					var listProperty = new ListProperty(obj, PropertyInfo);
+					if (listProperty.IsColumnVisible())
+						return true;
+				}
+				catch (Exception)
+				{
+				}
+			}
+			return false;
+		}
 	}
 
 	private List<PropertyInfo> GetPropertyColumns(Type elementType)

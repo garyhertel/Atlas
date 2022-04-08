@@ -32,6 +32,7 @@ public interface IItemSelector
 	IList SelectedItems { get; set; }
 }
 
+// TabInstance or Controls can specify this to create child controls dynamically
 public interface ITabCreator
 {
 	object CreateControl(object value, out string label);
@@ -45,7 +46,7 @@ public interface ITabCreatorAsync
 public class TabObject
 {
 	public object Object { get; set; }
-	public bool Fill { get; set; }
+	public bool Fill { get; set; } // Stretch to Fill all vertical space
 }
 
 public enum AutoSelectType
@@ -68,6 +69,7 @@ public class TabModel
 	public bool Editing { get; set; }
 	public bool Skippable { get; set; }
 	public bool ShowSearch { get; set; } // Show search filter above DataGrids
+	public bool ShowTasks { get; set; } // Will add the Tasks to show logs when an error occurs
 
 	public SearchFilter SearchFilter { get; set; } // DataGrid filtering will also update this filter
 
@@ -140,7 +142,7 @@ public class TabModel
 		if (obj is ChartSettings)
 			MinDesiredWidth = 800;
 
-		var tabObject = new TabObject()
+		TabObject tabObject = new()
 		{
 			Object = obj,
 			Fill = fill,
@@ -169,52 +171,14 @@ public class TabModel
 		var listItemAttribute = type.GetCustomAttribute<ListItemAttribute>();
 		if (listItemAttribute != null)
 		{
-			ItemList.Add(ListItem.Create(obj, listItemAttribute.IncludeBaseTypes));
+			ItemList.Add(IListItem.Create(obj, listItemAttribute.IncludeBaseTypes));
 			return;
 		}
 
 		if (obj is IList iList)
 		{
-			Type elementType = type.GetElementTypeForAll();
-			if (elementType != null)
-			{
-				List<PropertyInfo> visibleProperties = elementType.GetVisibleProperties();
-				if (elementType == typeof(string))
-				{
-					// string properties don't display well
-					AddEnumerable((IEnumerable)obj);
-				}
-				else if (type.GenericTypeArguments.Length > 0 && visibleProperties.Count > 0)
-				{
-					// list element type has properties (should check if they're visible properties?)
-					ItemList.Add(iList);
-				}
-				/*else if (elementType.IsPrimitive)
-				{
-					// todo: create a List<elementType>
-				}
-				else*/
-				else if (visibleProperties.Count == 0)
-				{
-					ItemList.Add(ListToString.Create(iList));
-				}
-				else
-				{
-					// this doesn't work if there's a null value in the array
-					// should we databind columns to Value property in Nullable?
-					Type underlyingType = Nullable.GetUnderlyingType(elementType);
-					if (underlyingType != null)
-						elementType = underlyingType;
-
-					Type genericType = typeof(ItemCollection<>).MakeGenericType(elementType);
-					IList iNewList = (IList)Activator.CreateInstance(genericType);
-					foreach (object child in iList)
-						iNewList.Add(child);
-					ItemList.Add(iNewList);
-				}
-				UpdateSkippable(elementType);
+			if (AddList(iList, type))
 				return;
-			}
 		}
 
 		// Can only set one set of columns for Items, so we have to choose
@@ -242,33 +206,53 @@ public class TabModel
 		}
 	}
 
-	private void UpdateSkippable(Type elementType)
+	private bool AddList(IList list, Type listType)
 	{
-		// skip over single items that will take up lots of room (always show ListItems though)
-		Skippable = false;
-
-		/*if (ItemList is ItemCollection<> itemCollection)
+		Type elementType = listType.GetElementTypeForAll();
+		if (elementType == null)
+			return false;
+		
+		List<PropertyInfo> visibleProperties = elementType.GetVisibleProperties();
+		if (elementType == typeof(string))
 		{
-		}*/
-
-		if (ItemList[0].Count == 1)
-		{
-			if (ItemList[0] is IItemCollection itemCollection && itemCollection.Skippable == false)
-				return;
-
-			var firstItem = ItemList[0][0];
-			var skippableAttribute = firstItem.GetType().GetCustomAttribute<SkippableAttribute>();
-			if (skippableAttribute != null)
-			{
-				Skippable = skippableAttribute.Value;
-			}
-			else if (firstItem is not ITab && TabDataSettings.GetVisibleProperties(elementType).Count > 1)
-			{
-				Skippable = true;
-			}
-
-			//Skippable = (skippableAttribute != null) || (!(firstItem is ITab) && TabDataSettings.GetVisibleProperties(elementType).Count > 1);
+			// string properties don't display well
+			AddEnumerable(list);
 		}
+		else if (listType.GenericTypeArguments.Length > 0 && visibleProperties.Count > 0)
+		{
+			// list element type has properties (should check if they're visible properties?)
+			ItemList.Add(list);
+		}
+		else if (list is byte[] byteArray)
+		{
+			ItemList.Add(ListByte.Create(byteArray));
+		}
+		/*else if (elementType.IsPrimitive)
+		{
+			// todo: create a List<elementType>
+		}
+		else*/
+		else if (visibleProperties.Count == 0)
+		{
+			ItemList.Add(ListToString.Create(list));
+		}
+		else
+		{
+			// this doesn't work if there's a null value in the array
+			// should we databind columns to Value property in Nullable?
+			Type underlyingType = Nullable.GetUnderlyingType(elementType);
+			if (underlyingType != null)
+				elementType = underlyingType;
+
+			Type genericType = typeof(ItemCollection<>).MakeGenericType(elementType);
+			IList iNewList = (IList)Activator.CreateInstance(genericType);
+			foreach (object child in list)
+				iNewList.Add(child);
+			ItemList.Add(iNewList);
+		}
+
+		UpdateSkippable(elementType);
+		return true;
 	}
 
 	private void AddDictionary(IDictionary dictionary)
@@ -350,6 +334,35 @@ public class TabModel
 		//AddMethods(obj);
 	}
 
+	private void UpdateSkippable(Type elementType)
+	{
+		// skip over single items that will take up lots of room (always show ListItems though)
+		Skippable = false;
+
+		/*if (ItemList is ItemCollection<> itemCollection)
+		{
+		}*/
+
+		if (ItemList[0].Count == 1)
+		{
+			if (ItemList[0] is IItemCollection itemCollection && !itemCollection.Skippable)
+				return;
+
+			var firstItem = ItemList[0][0];
+			var skippableAttribute = firstItem.GetType().GetCustomAttribute<SkippableAttribute>();
+			if (skippableAttribute != null)
+			{
+				Skippable = skippableAttribute.Value;
+			}
+			else if (firstItem is not ITab && TabDataSettings.GetVisibleProperties(elementType).Count > 1)
+			{
+				Skippable = true;
+			}
+
+			//Skippable = (skippableAttribute != null) || (!(firstItem is ITab) && TabDataSettings.GetVisibleProperties(elementType).Count > 1);
+		}
+	}
+
 	public void Clear()
 	{
 		Objects.Clear();
@@ -393,7 +406,7 @@ public class TabModel
 			{
 				if (filter.Matches(obj, visibleProperties))
 				{
-					var selectedRow = new SelectedRow()
+					SelectedRow selectedRow = new()
 					{
 						RowIndex = -1,
 						Object = obj,
@@ -410,7 +423,7 @@ public class TabModel
 						if (childNode.SelectedObjects.Count > 0)
 						{
 							childNode.TabModel = tabModel;
-							var selectedRow = new SelectedRow()
+							SelectedRow selectedRow = new()
 							{
 								RowIndex = -1,
 								Object = obj,

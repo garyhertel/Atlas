@@ -1,17 +1,19 @@
 using Atlas.Core;
+using Atlas.Resources;
 using System;
 using System.Collections.Generic;
 using System.IO;
 
 namespace Atlas.Tabs.Tools;
 
+public interface IFileTypeView
+{
+	string Path { get; set; }
+}
+
 public class TabFile : ITab
 {
-	public static HashSet<string> TextExtensions = new()
-	{
-		".txt",
-		".md",
-	};
+	public static Dictionary<string, Type> ExtensionTypes = new();
 
 	public string Path;
 
@@ -21,6 +23,14 @@ public class TabFile : ITab
 	}
 
 	public TabInstance Create() => new Instance(this);
+
+	public class Toolbar : TabToolbar
+	{
+		public ToolButton ButtonOpenFolder { get; set; } = new("Open Folder", Icons.Streams.OpenFolder);
+
+		[Separator]
+		public ToolButton ButtonDelete { get; set; } = new("Delete", Icons.Streams.Delete);
+	}
 
 	public class Instance : TabInstance
 	{
@@ -33,44 +43,58 @@ public class TabFile : ITab
 
 		public override void Load(Call call, TabModel model)
 		{
-			var items = new ItemCollection<ListItem>();
+			string path = Tab.Path;
+			if (!File.Exists(path))
+			{
+				model.AddObject("File doesn't exist");
+				return;
+			}
 
-			string extension = System.IO.Path.GetExtension(Tab.Path);
+			var toolbar = new Toolbar();
+			toolbar.ButtonOpenFolder.Action = OpenFolder;
+			toolbar.ButtonDelete.Action = Delete;
+			model.AddObject(toolbar);
+
+			var items = new List<ListItem>();
+
+			string extension = System.IO.Path.GetExtension(path).ToLower();
+
+			if (ExtensionTypes.TryGetValue(extension, out Type type))
+			{
+				var tab = (IFileTypeView)Activator.CreateInstance(type);
+				tab.Path = path;
+				items.Add(new ListItem(extension, tab));
+			}
 
 			if (extension == ".json")
 			{
-				items.Add(new ListItem("Contents", LazyJsonNode.LoadPath(Tab.Path)));
-				//items.Add(new ListItem("Contents", JsonValue.Parse(File.ReadAllText(path))));
+				string text = File.ReadAllText(path);
+				items.Add(new ListItem("Contents", text));
+				items.Add(new ListItem("Json", LazyJsonNode.Parse(text)));
 			}
 			else
 			{
-				bool isText = TextExtensions.Contains(extension);
-				if (!isText)
+				if (FileUtils.IsTextFile(path))
 				{
-					try
-					{
-						// doesn't work
-						using StreamReader streamReader = File.OpenText(Tab.Path);
-
-						var buffer = new char[100];
-						streamReader.Read(buffer, 0, buffer.Length);
-						isText = true;
-					}
-					catch (Exception)
-					{
-					}
-				}
-
-				if (isText)
-				{
-					items.Add(new ListItem("Contents", new FilePath(Tab.Path)));
-				}
-				else
-				{
-					items.Add(new ListItem("Contents", null));
+					items.Add(new ListItem("Contents", new FilePath(path)));
 				}
 			}
+			items.Add(new ListItem("File Info", new FileInfo(path)));
+
 			model.Items = items;
+		}
+
+		private void OpenFolder(Call call)
+		{
+			ProcessUtils.OpenFolder(Tab.Path);
+		}
+
+		private void Delete(Call call)
+		{
+			if (File.Exists(Tab.Path))
+				File.Delete(Tab.Path);
+
+			Refresh();
 		}
 	}
 }

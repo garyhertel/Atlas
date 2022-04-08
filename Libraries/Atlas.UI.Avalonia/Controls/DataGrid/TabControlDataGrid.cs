@@ -557,7 +557,9 @@ public class TabControlDataGrid : Grid, IDisposable, ITabSelector, IItemSelector
 	private void SearchControl_KeyUp(object sender, KeyEventArgs e)
 	{
 		FilterText = SearchControl.Text;
+
 		SelectDefaultItems();
+
 		if (_disableSaving == 0)
 			TabInstance.SaveTabSettings();
 	}
@@ -575,6 +577,12 @@ public class TabControlDataGrid : Grid, IDisposable, ITabSelector, IItemSelector
 		}
 
 		List<TabDataSettings.PropertyColumn> propertyColumns = TabDataSettings.GetPropertiesAsColumns(_elementType);
+
+		// Filter [Hide(null)]
+		propertyColumns = propertyColumns
+			.Where(p => p.IsVisible(List))
+			.ToList();
+
 		if (propertyColumns.Count == 0)
 			return;
 
@@ -691,7 +699,7 @@ public class TabControlDataGrid : Grid, IDisposable, ITabSelector, IItemSelector
 	{
 		if (TabInstance.Project.UserSettings.AutoLoad)
 		{
-			SortSavedColumn();
+			// SortSavedColumn(); // Not supported yet
 			LoadSearch();
 
 			if (!SelectSavedItems()) // sorting must happen before this
@@ -727,50 +735,17 @@ public class TabControlDataGrid : Grid, IDisposable, ITabSelector, IItemSelector
 		if (TabDataSettings.SelectedRows.Count == 0)
 			return rowObjects;
 
-		var objects = new HashSet<object>();
-		var keys = new Dictionary<string, object>();
-		foreach (object obj in CollectionView) // collectionView takes filters into account
+		TabItemCollection tabItemCollectionView = new(List, CollectionView);
+
+		List<object> matchingObjects = tabItemCollectionView.GetSelectedObjects(TabDataSettings.SelectedRows);
+
+		foreach (object matchingObject in matchingObjects)
 		{
-			if (obj == null)
-				continue;
-
-			objects.Add(obj);
-
-			string id = DataUtils.GetObjectId(obj);
-			if (id != null)
-				keys[id] = obj;
-		}
-
-		foreach (SelectedRow selectedRow in TabDataSettings.SelectedRows)
-		{
-			object selectedObject;
-			if (selectedRow.Object != null && objects.Contains(selectedRow.Object))
-			{
-				selectedObject = selectedRow.Object;
-			}
-			else if (selectedRow.DataKey != null)
-			{
-				if (!keys.TryGetValue(selectedRow.DataKey, out selectedObject))
-					continue;
-			}
-			else if (selectedRow.Label != null)
-			{
-				if (!keys.TryGetValue(selectedRow.Label, out selectedObject))
-					continue;
-			}
-			else
-			{
-				int rowIndex = selectedRow.RowIndex;
-				if (rowIndex < 0 || rowIndex >= List.Count) // some items might be filtered or have changed
-					continue;
-				selectedObject = List[rowIndex];
-			}
-
 			if (TabDataSettings.SelectionType != SelectionType.User &&
-				TabInstance.IsOwnerObject(selectedObject.GetInnerValue())) // stops self referencing loops
+				TabInstance.IsOwnerObject(matchingObject.GetInnerValue())) // stops self referencing loops
 				continue;
 
-			rowObjects.Add(selectedObject);
+			rowObjects.Add(matchingObject);
 		}
 
 		if (TabInstance.TabBookmark?.Bookmark?.Imported == true && rowObjects.Count != TabDataSettings.SelectedRows.Count)
@@ -1086,7 +1061,10 @@ public class TabControlDataGrid : Grid, IDisposable, ITabSelector, IItemSelector
 					if (obj == null)
 						continue;
 
-					SelectedRow selectedRow = GetSelectedRow(obj);
+					var selectedRow = new SelectedRow(obj)
+					{
+						RowIndex = List.IndexOf(obj),
+					};
 					selectedRows.Add(selectedRow);
 				}
 			}
@@ -1097,14 +1075,6 @@ public class TabControlDataGrid : Grid, IDisposable, ITabSelector, IItemSelector
 
 			return selectedRows;
 		}
-	}
-
-	private SelectedRow GetSelectedRow(object obj)
-	{
-		return new SelectedRow(obj)
-		{
-			RowIndex = List.IndexOf(obj),
-		};
 	}
 
 	private string FilterText
@@ -1161,10 +1131,10 @@ public class TabControlDataGrid : Grid, IDisposable, ITabSelector, IItemSelector
 	}
 
 	// Not possible with current DataGrid yet?
-	private void SortSavedColumn()
+	/*private void SortSavedColumn()
 	{
 		//collectionView.SortDescriptions
-		/*ListCollectionView listCollectionView = collectionView as ListCollectionView;
+		ListCollectionView listCollectionView = collectionView as ListCollectionView;
 		if (listCollectionView != null && tabDataSettings.SortColumnName != null)
 		{
 			DataGridColumn matchingColumn = null;
@@ -1184,8 +1154,8 @@ public class TabControlDataGrid : Grid, IDisposable, ITabSelector, IItemSelector
 				Debug.Assert(propertyInfo != null);
 				listCollectionView.CustomSort = new DataGridSortComparer(propertyInfo, tabDataSettings.SortDirection);
 			}
-		}*/
-	}
+		}
+	}*/
 
 	public void Dispose()
 	{
