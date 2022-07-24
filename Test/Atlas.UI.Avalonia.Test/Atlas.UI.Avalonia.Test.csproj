@@ -5,14 +5,16 @@
     <Configurations>Debug;Release;DebugX86</Configurations>
 
     <IsPackable>false</IsPackable>
+
+    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Avalonia" Version="$(AvaloniaVersion)" />
     <PackageReference Include="Avalonia.Desktop" Version="$(AvaloniaVersion)" />
-    <PackageReference Include="nunit" Version="3.13.1" />
-    <PackageReference Include="NUnit3TestAdapter" Version="3.17.0" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.9.1" />
+    <PackageReference Include="nunit" Version="3.13.3" />
+    <PackageReference Include="NUnit3TestAdapter" Version="4.2.1" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.2.0" />
   </ItemGroup>
 
   <ItemGroup>

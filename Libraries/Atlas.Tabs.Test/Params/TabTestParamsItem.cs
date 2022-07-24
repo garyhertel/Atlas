@@ -6,37 +6,35 @@ namespace Atlas.Tabs.Test.Params;
 
 public class TabParamItem : ITab, IDataView
 {
-	public ParamTestItem TestItem;
+	public ParamTestItem? TestItem;
 
 	//[ButtonColumn("-")]
-	public event EventHandler<EventArgs> OnDelete;
+	public event EventHandler<EventArgs>? OnDelete;
 
 	[ButtonColumn("-")]
 	public void Delete()
 	{
-		OnDelete?.Invoke(this, null);
+		OnDelete?.Invoke(this, EventArgs.Empty);
 	}
 
 	[DataKey]
-	public string Name => TestItem.Name;
+	public string? Name => TestItem?.Name;
 
-	public int? Amount => TestItem.Amount;
+	public int? Amount => TestItem?.Amount;
 
-	public TabParamItem()
-	{
-	}
+	public TabParamItem() { }
 
 	public TabParamItem(ParamTestItem testItem)
 	{
 		TestItem = testItem;
 	}
 
-	public void Load(object obj, object[] tabParams)
+	public void Load(object sender, object obj, object[] tabParams)
 	{
 		TestItem = (ParamTestItem)obj;
 	}
 
-	public override string ToString() => Name;
+	public override string? ToString() => Name;
 
 	public TabInstance Create() => new Instance(this);
 
