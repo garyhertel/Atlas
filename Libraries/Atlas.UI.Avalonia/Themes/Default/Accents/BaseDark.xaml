@@ -22,7 +22,6 @@
         <SolidColorBrush x:Key="ThemeBorderMidBrush">#106090</SolidColorBrush>
         <SolidColorBrush x:Key="ThemeBorderHighBrush">#3168a2</SolidColorBrush>
         <SolidColorBrush x:Key="ThemeBorderHighRadioBrush">#006df0</SolidColorBrush>
-        <SolidColorBrush x:Key="ThemeBorderDarkBrush">#000000</SolidColorBrush>    <!-- DataGrid only -->
 
         <!-- Controls -->
         <SolidColorBrush x:Key="ThemeControlLightBrush">#101010</SolidColorBrush>

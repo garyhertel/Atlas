@@ -1,4 +1,5 @@
 using Atlas.Resources;
+using Atlas.UI.Avalonia.Themes;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;

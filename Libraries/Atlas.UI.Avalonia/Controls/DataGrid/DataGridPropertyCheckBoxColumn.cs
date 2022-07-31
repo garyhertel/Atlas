@@ -1,3 +1,4 @@
+using Atlas.UI.Avalonia.Themes;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Data;
@@ -46,7 +47,7 @@ public class DataGridPropertyCheckBoxColumn : DataGridCheckBoxColumn
 		return new Border()
 		{
 			BorderThickness = new Thickness(0, 0, 0, 1), // Bottom only
-			BorderBrush = Theme.ThemeBorderHighBrush,
+			BorderBrush = Theme.BorderHigh,
 			Child = checkbox,
 		};
 	}

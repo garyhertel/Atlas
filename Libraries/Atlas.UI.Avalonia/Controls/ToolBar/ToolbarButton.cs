@@ -3,6 +3,7 @@ using System.IO;
 using System.Windows.Input;
 using Atlas.Core;
 using Atlas.Tabs;
+using Atlas.UI.Avalonia.Themes;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;

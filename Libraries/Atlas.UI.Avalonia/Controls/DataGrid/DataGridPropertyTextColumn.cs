@@ -1,5 +1,6 @@
 using Atlas.Core;
 using Atlas.Tabs;
+using Atlas.UI.Avalonia.Themes;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Data;
@@ -180,7 +181,7 @@ public class DataGridPropertyTextColumn : DataGridTextColumn
 			};
 			textBlock.Bind(TextBlock.ForegroundProperty, foregroundBinding);
 
-			border.BorderBrush = Theme.GridStyledLinesBrush;
+			border.BorderBrush = Theme.GridStyledLines;
 		}
 
 		if (DisplayIndex > 0)

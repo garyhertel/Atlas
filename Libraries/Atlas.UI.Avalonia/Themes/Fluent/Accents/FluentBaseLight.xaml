@@ -3,6 +3,8 @@
        xmlns:sys="clr-namespace:System;assembly=mscorlib">
 
     <Style.Resources>
+        
+        <!--- Fluent -->
 
       <Color x:Key="SystemAccentColor">#88ff88</Color> <!-- DataGridRow Selected -->
       <Color x:Key="SystemListLowColor">#88ff88</Color> <!-- DataGridRow Hover -->
@@ -22,8 +24,14 @@
       <SolidColorBrush x:Key="ComboBoxBackgroundPointerOver" Color="#FFFFFFFF" />
       <SolidColorBrush x:Key="ComboBoxBorderBrushPointerOver" Color="#88ff88" />
 
+        <!-- Grid Column Header -->
+        <SolidColorBrush x:Key="GridColumnHeaderBackgroundBrush">#27204a</SolidColorBrush>
+        <SolidColorBrush x:Key="GridColumnHeaderForegroundBrush">#d0d0f0</SolidColorBrush>
 
-      <!-- Background -->
+        <!--- End Fluent -->
+
+
+        <!-- Background -->
         <SolidColorBrush x:Key="ThemeBackgroundBrush">#ffffff</SolidColorBrush>
         <SolidColorBrush x:Key="ThemeBackgroundHoverBrush">#ddffdd</SolidColorBrush>
         <SolidColorBrush x:Key="ThemeBackgroundTextBrush">#e3e3e3</SolidColorBrush>
@@ -35,42 +43,14 @@
 
         <!-- Border -->
         <SolidColorBrush x:Key="ThemeBorderLowBrush">#000000</SolidColorBrush>
-        <SolidColorBrush x:Key="ThemeBorderMidBrush">#000000</SolidColorBrush>
+        <SolidColorBrush x:Key="ThemeBorderMidBrush">#000000</SolidColorBrush> <!-- Custom-->
         <SolidColorBrush x:Key="ThemeBorderHighBrush">#000000</SolidColorBrush> <!-- RadioButton circle border -->
         <SolidColorBrush x:Key="ThemeBorderHighRadioBrush">#006df0</SolidColorBrush>
-        <SolidColorBrush x:Key="ThemeBorderDarkBrush">#000000</SolidColorBrush>    <!-- DataGrid only -->
+        
+        <!-- Default -->
 
-        <!-- Controls -->
-        <Color x:Key="ThemeBorderLowColor">#000000</Color>
-        <Color x:Key="ThemeBorderHighColor">#d3d3d3</Color> <!-- DataGrid Lines -->
-      
-        <SolidColorBrush x:Key="ThemeControlLightBrush">#FFFFFF</SolidColorBrush>
-        <SolidColorBrush x:Key="ThemeControlMidBrush">#2a2954</SolidColorBrush>
-        <SolidColorBrush x:Key="ThemeControlMidHighBrush">#2a2954</SolidColorBrush> <!-- DataGrid background elements -->
-        <SolidColorBrush x:Key="ThemeControlHighBrush">#3070d0</SolidColorBrush> <!-- Button Pressed, ScrollBar -->
-        <SolidColorBrush x:Key="ThemeControlDarkBrush">#888888</SolidColorBrush>
-        <SolidColorBrush x:Key="ThemeControlHighlightMidBrush">#92F397</SolidColorBrush>
-
-        <!-- Accents -->
-        <SolidColorBrush x:Key="ThemeAccentBrush">#FF92F397</SolidColorBrush>
-        <SolidColorBrush x:Key="ThemeAccentBrush2">#CC92F397</SolidColorBrush>
-        <SolidColorBrush x:Key="ThemeAccentBrush3">#9992F397</SolidColorBrush>
-        <SolidColorBrush x:Key="ThemeAccentBrush4">#6692F397</SolidColorBrush>
-
-        <!-- Errors -->
-        <SolidColorBrush x:Key="ErrorBrush">Red</SolidColorBrush>
-        <SolidColorBrush x:Key="ErrorBrushLight">#10ff0000</SolidColorBrush>
-
-        <!-- Highlight -->
-        <SolidColorBrush x:Key="HighlightBrush">#006df0</SolidColorBrush>
-        <SolidColorBrush x:Key="HighlightBackgroundBrush">#4e8ef7</SolidColorBrush>
-        <SolidColorBrush x:Key="HighlightForegroundBrush">AliceBlue</SolidColorBrush>
-
-        <!-- Grid Column Header -->
-        <SolidColorBrush x:Key="GridColumnHeaderBackgroundBrush">#27204a</SolidColorBrush>
-        <SolidColorBrush x:Key="GridColumnHeaderForegroundBrush">#d0d0f0</SolidColorBrush>
-      
-         <!-- Custom Colors -->
+        <!-- Custom Colors -->
+        
         <SolidColorBrush x:Key="ThemeTabBackgroundBrush">#141414</SolidColorBrush>
         <!--SolidColorBrush x:Key="ThemeBackgroundFocusedBrush">#272727</-->
         <SolidColorBrush x:Key="ThemeBackgroundFocusedBrush">#1e1e1e</SolidColorBrush>
@@ -143,11 +123,6 @@
 
         <Thickness x:Key="ThemeBorderThickness">1</Thickness>
         <sys:Double x:Key="ThemeDisabledOpacity">0.75</sys:Double>
-
-        <!-- Fonts -->
-        <sys:Double x:Key="FontSizeSmall">14</sys:Double>
-        <sys:Double x:Key="FontSizeNormal">16</sys:Double>
-        <sys:Double x:Key="FontSizeLarge">18</sys:Double>
 
         <!-- ScrollBar -->
         <sys:Double x:Key="ScrollBarThickness">20</sys:Double>

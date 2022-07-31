@@ -5,9 +5,9 @@
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:sys="clr-namespace:System;assembly=mscorlib">
 
-  <StyleInclude Source="resm:Atlas.UI.Avalonia.Theme.Controls.TabButton.xaml?assembly=Atlas.UI.Avalonia"/>
-    <StyleInclude Source="resm:Atlas.UI.Avalonia.Theme.Controls.ToolbarButton.xaml?assembly=Atlas.UI.Avalonia"/>
-    <StyleInclude Source="resm:Atlas.UI.Avalonia.Theme.Fluent.Controls.ScrollBar.xaml?assembly=Atlas.UI.Avalonia"/>
+    <StyleInclude Source="resm:Atlas.UI.Avalonia.Themes.Controls.TabButton.xaml?assembly=Atlas.UI.Avalonia"/>
+    <StyleInclude Source="resm:Atlas.UI.Avalonia.Themes.Controls.ToolbarButton.xaml?assembly=Atlas.UI.Avalonia"/>
+    <StyleInclude Source="resm:Atlas.UI.Avalonia.Themes.Fluent.Controls.ScrollBar.xaml?assembly=Atlas.UI.Avalonia"/>
 
 
     <!--StyleInclude Source="avares://Atlas.UI.Avalonia/Theme/Controls/ScrollBar.xaml" /-->

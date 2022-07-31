@@ -3,7 +3,7 @@ using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 using Avalonia.Styling;
 
-namespace Atlas.UI.Avalonia.Themes;
+namespace Atlas.UI.Avalonia.Themes.Base;
 
 public class DefaultTheme : Styles
 {

@@ -38,12 +38,13 @@
     <None Remove="Logo.ico" />
     <None Remove="right-chevron.png" />
     <None Remove="StyleResources.xaml" />
-    <None Remove="Theme\Accents\BaseLight.xaml" />
-    <None Remove="Theme\Accents\BaseDark.xaml" />
-    <None Remove="Theme\Controls\TabButton.xaml" />
-    <None Remove="Theme\Controls\ToolbarButton.xaml" />
-    <None Remove="Theme\Fluent\FluentTheme.xaml" />
-    <None Remove="Theme\Fluent\Controls\ScrollBar.xaml" />
+    <None Remove="Themes\Base\Accents\BaseLight.xaml" />
+    <None Remove="Themes\Base\Accents\BaseDark.xaml" />
+    <None Remove="Themes\Controls\TabButton.xaml" />
+    <None Remove="Themes\Controls\ToolbarButton.xaml" />
+    <None Remove="Themes\Fluent\Accents\FluentBaseLight.xaml" />
+    <None Remove="Themes\Fluent\FluentTheme.xaml" />
+    <None Remove="Themes\Fluent\Controls\ScrollBar.xaml" />
     <None Remove="View\TabAvalonEdit.xaml" />
   </ItemGroup>
 
@@ -66,7 +67,7 @@
     <Compile Update="Theme\Controls\FluentTheme.xaml.cs">
       <DependentUpon>FluentTheme.xaml</DependentUpon>
     </Compile>
-    <Compile Update="Theme\DefaultTheme.xaml.cs">
+    <Compile Update="Themes\Base\DefaultTheme.xaml.cs">
       <DependentUpon>%(Filename)</DependentUpon>
     </Compile>
     <Compile Update="Tabs\TabAvalonEdit.xaml.cs">
@@ -76,22 +77,25 @@
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Update="Theme\Accents\BaseLight.xaml">
+    <EmbeddedResource Update="Themes\Base\Accents\BaseLight.xaml">
       <Generator>MSBuild:Compile</Generator>
     </EmbeddedResource>
-    <EmbeddedResource Update="Theme\Accents\BaseDark.xaml">
+    <EmbeddedResource Update="Themes\Base\Accents\BaseDark.xaml">
       <Generator>MSBuild:Compile</Generator>
     </EmbeddedResource>
-    <EmbeddedResource Update="Theme\Fluent\Controls\ScrollBar.xaml">
+    <EmbeddedResource Update="Themes\Fluent\Accents\FluentBaseLight.xaml">
       <Generator>MSBuild:Compile</Generator>
     </EmbeddedResource>
-    <EmbeddedResource Update="Theme\Fluent\FluentTheme.xaml">
+    <EmbeddedResource Update="Themes\Fluent\Controls\ScrollBar.xaml">
       <Generator>MSBuild:Compile</Generator>
     </EmbeddedResource>
-    <EmbeddedResource Update="Theme\Controls\ToolbarButton.xaml">
+    <EmbeddedResource Update="Themes\Fluent\FluentTheme.xaml">
       <Generator>MSBuild:Compile</Generator>
     </EmbeddedResource>
-    <EmbeddedResource Update="Theme\Controls\TabButton.xaml">
+    <EmbeddedResource Update="Themes\Controls\ToolbarButton.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Themes\Controls\TabButton.xaml">
       <Generator>MSBuild:Compile</Generator>
     </EmbeddedResource>
   </ItemGroup>

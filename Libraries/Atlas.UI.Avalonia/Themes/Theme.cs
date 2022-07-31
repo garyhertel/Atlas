@@ -2,7 +2,7 @@ using Avalonia;
 using Avalonia.Media;
 using System;
 
-namespace Atlas.UI.Avalonia;
+namespace Atlas.UI.Avalonia.Themes;
 
 public static class Theme
 {
@@ -12,8 +12,8 @@ public static class Theme
 	public static SolidColorBrush BackgroundText => Get("ThemeBackgroundTextBrush");
 	public static SolidColorBrush TabBackground => Get("ThemeTabBackgroundBrush");
 
-	public static SolidColorBrush ThemeBorderHighBrush => GetColorBrush("ThemeBorderHighColor");
-	public static SolidColorBrush GridStyledLinesBrush => Get("ThemeGridStyledLinesBrush");
+	public static SolidColorBrush BorderHigh => GetColorBrush("ThemeBorderHighColor");
+	public static SolidColorBrush GridStyledLines => Get("ThemeGridStyledLinesBrush");
 
 	// Content
 	public static SolidColorBrush GridForeground => Get("ThemeGridForegroundBrush");
@@ -34,7 +34,7 @@ public static class Theme
 	public static SolidColorBrush TitleBackground => Get("TitleBackgroundBrush");
 	public static SolidColorBrush TitleForeground => Get("TitleForegroundBrush");
 
-	public static SolidColorBrush TextBackgroundBrush => Get("ThemeTextBackgroundBrush");
+	public static SolidColorBrush TextBackground => Get("ThemeTextBackgroundBrush");
 
 	public static SolidColorBrush TextBackgroundDisabled => Get("TextBackgroundDisabledBrush");
 
