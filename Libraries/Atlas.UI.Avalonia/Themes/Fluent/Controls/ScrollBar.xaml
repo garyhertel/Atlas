@@ -46,10 +46,10 @@
         <Setter Property="BorderThickness" Value="1"/>
     </Style>
 
-    <Style Selector="ScrollBar /template/ Thumb#thumb">
+    <Style Selector="ScrollBar /template/ Thumb.thumb">
         <Setter Property="Background" Value="{DynamicResource ThemeScrollBarThumbBrush}"/>
     </Style>
-    <Style Selector="ScrollBar /template/ Thumb#thumb /template/ Border:pointerover">
+    <Style Selector="ScrollBar /template/ Thumb.thumb /template/ Border:pointerover">
         <Setter Property="Background" Value="{DynamicResource ThemeScrollBarThumbHoverBrush}"/>
     </Style>
 

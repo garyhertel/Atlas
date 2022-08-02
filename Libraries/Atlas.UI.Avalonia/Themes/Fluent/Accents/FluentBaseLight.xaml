@@ -6,8 +6,27 @@
         
         <!--- Fluent -->
 
-      <Color x:Key="SystemAccentColor">#88ff88</Color> <!-- DataGridRow Selected -->
-      <Color x:Key="SystemListLowColor">#88ff88</Color> <!-- DataGridRow Hover -->
+
+        <Color x:Key="SystemBaseLowColor">#33000000</Color>
+
+        <SolidColorBrush x:Key="DataGridColumnHeaderHoveredBackgroundBrush">#2040a0</SolidColorBrush>
+
+        <Color x:Key="DataGridAccentColor">#88ff88</Color>
+        <SolidColorBrush x:Key="DataGridAccentBrush" Color="{DynamicResource DataGridAccentColor}" />
+        <!-- DataGridRow Selected -->
+
+        <!--SolidColorBrush x:Key="DataGridRowSelectedBackgroundBrush2" Color="{DynamicResource DataGridAccentColor}" />
+        <SolidColorBrush x:Key="DataGridRowSelectedHoveredBackgroundBrush2" Color="{DynamicResource DataGridAccentColor}" />
+        <SolidColorBrush x:Key="DataGridRowSelectedUnfocusedBackgroundBrush2" Color="{DynamicResource DataGridAccentColor}" />
+        <SolidColorBrush x:Key="DataGridRowSelectedHoveredUnfocusedBackgroundBrush2" Color="{DynamicResource DataGridAccentColor}" />
+
+        <SolidColorBrush x:Key="DataGridColumnHeaderHoveredBackgroundBrush2" Color="{DynamicResource DataGridAccentColor}" />
+        <SolidColorBrush x:Key="DataGridRowGroupHeaderHoveredBackgroundBrush2" Color="{DynamicResource DataGridAccentColor}" />
+        <SolidColorBrush x:Key="DataGridRowHoveredBackgroundColor2" Color="{DynamicResource DataGridAccentColor}" /-->
+
+        <!--Color x:Key="SystemAccentColor">#88ff88</Color--> <!-- DataGridRow Selected -->
+      <!--Color x:Key="SystemListLowColor">#88ff88</Color--> <!-- DataGridRow Hover -->
+
       <Color x:Key="SystemAccentColorDark1">#005A9E</Color>
       <Color x:Key="SystemAccentColorDark2">#004275</Color>
       <Color x:Key="SystemAccentColorDark3">#002642</Color>
