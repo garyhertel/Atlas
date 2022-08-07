@@ -11,5 +11,8 @@
     <EmbeddedResource Update="Themes\Controls\TabButton.xaml">
       <SubType>Designer</SubType>
     </EmbeddedResource>
+    <EmbeddedResource Update="Themes\Fluent\Controls\DataGrid.xaml">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
   </ItemGroup>
 </Project>

@@ -43,6 +43,7 @@
     <None Remove="Themes\Controls\TabButton.xaml" />
     <None Remove="Themes\Controls\ToolbarButton.xaml" />
     <None Remove="Themes\Fluent\Accents\FluentBaseLight.xaml" />
+    <None Remove="Themes\Fluent\DataGrid.xaml" />
     <None Remove="Themes\Fluent\FluentTheme.xaml" />
     <None Remove="Themes\Fluent\Controls\ScrollBar.xaml" />
     <None Remove="View\TabAvalonEdit.xaml" />
@@ -87,6 +88,9 @@
       <Generator>MSBuild:Compile</Generator>
     </EmbeddedResource>
     <EmbeddedResource Update="Themes\Fluent\Controls\ScrollBar.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Themes\Fluent\Controls\DataGrid.xaml">
       <Generator>MSBuild:Compile</Generator>
     </EmbeddedResource>
     <EmbeddedResource Update="Themes\Fluent\FluentTheme.xaml">
