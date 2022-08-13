@@ -37,14 +37,37 @@
         
         <!--Color x:Key="SystemAltMediumColor">#FFFFFFFF</Color-->
 
+        <SolidColorBrush x:Key="SystemControlBackgroundBaseLowBrush" Color="#2a2954" />
+
         <SolidColorBrush x:Key="TextControlBackgroundPointerOver" Color="#FFFFFFFF" />
-        <SolidColorBrush x:Key="TextControlBorderBrushPointerOver" Color="#BBffff" />
+        <SolidColorBrush x:Key="TextControlBorderBrushPointerOver" Color="#00ffff" />
 
-        <SolidColorBrush x:Key="SelectionForegroundBrush" Color="#FFFFFFFF" />
+        <!-- TextControl -->
 
+        <Thickness x:Key="TextControlBorderThemeThickness">2</Thickness>
+        <Thickness x:Key="TextControlBorderThemeThicknessFocused">2</Thickness>
+
+        <!-- ScrollBar -->
+
+        <SolidColorBrush x:Key="ScrollBarButtonArrowForeground" Color="#eeeeee" />
+        <SolidColorBrush x:Key="ScrollBarButtonArrowForegroundPointerOver" Color="#eeeeee" />
+
+        <SolidColorBrush x:Key="ScrollBarButtonBackground" Color="#38409a"/>
+        <SolidColorBrush x:Key="ScrollBarButtonBackgroundPointerOver" Color="#477ed7"/>
+        <SolidColorBrush x:Key="ScrollBarButtonBackgroundPressed" Color="#477ed7"/>
+
+        <SolidColorBrush x:Key="ScrollBarPanningThumbBackground" Color="#ff0000" />
+        <SolidColorBrush x:Key="ScrollBarTrackFillPointerOver" Color="#38409a" />
+        <!--SolidColorBrush x:Key="ScrollBarTrackFillPointerOver">#FF00FF00</SolidColorBrush-->
+
+        <!-- ComboBox -->
+
+        <Thickness x:Key="ComboBoxBorderThemeThickness">2</Thickness>
 
         <SolidColorBrush x:Key="ComboBoxBackgroundPointerOver" Color="#FFFFFFFF" />
-        <SolidColorBrush x:Key="ComboBoxBorderBrushPointerOver" Color="#88ff88" />
+        <SolidColorBrush x:Key="ComboBoxBorderBrushPointerOver" Color="#009dff" />
+
+        <SolidColorBrush x:Key="SelectionForegroundBrush" Color="#FFFFFFFF" />
 
         <!-- Grid Column Header -->
         <SolidColorBrush x:Key="GridColumnHeaderBackgroundBrush" Color="#27204a" />
@@ -66,7 +89,7 @@
         <!-- Border -->
         <SolidColorBrush x:Key="ThemeBorderLowBrush" Color="#000000" />
         <SolidColorBrush x:Key="ThemeBorderMidBrush" Color="#000000" /> <!-- Custom-->
-        <SolidColorBrush x:Key="ThemeBorderHighBrush" Color="#000000" /> <!-- RadioButton circle border -->
+        <SolidColorBrush x:Key="ThemeBorderHighBrush" Color="#009dff" /> <!-- RadioButton circle border -->
         <SolidColorBrush x:Key="ThemeBorderHighRadioBrush" Color="#006df0" />
         
         <!-- Default -->
@@ -131,6 +154,8 @@
         <!-- ToolTip -->
         <SolidColorBrush x:Key="ToolTipBackgroundBrush" Color="#58588f" />
         <SolidColorBrush x:Key="ToolTipForegroundBrush" Color="#d0d0e8" />
+        
+        <x:Double x:Key="ToolTipContentThemeFontSize">14</x:Double>
 
         <!-- Title -->
         <SolidColorBrush x:Key="TitleBackgroundBrush" Color="#4f52bb" />
@@ -151,9 +176,10 @@
         <sys:Double x:Key="ScrollBarThumbThickness">12</sys:Double>
 
         <sys:Double x:Key="LargeChange">20</sys:Double>
-      
-      
+
         <sys:Double x:Key="SplitterSize">5</sys:Double>
+        
+        <CornerRadius x:Key="ControlCornerRadius">3</CornerRadius>        
 
     </Style.Resources>
 </Style>

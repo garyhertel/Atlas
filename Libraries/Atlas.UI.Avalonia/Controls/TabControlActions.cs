@@ -2,6 +2,7 @@ using Atlas.Core;
 using Atlas.Tabs;
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Layout;
 using System.Collections.Generic;
 
 namespace Atlas.UI.Avalonia.Controls;
@@ -40,9 +41,11 @@ public class TabControlActions : UserControl
 			};
 			containerGrid.RowDefinitions.Add(rowDefinition);
 
-			var button = new TabControlButton(taskCreator.Label)
+			var button = new TabControlTextButton(taskCreator.Label)
 			{
 				Margin = new Thickness(4, 2),
+				HorizontalAlignment = HorizontalAlignment.Stretch,
+				HorizontalContentAlignment = HorizontalAlignment.Center,
 			};
 			button.Click += Button_Click;
 			_taskCreators[button] = taskCreator;
