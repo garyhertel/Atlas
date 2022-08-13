@@ -8,7 +8,9 @@
 
         <Color x:Key="SystemBaseLowColor">#33000000</Color>
 
-        <SolidColorBrush x:Key="DataGridColumnHeaderHoveredBackgroundBrush" Color="#2040a0" />
+        <!-- Doesn't work -->
+        <!--SolidColorBrush x:Key="DataGridColumnHeaderHoveredBackgroundBrush" Color="#2040a0" />
+        <SolidColorBrush x:Key="DataGridColumnHeaderPressedBackgroundBrush" Color="#2040a0" /-->
 
         <Color x:Key="DataGridAccentColor">#88ff88</Color>
         <SolidColorBrush x:Key="DataGridAccentBrush" Color="{DynamicResource DataGridAccentColor}" />
@@ -40,7 +42,7 @@
         <SolidColorBrush x:Key="SystemControlBackgroundBaseLowBrush" Color="#2a2954" />
 
         <SolidColorBrush x:Key="TextControlBackgroundPointerOver" Color="#FFFFFFFF" />
-        <SolidColorBrush x:Key="TextControlBorderBrushPointerOver" Color="#00ffff" />
+        <SolidColorBrush x:Key="TextControlBorderBrushPointerOver" Color="#009dff" />
 
         <!-- TextControl -->
 
@@ -62,10 +64,11 @@
 
         <!-- ComboBox -->
 
-        <Thickness x:Key="ComboBoxBorderThemeThickness">2</Thickness>
-
-        <SolidColorBrush x:Key="ComboBoxBackgroundPointerOver" Color="#FFFFFFFF" />
+        <SolidColorBrush x:Key="ComboBoxBackground" Color="#ffffff" />
+        <SolidColorBrush x:Key="ComboBoxBackgroundPointerOver" Color="#ffffff" />
         <SolidColorBrush x:Key="ComboBoxBorderBrushPointerOver" Color="#009dff" />
+
+        <Thickness x:Key="ComboBoxBorderThemeThickness">2</Thickness>
 
         <SolidColorBrush x:Key="SelectionForegroundBrush" Color="#FFFFFFFF" />
 
@@ -152,8 +155,11 @@
         <SolidColorBrush x:Key="ControlBackgroundHoverBrush" Color="#ddffdd" />
 
         <!-- ToolTip -->
-        <SolidColorBrush x:Key="ToolTipBackgroundBrush" Color="#58588f" />
-        <SolidColorBrush x:Key="ToolTipForegroundBrush" Color="#d0d0e8" />
+        <SolidColorBrush x:Key="ToolTipBackground" Color="#58588f" />
+        <SolidColorBrush x:Key="ToolTipForeground" Color="#d0d0e8" />
+        <SolidColorBrush x:Key="ToolTipBorderBrush" Color="#FF000000" />
+        
+        <Thickness x:Key="ToolTipBorderThemeThickness">1</Thickness>
         
         <x:Double x:Key="ToolTipContentThemeFontSize">14</x:Double>
 
@@ -179,7 +185,14 @@
 
         <sys:Double x:Key="SplitterSize">5</sys:Double>
         
-        <CornerRadius x:Key="ControlCornerRadius">3</CornerRadius>        
+        <CornerRadius x:Key="ControlCornerRadius">3</CornerRadius>
+
+        <!-- ContextMenu -->
+
+        <SolidColorBrush x:Key="MenuFlyoutPresenterBackground" Color="#58588f" />
+        <SolidColorBrush x:Key="MenuFlyoutItemForeground" Color="#d0d0e8" />
+        <SolidColorBrush x:Key="MenuFlyoutItemForegroundPressed" Color="#d0d0e8" />
+        <SolidColorBrush x:Key="MenuFlyoutItemForegroundPointerOver" Color="#d0d0e8" />
 
     </Style.Resources>
 </Style>

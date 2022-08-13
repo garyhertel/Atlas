@@ -36,10 +36,6 @@
     <Style Selector="DataGridColumnHeader:pointerover /template/ Grid#PART_ColumnHeaderRoot">
         <Setter Property="Background" Value="{DynamicResource ThemeButtonBackgroundHoverBrush}" />
     </Style>
-
-    <Style Selector="DataGridColumnHeader:pointerover /template/ Grid#PART_ColumnHeaderRoot">
-        <Setter Property="Background" Value="{DynamicResource ThemeButtonBackgroundHoverBrush}" />
-    </Style>
     <Style Selector="DataGridColumnHeader:pressed /template/ Grid#PART_ColumnHeaderRoot">
         <Setter Property="Background" Value="{DynamicResource ThemeButtonBackgroundHoverBrush}" />
     </Style>
