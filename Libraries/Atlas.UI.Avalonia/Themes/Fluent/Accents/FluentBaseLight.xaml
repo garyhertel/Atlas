@@ -94,7 +94,9 @@
         <SolidColorBrush x:Key="ThemeBorderMidBrush" Color="#000000" /> <!-- Custom-->
         <SolidColorBrush x:Key="ThemeBorderHighBrush" Color="#009dff" /> <!-- RadioButton circle border -->
         <SolidColorBrush x:Key="ThemeBorderHighRadioBrush" Color="#006df0" />
-        
+
+        <Color x:Key="ThemeBorderHighColor">#d3d3d3</Color> <!-- DataGrid Lines -->
+
         <!-- Default -->
 
         <!-- Custom Colors -->

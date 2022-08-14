@@ -4,6 +4,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Layout;
+using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Avalonia.Styling;
 using System;
@@ -49,6 +50,7 @@ public class TabControlSearch : Grid, IStyleable
 	{
 		TextBoxSearch = new TextBox()
 		{
+			VerticalContentAlignment = VerticalAlignment.Center,
 			Padding = new Thickness(5, 3, 25, 3),
 			Watermark = "Search",
 			Background = Theme.ToolbarTextBackground,
@@ -59,6 +61,11 @@ public class TabControlSearch : Grid, IStyleable
 		TextBoxSearch.Resources.Add("ThemeBackgroundHoverBrush", TextBoxSearch.Background); // Disable for now
 		TextBoxSearch.Resources.Add("ThemeBorderMidBrush", Theme.ToolbarBorderMid);
 		TextBoxSearch.Resources.Add("ThemeBorderHighBrush", Theme.ToolbarBorderHigh);
+
+		// Fluent
+		TextBoxSearch.Resources.Add("TextControlBackgroundPointerOver", TextBoxSearch.Background);
+		TextBoxSearch.Resources.Add("TextControlBackgroundFocused", TextBoxSearch.Background);
+		TextBoxSearch.Resources.Add("TextControlPlaceholderForegroundFocused", TextBoxSearch.Foreground);
 
 		Children.Add(TextBoxSearch);
 	}
