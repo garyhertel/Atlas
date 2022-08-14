@@ -54,12 +54,13 @@
         <SolidColorBrush x:Key="ScrollBarButtonArrowForeground" Color="#eeeeee" />
         <SolidColorBrush x:Key="ScrollBarButtonArrowForegroundPointerOver" Color="#eeeeee" />
 
-        <SolidColorBrush x:Key="ScrollBarButtonBackground" Color="#38409a"/>
+        <SolidColorBrush x:Key="ScrollBarButtonBackground" Color="#27204a"/>
         <SolidColorBrush x:Key="ScrollBarButtonBackgroundPointerOver" Color="#477ed7"/>
         <SolidColorBrush x:Key="ScrollBarButtonBackgroundPressed" Color="#477ed7"/>
 
         <SolidColorBrush x:Key="ScrollBarPanningThumbBackground" Color="#ff0000" />
-        <SolidColorBrush x:Key="ScrollBarTrackFillPointerOver" Color="#38409a" />
+        <SolidColorBrush x:Key="ScrollBarTrackFill" Color="#27204a" />
+        <SolidColorBrush x:Key="ScrollBarTrackFillPointerOver" Color="#27204a" />
         <!--SolidColorBrush x:Key="ScrollBarTrackFillPointerOver" Color="#FF00FF00" /-->
 
         <!-- ComboBox -->
@@ -69,6 +70,17 @@
         <SolidColorBrush x:Key="ComboBoxBorderBrushPointerOver" Color="#009dff" />
 
         <Thickness x:Key="ComboBoxBorderThemeThickness">2</Thickness>
+
+        <SolidColorBrush x:Key="CheckBoxCheckBackgroundFillUncheckedPointerOver" Color="#ffffff" />
+        <SolidColorBrush x:Key="CheckBoxCheckBackgroundStrokeUncheckedPointerOver" Color="#009dff" />
+
+        <SolidColorBrush x:Key="CheckBoxCheckBackgroundStrokeCheckedDisabled" Color="#000000" />
+        <SolidColorBrush x:Key="CheckBoxCheckGlyphForegroundCheckedDisabled" Color="#000000" />
+        <SolidColorBrush x:Key="CheckBoxCheckBackgroundStrokeUncheckedDisabled" Color="#000000" />
+        
+
+        <SolidColorBrush x:Key="CheckBoxCheckBackgroundFillUncheckedPressed" Color="#ffffff" />
+        <SolidColorBrush x:Key="CheckBoxCheckBackgroundFillCheckedDisabled" Color="Transparent" />
 
         <SolidColorBrush x:Key="SelectionForegroundBrush" Color="#FFFFFFFF" />
 
@@ -115,7 +127,7 @@
 
         <!-- ScrollBar -->
         <SolidColorBrush x:Key="ThemeScrollBarBackgroundBrush" Color="#38409a" />
-        <SolidColorBrush x:Key="ThemeScrollBarThumbBrush" Color="#45599b" />
+        <SolidColorBrush x:Key="ThemeScrollBarThumbBrush" Color="#38409a" />
         <SolidColorBrush x:Key="ThemeScrollBarThumbHoverBrush" Color="#477ed7" />
 
         <!-- Grid -->
