@@ -107,6 +107,7 @@ public class TabViewer : Grid
 			VerticalAlignment = VerticalAlignment.Stretch,
 			HorizontalScrollBarVisibility = ScrollBarVisibility.Auto,
 			VerticalScrollBarVisibility = ScrollBarVisibility.Disabled,
+			Padding = new Thickness(0, 0, 0, 15),
 			MaxWidth = 5000,
 			MaxHeight = 4000,
 			Content = ContentGrid,

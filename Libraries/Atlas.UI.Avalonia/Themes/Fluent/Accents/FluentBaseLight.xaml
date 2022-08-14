@@ -60,7 +60,7 @@
 
         <SolidColorBrush x:Key="ScrollBarPanningThumbBackground" Color="#ff0000" />
         <SolidColorBrush x:Key="ScrollBarTrackFillPointerOver" Color="#38409a" />
-        <!--SolidColorBrush x:Key="ScrollBarTrackFillPointerOver">#FF00FF00</SolidColorBrush-->
+        <!--SolidColorBrush x:Key="ScrollBarTrackFillPointerOver" Color="#FF00FF00" /-->
 
         <!-- ComboBox -->
 
@@ -192,7 +192,9 @@
         <SolidColorBrush x:Key="MenuFlyoutPresenterBackground" Color="#58588f" />
         <SolidColorBrush x:Key="MenuFlyoutItemForeground" Color="#d0d0e8" />
         <SolidColorBrush x:Key="MenuFlyoutItemForegroundPressed" Color="#d0d0e8" />
-        <SolidColorBrush x:Key="MenuFlyoutItemForegroundPointerOver" Color="#d0d0e8" />
+        <SolidColorBrush x:Key="MenuFlyoutItemForegroundPointerOver" Color="#e0e0f8" />
+
+        <SolidColorBrush x:Key="MenuFlyoutItemBackgroundPointerOver" Color="#7878bf" />
 
     </Style.Resources>
 </Style>
