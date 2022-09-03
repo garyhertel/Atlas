@@ -6,7 +6,6 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Threading;
-using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 

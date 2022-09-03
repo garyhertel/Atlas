@@ -1,5 +1,3 @@
-using System;
-
 namespace Atlas.Core;
 
 public class TaskDelegateParams : TaskCreator
@@ -35,7 +33,7 @@ public class TaskDelegateParams : TaskCreator
 		}
 		catch (Exception e)
 		{
-			call.Log!.Add(e);
+			call.Log.Add(e);
 		}
 	}
 }

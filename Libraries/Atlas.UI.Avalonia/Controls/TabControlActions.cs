@@ -3,7 +3,6 @@ using Atlas.Tabs;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Layout;
-using System.Collections.Generic;
 
 namespace Atlas.UI.Avalonia.Controls;
 

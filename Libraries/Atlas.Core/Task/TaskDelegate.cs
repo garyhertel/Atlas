@@ -1,6 +1,3 @@
-using System;
-using System.Threading.Tasks;
-
 namespace Atlas.Core;
 
 public class TaskDelegate : TaskCreator
@@ -44,7 +41,7 @@ public class TaskDelegate : TaskCreator
 		}
 		catch (Exception e)
 		{
-			call.Log!.Add(e);
+			call.Log.Add(e);
 		}
 	}
 

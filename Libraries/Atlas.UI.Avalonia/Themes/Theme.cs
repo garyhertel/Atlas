@@ -1,6 +1,5 @@
 using Avalonia;
 using Avalonia.Media;
-using System;
 
 namespace Atlas.UI.Avalonia.Themes;
 
@@ -24,6 +23,9 @@ public static class Theme
 	public static SolidColorBrush HasLinksBackground => Get("ThemeHasLinksBrush");
 	public static SolidColorBrush NoLinksBackground => Get("ThemeNoLinksBrush");
 	public static SolidColorBrush StyleLineBackground => Get("ThemeStyleLineBrush");
+
+	// ScrollBar
+	public static SolidColorBrush ScrollBarThumb => Get("ThemeScrollBarThumbBrush");
 
 	// Button
 	public static SolidColorBrush ButtonBackground => Get("ThemeButtonBackgroundBrush");

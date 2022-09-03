@@ -1,7 +1,4 @@
-using System;
 using System.ComponentModel;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Atlas.Core;
 
@@ -44,7 +41,7 @@ public abstract class TaskCreator : INotifyPropertyChanged
 	{
 		TimesRun++;
 		Context = SynchronizationContext.Current ?? new SynchronizationContext();
-		call.Log!.Settings!.Context = Context;
+		call.Log.Settings!.Context = Context;
 
 		var taskInstance = new TaskInstance
 		{

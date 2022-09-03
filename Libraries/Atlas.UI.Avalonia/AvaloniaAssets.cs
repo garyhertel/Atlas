@@ -1,7 +1,6 @@
 using Atlas.Resources;
 using Avalonia.Controls;
 using Avalonia.Media.Imaging;
-using System.IO;
 using System.Reflection;
 
 namespace Atlas.UI.Avalonia;
@@ -10,20 +9,18 @@ public class AvaloniaAssets
 {
 	public static Bitmap GetBitmap(string name)
 	{
-		var assembly = Assembly.GetExecutingAssembly();
-		var resourceName = name;
+		Assembly assembly = Assembly.GetExecutingAssembly();
 
-		using Stream stream = assembly.GetManifestResourceStream(resourceName)!;
+		using Stream stream = assembly.GetManifestResourceStream(name)!;
 		return new Bitmap(stream);
 	}
 
 	public static Image GetImage(Bitmap bitmap)
 	{
-		var image = new Image()
+		return new Image()
 		{
 			Source = bitmap,
 		};
-		return image;
 	}
 
 	public class Bitmaps

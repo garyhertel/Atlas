@@ -9,13 +9,9 @@ using Avalonia.Input;
 using Avalonia.Layout;
 using Avalonia.Media;
 using Avalonia.Threading;
-using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Reflection;
-using System.Threading.Tasks;
 
 namespace Atlas.UI.Avalonia.View;
 
@@ -719,15 +715,15 @@ public class TabView : Grid, IDisposable
 			orderedChildControls.Add(_fillerPanel);
 			newChildControls[FillerPanelId] = _fillerPanel;
 		}
-		_tabChildControls!.SetControls(newChildControls, orderedChildControls);
-		UpdateSelectedTabInstances();
-
-		if (Instance.TabBookmark != null)
+		else if (Instance.TabBookmark != null)
 		{
 			Instance.SaveTabSettings();
 			Instance.TabBookmarkLoaded = Instance.TabBookmark;
 			Instance.TabBookmark = null; // clear so user can navigate and save prefs
 		}
+		_tabChildControls!.SetControls(newChildControls, orderedChildControls);
+		UpdateSelectedTabInstances();
+
 	}
 
 	private List<Control> CreateAllChildControls(bool recreate, out Dictionary<object, Control> newChildControls)

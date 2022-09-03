@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Runtime.InteropServices;
 
 namespace Atlas.Core;
@@ -83,7 +79,7 @@ public static class FileUtils
 			foreach (FileInfo fileInfo in fileInfos)
 			{
 				string destFilePath = Path.Combine(destDirPath, fileInfo.Name);
-				call.Log!.Add("Copying", new Tag("File", fileInfo.Name));
+				call.Log.Add("Copying", new Tag("File", fileInfo.Name));
 				fileInfo.CopyTo(destFilePath, true);
 			}
 

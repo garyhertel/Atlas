@@ -8,8 +8,6 @@ using Avalonia.Controls;
 using Avalonia.Layout;
 using Avalonia.Media;
 using Avalonia.Styling;
-using System;
-using System.IO;
 using System.Reflection;
 using System.Windows.Input;
 

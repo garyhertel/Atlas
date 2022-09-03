@@ -14,9 +14,7 @@ using OxyPlot;
 using OxyPlot.Annotations;
 using OxyPlot.Avalonia;
 using OxyPlot.Axes;
-using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Reflection;
 using WeakEvent;
 

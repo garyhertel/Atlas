@@ -1,10 +1,5 @@
 using Atlas.Extensions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Atlas.Core;
 
@@ -55,7 +50,7 @@ public class Call
 	public Call DebugLogAll()
 	{
 		var child = Child("LogDebug");
-		child.Log!.Settings = child.Log!.Settings!.Clone();
+		child.Log.Settings = child.Log.Settings!.Clone();
 		child.Log.Settings.MinLogLevel = LogLevel.Debug;
 		child.Log.Settings.DebugPrintLogLevel = LogLevel.Debug;
 		return child;
@@ -114,12 +109,12 @@ public class Call
 		{
 			T2 result = await func(callTimer, item);
 			if (result == null)
-				callTimer.Log!.Add("No result");
+				callTimer.Log.Add("No result");
 			return result;
 		}
 		catch (Exception e)
 		{
-			callTimer.Log!.Add(e);
+			callTimer.Log.Add(e);
 			return default;
 		}
 	}
@@ -132,12 +127,12 @@ public class Call
 		{
 			T3 result = await func(callTimer, item, param1);
 			if (result == null)
-				callTimer.Log!.Add("No result");
+				callTimer.Log.Add("No result");
 			return result;
 		}
 		catch (Exception e)
 		{
-			callTimer.Log!.Add(e);
+			callTimer.Log.Add(e);
 			return default;
 		}
 	}
@@ -150,12 +145,12 @@ public class Call
 		{
 			T4 result = await func(callTimer, item, param1, param2);
 			if (result == null)
-				callTimer.Log!.Add("No result");
+				callTimer.Log.Add("No result");
 			return result;
 		}
 		catch (Exception e)
 		{
-			callTimer.Log!.Add(e);
+			callTimer.Log.Add(e);
 			return default;
 		}
 	}
@@ -189,7 +184,7 @@ public class Call
 			await throttler.WaitAsync();
 			if (TaskInstance?.CancelToken.IsCancellationRequested == true)
 			{
-				Log!.Add("Cancelled");
+				Log.Add("Cancelled");
 				break;
 			}
 			tasks.Add(Task.Run(async () =>
@@ -207,7 +202,7 @@ public class Call
 				}
 				catch (Exception e)
 				{
-					Log!.Add(e);
+					Log.Add(e);
 				}
 				finally
 				{
@@ -233,7 +228,7 @@ public class Call
 			await throttler.WaitAsync();
 			if (TaskInstance?.CancelToken.IsCancellationRequested == true)
 			{
-				Log!.Add("Cancelled");
+				Log.Add("Cancelled");
 				break;
 			}
 			tasks.Add(Task.Run(async () =>
@@ -251,7 +246,7 @@ public class Call
 				}
 				catch (Exception e)
 				{
-					Log!.Add(e);
+					Log.Add(e);
 				}
 				finally
 				{
@@ -277,7 +272,7 @@ public class Call
 			await throttler.WaitAsync();
 			if (TaskInstance?.CancelToken.IsCancellationRequested == true)
 			{
-				Log!.Add("Cancelled");
+				Log.Add("Cancelled");
 				break;
 			}
 			tasks.Add(Task.Run(async () =>
@@ -295,7 +290,7 @@ public class Call
 				}
 				catch (Exception e)
 				{
-					Log!.Add(e);
+					Log.Add(e);
 				}
 				finally
 				{

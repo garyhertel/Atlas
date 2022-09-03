@@ -1,6 +1,4 @@
 using Atlas.Extensions;
-using System;
-using System.Threading.Tasks;
 
 namespace Atlas.Core;
 
@@ -44,7 +42,7 @@ public class TaskDelegateAsync : TaskCreator
 		}
 		catch (Exception e)
 		{
-			call.Log!.Add(e);
+			call.Log.Add(e);
 		}
 	}
 
@@ -56,7 +54,7 @@ public class TaskDelegateAsync : TaskCreator
 		}
 		catch (Exception e)
 		{
-			call.Log!.Add(e);
+			call.Log.Add(e);
 		}
 	}
 }

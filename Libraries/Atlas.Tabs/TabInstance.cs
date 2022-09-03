@@ -1,14 +1,9 @@
 using Atlas.Core;
 using Atlas.Extensions;
 using Atlas.Serialize;
-using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
 using System.Reflection;
-using System.Threading;
-using System.Threading.Tasks;
 using static Atlas.Core.TaskDelegate;
 using static Atlas.Core.TaskDelegateAsync;
 using static Atlas.Core.TaskDelegateParams;
@@ -643,7 +638,8 @@ public class TabInstance : IDisposable
 				tabBookmark.IsRoot = true;
 				tabBookmark.Tab = iTab;
 			}
-			else if (type.GetCustomAttribute<PublicDataAttribute>() != null && (tabBookmark.IsRoot || IsRoot))
+			else if (type.GetCustomAttribute<PublicDataAttribute>() != null && 
+				(tabBookmark.IsRoot || IsRoot))
 			{
 				tabBookmark.Tab = iTab;
 				tabBookmark.Bookmark!.Name = iTab.ToString();

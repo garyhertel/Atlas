@@ -3,7 +3,6 @@ using Atlas.Tabs;
 using Atlas.UI.Avalonia.Themes;
 using Avalonia.Data.Converters;
 using Avalonia.Media;
-using System;
 using System.Collections;
 using System.Reflection;
 
