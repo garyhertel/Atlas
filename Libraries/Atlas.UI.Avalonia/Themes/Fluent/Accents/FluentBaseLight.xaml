@@ -15,16 +15,7 @@
         <Color x:Key="DataGridAccentColor">#88ff88</Color>
         <SolidColorBrush x:Key="DataGridAccentBrush" Color="{DynamicResource DataGridAccentColor}" />
         <!-- DataGridRow Selected -->
-
-        <!--SolidColorBrush x:Key="DataGridRowSelectedBackgroundBrush2" Color="{DynamicResource DataGridAccentColor}" />
-        <SolidColorBrush x:Key="DataGridRowSelectedHoveredBackgroundBrush2" Color="{DynamicResource DataGridAccentColor}" />
-        <SolidColorBrush x:Key="DataGridRowSelectedUnfocusedBackgroundBrush2" Color="{DynamicResource DataGridAccentColor}" />
-        <SolidColorBrush x:Key="DataGridRowSelectedHoveredUnfocusedBackgroundBrush2" Color="{DynamicResource DataGridAccentColor}" />
-
-        <SolidColorBrush x:Key="DataGridColumnHeaderHoveredBackgroundBrush2" Color="{DynamicResource DataGridAccentColor}" />
-        <SolidColorBrush x:Key="DataGridRowGroupHeaderHoveredBackgroundBrush2" Color="{DynamicResource DataGridAccentColor}" />
-        <SolidColorBrush x:Key="DataGridRowHoveredBackgroundColor2" Color="{DynamicResource DataGridAccentColor}" /-->
-
+        
         <!--Color x:Key="SystemAccentColor">#88ff88</Color--> <!-- DataGridRow Selected -->
         <!--Color x:Key="SystemListLowColor">#88ff88</Color--> <!-- DataGridRow Hover -->
 
@@ -34,20 +25,21 @@
         <Color x:Key="SystemAccentColorLight1">#429CE3</Color>
         <Color x:Key="SystemAccentColorLight2">#76B9ED</Color>
         <Color x:Key="SystemAccentColorLight3">#A6D8FF</Color>
-        
+
         <!--Color x:Key="SystemBaseHighColor">#FFFFFFFF</Color-->
         
         <!--Color x:Key="SystemAltMediumColor">#FFFFFFFF</Color-->
 
         <SolidColorBrush x:Key="SystemControlBackgroundBaseLowBrush" Color="#2a2954" />
 
-        <SolidColorBrush x:Key="TextControlBackgroundPointerOver" Color="#FFFFFFFF" />
-        <SolidColorBrush x:Key="TextControlBorderBrushPointerOver" Color="#009dff" />
-
         <!-- TextControl -->
 
         <Thickness x:Key="TextControlBorderThemeThickness">2</Thickness>
         <Thickness x:Key="TextControlBorderThemeThicknessFocused">2</Thickness>
+
+        <SolidColorBrush x:Key="TextControlBackgroundPointerOver" Color="#FFFFFFFF" />
+        <SolidColorBrush x:Key="TextControlBorderBrushPointerOver" Color="#009dff" />
+        <SolidColorBrush x:Key="TextControlSelectionHighlightColor" Color="#006df0" />
 
         <!-- ScrollBar -->
 
@@ -68,6 +60,11 @@
         <SolidColorBrush x:Key="ComboBoxBackground" Color="#ffffff" />
         <SolidColorBrush x:Key="ComboBoxBackgroundPointerOver" Color="#ffffff" />
         <SolidColorBrush x:Key="ComboBoxBorderBrushPointerOver" Color="#009dff" />
+
+        <SolidColorBrush x:Key="ComboBoxItemBackgroundPointerOver" Color="#92F397" />
+        <SolidColorBrush x:Key="ComboBoxItemBackgroundSelected" Color="#AA92F397" />
+        <SolidColorBrush x:Key="ComboBoxItemBackgroundSelectedPointerOver" Color="#92F397" />
+        
 
         <Thickness x:Key="ComboBoxBorderThemeThickness">2</Thickness>
 
@@ -144,6 +141,8 @@
         <sys:Double x:Key="ChartBackgroundSelectedAlpha">64</sys:Double>
 
         <!-- Buttons -->
+        <SolidColorBrush x:Key="ThemeActionButtonBackgroundBrush" Color="#363f80" />
+        <SolidColorBrush x:Key="ThemeActionButtonForegroundBrush" Color="#d0d0e8" />
         <SolidColorBrush x:Key="ThemeButtonBackgroundBrush" Color="#27204a" />
         <SolidColorBrush x:Key="ThemeButtonForegroundBrush" Color="#60bdff" />
         <SolidColorBrush x:Key="ThemeButtonBackgroundHoverBrush" Color="#2040a0" />
@@ -169,7 +168,7 @@
         <SolidColorBrush x:Key="ControlBackgroundHoverBrush" Color="#ddffdd" />
 
         <!-- ToolTip -->
-        <SolidColorBrush x:Key="ToolTipBackground" Color="#58588f" />
+        <SolidColorBrush x:Key="ToolTipBackground" Color="#E8123d7f" />
         <SolidColorBrush x:Key="ToolTipForeground" Color="#d0d0e8" />
         <SolidColorBrush x:Key="ToolTipBorderBrush" Color="#FF000000" />
         

@@ -28,6 +28,8 @@ public static class Theme
 	public static SolidColorBrush ScrollBarThumb => Get("ThemeScrollBarThumbBrush");
 
 	// Button
+	public static SolidColorBrush ActionButtonBackground => Get("ThemeActionButtonBackgroundBrush");
+	public static SolidColorBrush ActionButtonForeground => Get("ThemeActionButtonForegroundBrush");
 	public static SolidColorBrush ButtonBackground => Get("ThemeButtonBackgroundBrush");
 	public static SolidColorBrush ButtonForeground => Get("ThemeButtonForegroundBrush");
 	public static SolidColorBrush ButtonBackgroundHover => Get("ThemeButtonBackgroundHoverBrush");

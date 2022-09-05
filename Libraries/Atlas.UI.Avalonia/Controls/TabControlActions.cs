@@ -11,8 +11,6 @@ public class TabControlActions : UserControl
 	public TabInstance TabInstance;
 	public TabModel TabModel;
 
-	// public bool GridInitialized { get; private set; }
-
 	private readonly Dictionary<Button, TaskCreator> _taskCreators = new();
 
 	public TabControlActions(TabInstance tabInstance, TabModel tabModel)
@@ -29,6 +27,7 @@ public class TabControlActions : UserControl
 		{
 			ColumnDefinitions = new ColumnDefinitions("Auto,*"),
 			RowDefinitions = new RowDefinitions("Auto"),
+			Margin = new Thickness(8),
 		};
 
 		int rowIndex = 0;
