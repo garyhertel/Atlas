@@ -53,6 +53,16 @@
     <None Remove="Icons\png\shutter.png" />
     <None Remove="Icons\png\stats.png" />
     <None Remove="Icons\png\unlock.png" />
+    <None Remove="Icons\svg\add.svg" />
+    <None Remove="Icons\svg\cancel.svg" />
+    <None Remove="Icons\svg\import.svg" />
+    <None Remove="Icons\svg\leftarrow.svg" />
+    <None Remove="Icons\svg\link.svg" />
+    <None Remove="Icons\svg\padnote.svg" />
+    <None Remove="Icons\svg\refresh.svg" />
+    <None Remove="Icons\svg\rightarrow.svg" />
+    <None Remove="Icons\svg\screenshot.svg" />
+    <None Remove="Icons\svg\search.svg" />
   </ItemGroup>
 
   <ItemGroup>
@@ -97,6 +107,16 @@
     <EmbeddedResource Include="Icons\png\shutter.png" />
     <EmbeddedResource Include="Icons\png\stats.png" />
     <EmbeddedResource Include="Icons\png\unlock.png" />
+    <EmbeddedResource Include="Icons\svg\add.svg" />
+    <EmbeddedResource Include="Icons\svg\cancel.svg" />
+    <EmbeddedResource Include="Icons\svg\import.svg" />
+    <EmbeddedResource Include="Icons\svg\leftarrow.svg" />
+    <EmbeddedResource Include="Icons\svg\link.svg" />
+    <EmbeddedResource Include="Icons\svg\padnote.svg" />
+    <EmbeddedResource Include="Icons\svg\refresh.svg" />
+    <EmbeddedResource Include="Icons\svg\rightarrow.svg" />
+    <EmbeddedResource Include="Icons\svg\screenshot.svg" />
+    <EmbeddedResource Include="Icons\svg\search.svg" />
   </ItemGroup>
 
   <ItemGroup>
