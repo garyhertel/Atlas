@@ -54,15 +54,26 @@
     <None Remove="Icons\png\stats.png" />
     <None Remove="Icons\png\unlock.png" />
     <None Remove="Icons\svg\add.svg" />
+    <None Remove="Icons\svg\BlankDocument.svg" />
     <None Remove="Icons\svg\cancel.svg" />
+    <None Remove="Icons\svg\delete_list.svg" />
+    <None Remove="Icons\svg\enter.svg" />
+    <None Remove="Icons\svg\eraser.svg" />
     <None Remove="Icons\svg\import.svg" />
+    <None Remove="Icons\svg\internet.svg" />
     <None Remove="Icons\svg\leftarrow.svg" />
     <None Remove="Icons\svg\link.svg" />
+    <None Remove="Icons\svg\list1.svg" />
+    <None Remove="Icons\svg\list2.svg" />
+    <None Remove="Icons\svg\OpenFolder.svg" />
     <None Remove="Icons\svg\padnote.svg" />
+    <None Remove="Icons\svg\placeholder.svg" />
     <None Remove="Icons\svg\refresh.svg" />
     <None Remove="Icons\svg\rightarrow.svg" />
+    <None Remove="Icons\svg\save.svg" />
     <None Remove="Icons\svg\screenshot.svg" />
     <None Remove="Icons\svg\search.svg" />
+    <None Remove="Icons\svg\stats.svg" />
   </ItemGroup>
 
   <ItemGroup>
@@ -108,15 +119,26 @@
     <EmbeddedResource Include="Icons\png\stats.png" />
     <EmbeddedResource Include="Icons\png\unlock.png" />
     <EmbeddedResource Include="Icons\svg\add.svg" />
+    <EmbeddedResource Include="Icons\svg\BlankDocument.svg" />
     <EmbeddedResource Include="Icons\svg\cancel.svg" />
+    <EmbeddedResource Include="Icons\svg\delete_list.svg" />
+    <EmbeddedResource Include="Icons\svg\enter.svg" />
+    <EmbeddedResource Include="Icons\svg\eraser.svg" />
     <EmbeddedResource Include="Icons\svg\import.svg" />
+    <EmbeddedResource Include="Icons\svg\internet.svg" />
     <EmbeddedResource Include="Icons\svg\leftarrow.svg" />
     <EmbeddedResource Include="Icons\svg\link.svg" />
+    <EmbeddedResource Include="Icons\svg\list1.svg" />
+    <EmbeddedResource Include="Icons\svg\list2.svg" />
+    <EmbeddedResource Include="Icons\svg\OpenFolder.svg" />
     <EmbeddedResource Include="Icons\svg\padnote.svg" />
+    <EmbeddedResource Include="Icons\svg\placeholder.svg" />
     <EmbeddedResource Include="Icons\svg\refresh.svg" />
     <EmbeddedResource Include="Icons\svg\rightarrow.svg" />
+    <EmbeddedResource Include="Icons\svg\save.svg" />
     <EmbeddedResource Include="Icons\svg\screenshot.svg" />
     <EmbeddedResource Include="Icons\svg\search.svg" />
+    <EmbeddedResource Include="Icons\svg\stats.svg" />
   </ItemGroup>
 
   <ItemGroup>
