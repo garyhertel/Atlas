@@ -64,6 +64,7 @@ public class TabControlSearch : Grid, IStyleable
 		TextBoxSearch.Resources.Add("TextControlBackgroundPointerOver", TextBoxSearch.Background);
 		TextBoxSearch.Resources.Add("TextControlBackgroundFocused", TextBoxSearch.Background);
 		TextBoxSearch.Resources.Add("TextControlPlaceholderForegroundFocused", TextBoxSearch.Foreground);
+		TextBoxSearch.Resources.Add("TextControlPlaceholderForegroundPointerOver", TextBoxSearch.Foreground);
 
 		Children.Add(TextBoxSearch);
 	}

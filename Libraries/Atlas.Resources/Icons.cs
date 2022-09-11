@@ -7,7 +7,6 @@ public static class Icons
 {
 	public const string Logo = "Logo3.ico";
 
-	//public const string Search = "search.png";
 	public const string Search16 = "search_right_light_16.png";
 	public const string ClearSearch = "clear_search.png";
 
@@ -15,19 +14,12 @@ public static class Icons
 	
 	public const string Info20 = "info_20_759eeb.png";
 
-	// public const string Info2 = "info_24_c8c2f9.png";
-
 	public const string Unlock = "unlock.png";
 	public const string Password = "password.png";
-	//public const string Enter = "enter.png";
 
-	//public const string PadNote = "padnote.png";
 	public const string Paste = "paste_16.png";
-	//public const string Eraser = "eraser.png";
 
-	//public const string Link = "link.png";
 	public const string Bookmark = "bookmark.png";
-	//public const string Import = "import.png";
 
 	public static class Svg
 	{
