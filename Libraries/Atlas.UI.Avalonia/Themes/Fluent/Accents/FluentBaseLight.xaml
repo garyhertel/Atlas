@@ -38,6 +38,7 @@
         <Thickness x:Key="TextControlBorderThemeThicknessFocused">2</Thickness>
 
         <SolidColorBrush x:Key="TextControlBackgroundPointerOver" Color="#FFFFFFFF" />
+        <!--SolidColorBrush x:Key="TextControlPlaceholderForegroundPointerOver" Color="#172144" /-->
         <SolidColorBrush x:Key="TextControlBorderBrushPointerOver" Color="#009dff" />
         <SolidColorBrush x:Key="TextControlSelectionHighlightColor" Color="#006df0" />
 
@@ -65,8 +66,9 @@
         <SolidColorBrush x:Key="ComboBoxItemBackgroundSelected" Color="#AA92F397" />
         <SolidColorBrush x:Key="ComboBoxItemBackgroundSelectedPointerOver" Color="#92F397" />
         
-
         <Thickness x:Key="ComboBoxBorderThemeThickness">2</Thickness>
+        
+        <!-- CheckBox -->
 
         <SolidColorBrush x:Key="CheckBoxCheckBackgroundFillUncheckedPointerOver" Color="#ffffff" />
         <SolidColorBrush x:Key="CheckBoxCheckBackgroundStrokeUncheckedPointerOver" Color="#009dff" />
@@ -75,9 +77,31 @@
         <SolidColorBrush x:Key="CheckBoxCheckGlyphForegroundCheckedDisabled" Color="#000000" />
         <SolidColorBrush x:Key="CheckBoxCheckBackgroundStrokeUncheckedDisabled" Color="#000000" />
         
-
         <SolidColorBrush x:Key="CheckBoxCheckBackgroundFillUncheckedPressed" Color="#ffffff" />
         <SolidColorBrush x:Key="CheckBoxCheckBackgroundFillCheckedDisabled" Color="Transparent" />
+
+
+        <!-- RadioButton -->
+
+        <SolidColorBrush x:Key="RadioButtonForegroundPointerOver" Color="#ffffff" />
+        <SolidColorBrush x:Key="RadioButtonForegroundPressed" Color="#ffffff" />
+        
+        <!--SolidColorBrush x:Key="RadioButtonOuterEllipseFill" Color="#453e77" /-->
+        <SolidColorBrush x:Key="RadioButtonOuterEllipseStroke" Color="#006df0" />
+        <SolidColorBrush x:Key="RadioButtonOuterEllipseStrokePointerOver" Color="#009dff" />
+        <SolidColorBrush x:Key="RadioButtonOuterEllipseStrokePressed" Color="#009dff" />
+
+        <SolidColorBrush x:Key="RadioButtonOuterEllipseCheckedFill" Color="Transparent" />
+        <SolidColorBrush x:Key="RadioButtonOuterEllipseCheckedFillPointerOver" Color="Transparent" />
+        <SolidColorBrush x:Key="RadioButtonOuterEllipseCheckedFillPressed" Color="Transparent" />
+
+        <SolidColorBrush x:Key="RadioButtonCheckGlyphFill" Color="#006df0" />
+        <SolidColorBrush x:Key="RadioButtonCheckGlyphFillPointerOver" Color="#009dff" />
+        <SolidColorBrush x:Key="RadioButtonCheckGlyphFillPressed" Color="#009dff" />
+
+        <x:Double x:Key="RadioButtonBorderThemeThickness">1.5</x:Double>
+
+        <!-- Other -->
 
         <SolidColorBrush x:Key="SelectionForegroundBrush" Color="#FFFFFFFF" />
 

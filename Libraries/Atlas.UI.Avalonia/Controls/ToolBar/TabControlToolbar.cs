@@ -162,10 +162,14 @@ public class TabControlToolbar : Grid, IDisposable
 			Margin = DefaultMargin,
 			BorderThickness = new Thickness(0),
 			BorderBrush = Brushes.Transparent,
-			Background = Brushes.Transparent,
+			Background = Theme.ToolbarButtonBackground,
 			Foreground = Theme.TitleForeground,
 			//CaretBrush = new SolidColorBrush(Theme.GridSelectedBackgroundColor), // todo: enable with next version?
 		};
+		// Fluent
+		textBox.Resources.Add("TextControlBackgroundPointerOver", textBox.Background);
+		textBox.Resources.Add("TextControlBackgroundFocused", textBox.Background);
+		textBox.Resources.Add("TextBackgroundDisabledBrush", textBox.Background);
 
 		AddControl(textBox);
 		return textBox;
@@ -182,7 +186,15 @@ public class TabControlToolbar : Grid, IDisposable
 			Margin = DefaultMargin,
 			TextWrapping = TextWrapping.NoWrap,
 			VerticalAlignment = VerticalAlignment.Center,
+			Background = Theme.ToolbarTextBackground,
+			Foreground = Theme.ToolbarTextForeground,
+			CaretBrush = Theme.ToolbarCaret,
 		};
+		// Fluent
+		textBox.Resources.Add("TextControlBackgroundPointerOver", textBox.Background);
+		textBox.Resources.Add("TextControlBackgroundFocused", textBox.Background);
+		textBox.Resources.Add("TextControlPlaceholderForegroundFocused", textBox.Foreground);
+		textBox.Resources.Add("TextControlPlaceholderForegroundPointerOver", textBox.Foreground);
 
 		AddControl(textBox);
 

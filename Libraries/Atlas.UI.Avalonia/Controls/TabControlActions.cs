@@ -23,6 +23,8 @@ public class TabControlActions : UserControl
 
 	private void InitializeControls()
 	{
+		if (TabModel.Actions!.Count == 0) return;
+
 		var containerGrid = new Grid()
 		{
 			ColumnDefinitions = new ColumnDefinitions("Auto,*"),
@@ -31,7 +33,7 @@ public class TabControlActions : UserControl
 		};
 
 		int rowIndex = 0;
-		foreach (TaskCreator taskCreator in TabModel.Actions!)
+		foreach (TaskCreator taskCreator in TabModel.Actions)
 		{
 			var rowDefinition = new RowDefinition()
 			{
