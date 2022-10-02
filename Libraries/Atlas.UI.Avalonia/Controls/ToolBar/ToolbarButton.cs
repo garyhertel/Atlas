@@ -146,6 +146,7 @@ public class ToolbarButton : Button, IStyleable, ILayoutable, IDisposable
 			}
 		}*/
 
+		// Todo: Add caching
 		var svgSource = new SvgSource();
 		//svgSource.Load(bitmapStream);
 		//svgSource.FromSvgDocument(model);
