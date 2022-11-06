@@ -4,6 +4,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Media;
+using System.Diagnostics;
 using System.Reflection;
 
 namespace Atlas.UI.Avalonia;
@@ -49,10 +50,17 @@ public class DataGridButtonColumn : DataGridBoundColumn
 		return button;
 	}
 
-	private void Button_Click(object? sender, global::Avalonia.Interactivity.RoutedEventArgs e)
+	private void Button_Click(object? sender, RoutedEventArgs e)
 	{
-		Button button = (Button)sender!;
-		MethodInfo.Invoke(button.DataContext, new object[] { });
+		try
+		{
+			Button button = (Button)sender!;
+			MethodInfo.Invoke(button.DataContext, new object[] { });
+		}
+		catch (Exception ex)
+		{
+			Debug.WriteLine(ex.Message);
+		}
 	}
 
 	protected override object PrepareCellForEdit(IControl editingElement, RoutedEventArgs editingEventArgs)
