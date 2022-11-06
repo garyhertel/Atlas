@@ -33,6 +33,7 @@
 | [Enter](https://www.flaticon.com/free-icon/enter_1828391) | Pixel Perfect |
 | [Open Folder](https://icon-icons.com/icon/folder-open/172452) | [Phosphor](https://github.com/phosphor-icons)
 | [Info2](https://icon-icons.com/icon/circle-customer-help-info-information-service-support/123208) | Perpixel |
+| [Star](https://icon-icons.com/icon/bookmark-favorite-rate-rating-star/113418) | Unknown by site |
 
 * Lucy G
   - (user account no longer exists)

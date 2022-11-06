@@ -59,6 +59,8 @@
     <None Remove="Icons\svg\delete_list.svg" />
     <None Remove="Icons\svg\enter.svg" />
     <None Remove="Icons\svg\eraser.svg" />
+    <None Remove="Icons\svg\Star.svg" />
+    <None Remove="Icons\svg\StarFilled.svg" />
     <None Remove="Icons\svg\import.svg" />
     <None Remove="Icons\svg\internet.svg" />
     <None Remove="Icons\svg\leftarrow.svg" />
@@ -124,6 +126,8 @@
     <EmbeddedResource Include="Icons\svg\delete_list.svg" />
     <EmbeddedResource Include="Icons\svg\enter.svg" />
     <EmbeddedResource Include="Icons\svg\eraser.svg" />
+    <EmbeddedResource Include="Icons\svg\Star.svg" />
+    <EmbeddedResource Include="Icons\svg\StarFilled.svg" />
     <EmbeddedResource Include="Icons\svg\import.svg" />
     <EmbeddedResource Include="Icons\svg\internet.svg" />
     <EmbeddedResource Include="Icons\svg\leftarrow.svg" />

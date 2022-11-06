@@ -2,6 +2,7 @@ using System.Windows.Input;
 using Atlas.Core;
 using Atlas.Tabs;
 using Atlas.UI.Avalonia.Themes;
+using Atlas.UI.Avalonia.Utilities;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
@@ -9,12 +10,7 @@ using Avalonia.Layout;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Avalonia.Styling;
-using Avalonia.Svg.Skia;
 using Avalonia.Threading;
-using ShimSkiaSharp;
-using Svg;
-using Svg.Model;
-using SvgImage = Avalonia.Svg.Skia.SvgImage;
 
 namespace Atlas.UI.Avalonia.Controls;
 
@@ -64,7 +60,7 @@ public class ToolbarButton : Button, IStyleable, ILayoutable, IDisposable
 
 	private void Initialize(Stream bitmapStream, ICommand? command = null)
 	{
-		var grid = new Grid()
+		Grid grid = new()
 		{
 			ColumnDefinitions = new ColumnDefinitions("Auto,Auto"),
 			RowDefinitions = new RowDefinitions("Auto"),
@@ -76,12 +72,12 @@ public class ToolbarButton : Button, IStyleable, ILayoutable, IDisposable
 			bitmapStream.Position = 0;
 			sourceImage = new Bitmap(bitmapStream);
 		}
-		catch (Exception e)
+		catch (Exception)
 		{
-			sourceImage = GetSvgImage(bitmapStream);
+			sourceImage = SvgUtils.GetSvgImage(bitmapStream);
 		}
 
-		var image = new Image()
+		Image image = new()
 		{
 			Source = sourceImage,
 			Width = 24,
@@ -94,7 +90,7 @@ public class ToolbarButton : Button, IStyleable, ILayoutable, IDisposable
 
 		if (Label != null)
 		{
-			var textBlock = new TextBlock()
+			TextBlock textBlock = new()
 			{
 				Text = Label,
 				FontSize = 15,
@@ -118,67 +114,6 @@ public class ToolbarButton : Button, IStyleable, ILayoutable, IDisposable
 
 		BorderBrush = Background;
 		Click += ToolbarButton_Click;
-	}
-
-	private static IImage GetSvgImage(Stream bitmapStream)
-	{
-		IImage sourceImage;
-		bitmapStream.Position = 0;
-
-
-		using var reader = new StreamReader(bitmapStream);
-		string text = reader.ReadToEnd();
-		//string updated = text.Replace("rgb(0,0,0)", "rgb(101,119,204)");
-		string updated = text.Replace("rgb(0,0,0)", "rgb(0,109,240)");
-
-		//6577cc
-
-
-		//var svgSource = new SvgDocument();
-		/*var model = SvgExtensions.Open(bitmapStream);
-		//model.Color = new SKColor(255, 255, 255, 255);
-
-		foreach (SvgGroup group in model.Children[0].Children)
-		{
-			foreach (SvgElement element in group.Children)
-			{
-				//element.Color = new SKColor(255, 255, 255, 255);
-			}
-		}*/
-
-		// Todo: Add caching
-		var svgSource = new SvgSource();
-		//svgSource.Load(bitmapStream);
-		//svgSource.FromSvgDocument(model);
-		svgSource.FromSvg(updated);
-		/*foreach (CanvasCommand canvasCommand in svgSource!.Model!.Commands!)
-		{
-			if (canvasCommand is DrawPathCanvasCommand drawCommand)
-			{
-				var color = new SKColor(255, 255, 255, 255);
-				drawCommand.Paint.Color = color;
-				drawCommand.Paint.Shader = SKShader.CreateColor(color, SKColorSpace.Srgb);
-			}
-		}*/
-		/*var tempStream = new MemoryStream();
-		svgSource.Save(tempStream, SkiaSharp.SKColor.Empty);
-		tempStream.Position = 0;
-		sourceImage = new Bitmap(tempStream);*/
-
-		//svgSource.Load(tempStream);
-		sourceImage = new SvgImage()
-		{
-			Source = svgSource,
-		};
-
-
-		/*using (var svg = new SKSvg())
-		{
-			svg.Load(stream);
-			//svg.Picture.ToBitmap(SKColor.Empty, 1f, 1f, SKColorType.Unknown)
-			svg.Picture.ToImage(stream, SKColors.Empty, SKEncodedImageFormat.Png, 100, 1f, 1f, SKColorType.Unknown, SKAlphaType.Unknown, SKColorSpace.);
-		}*/
-		return sourceImage;
 	}
 
 	private void ToolbarButton_Click(object? sender, global::Avalonia.Interactivity.RoutedEventArgs e)
