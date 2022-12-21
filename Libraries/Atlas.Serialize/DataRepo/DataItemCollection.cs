@@ -8,21 +8,24 @@ public class DataItemCollection<T> : ItemCollection<DataItem<T>>
 {
 	public SortedDictionary<string, T> Lookup { get; set; } = new();
 
-	public List<T?> Values => this.Select(o => o.Value).ToList();
+	public IEnumerable<T> Values => this.Select(o => o.Value);
+	public IEnumerable<T> SortedValues => Lookup.Values.Select(o => o);
 
 	public DataItemCollection()	{ }
 
 	// Don't implement List<T>, it isn't sortable
 	public DataItemCollection(IEnumerable<DataItem<T>> iEnumerable) : base(iEnumerable)
 	{
-		Lookup = Map();
+		Lookup = CreateLookup();
 	}
 
-	private SortedDictionary<string, T> Map()
+	private SortedDictionary<string, T> CreateLookup()
 	{
 		var entries = new SortedDictionary<string, T>();
 		foreach (DataItem<T> item in ToList())
-			entries.Add(item.Key!, item.Value!);
+		{
+			entries.Add(item.Key, item.Value);
+		}
 		return entries;
 	}
 
@@ -49,7 +52,7 @@ public class DataItemCollection<T> : ItemCollection<DataItem<T>>
 	public new void Remove(DataItem<T> item)
 	{
 		base.Remove(item);
-		Lookup.Remove(item.Key!);
+		Lookup.Remove(item.Key);
 	}
 
 	public new void Clear()
@@ -61,21 +64,19 @@ public class DataItemCollection<T> : ItemCollection<DataItem<T>>
 
 public interface IDataItem
 {
-	string? Key { get; }
-	object? Object { get; }
+	string Key { get; }
+	object Object { get; }
 }
 
 public class DataItem<T> : IDataItem
 {
-	public string? Key { get; set; }
-	public T? Value { get; set; }
-	public object? Object => Value;
+	public string Key { get; set; }
+	public T Value { get; set; }
+	public object Object => Value!;
 
-	public override string? ToString() => Key;
+	public override string ToString() => Key;
 
-	public DataItem() { }
-
-	public DataItem(string key, T? value)
+	public DataItem(string key, T value)
 	{
 		Key = key;
 		Value = value;

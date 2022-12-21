@@ -41,10 +41,10 @@ public class DataRepo
 		return view;
 	}
 
-	public DataRepoView<T> LoadView<T>(Call call, string groupId, string orderByMemberName)
+	public DataRepoView<T> LoadView<T>(Call call, string groupId, string orderByMemberName, bool ascending = true)
 	{
 		var view = new DataRepoView<T>(this, groupId);
-		view.LoadAllOrderBy(call, orderByMemberName);
+		view.LoadAllOrderBy(call, orderByMemberName, ascending);
 		return view;
 	}
 
@@ -157,16 +157,13 @@ public class DataRepo
 				{
 					T? obj = serializerFile.Load<T>(call, lazy);
 					if (obj != null)
+					{
 						entries.Add(serializerFile.LoadHeader(call).Name, obj);
+					}
 				}
 			}
 		}
 		return entries;
-	}
-
-	public SortedDictionary<string, T> LoadAllSorted<T>(Call? call = null, string? groupId = null, bool lazy = false)
-	{
-		return LoadAll<T>(call, groupId, lazy).Lookup;
 	}
 
 	public ItemCollection<Header> LoadHeaders(Type type, string? groupId = null, Call? call = null)
@@ -193,13 +190,15 @@ public class DataRepo
 		return headers;
 	}
 
-	public void DeleteAll<T>(string? groupId = null)
+	public void DeleteAll<T>(Call? call, string? groupId = null)
 	{
-		DeleteAll(typeof(T), groupId);
+		DeleteAll(call, typeof(T), groupId);
 	}
 
-	public void DeleteAll(Type type, string? groupId = null)
+	public void DeleteAll(Call? call, Type type, string? groupId = null)
 	{
+		call ??= new();
+
 		string groupPath = GetGroupPath(type, groupId);
 		if (!Directory.Exists(groupPath))
 			return;
@@ -214,23 +213,24 @@ public class DataRepo
 	}
 
 	// remove all other deletes and add null defaults?
-	public void Delete<T>(string groupId, string key)
+	public void Delete<T>(Call? call, string groupId, string key)
 	{
-		Delete(typeof(T), groupId, key);
+		Delete(call, typeof(T), groupId, key);
 	}
 
-	public void Delete<T>(string key)
+	public void Delete<T>(Call? call, string key)
 	{
-		Delete(typeof(T), null, key);
+		Delete(call, typeof(T), null, key);
 	}
 
-	public void Delete(Type type, string key)
+	public void Delete(Call? call, Type type, string key)
 	{
-		Delete(type, null, key);
+		Delete(call, type, null, key);
 	}
 
-	public void Delete(Type type, string? groupId, string key)
+	public void Delete(Call? call, Type type, string? groupId, string key)
 	{
+		call ??= new();
 		groupId ??= DefaultGroupId;
 		string dataPath = GetDataPath(type, groupId, key);
 		if (!Directory.Exists(dataPath))
@@ -239,9 +239,11 @@ public class DataRepo
 		try
 		{
 			Directory.Delete(dataPath, true);
+			call.Log.Add("Deleted path", new Tag("Path", dataPath));
 		}
-		catch (Exception)
+		catch (Exception e)
 		{
+			call.Log.Add(e, new Tag("Path", dataPath));
 		}
 	}
 
