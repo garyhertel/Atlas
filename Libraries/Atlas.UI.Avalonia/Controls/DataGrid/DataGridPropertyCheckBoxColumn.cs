@@ -27,12 +27,12 @@ public class DataGridPropertyCheckBoxColumn : DataGridCheckBoxColumn
 
 	protected override IControl GenerateElement(DataGridCell cell, object dataItem)
 	{
-		var checkbox = (CheckBox)GenerateEditingElementDirect(cell, dataItem);
+		var checkBox = (CheckBox)GenerateEditingElementDirect(cell, dataItem);
 		if (Binding != null)
-			checkbox.Bind(CheckBox.IsCheckedProperty, Binding);
+			checkBox.Bind(CheckBox.IsCheckedProperty, Binding);
 
-		checkbox.Margin = new Thickness(10, 4);
-		checkbox.IsEnabled = !IsReadOnly;
+		checkBox.Margin = new Thickness(10, 4);
+		checkBox.IsEnabled = !IsReadOnly;
 		/*var checkbox = new CheckBox()
 		{
 			Margin = new Thickness(10, 0, 0, 0), // aligns with header title better than centering
@@ -42,13 +42,13 @@ public class DataGridPropertyCheckBoxColumn : DataGridCheckBoxColumn
 			checkbox.IsHitTestVisible = false; // disable changing*/
 
 		if (!StyleCells)
-			return checkbox;
+			return checkBox;
 
 		return new Border()
 		{
 			BorderThickness = new Thickness(0, 0, 0, 1), // Bottom only
 			BorderBrush = Theme.BorderHigh,
-			Child = checkbox,
+			Child = checkBox,
 		};
 	}
 

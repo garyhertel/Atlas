@@ -26,14 +26,13 @@ public class TabControlCheckBox : CheckBox, IStyleable, ILayoutable
 
 	private void Initialize()
 	{
-		BorderBrush = new SolidColorBrush(Colors.Black);
 		HorizontalAlignment = HorizontalAlignment.Stretch;
 		BorderThickness = new Thickness(1);
 		MaxWidth = TabControlParams.ControlMaxWidth;
 		Margin = new Thickness(2, 2);
 		//Padding = new Thickness(6, 3);
 
-		Resources.Add("CheckBoxCheckBackgroundFillUnchecked", Theme.Background);
+		//Resources.Add("CheckBoxCheckBackgroundFillUnchecked", Theme.Background);
 	}
 
 	private void Bind(ListProperty property)

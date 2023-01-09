@@ -43,6 +43,7 @@
     <None Remove="Themes\Default\Accents\BaseDark.xaml" />
     <None Remove="Themes\Controls\TabButton.xaml" />
     <None Remove="Themes\Controls\ToolbarButton.xaml" />
+    <None Remove="Themes\Fluent\Accents\FluentBaseDark.xaml" />
     <None Remove="Themes\Fluent\Accents\FluentBaseLight.xaml" />
     <None Remove="Themes\Fluent\DataGrid.xaml" />
     <None Remove="Themes\Fluent\FluentTheme.xaml" />
@@ -84,6 +85,9 @@
       <Generator>MSBuild:Compile</Generator>
     </EmbeddedResource>
     <EmbeddedResource Update="Themes\Default\Accents\BaseDark.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Themes\Fluent\Accents\FluentBaseDark.xaml">
       <Generator>MSBuild:Compile</Generator>
     </EmbeddedResource>
     <EmbeddedResource Update="Themes\Fluent\Accents\FluentBaseLight.xaml">

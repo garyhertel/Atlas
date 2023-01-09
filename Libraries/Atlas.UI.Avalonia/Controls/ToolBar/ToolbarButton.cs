@@ -27,10 +27,11 @@ public class ToolbarButton : Button, IStyleable, ILayoutable, IDisposable
 
 	public bool ShowTask;
 	public bool IsActive; // Only allow one task at once (modifying IsEnabled doesn't updating elsewhere)
+	public KeyGesture? KeyGesture;
 
 	public TimeSpan MinWaitTime = TimeSpan.FromSeconds(1); // Wait time between clicks
 
-	private DateTime _lastInvoked;
+	private DateTime? _lastInvoked;
 	private DispatcherTimer? _dispatcherTimer;  // delays auto selection to throttle updates
 
 	public ToolbarButton(TabControlToolbar toolbar, ToolButton toolButton)
@@ -47,6 +48,11 @@ public class ToolbarButton : Button, IStyleable, ILayoutable, IDisposable
 
 		if (toolButton.Default)
 			SetDefault();
+
+		if (toolButton.HotKey is KeyGesture keyGesture)
+		{
+			HotKey = keyGesture;
+		}
 	}
 
 	public ToolbarButton(TabControlToolbar toolbar, string? label, string tooltip, Stream bitmapStream, ICommand? command = null)
@@ -126,28 +132,30 @@ public class ToolbarButton : Button, IStyleable, ILayoutable, IDisposable
 		Toolbar.TabInstance!.DefaultAction = () => Invoke();
 	}
 
-	private void Invoke(bool canDelay = true)
+	public void Invoke(bool canDelay = true)
 	{
 		if (!IsEnabled || IsActive)
 			return;
 
-		TimeSpan timeSpan = DateTime.UtcNow.Subtract(_lastInvoked);
-		if (canDelay && timeSpan < MinWaitTime)
+		if (_lastInvoked != null)
 		{
-			// Rate limiting can delay these
-			if (_dispatcherTimer == null)
+			TimeSpan timeSpan = DateTime.UtcNow.Subtract(_lastInvoked.Value);
+			if (canDelay && timeSpan < MinWaitTime)
 			{
-				_dispatcherTimer = new DispatcherTimer()
+				// Rate limiting can delay these
+				if (_dispatcherTimer == null)
 				{
-					Interval = TimeSpan.FromSeconds(1),
-				};
-				_dispatcherTimer.Tick += DispatcherTimer_Tick;
+					_dispatcherTimer = new DispatcherTimer()
+					{
+						Interval = TimeSpan.FromSeconds(1),
+					};
+					_dispatcherTimer.Tick += DispatcherTimer_Tick;
+				}
+				if (!_dispatcherTimer.IsEnabled)
+					_dispatcherTimer.Start();
+				return;
 			}
-			if (!_dispatcherTimer.IsEnabled)
-				_dispatcherTimer.Start();
-			return;
 		}
-
 		_lastInvoked = DateTime.UtcNow;
 
 		if (Toolbar.TabInstance == null)

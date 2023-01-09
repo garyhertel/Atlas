@@ -157,7 +157,7 @@ public class DataGridPropertyTextColumn : DataGridTextColumn
 	{
 		var border = new Border()
 		{
-			BorderBrush = Brushes.LightGray,
+			BorderBrush = Theme.GridBorder,
 			Child = textBlock,
 		};
 
@@ -182,6 +182,11 @@ public class DataGridPropertyTextColumn : DataGridTextColumn
 			border.BorderBrush = Theme.GridStyledLines;
 		}
 
+		if (PropertyInfo.IsDefined(typeof(StyleLabelAttribute)))
+		{
+			textBlock.Foreground = Theme.BackgroundText;
+		}
+
 		if (DisplayIndex > 0)
 		{
 			border.BorderThickness = new Thickness(1, 0, 0, 1); // Left and Bottom
@@ -196,15 +201,12 @@ public class DataGridPropertyTextColumn : DataGridTextColumn
 
 	protected TextBlock CreateTextBlock(DataGridCell cell)
 	{
-		var textBlockElement = new TextBlockElement(this, PropertyInfo)
-		{
-			//BorderBrush = Brushes.Black,
-			//BorderThickness = new Thickness(1),
-		};
+		var textBlockElement = new TextBlockElement(this, PropertyInfo);
 
 		cell.IsHitTestVisible = true;
 		cell.Focusable = true;
-		cell.BorderBrush = Brushes.Blue;
+		cell.Foreground = Theme.GridForeground;
+		cell.BorderBrush = Brushes.Black;
 		cell.BorderThickness = new Thickness(1);
 
 		if (Binding != null)

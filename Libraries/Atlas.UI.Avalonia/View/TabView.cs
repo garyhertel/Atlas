@@ -99,6 +99,7 @@ public class TabView : Grid, IDisposable
 		Instance.OnModelChanged += TabInstance_OnModelChanged;
 		if (Instance is ITabSelector tabSelector)
 			tabSelector.OnSelectionChanged += ParentListSelectionChanged;
+		KeyDown += TabView_KeyDown;
 	}
 
 	public async Task LoadBackgroundAsync(Call call)
@@ -129,7 +130,7 @@ public class TabView : Grid, IDisposable
 	// Gets called multiple times when re-initializing
 	private void InitializeControls()
 	{
-		Background = Theme.TabBackground; // doesn't do anything
+		Background = Theme.TabBackground;
 		HorizontalAlignment = HorizontalAlignment.Stretch;
 		VerticalAlignment = VerticalAlignment.Stretch;
 		//Focusable = true;
@@ -221,6 +222,21 @@ public class TabView : Grid, IDisposable
 		{
 			Instance.DefaultAction?.Invoke();
 			e.Handled = true;
+			return;
+		}
+	}
+
+	private void TabView_KeyDown(object? sender, KeyEventArgs e)
+	{
+		foreach (ToolbarButton toolbarButton in _hotKeys)
+		{
+			var hotKey = toolbarButton.HotKey;
+			if (hotKey.Key == e.Key && hotKey.KeyModifiers == e.KeyModifiers)
+			{
+				toolbarButton.Invoke();
+				e.Handled = true;
+				return;
+			}
 		}
 	}
 
@@ -464,9 +480,15 @@ public class TabView : Grid, IDisposable
 		}
 	}
 
+	private List<ToolbarButton> _hotKeys = new();
+
 	// should we check for a Grid stretch instead of passing that parameter?
 	protected void AddControl(Control control, bool fill)
 	{
+		if (control is TabControlToolbar toolbar)
+		{
+			_hotKeys.AddRange(toolbar.GetHotKeyButtons());
+		}
 		_tabParentControls!.AddControl(control, fill, SeparatorType.Splitter);
 	}
 
@@ -479,7 +501,7 @@ public class TabView : Grid, IDisposable
 
 	protected void AddControlString(string text)
 	{
-		var textBox = new TextBox
+		TextBox textBox = new()
 		{
 			Text = text,
 			Foreground = Theme.BackgroundText,
@@ -495,6 +517,9 @@ public class TabView : Grid, IDisposable
 			TextWrapping = TextWrapping.Wrap,
 			AcceptsReturn = true,
 		};
+		textBox.Resources.Add("TextBackgroundDisabledBrush", Brushes.Transparent);
+		//textBox.Resources.Add("TextControlBackgroundFocused", Brushes.Transparent);
+		
 		AvaloniaUtils.AddContextMenu(textBox);
 		_tabParentControls!.AddControl(textBox, false, SeparatorType.Spacer);
 	}
@@ -922,6 +947,8 @@ public class TabView : Grid, IDisposable
 			tabSelector.OnSelectionChanged -= ParentListSelectionChanged;
 		}
 		CustomTabControls.Clear();
+
+		_hotKeys = new();
 
 		//LogicalChildren.Clear();
 		Children.Clear();

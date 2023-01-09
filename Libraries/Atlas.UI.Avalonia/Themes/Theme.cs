@@ -18,6 +18,7 @@ public static class Theme
 	public static SolidColorBrush GridForeground => Get("ThemeGridForegroundBrush");
 	public static SolidColorBrush GridBackground => Get("ThemeGridBackgroundBrush");
 	public static SolidColorBrush GridBackgroundSelected => Get("ThemeGridBackgroundSelectedBrush");
+	public static SolidColorBrush GridBorder => Get("ThemeGridBorderBrush");
 
 	// Links
 	public static SolidColorBrush HasLinksBackground => Get("ThemeHasLinksBrush");
@@ -59,6 +60,8 @@ public static class Theme
 	public static SolidColorBrush ToolbarBorderHigh => Get("ToolbarBorderHighBrush");
 
 	public static SolidColorBrush ControlBackgroundHover => Get("ControlBackgroundHoverBrush");
+
+	public static SolidColorBrush IconForeground => Get("IconForegroundBrush");
 
 	// Chart 
 	public static SolidColorBrush ChartBackgroundSelected => Get("ThemeChartBackgroundSelectedBrush");

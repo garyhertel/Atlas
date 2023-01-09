@@ -108,8 +108,6 @@ public class DataGridBoundTextColumn : DataGridTextColumn
 	// Adds a context menu to the text block
 	private void AddTextBlockContextMenu(TextBlock textBlock)
 	{
-		var contextMenu = new ContextMenu();
-
 		var keymap = AvaloniaLocator.Current.GetService<PlatformHotkeyConfiguration>();
 
 		var list = new AvaloniaList<object>();
@@ -143,7 +141,10 @@ public class DataGridBoundTextColumn : DataGridTextColumn
 
 		//list.Add(new Separator());
 
-		contextMenu.Items = list;
+		ContextMenu contextMenu = new()
+		{
+			Items = list,
+		};
 
 		textBlock.ContextMenu = contextMenu;
 	}

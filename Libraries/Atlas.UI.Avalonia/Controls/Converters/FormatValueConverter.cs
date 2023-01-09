@@ -83,7 +83,8 @@ public class FormatValueConverter : IValueConverter
 			if (formatted)
 				return timeSpan.FormattedDecimal();
 			else
-				return timeSpan.Trim(TimeSpan.FromMilliseconds(1)).ToString("g");
+				return timeSpan.Trim(TimeSpan.FromMilliseconds(1)).FormattedUnits();
+			//return timeSpan.Trim(TimeSpan.FromMilliseconds(1)).ToString("g");
 		}
 
 		if (value is double d && formatted)

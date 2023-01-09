@@ -204,6 +204,7 @@ public class TabControlDataGrid : Grid, IDisposable, ITabSelector, ITabItemSelec
 			CanUserReorderColumns = true,
 			CanUserSortColumns = true,
 
+			BorderBrush = Brushes.Black,
 			RowBackground = Theme.GridBackground,
 			AlternatingRowBackground = Theme.GridBackground,
 			HorizontalAlignment = HorizontalAlignment.Stretch,
@@ -366,6 +367,7 @@ public class TabControlDataGrid : Grid, IDisposable, ITabSelector, ITabItemSelec
 					_autoSelectItem = item;
 				}
 			}
+			Dispatcher.UIThread.Post(AutoSizeColumns, DispatcherPriority.Background);
 		}
 		else if (e.Action == NotifyCollectionChangedAction.Reset) // Clear() will trigger this
 		{
@@ -607,7 +609,7 @@ public class TabControlDataGrid : Grid, IDisposable, ITabSelector, ITabItemSelec
 
 		// 2 columns need headers for resizing first column?
 		// For visual color separation due to HasLinks background color being too close to title
-		if (propertyColumns.Count == 1)// || typeof(IListPair).IsAssignableFrom(_elementType))
+		if (propertyColumns.Count == 1 || typeof(IListPair).IsAssignableFrom(_elementType))
 			DataGrid.HeadersVisibility = DataGridHeadersVisibility.None;
 	}
 
@@ -676,6 +678,13 @@ public class TabControlDataGrid : Grid, IDisposable, ITabSelector, ITabItemSelec
 		_columnObjects[propertyInfo.Name] = column;
 		_columnNames[column] = propertyInfo.Name;
 		_columnProperties.Add(propertyInfo);
+
+		DataGrid.Sorting += DataGrid_Sorting;
+	}
+
+	private void DataGrid_Sorting(object? sender, DataGridColumnEventArgs e)
+	{
+		Dispatcher.UIThread.Post(AutoSizeColumns, DispatcherPriority.Background);
 	}
 
 	public void AddButtonColumn(string methodName)
@@ -688,6 +697,7 @@ public class TabControlDataGrid : Grid, IDisposable, ITabSelector, ITabItemSelec
 	{
 		var column = new DataGridButtonColumn(methodColumn.MethodInfo, methodColumn.Label);
 		DataGrid.Columns.Add(column);
+		DataGrid.IsReadOnly = false; // Requires double clicking otherwise
 		_columnNames[column] = methodColumn.Label;
 	}
 

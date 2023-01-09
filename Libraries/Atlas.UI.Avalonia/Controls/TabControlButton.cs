@@ -26,7 +26,7 @@ public class TabControlButton : Button, IStyleable
 	public void InitializeControl()
 	{
 		Background = BackgroundBrush;
-		Foreground = ForegroundBrush;
+		//Foreground = ForegroundBrush;
 		BorderBrush = new SolidColorBrush(Colors.Black);
 
 		PointerEnter += Button_PointerEnter;

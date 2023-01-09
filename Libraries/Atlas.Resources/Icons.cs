@@ -37,7 +37,7 @@ public static class Icons
 
 		public const string Save = "save.svg";
 		public const string OpenFolder = "OpenFolder.svg";
-		public const string Favorite = "Star.svg";
+		public const string Star = "Star.svg";
 		public const string StarFilled = "StarFilled.svg";
 
 		public const string Browser = "internet.svg";
@@ -81,7 +81,7 @@ public static class Icons
 		public static Stream BlankDocument => GetSvg(Svg.BlankDocument);
 		public static Stream Save => GetSvg(Svg.Save);
 		public static Stream OpenFolder => GetSvg(Svg.OpenFolder);
-		public static Stream Star => GetSvg(Svg.Favorite);
+		public static Stream Star => GetSvg(Svg.Star);
 		public static Stream StarFilled => GetSvg(Svg.StarFilled);
 
 		public static Stream Browser => GetSvg(Svg.Browser);

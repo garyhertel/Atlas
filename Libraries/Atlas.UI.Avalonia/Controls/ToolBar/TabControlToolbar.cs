@@ -1,7 +1,6 @@
 using Atlas.Core;
 using Atlas.Extensions;
 using Atlas.Tabs;
-using Atlas.UI.Avalonia.Controls;
 using Atlas.UI.Avalonia.Themes;
 using Avalonia;
 using Avalonia.Controls;
@@ -103,10 +102,7 @@ public class TabControlToolbar : Grid, IDisposable
 		AddControl(textBlock);
 
 		PropertyInfo propertyInfo = toolComboBox.GetType().GetProperty(nameof(IToolComboBox.SelectedObject))!;
-		var comboBox = new TabControlFormattedComboBox(new ListProperty(toolComboBox, propertyInfo))
-		{
-			Items = toolComboBox.GetItems(),
-		};
+		var comboBox = new TabControlFormattedComboBox(new ListProperty(toolComboBox, propertyInfo), toolComboBox.GetItems());
 		AddControl(comboBox);
 		return comboBox;
 	}
@@ -117,11 +113,11 @@ public class TabControlToolbar : Grid, IDisposable
 		if (Children.Count == 0)
 			return;
 
-		var panel = new Panel()
+		Panel panel = new()
 		{
 			Background = Theme.ToolbarButtonSeparator,
-			Width = 2,
-			Margin = new Thickness(2),
+			Width = 1,
+			Margin = new Thickness(4),
 		};
 		AddControl(panel);
 	}
@@ -129,7 +125,7 @@ public class TabControlToolbar : Grid, IDisposable
 	// For right aligning
 	public void AddFill()
 	{
-		var panel = new Panel()
+		Panel panel = new()
 		{
 			HorizontalAlignment = HorizontalAlignment.Stretch,
 		};
@@ -178,27 +174,22 @@ public class TabControlToolbar : Grid, IDisposable
 	// Editable
 	public TextBox AddText(string text, int minWidth)
 	{
-		var textBox = new TextBox()
+		var textBox = new ToolbarTextBox(text)
 		{
-			//Foreground = new SolidColorBrush(Colors.Black),
-			Text = text,
 			MinWidth = minWidth,
 			Margin = DefaultMargin,
-			TextWrapping = TextWrapping.NoWrap,
-			VerticalAlignment = VerticalAlignment.Center,
-			Background = Theme.ToolbarTextBackground,
-			Foreground = Theme.ToolbarTextForeground,
-			CaretBrush = Theme.ToolbarCaret,
 		};
-		// Fluent
-		textBox.Resources.Add("TextControlBackgroundPointerOver", textBox.Background);
-		textBox.Resources.Add("TextControlBackgroundFocused", textBox.Background);
-		textBox.Resources.Add("TextControlPlaceholderForegroundFocused", textBox.Foreground);
-		textBox.Resources.Add("TextControlPlaceholderForegroundPointerOver", textBox.Foreground);
 
 		AddControl(textBox);
 
 		return textBox;
+	}
+
+	public IEnumerable<ToolbarButton> GetHotKeyButtons()
+	{
+		return Children
+			.Where(c => c is ToolbarButton button && button.HotKey != null)
+			.Select(c => (ToolbarButton)c);
 	}
 
 	public void Dispose()
@@ -217,7 +208,7 @@ public class ToolbarTextBlock : TextBlock, IStyleable
 
 	public ToolbarTextBlock(string text = "")
 	{
-		Foreground = Theme.TitleForeground;
+		Foreground = Theme.BackgroundText;
 		Text = text;
 		Margin = TabControlToolbar.DefaultMargin;
 		TextWrapping = TextWrapping.NoWrap;
