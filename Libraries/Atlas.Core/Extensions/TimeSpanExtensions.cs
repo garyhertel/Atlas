@@ -37,13 +37,20 @@ public static class TimeSpanExtensions
 		return timeSpan.TotalSeconds + " Seconds";
 	}
 
-	public static string FormattedUnits(this TimeSpan timeSpan)
+	// Only show required units, with 3 optional decimal places
+	public static string FormattedShort(this TimeSpan timeSpan)
 	{
 		StringBuilder sb = new();
 
+		if ((int)timeSpan.TotalDays > 0)
+		{
+			sb.Append((int)timeSpan.TotalDays);
+			sb.Append(':');
+		}
+
 		if ((int)timeSpan.TotalHours > 0)
 		{
-			sb.Append((int)timeSpan.TotalHours);
+			sb.Append(timeSpan.Hours);
 			sb.Append(':');
 			if (timeSpan.Minutes < 10)
 				sb.Append('0');
@@ -63,14 +70,7 @@ public static class TimeSpanExtensions
 		if (millis > 0)
 		{
 			sb.Append('.');
-			for (int milliPlace = 100; ; milliPlace /= 10)
-			{
-				if (millis >= milliPlace)
-				{
-					sb.Append(millis / milliPlace);
-					break;
-				}
-			}
+			sb.Append(millis.ToString("D3").TrimEnd('0'));
 		}
 
 		return sb.ToString();
