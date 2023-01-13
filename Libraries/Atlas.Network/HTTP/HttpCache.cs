@@ -188,13 +188,6 @@ public class HttpCache : IDisposable
 		return text;
 	}
 }
-
-// will take too long to serialize each time
-// could work if we only re-serialized dictionary
-/*public class HttpCacheSerialized
-{
-	private Dictionary<string, byte[]> cache;
-}*/
 /*
 Serialize Cache for HTTP
 	append only cache?

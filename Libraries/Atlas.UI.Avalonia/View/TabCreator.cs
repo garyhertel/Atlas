@@ -53,7 +53,7 @@ public static class TabCreator
 		Type type = value.GetType();
 		if (value is string || value is decimal || type.IsPrimitive)
 		{
-			value = new TabText(value); // create an ITab
+			value = new TabText(value.ToString()!); // create an ITab
 		}
 		/*else if (value is Uri uri)
 		{

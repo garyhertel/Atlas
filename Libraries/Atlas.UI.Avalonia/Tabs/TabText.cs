@@ -6,11 +6,11 @@ namespace Atlas.UI.Avalonia.Tabs;
 
 public class TabText : ITab
 {
-	public object Object;
+	public string Text;
 
-	public TabText(object obj)
+	public TabText(string text)
 	{
-		Object = obj;
+		Text = text;
 	}
 
 	public TabInstance Create() => new Instance(this);
@@ -30,14 +30,7 @@ public class TabText : ITab
 			model.MaxDesiredWidth = 1000;
 
 			var tabAvaloniaEdit = new TabControlAvaloniaEdit(this);
-			if (Tab.Object is string text)
-			{
-				tabAvaloniaEdit.SetFormattedJson(text);
-			}
-			else
-			{
-				tabAvaloniaEdit.Text = Tab.Object.ToString()!;
-			}
+			tabAvaloniaEdit.SetFormattedJson(Tab.Text);
 
 			model.AddObject(tabAvaloniaEdit, true);
 		}
