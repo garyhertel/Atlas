@@ -174,7 +174,7 @@
         <SolidColorBrush x:Key="ThemeGridForegroundSelectedBrush" Color="Black" />
         <SolidColorBrush x:Key="ThemeGridHighBrush" Color="#92F397" />
         <SolidColorBrush x:Key="ThemeGridBorderBrush" Color="LightGray" />
-        <SolidColorBrush x:Key="ThemeGridButtonForegroundBrush" Color="#006df0" />
+        <SolidColorBrush x:Key="ThemeGridButtonForegroundBrush" Color="#d0d0f0" />
 
         <!-- Chart -->
         <!--SolidColorBrush x:Key="ThemeChartBackgroundSelectedBrush" Color="#326db8" /-->
