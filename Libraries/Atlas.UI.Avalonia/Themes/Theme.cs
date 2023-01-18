@@ -21,6 +21,7 @@ public static class Theme
 	public static SolidColorBrush GridBorder => Get("ThemeGridBorderBrush");
 
 	// Links
+	public static SolidColorBrush StyledLabelForeground => Get("ThemeStyledLabelForegroundBrush");
 	public static SolidColorBrush HasLinksBackground => Get("ThemeHasLinksBrush");
 	public static SolidColorBrush NoLinksBackground => Get("ThemeNoLinksBrush");
 	public static SolidColorBrush StyleLineBackground => Get("ThemeStyleLineBrush");

@@ -114,8 +114,7 @@ public static class Icons
 
 		public static Stream GetSvg(string resourceName)
 		{
-			Stream stream = Get(resourceName, "svg");
-			return stream;
+			return Get(resourceName, "svg");
 		}
 	}
 }

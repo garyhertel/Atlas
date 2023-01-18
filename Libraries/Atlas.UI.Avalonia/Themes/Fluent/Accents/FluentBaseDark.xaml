@@ -166,7 +166,8 @@
         <!--SolidColorBrush x:Key="ThemeBackgroundFocusedBrush" Color="#272727" /-->
         <SolidColorBrush x:Key="ThemeBackgroundFocusedBrush" Color="#1a1a1a" />
 
-        <!-- Links -->
+        <!-- Styled -->
+        <SolidColorBrush x:Key="ThemeStyledLabelForegroundBrush" Color="#b5b5b5" />
         <SolidColorBrush x:Key="ThemeHasLinksBrush" Color="#38384f" />
         <SolidColorBrush x:Key="ThemeNoLinksBrush" Color="#2c2c2c" />
         <SolidColorBrush x:Key="ThemeGridStyledLinesBrush" Color="#1c1c1c" />

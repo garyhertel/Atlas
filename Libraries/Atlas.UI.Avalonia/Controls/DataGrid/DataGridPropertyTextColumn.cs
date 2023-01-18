@@ -184,7 +184,7 @@ public class DataGridPropertyTextColumn : DataGridTextColumn
 
 		if (PropertyInfo.IsDefined(typeof(StyleLabelAttribute)))
 		{
-			textBlock.Foreground = Theme.BackgroundText;
+			textBlock.Foreground = Theme.StyledLabelForeground;
 		}
 
 		if (DisplayIndex > 0)
