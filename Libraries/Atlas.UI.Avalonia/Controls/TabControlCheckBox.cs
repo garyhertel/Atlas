@@ -29,7 +29,7 @@ public class TabControlCheckBox : CheckBox, IStyleable, ILayoutable
 		HorizontalAlignment = HorizontalAlignment.Stretch;
 		BorderThickness = new Thickness(1);
 		MaxWidth = TabControlParams.ControlMaxWidth;
-		Margin = new Thickness(2, 2);
+		//Margin = new Thickness(2, 2);
 		//Padding = new Thickness(6, 3);
 
 		//Resources.Add("CheckBoxCheckBackgroundFillUnchecked", Theme.Background);

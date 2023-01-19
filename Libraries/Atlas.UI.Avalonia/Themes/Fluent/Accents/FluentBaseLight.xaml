@@ -41,8 +41,8 @@
         <!-- TextControl -->
         <SolidColorBrush x:Key="TextControlBackground" Color="#ffffff" />
 
-        <Thickness x:Key="TextControlBorderThemeThickness">2</Thickness>
-        <Thickness x:Key="TextControlBorderThemeThicknessFocused">2</Thickness>
+		<Thickness x:Key="TextControlBorderThemeThickness">1.5</Thickness>
+        <Thickness x:Key="TextControlBorderThemeThicknessFocused">1.5</Thickness>
 
         <SolidColorBrush x:Key="TextControlBackgroundPointerOver" Color="#FFFFFFFF" />
         <!--SolidColorBrush x:Key="TextControlPlaceholderForegroundPointerOver" Color="#172144" /-->
@@ -72,8 +72,8 @@
         <SolidColorBrush x:Key="ComboBoxItemBackgroundPointerOver" Color="#92F397" />
         <SolidColorBrush x:Key="ComboBoxItemBackgroundSelected" Color="#AA92F397" />
         <SolidColorBrush x:Key="ComboBoxItemBackgroundSelectedPointerOver" Color="#92F397" />
-        
-        <Thickness x:Key="ComboBoxBorderThemeThickness">2</Thickness>
+
+		<Thickness x:Key="ComboBoxBorderThemeThickness">1.5</Thickness>
         
         <!-- CheckBox -->
 

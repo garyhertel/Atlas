@@ -2,6 +2,7 @@ using Atlas.UI.Avalonia.Themes;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Data;
+using Avalonia.Layout;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 
@@ -31,8 +32,9 @@ public class DataGridPropertyCheckBoxColumn : DataGridCheckBoxColumn
 		if (Binding != null)
 			checkBox.Bind(CheckBox.IsCheckedProperty, Binding);
 
-		checkBox.Margin = new Thickness(10, 4);
+		checkBox.Margin = new Thickness(10, 4, 4, 4); // Checkbox isn't centered (due to optional text control?)
 		checkBox.IsEnabled = !IsReadOnly;
+		checkBox.HorizontalAlignment = HorizontalAlignment.Center;
 		/*var checkbox = new CheckBox()
 		{
 			Margin = new Thickness(10, 0, 0, 0), // aligns with header title better than centering
