@@ -41,12 +41,10 @@ public class TabControlTextBox : TextBox, IStyleable, ILayoutable
 		InitializeBorder();
 	}
 
-	// Default Padding shows a gap between ScrollBar and Border
+	// Default Padding shows a gap between ScrollBar and Border, and has too big of a left Margin
 	// Workaround: Move the Padding into the inner controls Margin
 	private void InitializeBorder()
 	{
-		return;
-
 		// read Padding in and use for margins?
 
 		Padding = new Thickness(0);
@@ -55,7 +53,7 @@ public class TabControlTextBox : TextBox, IStyleable, ILayoutable
 		{
 			Setters =
 			{
-				new Setter(TextPresenter.MarginProperty, new Thickness(6, 3)),
+				new Setter(TextPresenter.MarginProperty, new Thickness(6)),
 			}
 		};
 		Styles.Add(style);
@@ -64,7 +62,7 @@ public class TabControlTextBox : TextBox, IStyleable, ILayoutable
 		{
 			Setters =
 			{
-				new Setter(TextBlock.MarginProperty, new Thickness(6, 3)),
+				new Setter(TextBlock.MarginProperty, new Thickness(6)),
 			}
 		};
 		Styles.Add(style);
