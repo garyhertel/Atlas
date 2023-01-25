@@ -26,10 +26,17 @@ public class TabControlTextButton : Button, IStyleable
 	{
 		Background = BackgroundBrush;
 		Foreground = ForegroundBrush;
+
 		BorderBrush = new SolidColorBrush(Colors.Black);
 
 		Resources.Add("ButtonBackgroundPointerOver", HoverBrush);
 		Resources.Add("ButtonForegroundPointerOver", ForegroundBrush);
+
+		Resources.Add("ButtonBackgroundPressed", BackgroundBrush);
+		Resources.Add("ButtonForegroundPressed", ForegroundBrush);
+
+		//Resources.Add("ButtonBorderBrushPointerOver", Theme.BorderHigh);
+
 		Resources.Add("ButtonBorderThemeThickness", new Thickness(1.5));
 		Resources.Add("ControlCornerRadius", new CornerRadius(5));
 	}
