@@ -3,6 +3,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Data;
 using Avalonia.Layout;
+using Avalonia.Media;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 
@@ -35,6 +36,7 @@ public class DataGridPropertyCheckBoxColumn : DataGridCheckBoxColumn
 		checkBox.Margin = new Thickness(10, 4, 4, 4); // Checkbox isn't centered (due to optional text control?)
 		checkBox.IsEnabled = !IsReadOnly;
 		checkBox.HorizontalAlignment = HorizontalAlignment.Center;
+		checkBox.Resources.Add("CheckBoxCheckBackgroundFillUnchecked", Brushes.Transparent);
 		/*var checkbox = new CheckBox()
 		{
 			Margin = new Thickness(10, 0, 0, 0), // aligns with header title better than centering

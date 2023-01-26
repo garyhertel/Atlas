@@ -25,7 +25,7 @@ namespace Atlas.UI.Avalonia.Controls;
 public class TabControlDataGrid : Grid, IDisposable, ITabSelector, ITabItemSelector, ILayoutable, ITabDataControl
 {
 	private const int ColumnPercentBased = 150;
-	private const int MaxMinColumnWidth = 150;
+	private const int MaxMinColumnWidth = 200;
 	private const int MaxAutoSizeMinColumnWidth = 250;
 
 	public int MaxColumnWidth = 600;
