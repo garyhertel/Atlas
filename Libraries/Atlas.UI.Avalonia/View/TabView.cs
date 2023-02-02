@@ -99,6 +99,7 @@ public class TabView : Grid, IDisposable
 		Instance.OnModelChanged += TabInstance_OnModelChanged;
 		if (Instance is ITabSelector tabSelector)
 			tabSelector.OnSelectionChanged += ParentListSelectionChanged;
+		KeyDown += TabView_KeyDown;
 	}
 
 	public async Task LoadBackgroundAsync(Call call)
@@ -222,6 +223,20 @@ public class TabView : Grid, IDisposable
 			Instance.DefaultAction?.Invoke();
 			e.Handled = true;
 			return;
+		}
+	}
+
+	private void TabView_KeyDown(object? sender, KeyEventArgs e)
+	{
+		foreach (ToolbarButton toolbarButton in _hotKeys)
+		{
+			var hotKey = toolbarButton.HotKey;
+			if (hotKey.Key == e.Key && hotKey.KeyModifiers == e.KeyModifiers)
+			{
+				toolbarButton.Invoke();
+				e.Handled = true;
+				return;
+			}
 		}
 	}
 
@@ -465,9 +480,15 @@ public class TabView : Grid, IDisposable
 		}
 	}
 
+	private List<ToolbarButton> _hotKeys = new();
+
 	// should we check for a Grid stretch instead of passing that parameter?
 	protected void AddControl(Control control, bool fill)
 	{
+		if (control is TabControlToolbar toolbar)
+		{
+			_hotKeys.AddRange(toolbar.GetHotKeyButtons());
+		}
 		_tabParentControls!.AddControl(control, fill, SeparatorType.Splitter);
 	}
 
@@ -925,6 +946,8 @@ public class TabView : Grid, IDisposable
 			tabSelector.OnSelectionChanged -= ParentListSelectionChanged;
 		}
 		CustomTabControls.Clear();
+
+		_hotKeys = new();
 
 		//LogicalChildren.Clear();
 		Children.Clear();

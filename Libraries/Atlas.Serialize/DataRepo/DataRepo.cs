@@ -145,7 +145,7 @@ public class DataRepo
 			if (item != null)
 				list.Add(item);
 		}*/
-		DataItemCollection<T> entries = new();
+		DataItemCollection<T> entries = new(this);
 
 		string groupPath = GetGroupPath(typeof(T), groupId);
 		if (Directory.Exists(groupPath))

@@ -12,6 +12,10 @@ public class TabFile : ITab
 {
 	public static Dictionary<string, Type> ExtensionTypes = new();
 
+	public delegate void SelectFile(Call call, string path);
+
+	public SelectFile? SelectFileDelegate;
+
 	public static void RegisterType<T>(params string[] extensions)
 	{
 		foreach (string extension in extensions)
@@ -22,15 +26,19 @@ public class TabFile : ITab
 
 	public string Path;
 
-	public TabFile(string path)
+	public TabFile(string path, SelectFile? selectFileDelegate = null)
 	{
 		Path = path;
+		SelectFileDelegate = selectFileDelegate;
 	}
 
 	public TabInstance Create() => new Instance(this);
 
 	public class Toolbar : TabToolbar
 	{
+		public ToolButton? ButtonSelect { get; set; }
+
+		[Separator]
 		public ToolButton ButtonOpenFolder { get; set; } = new("Open Folder", Icons.Streams.OpenFolder);
 
 		[Separator]
@@ -55,12 +63,17 @@ public class TabFile : ITab
 				return;
 			}
 
-			var toolbar = new Toolbar();
+			Toolbar toolbar = new();
+			if (Tab.SelectFileDelegate != null)
+			{
+				toolbar.ButtonSelect = new("Select", Icons.Streams.Enter);
+				toolbar.ButtonSelect.Action = SelectClicked;
+			}
 			toolbar.ButtonOpenFolder.Action = OpenFolder;
 			toolbar.ButtonDelete.Action = Delete;
 			model.AddObject(toolbar);
 
-			var items = new List<ListItem>();
+			List<ListItem> items = new();
 
 			string extension = System.IO.Path.GetExtension(path).ToLower();
 
@@ -87,6 +100,11 @@ public class TabFile : ITab
 			items.Add(new ListItem("File Info", new FileInfo(path)));
 
 			model.Items = items;
+		}
+
+		private void SelectClicked(Call call)
+		{
+			Tab.SelectFileDelegate!(call, Tab.Path);
 		}
 
 		private void OpenFolder(Call call)

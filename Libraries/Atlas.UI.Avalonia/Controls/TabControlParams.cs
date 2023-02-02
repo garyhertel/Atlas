@@ -52,9 +52,27 @@ public class TabControlParams : Grid
 		AddSummary();
 
 		ItemCollection<ListProperty> properties = ListProperty.Create(obj);
+
 		foreach (ListProperty property in properties)
 		{
-			AddPropertyRow(property);
+			int columnIndex = property.GetCustomAttribute<ColumnAttribute>()?.Index ?? 0;
+			AddColumnIndex(columnIndex + 1); // label + value controls
+		}
+
+		Control? lastControl = null;
+		foreach (ListProperty property in properties)
+		{
+			var newControl = AddPropertyRow(property);
+			if (newControl != null && lastControl != null && Grid.GetRow(lastControl) != Grid.GetRow(newControl))
+			{
+				int columnIndex = Grid.GetColumn(lastControl);
+				int columnSpan = Grid.GetColumnSpan(lastControl);
+				if (columnIndex + columnSpan < ColumnDefinitions.Count)
+				{
+					Grid.SetColumnSpan(lastControl, ColumnDefinitions.Count - columnIndex);
+				}
+			}
+			lastControl = newControl;
 		}
 	}
 
@@ -116,9 +134,21 @@ public class TabControlParams : Grid
 
 	private void AddControl(Control control, int columnIndex, int rowIndex)
 	{
+		AddColumnIndex(columnIndex);
+
 		SetColumn(control, columnIndex);
 		SetRow(control, rowIndex);
 		Children.Add(control);
+	}
+
+	private void AddColumnIndex(int columnIndex)
+	{
+		while (columnIndex >= ColumnDefinitions.Count)
+		{
+			GridUnitType type = (ColumnDefinitions.Count % 2 == 0) ? GridUnitType.Auto : GridUnitType.Star;
+			var columnDefinition = new ColumnDefinition(1, type);
+			ColumnDefinitions.Add(columnDefinition);
+		}
 	}
 
 	public Control? AddPropertyRow(string propertyName)
@@ -134,26 +164,38 @@ public class TabControlParams : Grid
 
 	public Control? AddPropertyRow(ListProperty property)
 	{
+		int columnIndex = property.GetCustomAttribute<ColumnAttribute>()?.Index ?? 0;
+
 		Control? control = CreatePropertyControl(property);
 		if (control == null)
 			return null;
 
 		int rowIndex = RowDefinitions.Count;
-		{
-			var spacerRow = new RowDefinition()
-			{
-				Height = new GridLength(5),
-			};
-			RowDefinitions.Add(spacerRow);
-			rowIndex++;
-		}
-		var rowDefinition = new RowDefinition()
-		{
-			Height = new GridLength(1, GridUnitType.Auto),
-		};
-		RowDefinitions.Add(rowDefinition);
 
-		var textLabel = new TextBlock()
+		if (rowIndex > 0 && columnIndex > 0)
+		{
+			rowIndex--; // Reuse previous row
+		}
+		else
+		{
+			if (columnIndex == 0)
+			{
+				RowDefinition spacerRow = new()
+				{
+					Height = new GridLength(5),
+				};
+				RowDefinitions.Add(spacerRow);
+				rowIndex++;
+			}
+
+			RowDefinition rowDefinition = new()
+			{
+				Height = new GridLength(1, GridUnitType.Auto),
+			};
+			RowDefinitions.Add(rowDefinition);
+		}
+
+		TextBlock textLabel = new()
 		{
 			Text = property.Name,
 			Margin = new Thickness(10, 3),
@@ -161,11 +203,11 @@ public class TabControlParams : Grid
 			VerticalAlignment = VerticalAlignment.Center,
 			MaxWidth = 500,
 			[Grid.RowProperty] = rowIndex,
-			[Grid.ColumnProperty] = 0,
+			[Grid.ColumnProperty] = columnIndex++,
 		};
 		Children.Add(textLabel);
 
-		AddControl(control, 1, rowIndex);
+		AddControl(control, columnIndex, rowIndex);
 
 		return control;
 	}

@@ -6,26 +6,29 @@ namespace Atlas.Serialize;
 // Collection of DataRepo items with a key/value lookup
 public class DataItemCollection<T> : ItemCollection<DataItem<T>>
 {
-	public SortedDictionary<string, T> Lookup { get; set; } = new();
+	public DataRepo DataRepo;
+	public SortedDictionary<string, DataItem<T>> Lookup { get; set; } = new();
 
 	public IEnumerable<T> Values => this.Select(o => o.Value);
-	public IEnumerable<T> SortedValues => Lookup.Values.Select(o => o);
+	public IEnumerable<T> SortedValues => Lookup.Values.Select(o => o.Value);
 
-	public DataItemCollection()	{ }
+	public DataItemCollection(DataRepo dataRepo) : base()
+	{
+		DataRepo = dataRepo;
+	}
 
 	// Don't implement List<T>, it isn't sortable
-	public DataItemCollection(IEnumerable<DataItem<T>> iEnumerable) : base(iEnumerable)
+	public DataItemCollection(DataRepo dataRepo, IEnumerable<DataItem<T>> iEnumerable) : base(iEnumerable)
 	{
+		DataRepo = dataRepo;
 		Lookup = CreateLookup();
 	}
 
-	private SortedDictionary<string, T> CreateLookup()
+	private SortedDictionary<string, DataItem<T>> CreateLookup()
 	{
-		var entries = new SortedDictionary<string, T>();
+		var entries = new SortedDictionary<string, DataItem<T>>();
 		foreach (DataItem<T> item in ToList())
-		{
-			entries.Add(item.Key, item.Value);
-		}
+			entries.Add(item.Key, item);
 		return entries;
 	}
 
@@ -45,8 +48,23 @@ public class DataItemCollection<T> : ItemCollection<DataItem<T>>
 
 	public void Add(string key, T value)
 	{
-		Add(new DataItem<T>(key, value));
-		Lookup.Add(key, value);
+		var dataItem = new DataItem<T>(key, value, this);
+		Add(dataItem);
+		Lookup.Add(key, dataItem);
+	}
+
+	public void Update(string key, T value)
+	{
+		if (Lookup.TryGetValue(key, out DataItem<T>? existingDataItem))
+		{
+			existingDataItem!.Value = value;
+		}
+		else
+		{
+			var dataItem = new DataItem<T>(key, value, this);
+			Add(dataItem);
+			Lookup[key] = dataItem;
+		}
 	}
 
 	public new void Remove(DataItem<T> item)
@@ -59,6 +77,17 @@ public class DataItemCollection<T> : ItemCollection<DataItem<T>>
 	{
 		base.Clear();
 		Lookup.Clear();
+	}
+
+	public bool TryGetValue(string key, out T? value)
+	{
+		if (Lookup.TryGetValue(key, out DataItem<T>? lookupValue))
+		{
+			value = lookupValue.Value;
+			return true;
+		}
+		value = default;
+		return false;
 	}
 }
 
@@ -74,11 +103,21 @@ public class DataItem<T> : IDataItem
 	public T Value { get; set; }
 	public object Object => Value!;
 
+	public DataItemCollection<T>? DataItemCollection;
+
 	public override string ToString() => Key;
 
-	public DataItem(string key, T value)
+	public DataItem() { }
+
+	public DataItem(string key, T? value, DataItemCollection<T>? dataItemCollection)
 	{
 		Key = key;
 		Value = value;
+		DataItemCollection = dataItemCollection;
+	}
+
+	public void Save()
+	{
+		DataItemCollection!.DataRepo.Save(Value);
 	}
 }

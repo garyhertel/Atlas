@@ -26,7 +26,9 @@ public class ToolbarButton : Button, IStyleable, ILayoutable, IDisposable
 	public TaskDelegateAsync.CallActionAsync? CallActionAsync;
 
 	public bool ShowTask;
+	public bool DisableWhileRunning = true;
 	public bool IsActive; // Only allow one task at once (modifying IsEnabled doesn't updating elsewhere)
+	public KeyGesture? KeyGesture;
 
 	public TimeSpan MinWaitTime = TimeSpan.FromSeconds(1); // Wait time between clicks
 
@@ -39,6 +41,7 @@ public class ToolbarButton : Button, IStyleable, ILayoutable, IDisposable
 		Label = toolButton.Label;
 		Tooltip = toolButton.Tooltip;
 		ShowTask = toolButton.ShowTask;
+		DisableWhileRunning = toolButton.DisableWhileRunning;
 
 		CallAction = toolButton.Action;
 		CallActionAsync = toolButton.ActionAsync;
@@ -47,6 +50,11 @@ public class ToolbarButton : Button, IStyleable, ILayoutable, IDisposable
 
 		if (toolButton.Default)
 			SetDefault();
+
+		if (toolButton.HotKey is KeyGesture keyGesture)
+		{
+			HotKey = keyGesture;
+		}
 	}
 
 	public ToolbarButton(TabControlToolbar toolbar, string? label, string tooltip, Stream bitmapStream, ICommand? command = null)
@@ -67,14 +75,14 @@ public class ToolbarButton : Button, IStyleable, ILayoutable, IDisposable
 		};
 
 		IImage sourceImage;
-		if (SvgUtils.IsSvg(bitmapStream))
-		{
-			sourceImage = SvgUtils.GetSvgImage(bitmapStream);
-		}
-		else
+		try
 		{
 			bitmapStream.Position = 0;
 			sourceImage = new Bitmap(bitmapStream);
+		}
+		catch (Exception)
+		{
+			sourceImage = SvgUtils.GetSvgImage(bitmapStream);
 		}
 
 		Image image = new()
@@ -106,7 +114,7 @@ public class ToolbarButton : Button, IStyleable, ILayoutable, IDisposable
 		Background = Theme.ToolbarButtonBackground;
 		BorderBrush = Background;
 		BorderThickness = new Thickness(0);
-		Margin = new Thickness(0, 1);
+		Margin = new Thickness(1);
 		//BorderThickness = new Thickness(2),
 		//Foreground = new SolidColorBrush(Theme.ButtonForegroundColor),
 		//BorderBrush = new SolidColorBrush(Colors.Black),
@@ -128,7 +136,7 @@ public class ToolbarButton : Button, IStyleable, ILayoutable, IDisposable
 
 	public void Invoke(bool canDelay = true)
 	{
-		if (!IsEnabled || IsActive)
+		if (!IsEnabled || (DisableWhileRunning && IsActive))
 			return;
 
 		if (_lastInvoked != null)

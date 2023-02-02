@@ -7,12 +7,14 @@ namespace Atlas.Tabs.Tools;
 public class TabDirectory : ITab
 {
 	public string Path;
+	public TabFile.SelectFile? SelectFileDelegate;
 
 	public override string ToString() => Path;
 
-	public TabDirectory(string path)
+	public TabDirectory(string path, TabFile.SelectFile? selectFileDelegate = null)
 	{
 		Path = path;
+		SelectFileDelegate = selectFileDelegate;
 	}
 
 	public TabInstance Create() => new Instance(this);
@@ -45,7 +47,7 @@ public class TabDirectory : ITab
 				return;
 			}
 
-			var toolbar = new Toolbar();
+			Toolbar toolbar = new();
 			toolbar.ButtonOpenFolder.Action = OpenFolder;
 			//toolbar.ButtonDelete.Action = Delete;
 			model.AddObject(toolbar);
@@ -67,7 +69,7 @@ public class TabDirectory : ITab
 			try
 			{
 				return Directory.EnumerateFiles(Tab.Path)
-					.Select(f => new FileView(f))
+					.Select(path => new FileView(path, Tab.SelectFileDelegate))
 					.ToList();
 			}
 			catch (Exception ex)
@@ -83,7 +85,7 @@ public class TabDirectory : ITab
 			try
 			{
 				return Directory.EnumerateDirectories(Tab.Path)
-					.Select(f => new DirectoryView(f))
+					.Select(path => new DirectoryView(path, Tab.SelectFileDelegate))
 					.ToList();
 			}
 			catch (Exception ex)
@@ -107,7 +109,9 @@ public class TabDirectory : ITab
 
 		private List<SelectedRow> GetSelectedRows()
 		{
-			return TabViewSettings.TabDataSettings.SelectMany(s => s.SelectedRows).ToList();
+			return TabViewSettings.TabDataSettings
+				.SelectMany(settings => settings.SelectedRows)
+				.ToList();
 		}
 
 		private void Delete(Call call)
@@ -164,13 +168,14 @@ public class DirectoryView : INodeView, IDirectoryView
 
 	public override string ToString() => Directory;
 
-	public DirectoryView(string directoryPath)
+	public DirectoryView(string directoryPath, TabFile.SelectFile? selectFileDelegate)
 	{
 		DirectoryPath = directoryPath;
+
 		Directory = Path.GetFileName(directoryPath);
 		var info = new DirectoryInfo(directoryPath);
 		LastWriteTime = info.LastWriteTime.Trim();
-		Tab = new TabDirectory(directoryPath);
+		Tab = new TabDirectory(directoryPath, selectFileDelegate);
 	}
 }
 
@@ -192,11 +197,11 @@ public class FileView : INodeView
 
 	public override string ToString() => Filename;
 
-	public FileView(string filePath)
+	public FileView(string filePath, TabFile.SelectFile? selectFileDelegate)
 	{
 		FilePath = filePath;
-		FileInfo = new FileInfo(filePath);
 
+		FileInfo = new FileInfo(filePath);
 		Filename = Path.GetFileName(filePath);
 		Size = FileInfo.Length;
 		LastWriteTime = FileInfo.LastWriteTime.Trim();
@@ -204,6 +209,6 @@ public class FileView : INodeView
 		if (Filename.EndsWith(".atlas"))
 			Tab = new TabFileSerialized(filePath);
 		else
-			Tab = new TabFile(filePath);
+			Tab = new TabFile(filePath, selectFileDelegate);
 	}
 }
