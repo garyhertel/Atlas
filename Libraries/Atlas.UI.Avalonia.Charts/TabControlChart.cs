@@ -320,7 +320,7 @@ public class TabControlChart : Grid, IDisposable
 	{
 		Size size = base.MeasureOverride(availableSize);
 		if (FillHeight)
-			size = new Size(size.Width, Math.Max(size.Height, Math.Min(MaxHeight, availableSize.Height)));
+			size = size.WithHeight(Math.Max(size.Height, Math.Min(MaxHeight, availableSize.Height)));
 		return size;
 	}
 

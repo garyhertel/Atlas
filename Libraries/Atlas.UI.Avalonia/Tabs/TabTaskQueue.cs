@@ -24,7 +24,6 @@ public class TabTaskQueue : ITab
 	public class Toolbar : TabToolbar
 	{
 		public ToolButton ButtonRefresh { get; set; } = new ToolButton("Refresh", Icons.Streams.Refresh);
-		//public ToolButton ButtonReset { get; set; } = new ToolButton("Reset", Icons.Streams.Refresh);
 
 		[Separator]
 		public ToolButton ButtonClearAll { get; set; } = new ToolButton("Clear All", Icons.Streams.DeleteList);
@@ -41,10 +40,6 @@ public class TabTaskQueue : ITab
 
 		public override void Load(Call call, TabModel model)
 		{
-			//Tab.Bookmarks.Load(call, true);
-
-			//model.AddData(Tab.TaskQueue.TaskInstances);
-
 			model.Items = Tab.TaskQueue.TaskInstances
 				.Select(t => new TaskQueueItem(t))
 				.ToList();
@@ -54,15 +49,8 @@ public class TabTaskQueue : ITab
 		{
 			var toolbar = new Toolbar();
 			toolbar.ButtonRefresh.Action = Refresh;
-			//toolbar.ButtonReset.Action = Reset;
 			toolbar.ButtonClearAll.Action = DeleteAll;
 			model.AddObject(toolbar);
-
-			/*if (Tab.Bookmarks.NewBookmark != null)
-			{
-				SelectItem(Tab.Bookmarks.NewBookmark);
-				Tab.Bookmarks.NewBookmark = null;
-			}*/
 		}
 
 		public override void GetBookmark(TabBookmark tabBookmark)
@@ -77,14 +65,6 @@ public class TabTaskQueue : ITab
 		{
 			Refresh();
 		}
-
-		/*private void Reset(Call call)
-		{
-			foreach (TabBookmarkItem item in SelectedItems)
-			{
-				SelectItem(item);
-			}
-		}*/
 
 		private void DeleteAll(Call call)
 		{
