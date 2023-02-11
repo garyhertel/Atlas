@@ -67,7 +67,7 @@ public class SeparatorAttribute : Attribute
 {
 }
 
-// ->Toolbar: Show a separator before this item
+// -> For multi-column params
 [AttributeUsage(AttributeTargets.Property)]
 public class ColumnAttribute : Attribute
 {
@@ -76,6 +76,28 @@ public class ColumnAttribute : Attribute
 	public ColumnAttribute(int index)
 	{
 		Index = index;
+	}
+}
+
+[AttributeUsage(AttributeTargets.Property)]
+public class MinValueAttribute : Attribute
+{
+	public readonly object MinValue;
+
+	public MinValueAttribute(object minValue)
+	{
+		MinValue = minValue;
+	}
+}
+
+[AttributeUsage(AttributeTargets.Property)]
+public class MaxValueAttribute : Attribute
+{
+	public readonly object MaxValue;
+
+	public MaxValueAttribute(object maxValue)
+	{
+		MaxValue = maxValue;
 	}
 }
 
