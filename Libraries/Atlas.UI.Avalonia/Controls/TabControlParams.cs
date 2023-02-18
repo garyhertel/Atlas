@@ -8,6 +8,8 @@ using Avalonia.Layout;
 using System.Collections;
 using System.Reflection;
 using Atlas.UI.Avalonia.Themes;
+using Avalonia.Data;
+using System.ComponentModel.DataAnnotations;
 
 namespace Atlas.UI.Avalonia.Controls;
 
@@ -16,6 +18,8 @@ public class TabControlParams : Grid
 	public const int ControlMaxWidth = 500;
 	public const int ControlMaxHeight = 400;
 	public object? Object;
+
+	private Dictionary<ListProperty, Control> _propertyControls = new();
 
 	public TabControlParams(object? obj, bool autoGenerateRows = true, string columnDefinitions = "Auto,*")
 	{
@@ -64,14 +68,18 @@ public class TabControlParams : Grid
 		foreach (ListProperty property in properties)
 		{
 			var newControl = AddPropertyRow(property);
-			if (newControl != null && lastControl != null && Grid.GetRow(lastControl) != Grid.GetRow(newControl))
+			if (newControl != null)
 			{
-				int columnIndex = Grid.GetColumn(lastControl);
-				int columnSpan = Grid.GetColumnSpan(lastControl);
-				if (columnIndex + columnSpan < ColumnDefinitions.Count)
+				if (lastControl != null && Grid.GetRow(lastControl) != Grid.GetRow(newControl))
 				{
-					Grid.SetColumnSpan(lastControl, ColumnDefinitions.Count - columnIndex);
+					int columnIndex = Grid.GetColumn(lastControl);
+					int columnSpan = Grid.GetColumnSpan(lastControl);
+					if (columnIndex + columnSpan < ColumnDefinitions.Count)
+					{
+						Grid.SetColumnSpan(lastControl, ColumnDefinitions.Count - columnIndex);
+					}
 				}
+				_propertyControls[property] = newControl;
 			}
 			lastControl = newControl;
 		}
@@ -253,6 +261,47 @@ public class TabControlParams : Grid
 			}
 		}
 		base.Focus();
+	}
+
+	public void Validate()
+	{
+		bool valid = true;
+		foreach (var listControl in _propertyControls)
+		{
+			dynamic? value = listControl.Key.Value;
+			if (value != null)
+			{
+				if (listControl.Key.GetCustomAttribute<MinValueAttribute>() is MinValueAttribute minValueAttribute)
+				{
+					dynamic minValue = minValueAttribute.MinValue;
+					if (value < minValue)
+					{
+						valid = false;
+						DataValidationErrors.SetError(listControl.Value, new DataValidationException("Min Value: " + minValue));
+					}
+				}
+
+				if (listControl.Key.GetCustomAttribute<RangeAttribute>() is RangeAttribute rangeAttribute)
+				{
+					dynamic minValue = rangeAttribute.Minimum;
+					if (value < minValue)
+					{
+						valid = false;
+						DataValidationErrors.SetError(listControl.Value, new DataValidationException("Min Value: " + minValue));
+					}
+					dynamic maxValue = rangeAttribute.Maximum;
+					if (value > maxValue)
+					{
+						valid = false;
+						DataValidationErrors.SetError(listControl.Value, new DataValidationException("Max Value: " + maxValue));
+					}
+				}
+			}
+		}
+		if (!valid)
+		{
+			throw new Exception("Invalid params");
+		}
 	}
 }
 

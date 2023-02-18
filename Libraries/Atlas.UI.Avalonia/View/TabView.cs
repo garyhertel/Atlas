@@ -100,6 +100,7 @@ public class TabView : Grid, IDisposable
 		if (Instance is ITabSelector tabSelector)
 			tabSelector.OnSelectionChanged += ParentListSelectionChanged;
 		KeyDown += TabView_KeyDown;
+		Instance.OnValidate += Instance_OnValidate;
 	}
 
 	public async Task LoadBackgroundAsync(Call call)
@@ -290,6 +291,19 @@ public class TabView : Grid, IDisposable
 	private void TabInstance_OnModelChanged(object? sender, EventArgs e)
 	{
 		ReloadControls();
+	}
+
+	private void Instance_OnValidate(object? sender, EventArgs e)
+	{
+		if (_tabParentControls == null) return;
+
+		foreach (IControl control in _tabParentControls.Children)
+		{
+			if (control is TabControlParams paramsControl)
+			{
+				paramsControl.Validate();
+			}
+		}
 	}
 
 	private void TabInstance_OnResize(object? sender, EventArgs e)

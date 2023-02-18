@@ -149,6 +149,7 @@ public class TabInstance : IDisposable
 	public event EventHandler<EventSelectItem>? OnSelectionChanged;
 	public event EventHandler<EventArgs>? OnModified;
 	public event EventHandler<EventArgs>? OnResize;
+	public event EventHandler<EventArgs>? OnValidate;
 
 	public Action? DefaultAction; // Default action when Enter pressed
 
@@ -915,5 +916,10 @@ public class TabInstance : IDisposable
 			var eSelectItem = new EventSelectItem(SelectedItems[0]!);
 			OnSelectionChanged?.Invoke(sender, eSelectItem);
 		}
+	}
+
+	public void Validate()
+	{
+		OnValidate?.Invoke(this, EventArgs.Empty);
 	}
 }

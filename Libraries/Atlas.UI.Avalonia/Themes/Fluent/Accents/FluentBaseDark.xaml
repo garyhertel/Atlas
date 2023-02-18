@@ -235,5 +235,8 @@
         
         <CornerRadius x:Key="ControlCornerRadius">3</CornerRadius>
 
+
+        <SolidColorBrush x:Key="SystemControlErrorTextForegroundBrush" Color="#ffbb12"/>
+
     </Style.Resources>
 </Style>
