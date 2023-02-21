@@ -73,6 +73,8 @@ public class TabTestParamsTasks : ITab
 	public class ParamTestResult
 	{
 		public ParamTestItem? Parameters;
-		public string? String => Parameters?.Name;
+		public string? Name => Parameters?.Name;
+
+		public override string? ToString() => Name;
 	}
 }

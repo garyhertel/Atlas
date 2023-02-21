@@ -17,6 +17,7 @@ public class TabControlParams : Grid
 {
 	public const int ControlMaxWidth = 500;
 	public const int ControlMaxHeight = 400;
+
 	public object? Object;
 
 	private Dictionary<ListProperty, Control> _propertyControls = new();
@@ -55,7 +56,11 @@ public class TabControlParams : Grid
 		if (obj == null) return;
 
 		AddSummary();
+		AddPropertyControls(obj);
+	}
 
+	private void AddPropertyControls(object obj)
+	{
 		ItemCollection<ListProperty> properties = ListProperty.Create(obj);
 
 		foreach (ListProperty property in properties)
@@ -67,7 +72,7 @@ public class TabControlParams : Grid
 		Control? lastControl = null;
 		foreach (ListProperty property in properties)
 		{
-			var newControl = AddPropertyRow(property);
+			var newControl = AddPropertyControl(property);
 			if (newControl != null)
 			{
 				if (lastControl != null && Grid.GetRow(lastControl) != Grid.GetRow(newControl))
@@ -160,18 +165,18 @@ public class TabControlParams : Grid
 		}
 	}
 
-	public Control? AddPropertyRow(string propertyName)
+	public Control? AddPropertyControl(string propertyName)
 	{
 		PropertyInfo propertyInfo = Object!.GetType().GetProperty(propertyName)!;
-		return AddPropertyRow(new ListProperty(Object, propertyInfo));
+		return AddPropertyControl(new ListProperty(Object, propertyInfo));
 	}
 
-	public Control? AddPropertyRow(PropertyInfo propertyInfo)
+	public Control? AddPropertyControl(PropertyInfo propertyInfo)
 	{
-		return AddPropertyRow(new ListProperty(Object!, propertyInfo));
+		return AddPropertyControl(new ListProperty(Object!, propertyInfo));
 	}
 
-	public Control? AddPropertyRow(ListProperty property)
+	public Control? AddPropertyControl(ListProperty property)
 	{
 		int columnIndex = property.GetCustomAttribute<ColumnAttribute>()?.Index ?? 0;
 
@@ -207,9 +212,9 @@ public class TabControlParams : Grid
 		TextBlock textLabel = new()
 		{
 			Text = property.Name,
-			Margin = new Thickness(10, 3),
+			Margin = new Thickness(10, 7, 10, 3),
 			Foreground = Theme.BackgroundText,
-			VerticalAlignment = VerticalAlignment.Center,
+			VerticalAlignment = VerticalAlignment.Top,
 			MaxWidth = ControlMaxWidth,
 			[Grid.RowProperty] = rowIndex,
 			[Grid.ColumnProperty] = columnIndex++,
@@ -269,18 +274,18 @@ public class TabControlParams : Grid
 		foreach (var listControl in _propertyControls)
 		{
 			dynamic? value = listControl.Key.Value;
+
+			if (listControl.Key.GetCustomAttribute<RequiredAttribute>() is RequiredAttribute requiredAttribute)
+			{
+				if (value == null || (value is string text && text.Length == 0))
+				{
+					valid = false;
+					DataValidationErrors.SetError(listControl.Value, new DataValidationException("Required"));
+				}
+			}
+
 			if (value != null)
 			{
-				if (listControl.Key.GetCustomAttribute<MinValueAttribute>() is MinValueAttribute minValueAttribute)
-				{
-					dynamic minValue = minValueAttribute.MinValue;
-					if (value < minValue)
-					{
-						valid = false;
-						DataValidationErrors.SetError(listControl.Value, new DataValidationException("Min Value: " + minValue));
-					}
-				}
-
 				if (listControl.Key.GetCustomAttribute<RangeAttribute>() is RangeAttribute rangeAttribute)
 				{
 					dynamic minValue = rangeAttribute.Minimum;

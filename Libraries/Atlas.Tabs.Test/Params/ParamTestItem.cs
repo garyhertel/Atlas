@@ -1,5 +1,6 @@
 using Atlas.Core;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 
 namespace Atlas.Tabs.Test.Params;
 
@@ -17,6 +18,7 @@ public class ParamTestItem
 	[ReadOnly(true)]
 	public string ReadOnly { get; set; } = "ReadOnly";
 
+	[Range(1, 1000)]
 	public int Amount { get; set; } = 123;
 	public double Double { get; set; } = 3.14;
 

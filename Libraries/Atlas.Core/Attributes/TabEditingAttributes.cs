@@ -79,28 +79,6 @@ public class ColumnAttribute : Attribute
 	}
 }
 
-[AttributeUsage(AttributeTargets.Property)]
-public class MinValueAttribute : Attribute
-{
-	public readonly object MinValue;
-
-	public MinValueAttribute(object minValue)
-	{
-		MinValue = minValue;
-	}
-}
-
-[AttributeUsage(AttributeTargets.Property)]
-public class MaxValueAttribute : Attribute
-{
-	public readonly object MaxValue;
-
-	public MaxValueAttribute(object maxValue)
-	{
-		MaxValue = maxValue;
-	}
-}
-
 // If set, this method will appear as an Action (rename to [Action]?)
 /*[AttributeUsage(AttributeTargets.Method)]
 public class VisibleAttribute : Attribute
