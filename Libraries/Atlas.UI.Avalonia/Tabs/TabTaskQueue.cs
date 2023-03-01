@@ -1,79 +1,9 @@
 using Atlas.Core;
-using Atlas.Resources;
-using Atlas.Tabs;
 using System.ComponentModel;
 
 namespace Atlas.UI.Avalonia.Controls;
 
-public class TabTaskQueue : ITab
-{
-	public TaskQueue TaskQueue;
-
-	public TabTaskQueue()
-	{
-		TaskQueue = TaskManager.TaskQueue;// new TaskQueue();
-	}
-
-	/*public void AddBookmark(Call call, TaskInstance taskInstance)
-	{
-		TaskQueue.AddNew(call, taskInstance);
-	}*/
-
-	public TabInstance Create() => new Instance(this);
-
-	public class Toolbar : TabToolbar
-	{
-		public ToolButton ButtonRefresh { get; set; } = new ToolButton("Refresh", Icons.Streams.Refresh);
-
-		[Separator]
-		public ToolButton ButtonClearAll { get; set; } = new ToolButton("Clear All", Icons.Streams.DeleteList);
-	}
-
-	public class Instance : TabInstance
-	{
-		public readonly TabTaskQueue Tab;
-
-		public Instance(TabTaskQueue tab)
-		{
-			Tab = tab;
-		}
-
-		public override void Load(Call call, TabModel model)
-		{
-			model.Items = Tab.TaskQueue.TaskInstances
-				.Select(t => new TaskQueueItem(t))
-				.ToList();
-		}
-
-		public override void LoadUI(Call call, TabModel model)
-		{
-			var toolbar = new Toolbar();
-			toolbar.ButtonRefresh.Action = Refresh;
-			toolbar.ButtonClearAll.Action = DeleteAll;
-			model.AddObject(toolbar);
-		}
-
-		public override void GetBookmark(TabBookmark tabBookmark)
-		{
-			base.GetBookmark(tabBookmark);
-
-			foreach (var child in tabBookmark.ChildBookmarks.Values)
-				child.IsRoot = true;
-		}
-
-		private void Refresh(Call call)
-		{
-			Refresh();
-		}
-
-		private void DeleteAll(Call call)
-		{
-			Tab.TaskQueue.TaskInstances.Clear();
-			//Tab.TaskQueue.Load(call, true);
-		}
-	}
-}
-
+// No longer used: remove?
 public class TaskQueueItem : INotifyPropertyChanged
 {
 	public event EventHandler<EventArgs>? OnDelete;

@@ -193,7 +193,7 @@
         <SolidColorBrush x:Key="ControlBackgroundHoverBrush" Color="#ddffdd" />
 
         <!-- ToolTip -->
-		<SolidColorBrush x:Key="ToolTipBackground" Color="#444488" />
+		<SolidColorBrush x:Key="ToolTipBackground" Color="#dd333366" />
         <SolidColorBrush x:Key="ToolTipForeground" Color="#d0d0e8" />
         <SolidColorBrush x:Key="ToolTipBorderBrush" Color="#b0000000" />
         

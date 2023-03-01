@@ -101,7 +101,7 @@ public class TabInstance : IDisposable
 	public TabBookmark? TabBookmarkLoaded { get; set; }
 	public SelectedRow? SelectedRow { get; set; } // The parent selection that points to this tab
 
-	public TaskQueue? TaskQueue { get; set; }
+	public bool CancelTasksOnClose { get; set; } = true;
 
 	public int Depth
 	{
@@ -217,7 +217,7 @@ public class TabInstance : IDisposable
 		if (!StaticModel)
 			Model.Clear();
 
-		if (TaskQueue == null)
+		if (CancelTasksOnClose)
 		{
 			foreach (TaskInstance taskInstance in Model.Tasks)
 			{
@@ -288,7 +288,6 @@ public class TabInstance : IDisposable
 		if (taskInstance.ShowTask)
 		{
 			Model.Tasks.Add(taskInstance);
-			TaskQueue?.TaskInstances.Add(taskInstance);
 		}
 		return taskInstance;
 	}
