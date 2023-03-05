@@ -124,6 +124,8 @@ public class TabInstance : IDisposable
 	{
 		public readonly object Object;
 
+		public override string? ToString() => Object.ToString();
+
 		public EventSelectItem(object obj)
 		{
 			Object = obj;

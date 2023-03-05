@@ -107,6 +107,10 @@
 
         <x:Double x:Key="RadioButtonBorderThemeThickness">1.5</x:Double>
 
+        <!-- ProgressBar -->
+
+        <SolidColorBrush x:Key="SystemControlHighlightAccentBrush" Color="#20204a" />
+
         <!-- ContextMenu -->
 
         <!--SolidColorBrush x:Key="MenuFlyoutPresenterBackground" Color="#58588f" />

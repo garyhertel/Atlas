@@ -555,13 +555,13 @@ public class TabView : Grid, IDisposable
 		ClearControls(true);
 
 		// This will get cleared when the view reloads
-		var progressBar = new ProgressBar
+		ProgressBar progressBar = new()
 		{
 			IsIndeterminate = true,
 			MinWidth = 100,
 			MinHeight = 100,
 			MaxWidth = 200,
-			Foreground = Theme.ToolbarButtonBackground,
+			//Foreground = Theme.ToolbarButtonBackground,
 			Background = Theme.TabBackground,
 			HorizontalAlignment = HorizontalAlignment.Left,
 			VerticalAlignment = VerticalAlignment.Stretch,
