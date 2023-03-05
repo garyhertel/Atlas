@@ -28,8 +28,13 @@ public static class Icons
 		public const string Add = "Add.svg";
 		public const string Delete = "Cancel.svg";
 
-		public const string Back = "LeftArrow.svg";
-		public const string Forward = "RightArrow.svg";
+		public const string LeftArrow = "LeftArrow.svg";
+		public const string RightArrow = "RightArrow.svg";
+		public const string UpArrow = "UpArrow.svg";
+		public const string DownArrow = "DownArrow.svg";
+
+		public const string LeftArrowCircle = "LeftArrowCircle.svg";
+		public const string RightArrowCircle = "RightArrowCircle.svg";
 
 		public const string Search = "Search.svg";
 
@@ -68,8 +73,13 @@ public static class Icons
 		public static Stream Add => GetSvg(Svg.Add);
 		public static Stream Delete => GetSvg(Svg.Delete);
 
-		public static Stream Back => GetSvg(Svg.Back);
-		public static Stream Forward => GetSvg(Svg.Forward);
+		public static Stream Back => GetSvg(Svg.LeftArrowCircle);
+		public static Stream Forward => GetSvg(Svg.RightArrowCircle);
+
+		public static Stream LeftArrow => GetSvg(Svg.LeftArrow);
+		public static Stream RightArrow => GetSvg(Svg.RightArrow);
+		public static Stream UpArrow => GetSvg(Svg.UpArrow);
+		public static Stream DownArrow => GetSvg(Svg.DownArrow);
 
 		public static Stream ClearSearch => Get(Icons.ClearSearch);
 		public static Stream Search => GetSvg(Svg.Search);

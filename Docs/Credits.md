@@ -20,6 +20,10 @@
 | [Refresh](https://icon-icons.com/icon/sync-refresh-reload-update/176163) (svg) | Nicky Lim |
 | [Left Arrow](https://www.flaticon.com/free-icon/left-arrow_118744) | [Lucy G](https://www.flaticon.com/authors/lucy-g) |
 | [Right Arrow](https://www.flaticon.com/free-icon/right-arrow_118745) | Lucy G |
+| [Left Arrow](https://icon-icons.com/icon/left-arrow/193346) | moro icon |
+| [Right Arrow](https://icon-icons.com/icon/right-arrow/193336) | moro icon |
+| [Up Arrow](https://icon-icons.com/icon/down-arrow-direction/193338) | moro icon |
+| [Down Arrow](https://icon-icons.com/icon/down-arrow-direction/193338) | moro icon |
 | [Add](https://www.flaticon.com/free-icon/add_118742) | Lucy G |
 | [Cancel](https://icon-icons.com/icon/cancel/121292) | Lucy G |
 | [Unlock](https://www.flaticon.com/free-icon/unlock_118737) | Lucy G |

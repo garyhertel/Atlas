@@ -51,8 +51,8 @@ public class TabViewerToolbar : TabControlToolbar
 		//HotKeyManager.SetHotKey(button, gesture1);
 
 		// gray color 3289C7
-		ButtonBack = AddButton("Back (Alt+Left)", Icons.Streams.Back, CommandBindingBack);
-		ButtonForward = AddButton("Forward (Alt+Right)", Icons.Streams.Forward, CommandBindingForward);
+		ButtonBack = AddButton("Back (Alt+Left)", Icons.Streams.LeftArrow, CommandBindingBack);
+		ButtonForward = AddButton("Forward (Alt+Right)", Icons.Streams.RightArrow, CommandBindingForward);
 
 		AddSeparator();
 		ButtonRefresh = AddButton("Refresh (Ctrl+R)", Icons.Streams.Refresh);
