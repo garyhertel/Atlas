@@ -196,7 +196,8 @@
 		<SolidColorBrush x:Key="ToolTipBackground" Color="#dd333366" />
         <SolidColorBrush x:Key="ToolTipForeground" Color="#d0d0e8" />
         <SolidColorBrush x:Key="ToolTipBorderBrush" Color="#b0000000" />
-        
+
+        <Thickness x:Key="ToolTipBorderThemePadding">8,5,8,4</Thickness>
         <Thickness x:Key="ToolTipBorderThemeThickness">1.5</Thickness>
         
         <x:Double x:Key="ToolTipContentThemeFontSize">14</x:Double>

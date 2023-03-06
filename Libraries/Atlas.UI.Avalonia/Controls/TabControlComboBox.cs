@@ -63,8 +63,29 @@ public class TabControlComboBox : ComboBox, IStyleable, ILayoutable
 		};
 		this.Bind(SelectedItemProperty, binding);
 
-		if ((obj == null || SelectedItem == null) && Items.GetEnumerator().MoveNext())
-			SelectedIndex = 0;
+		SelectDefaultValue();
+	}
+
+	private void SelectDefaultValue()
+	{
+		if ((Property?.Object != null && SelectedItem != null) || Items.GetEnumerator().MoveNext() == false) return;
+
+		// Check for null value match
+		object? value = Property!.Value;
+		foreach (var item in Items)
+		{
+			if (item == value)
+			{
+				SelectedItem = item;
+				return;
+			}
+		}
+
+		var enumerator = Items.GetEnumerator();
+		if (enumerator.MoveNext())
+		{
+			SelectedItem = enumerator.Current;
+		}
 	}
 
 	private void InitializeComponent()
