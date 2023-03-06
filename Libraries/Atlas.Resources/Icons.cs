@@ -42,6 +42,7 @@ public static class Icons
 
 		public const string Save = "Save.svg";
 		public const string OpenFolder = "OpenFolder.svg";
+
 		public const string Star = "Star.svg";
 		public const string StarFilled = "StarFilled.svg";
 
@@ -49,6 +50,7 @@ public static class Icons
 
 		public const string Enter = "Enter.svg";
 
+		public const string Copy = "Copy.svg";
 		public const string PadNote = "PadNote.svg";
 		public const string Eraser = "Eraser.svg";
 
@@ -91,6 +93,7 @@ public static class Icons
 		public static Stream BlankDocument => GetSvg(Svg.BlankDocument);
 		public static Stream Save => GetSvg(Svg.Save);
 		public static Stream OpenFolder => GetSvg(Svg.OpenFolder);
+
 		public static Stream Star => GetSvg(Svg.Star);
 		public static Stream StarFilled => GetSvg(Svg.StarFilled);
 
@@ -100,6 +103,7 @@ public static class Icons
 		public static Stream Password => Get(Icons.Password);
 		public static Stream Enter => GetSvg(Svg.Enter);
 
+		public static Stream Copy => GetSvg(Svg.Copy);
 		public static Stream PadNote => GetSvg(Svg.PadNote);
 		public static Stream Paste => Get(Icons.Paste);
 		public static Stream Eraser => GetSvg(Svg.Eraser);

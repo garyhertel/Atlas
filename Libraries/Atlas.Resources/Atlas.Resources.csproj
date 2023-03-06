@@ -56,6 +56,7 @@
     <None Remove="Icons\svg\Add.svg" />
     <None Remove="Icons\svg\BlankDocument.svg" />
     <None Remove="Icons\svg\Cancel.svg" />
+    <None Remove="Icons\svg\Copy.svg" />
     <None Remove="Icons\svg\DeleteList.svg" />
     <None Remove="Icons\svg\DownArrow.svg" />
     <None Remove="Icons\svg\Enter.svg" />
@@ -127,6 +128,7 @@
     <EmbeddedResource Include="Icons\svg\Add.svg" />
     <EmbeddedResource Include="Icons\svg\BlankDocument.svg" />
     <EmbeddedResource Include="Icons\svg\Cancel.svg" />
+    <EmbeddedResource Include="Icons\svg\Copy.svg" />
     <EmbeddedResource Include="Icons\svg\DeleteList.svg" />
     <EmbeddedResource Include="Icons\svg\DownArrow.svg" />
     <EmbeddedResource Include="Icons\svg\Enter.svg" />

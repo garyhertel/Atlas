@@ -15,6 +15,7 @@
 | [Import](https://www.flaticon.com/free-icon/import_223438) | Kirill Kazachek |
 | [List1](https://www.flaticon.com/free-icon/list_151917) | Chanut |
 | [List2](https://www.flaticon.com/free-icon/list_159841) | Gregor Cresnar |
+| [Copy](https://icon-icons.com/icon/copy/153460) | Kryston Schwarze |
 | [Paste](https://www.flaticon.com/free-icon/paste_930233) | Vitaly Gorbachev |
 | [Refresh](https://www.flaticon.com/free-icon/refresh_875100) (png) | Becris |
 | [Refresh](https://icon-icons.com/icon/sync-refresh-reload-update/176163) (svg) | Nicky Lim |
