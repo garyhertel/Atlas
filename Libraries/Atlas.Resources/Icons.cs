@@ -51,6 +51,7 @@ public static class Icons
 		public const string Enter = "Enter.svg";
 
 		public const string Copy = "Copy.svg";
+		public const string Duplicate = "Duplicate.svg";
 		public const string PadNote = "PadNote.svg";
 		public const string Eraser = "Eraser.svg";
 
@@ -104,6 +105,7 @@ public static class Icons
 		public static Stream Enter => GetSvg(Svg.Enter);
 
 		public static Stream Copy => GetSvg(Svg.Copy);
+		public static Stream Duplicate => GetSvg(Svg.Duplicate);
 		public static Stream PadNote => GetSvg(Svg.PadNote);
 		public static Stream Paste => Get(Icons.Paste);
 		public static Stream Eraser => GetSvg(Svg.Eraser);
