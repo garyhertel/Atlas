@@ -52,6 +52,9 @@ public static class Icons
 
 		public const string Copy = "Copy.svg";
 		public const string Duplicate = "Duplicate.svg";
+		public const string DuplicateRightMultiple = "DuplicateRightMultiple.svg";
+		public const string DuplicateLeft = "DuplicateLeft.svg";
+		public const string DuplicateLeftMultiple = "DuplicateLeftMultiple.svg";
 		public const string PadNote = "PadNote.svg";
 		public const string Eraser = "Eraser.svg";
 
@@ -106,6 +109,9 @@ public static class Icons
 
 		public static Stream Copy => GetSvg(Svg.Copy);
 		public static Stream Duplicate => GetSvg(Svg.Duplicate);
+		public static Stream DuplicateRightMultiple => GetSvg(Svg.DuplicateRightMultiple);
+		public static Stream DuplicateLeft => GetSvg(Svg.DuplicateLeft);
+		public static Stream DuplicateLeftMultiple => GetSvg(Svg.DuplicateLeftMultiple);
 		public static Stream PadNote => GetSvg(Svg.PadNote);
 		public static Stream Paste => Get(Icons.Paste);
 		public static Stream Eraser => GetSvg(Svg.Eraser);

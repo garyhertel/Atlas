@@ -32,6 +32,10 @@ public class DataGridContextMenu : ContextMenu, IStyleable, IDisposable
 		menuItemCopyCellContents.Click += MenuItemCopyCellContents_Click;
 		list.Add(menuItemCopyCellContents);
 
+		var menuItemCopyCellValue = new TabMenuItem("Copy - _Cell Value");
+		menuItemCopyCellValue.Click += MenuItemCopyCellValue_Click;
+		list.Add(menuItemCopyCellValue);
+
 		list.Add(new Separator());
 
 		var menuItemCopyColumn = new TabMenuItem("Copy - Co_lumn");
@@ -82,6 +86,16 @@ public class DataGridContextMenu : ContextMenu, IStyleable, IDisposable
 
 	private async void MenuItemCopyCellContents_Click(object? sender, RoutedEventArgs e)
 	{
+		await CopyCellContents(true);
+	}
+
+	private async void MenuItemCopyCellValue_Click(object? sender, RoutedEventArgs e)
+	{
+		await CopyCellContents(false);
+	}
+
+	private async Task CopyCellContents(bool formatted)
+	{
 		if (Column == null)
 			return;
 
@@ -92,7 +106,17 @@ public class DataGridContextMenu : ContextMenu, IStyleable, IDisposable
 		if (content is TextBlock textBlock)
 		{
 			object textBlockValue = Column.PropertyInfo.GetValue(textBlock.DataContext)!;
-			string value = FormatValueConverter.ObjectToString(textBlockValue, MaxCellValueLength, Column.FormatConverter.IsFormatted)!;
+			string value;
+			Type valueType = textBlockValue.GetType();
+			if (formatted || (valueType != typeof(string) && !valueType.IsPrimitive))
+			{
+				value = FormatValueConverter.ObjectToString(textBlockValue, MaxCellValueLength, Column.FormatConverter.IsFormatted)!;
+			}
+			else
+			{
+				value = textBlockValue.ToString() ?? "";
+			}
+
 			await ClipBoardUtils.SetTextAsync(value);
 		}
 	}
