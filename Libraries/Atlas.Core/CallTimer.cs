@@ -36,7 +36,7 @@ public class CallTimer : Call, IDisposable
 		}
 		else
 		{
-			Log!.Add("Finished", new Tag("Duration", _stopwatch.Elapsed));
+			Log?.Add("Finished", new Tag("Duration", _stopwatch.Elapsed));
 		}
 	}
 

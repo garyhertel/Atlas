@@ -105,16 +105,16 @@ public class DataGridContextMenu : ContextMenu, IStyleable, IDisposable
 
 		if (content is TextBlock textBlock)
 		{
-			object textBlockValue = Column.PropertyInfo.GetValue(textBlock.DataContext)!;
+			object propertyValue = Column.PropertyInfo.GetValue(textBlock.DataContext)!;
 			string value;
-			Type valueType = textBlockValue.GetType();
+			Type valueType = propertyValue.GetType();
 			if (formatted || (valueType != typeof(string) && !valueType.IsPrimitive))
 			{
-				value = FormatValueConverter.ObjectToString(textBlockValue, MaxCellValueLength, Column.FormatConverter.IsFormatted)!;
+				value = FormatValueConverter.ObjectToString(propertyValue, MaxCellValueLength, Column.FormatConverter.IsFormatted)!;
 			}
 			else
 			{
-				value = textBlockValue.ToString() ?? "";
+				value = propertyValue.ToString() ?? "";
 			}
 
 			await ClipBoardUtils.SetTextAsync(value);

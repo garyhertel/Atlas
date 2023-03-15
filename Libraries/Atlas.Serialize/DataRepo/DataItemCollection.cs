@@ -100,8 +100,14 @@ public interface IDataItem
 public class DataItem<T> : IDataItem
 {
 	public string Key { get; set; }
-	public T Value { get; set; }
+	public T? Value { get; set; }
 	public object Object => Value!;
+	public string? Path { get; set; }
+
+	public FileInfo? FileInfo => _fileInfo ??= File.Exists(Path) ? new FileInfo(Path) : null;
+	private FileInfo? _fileInfo;
+
+	public DateTime? ModifiedUtc => FileInfo?.LastWriteTimeUtc;
 
 	public DataItemCollection<T>? DataItemCollection;
 
@@ -109,11 +115,12 @@ public class DataItem<T> : IDataItem
 
 	public DataItem() { }
 
-	public DataItem(string key, T? value, DataItemCollection<T>? dataItemCollection)
+	public DataItem(string key, T? value, DataItemCollection<T>? dataItemCollection, string? path = null)
 	{
 		Key = key;
 		Value = value;
 		DataItemCollection = dataItemCollection;
+		Path = path;
 	}
 
 	public void Save()

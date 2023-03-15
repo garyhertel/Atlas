@@ -35,9 +35,6 @@ public class TabControlComboBox : ComboBox, IStyleable, ILayoutable
 		InitializeComponent();
 
 		IsEnabled = property.Editable;
-		MaxWidth = TabControlParams.ControlMaxWidth;
-
-		Type type = property.UnderlyingType;
 
 		if (listPropertyName != null)
 		{
@@ -48,9 +45,16 @@ public class TabControlComboBox : ComboBox, IStyleable, ILayoutable
 		}
 		else
 		{
-			Items = type.GetEnumValues();
+			Items = property.UnderlyingType.GetEnumValues();
 		}
 		Bind(property.Object, property.PropertyInfo.Name);
+	}
+
+	private void InitializeComponent()
+	{
+		MaxWidth = TabControlParams.ControlMaxWidth;
+
+		HorizontalAlignment = HorizontalAlignment.Stretch;
 	}
 
 	public void Bind(object obj, string path)
@@ -86,12 +90,5 @@ public class TabControlComboBox : ComboBox, IStyleable, ILayoutable
 		{
 			SelectedItem = enumerator.Current;
 		}
-	}
-
-	private void InitializeComponent()
-	{
-		//MaxWidth = TabControlParams.ControlMaxWidth;
-
-		HorizontalAlignment = HorizontalAlignment.Stretch;
 	}
 }

@@ -35,6 +35,8 @@ public class TabTestParamsTasks : ITab
 
 		private void Add(Call call)
 		{
+			Validate();
+
 			SaveData(DataKey, _paramTestItem!);
 
 			ParamTestItem clone = _paramTestItem.DeepClone(call)!;

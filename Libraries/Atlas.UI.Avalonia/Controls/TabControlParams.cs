@@ -10,10 +10,11 @@ using System.Reflection;
 using Atlas.UI.Avalonia.Themes;
 using Avalonia.Data;
 using System.ComponentModel.DataAnnotations;
+using Atlas.UI.Avalonia.View;
 
 namespace Atlas.UI.Avalonia.Controls;
 
-public class TabControlParams : Grid
+public class TabControlParams : Grid, IValidationControl
 {
 	public const int ControlMaxWidth = 500;
 	public const int ControlMaxHeight = 400;
@@ -131,6 +132,8 @@ public class TabControlParams : Grid
 			AddControl(control, columnIndex, rowIndex);
 			controls.Add(control);
 			columnIndex++;
+
+			_propertyControls[property] = control;
 		}
 		return controls;
 	}
@@ -184,6 +187,8 @@ public class TabControlParams : Grid
 		if (control == null)
 			return null;
 
+		property.Cachable = false;
+
 		int rowIndex = RowDefinitions.Count;
 
 		if (rowIndex > 0 && columnIndex > 0)
@@ -222,6 +227,8 @@ public class TabControlParams : Grid
 		Children.Add(textLabel);
 
 		AddControl(control, columnIndex, rowIndex);
+
+		_propertyControls[property] = control;
 
 		return control;
 	}
@@ -271,41 +278,14 @@ public class TabControlParams : Grid
 	public void Validate()
 	{
 		bool valid = true;
-		foreach (var listControl in _propertyControls)
+		foreach (var propertyControl in _propertyControls)
 		{
-			dynamic? value = listControl.Key.Value;
-
-			if (listControl.Key.GetCustomAttribute<RequiredAttribute>() is RequiredAttribute requiredAttribute)
-			{
-				if (value == null || (value is string text && text.Length == 0))
-				{
-					valid = false;
-					DataValidationErrors.SetError(listControl.Value, new DataValidationException("Required"));
-				}
-			}
-
-			if (value != null)
-			{
-				if (listControl.Key.GetCustomAttribute<RangeAttribute>() is RangeAttribute rangeAttribute)
-				{
-					dynamic minValue = rangeAttribute.Minimum;
-					if (value < minValue)
-					{
-						valid = false;
-						DataValidationErrors.SetError(listControl.Value, new DataValidationException("Min Value: " + minValue));
-					}
-					dynamic maxValue = rangeAttribute.Maximum;
-					if (value > maxValue)
-					{
-						valid = false;
-						DataValidationErrors.SetError(listControl.Value, new DataValidationException("Max Value: " + maxValue));
-					}
-				}
-			}
+			valid = AvaloniaUtils.ValidateControl(propertyControl.Key, propertyControl.Value) && valid;
 		}
+
 		if (!valid)
 		{
-			throw new Exception("Invalid params");
+			throw new ValidationException("Invalid Parameters");
 		}
 	}
 }

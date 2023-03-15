@@ -20,6 +20,11 @@ public interface IControlCreator
 	void AddControl(TabInstance tabInstance, TabControlSplitContainer container, object obj);
 }
 
+public interface IValidationControl
+{
+	void Validate();
+}
+
 public class TabView : Grid, IDisposable
 {
 	private const string FillerPanelId = "FillerPanelId";
@@ -177,8 +182,7 @@ public class TabView : Grid, IDisposable
 			Children.Add(_containerGrid);
 
 		// Reassigning leaks memory
-		if (ContextMenu == null)
-			ContextMenu = new TabViewContextMenu(this, Instance);
+		ContextMenu ??= new TabViewContextMenu(this, Instance);
 
 		Dispatcher.UIThread.Post(AutoSizeParentControls, DispatcherPriority.Background);
 	}
@@ -299,7 +303,7 @@ public class TabView : Grid, IDisposable
 
 		foreach (IControl control in _tabParentControls.Children)
 		{
-			if (control is TabControlParams paramsControl)
+			if (control is IValidationControl paramsControl)
 			{
 				paramsControl.Validate();
 			}
@@ -1086,6 +1090,7 @@ public class TabView : Grid, IDisposable
 			ClearControls(true);
 
 			Instance.OnModelChanged -= TabInstance_OnModelChanged;
+			Instance.OnValidate -= Instance_OnValidate;
 			if (Instance is ITabSelector tabSelector)
 				tabSelector.OnSelectionChanged -= ParentListSelectionChanged;
 

@@ -28,6 +28,8 @@
         <Color x:Key="IconForegroundColor">#999999</Color>
         <SolidColorBrush x:Key="IconForegroundBrush" Color="{DynamicResource IconForegroundColor}" />
 
+        <SolidColorBrush x:Key="SystemControlErrorTextForegroundBrush" Color="#ffbb12"/>
+
         <!-- TextControl -->
 
         <SolidColorBrush x:Key="TextControlForeground" Color="{DynamicResource TextForegroundColor}" />
@@ -239,9 +241,6 @@
         <sys:Double x:Key="SplitterSize">5</sys:Double>
         
         <CornerRadius x:Key="ControlCornerRadius">3</CornerRadius>
-
-
-        <SolidColorBrush x:Key="SystemControlErrorTextForegroundBrush" Color="#ffbb12"/>
 
     </Style.Resources>
 </Style>

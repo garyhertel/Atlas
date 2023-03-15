@@ -5,12 +5,11 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Presenters;
 using Avalonia.Data;
+using Avalonia.Input;
 using Avalonia.Layout;
 using Avalonia.Media;
 using Avalonia.Styling;
-using Newtonsoft.Json.Linq;
 using System.ComponentModel.DataAnnotations;
-using System;
 using System.Reflection;
 
 namespace Atlas.UI.Avalonia.Controls;
