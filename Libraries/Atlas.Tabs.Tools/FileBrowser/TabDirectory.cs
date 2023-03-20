@@ -144,6 +144,9 @@ public interface INodeView : IHasLinks
 {
 	public string Name { get; }
 
+	[StyleValue]
+	public string? Type { get; }
+
 	[StyleValue, Formatter(typeof(ByteFormatter))]
 	public long? Size { get; }
 
@@ -156,6 +159,7 @@ public class DirectoryView : INodeView, IDirectoryView
 	public string Directory { get; set; }
 
 	public string Name => Directory;
+	public string? Type => null;
 	public long? Size => null;
 	public DateTime LastWriteTime { get; set; }
 	public TimeSpan Modified => LastWriteTime.Age();
@@ -182,6 +186,7 @@ public class DirectoryView : INodeView, IDirectoryView
 public class FileView : INodeView
 {
 	public string Filename { get; set; }
+	public string? Type { get; set; }
 	public long? Size { get; set; }
 	public DateTime LastWriteTime { get; set; }
 	public TimeSpan Modified => LastWriteTime.Age();
@@ -203,6 +208,7 @@ public class FileView : INodeView
 
 		FileInfo = new FileInfo(filePath);
 		Filename = Path.GetFileName(filePath);
+		Type = FileInfo.Extension;
 		Size = FileInfo.Length;
 		LastWriteTime = FileInfo.LastWriteTime.Trim();
 

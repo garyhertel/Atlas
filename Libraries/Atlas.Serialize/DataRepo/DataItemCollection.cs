@@ -115,7 +115,7 @@ public class DataItem<T> : IDataItem
 
 	public DataItem() { }
 
-	public DataItem(string key, T? value, DataItemCollection<T>? dataItemCollection, string? path = null)
+	public DataItem(string key, T? value, DataItemCollection<T>? dataItemCollection = null, string? path = null)
 	{
 		Key = key;
 		Value = value;

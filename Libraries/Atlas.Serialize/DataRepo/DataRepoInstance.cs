@@ -16,6 +16,10 @@ public class DataRepoInstance<T> : IDataRepoInstance
 
 	public readonly DataRepo DataRepo;
 	public string GroupId { get; set; }
+	public string GroupPath => DataRepo.GetGroupPath(typeof(T), GroupId);
+
+	//public bool Indexed { get; set; }
+	public DataRepoIndexInstance<T>? Index;
 
 	public override string ToString() => GroupId;
 
@@ -25,13 +29,20 @@ public class DataRepoInstance<T> : IDataRepoInstance
 		GroupId = groupId;
 	}
 
+	public void AddIndex()
+	{
+		Index = new(this);
+	}
+
 	public virtual void Save(Call? call, T item)
 	{
-		DataRepo.Save<T>(GroupId, DefaultKey, item, call);
+		Save(call, DefaultKey, item);
 	}
 
 	public virtual void Save(Call? call, string key, T item)
 	{
+		call ??= new();
+		Index?.Add(call, key);
 		DataRepo.Save<T>(GroupId, key, item, call);
 	}
 
@@ -40,9 +51,19 @@ public class DataRepoInstance<T> : IDataRepoInstance
 		return DataRepo.Load<T>(GroupId, key ?? DefaultKey, call, createIfNeeded, lazy);
 	}
 
+	public virtual DataPageView<T>? LoadPageView(Call? call, bool ascending = true)
+	{
+		return new DataPageView<T>(this, ascending);
+	}
+
 	public DataItemCollection<T> LoadAll(Call? call = null, bool lazy = false)
 	{
 		return DataRepo.LoadAll<T>(call, GroupId, lazy);
+	}
+
+	public ItemCollection<Header> LoadHeaders(Call? call = null)
+	{
+		return DataRepo.LoadHeaders(typeof(T), GroupPath);
 	}
 
 	public virtual void Delete(Call? call, T item)
@@ -52,11 +73,16 @@ public class DataRepoInstance<T> : IDataRepoInstance
 
 	public virtual void Delete(Call? call = null, string? key = null)
 	{
-		DataRepo.Delete<T>(call, GroupId, key ?? DefaultKey);
+		call ??= new();
+		key ??= DefaultKey;
+		Index?.Remove(call, key);
+		DataRepo.Delete<T>(call, GroupId, key);
 	}
 
 	public virtual void DeleteAll(Call? call)
 	{
+		call ??= new();
+		Index?.RemoveAll(call);
 		DataRepo.DeleteAll<T>(call, GroupId);
 	}
 }

@@ -28,6 +28,7 @@ public class ToolbarButton : Button, IStyleable, ILayoutable, IDisposable
 	public bool ShowTask;
 	public bool DisableWhileRunning = true;
 	public bool IsActive; // Only allow one task at once (modifying IsEnabled doesn't updating elsewhere)
+
 	public KeyGesture? KeyGesture;
 
 	public TimeSpan MinWaitTime = TimeSpan.FromSeconds(1); // Wait time between clicks
