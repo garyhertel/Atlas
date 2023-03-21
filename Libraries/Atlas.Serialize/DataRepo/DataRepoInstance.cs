@@ -63,7 +63,7 @@ public class DataRepoInstance<T> : IDataRepoInstance
 
 	public ItemCollection<Header> LoadHeaders(Call? call = null)
 	{
-		return DataRepo.LoadHeaders(typeof(T), GroupPath);
+		return DataRepo.LoadHeaders(typeof(T), GroupId, call);
 	}
 
 	public virtual void Delete(Call? call, T item)

@@ -48,7 +48,7 @@ public class DataItemCollection<T> : ItemCollection<DataItem<T>>
 
 	public void Add(string key, T value)
 	{
-		var dataItem = new DataItem<T>(key, value, this);
+		var dataItem = new DataItem<T>(key, value);
 		Add(dataItem);
 		Lookup.Add(key, dataItem);
 	}
@@ -61,7 +61,7 @@ public class DataItemCollection<T> : ItemCollection<DataItem<T>>
 		}
 		else
 		{
-			var dataItem = new DataItem<T>(key, value, this);
+			var dataItem = new DataItem<T>(key, value);
 			Add(dataItem);
 			Lookup[key] = dataItem;
 		}
@@ -109,22 +109,14 @@ public class DataItem<T> : IDataItem
 
 	public DateTime? ModifiedUtc => FileInfo?.LastWriteTimeUtc;
 
-	public DataItemCollection<T>? DataItemCollection;
-
 	public override string ToString() => Key;
 
 	public DataItem() { }
 
-	public DataItem(string key, T? value, DataItemCollection<T>? dataItemCollection = null, string? path = null)
+	public DataItem(string key, T? value, string? path = null)
 	{
 		Key = key;
 		Value = value;
-		DataItemCollection = dataItemCollection;
 		Path = path;
-	}
-
-	public void Save()
-	{
-		DataItemCollection!.DataRepo.Save(Value);
 	}
 }

@@ -113,14 +113,14 @@ public class DataRepo
 		{
 			T? obj = serializerFile.Load<T>(call, lazy);
 			if (obj != null)
-				return new DataItem<T>(key, obj, null, serializerFile.DataPath);
+				return new DataItem<T>(key, obj, serializerFile.DataPath);
 		}
 
 		if (createIfNeeded)
 		{
 			T newObject = Activator.CreateInstance<T>();
 			Debug.Assert(newObject != null);
-			return new DataItem<T>(key, newObject, null, serializerFile.DataPath);
+			return new DataItem<T>(key, newObject, serializerFile.DataPath);
 		}
 		return default;
 	}

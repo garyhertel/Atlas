@@ -10,6 +10,8 @@ public class DataPageView<T>
 
 	private IEnumerable<string>? _keyIterator;
 
+	public List<string>? Keys => GetEnumerable()?.ToList();
+
 	public DataPageView(DataRepoInstance<T> dataRepoInstance, bool ascending) : base()
 	{
 		DataRepoInstance = dataRepoInstance;
