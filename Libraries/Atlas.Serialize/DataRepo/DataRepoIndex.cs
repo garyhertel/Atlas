@@ -16,6 +16,8 @@ public class DataRepoIndex
 
 public class DataRepoIndexInstance<T>
 {
+	public static readonly TimeSpan MutexTimeout = TimeSpan.FromSeconds(5);
+
 	public DataRepoInstance<T> DataRepoInstance { get; set; }
 
 	public string GroupId => DataRepoInstance.GroupId;
@@ -27,7 +29,7 @@ public class DataRepoIndexInstance<T>
 
 	public class Indices
 	{
-		public List<Item> Items { get; set; }
+		public List<Item> Items { get; set; } = new();
 		public long NextIndex { get; set; }
 	}
 
@@ -43,7 +45,7 @@ public class DataRepoIndexInstance<T>
 
 		try
 		{
-			if (!mutex.WaitOne(TimeSpan.FromSeconds(5))) return null;
+			if (!mutex.WaitOne(MutexTimeout)) return null;
 		}
 		catch (AbandonedMutexException e)
 		{
@@ -85,7 +87,7 @@ public class DataRepoIndexInstance<T>
 
 		try
 		{
-			if (!mutex.WaitOne(TimeSpan.FromSeconds(5))) return;
+			if (!mutex.WaitOne(MutexTimeout)) return;
 		}
 		catch (AbandonedMutexException e)
 		{
@@ -121,7 +123,7 @@ public class DataRepoIndexInstance<T>
 
 		try
 		{
-			if (!mutex.WaitOne(TimeSpan.FromSeconds(5))) return;
+			if (!mutex.WaitOne(MutexTimeout)) return;
 		}
 		catch (AbandonedMutexException e)
 		{
@@ -201,7 +203,7 @@ public class DataRepoIndexInstance<T>
 		ItemCollection<Header> headers = DataRepoInstance.LoadHeaders(call);
 
 		int index = 0;
-		var items = headers
+		List<Item> items = headers
 			.Select(h => new Item(index++, h.Name))
 			.ToList();
 
