@@ -739,26 +739,26 @@ public class TabInstance : IDisposable
 	}
 
 	// replace with DataShared? Split call up?
-	public void SaveData(string name, object obj)
+	public void SaveData(string key, object obj)
 	{
-		DataApp.Save(name, obj, TaskInstance.Call);
+		DataApp.Save(key, obj, TaskInstance.Call);
 	}
 
-	public void SaveData(string directory, string name, object obj)
+	public void SaveData(string groupId, string key, object obj)
 	{
-		DataApp.Save(directory, name, obj, TaskInstance.Call);
+		DataApp.Save(groupId, key, obj, TaskInstance.Call);
 	}
 
 	// todo: Should createIfNeeded = false?
-	public T? LoadData<T>(string name, bool createIfNeeded = true)
+	public T? LoadData<T>(string key, bool createIfNeeded = true)
 	{
-		T? data = DataApp.Load<T>(name, TaskInstance.Call, createIfNeeded);
+		T? data = DataApp.Load<T>(key, TaskInstance.Call, createIfNeeded);
 		return data;
 	}
 
-	public T? LoadData<T>(string directory, string name, bool createIfNeeded = true)
+	public T? LoadData<T>(string groupId, string key, bool createIfNeeded = true)
 	{
-		T? data = DataApp.Load<T>(directory, name, TaskInstance.Call, createIfNeeded);
+		T? data = DataApp.Load<T>(groupId, key, TaskInstance.Call, createIfNeeded);
 		return data;
 	}
 

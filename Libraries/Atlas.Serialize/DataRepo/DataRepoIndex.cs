@@ -155,6 +155,10 @@ public class DataRepoIndexInstance<T>
 
 	private void Save(Indices indices)
 	{
+		if (!Directory.Exists(GroupPath))
+		{
+			Directory.CreateDirectory(GroupPath);
+		}
 		using var stream = new FileStream(DataPath!, FileMode.Create, FileAccess.ReadWrite, FileShare.Read);
 		using var writer = new BinaryWriter(stream);
 
