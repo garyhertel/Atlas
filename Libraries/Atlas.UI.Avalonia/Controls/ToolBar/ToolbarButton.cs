@@ -1,5 +1,6 @@
 using System.Windows.Input;
 using Atlas.Core;
+using Atlas.Resources;
 using Atlas.Tabs;
 using Atlas.UI.Avalonia.Themes;
 using Atlas.UI.Avalonia.Utilities;
@@ -47,7 +48,7 @@ public class ToolbarButton : Button, IStyleable, ILayoutable, IDisposable
 		CallAction = toolButton.Action;
 		CallActionAsync = toolButton.ActionAsync;
 
-		Initialize(toolButton.Icon);
+		Initialize(toolButton.IconResourceName);
 
 		if (toolButton.Default)
 			SetDefault();
@@ -58,16 +59,16 @@ public class ToolbarButton : Button, IStyleable, ILayoutable, IDisposable
 		}
 	}
 
-	public ToolbarButton(TabControlToolbar toolbar, string? label, string tooltip, Stream bitmapStream, ICommand? command = null)
+	public ToolbarButton(TabControlToolbar toolbar, string? label, string tooltip, string iconResourceName, ICommand? command = null)
 	{
 		Toolbar = toolbar;
 		Label = label;
 		Tooltip = tooltip;
 
-		Initialize(bitmapStream, command);
+		Initialize(iconResourceName, command);
 	}
 
-	private void Initialize(Stream bitmapStream, ICommand? command = null)
+	private void Initialize(string iconResourceName, ICommand? command = null)
 	{
 		Grid grid = new()
 		{
@@ -76,14 +77,14 @@ public class ToolbarButton : Button, IStyleable, ILayoutable, IDisposable
 		};
 
 		IImage sourceImage;
-		try
+		if (iconResourceName.EndsWith(".svg"))
 		{
-			bitmapStream.Position = 0;
-			sourceImage = new Bitmap(bitmapStream);
+			sourceImage = SvgUtils.GetSvgImage(iconResourceName);
 		}
-		catch (Exception)
+		else
 		{
-			sourceImage = SvgUtils.GetSvgImage(bitmapStream);
+			Stream stream = Icons.Streams.Get(iconResourceName);
+			sourceImage = new Bitmap(stream);
 		}
 
 		Image image = new()

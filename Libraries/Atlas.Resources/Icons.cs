@@ -6,22 +6,24 @@ namespace Atlas.Resources;
 public static class Icons
 {
 	public const string Logo = "Logo3.ico";
+	public class Png : NamedItemCollection<Png, string>
+	{
+		public const string Search16 = "search_right_light_16.png";
+		public const string ClearSearch = "clear_search.png";
 
-	public const string Search16 = "search_right_light_16.png";
-	public const string ClearSearch = "clear_search.png";
+		public const string Info1 = "info_24_759eeb.png";
 
-	public const string Info1 = "info_24_759eeb.png";
-	
-	public const string Info20 = "info_20_759eeb.png";
+		public const string Info20 = "info_20_759eeb.png";
 
-	public const string Unlock = "unlock.png";
-	public const string Password = "password.png";
+		public const string Unlock = "unlock.png";
+		public const string Password = "password.png";
 
-	public const string Paste = "paste_16.png";
+		public const string Paste = "paste_16.png";
 
-	public const string Bookmark = "bookmark.png";
+		public const string Bookmark = "bookmark.png";
+	}
 
-	public static class Svg
+	public class Svg : NamedItemCollection<Svg, string>
 	{
 		public const string Pin = "Placeholder.svg";
 
@@ -87,12 +89,12 @@ public static class Icons
 		public static Stream UpArrow => GetSvg(Svg.UpArrow);
 		public static Stream DownArrow => GetSvg(Svg.DownArrow);
 
-		public static Stream ClearSearch => Get(Icons.ClearSearch);
+		public static Stream ClearSearch => Get(Png.ClearSearch);
 		public static Stream Search => GetSvg(Svg.Search);
-		public static Stream Search16 => Get(Icons.Search16);
+		public static Stream Search16 => Get(Png.Search16);
 
-		public static Stream Info => Get(Icons.Info1);
-		public static Stream Info20 => Get(Icons.Info20);
+		public static Stream Info => Get(Png.Info1);
+		public static Stream Info20 => Get(Png.Info20);
 
 		public static Stream BlankDocument => GetSvg(Svg.BlankDocument);
 		public static Stream Save => GetSvg(Svg.Save);
@@ -103,8 +105,8 @@ public static class Icons
 
 		public static Stream Browser => GetSvg(Svg.Browser);
 
-		public static Stream Unlock => Get(Icons.Unlock);
-		public static Stream Password => Get(Icons.Password);
+		public static Stream Unlock => Get(Png.Unlock);
+		public static Stream Password => Get(Png.Password);
 		public static Stream Enter => GetSvg(Svg.Enter);
 
 		public static Stream Copy => GetSvg(Svg.Copy);
@@ -113,7 +115,7 @@ public static class Icons
 		public static Stream DuplicateLeft => GetSvg(Svg.DuplicateLeft);
 		public static Stream DuplicateLeftMultiple => GetSvg(Svg.DuplicateLeftMultiple);
 		public static Stream PadNote => GetSvg(Svg.PadNote);
-		public static Stream Paste => Get(Icons.Paste);
+		public static Stream Paste => Get(Png.Paste);
 		public static Stream Eraser => GetSvg(Svg.Eraser);
 
 		public static Stream Refresh => GetSvg(Svg.Refresh);
@@ -124,7 +126,7 @@ public static class Icons
 		public static Stream DeleteList => GetSvg(Svg.DeleteList);
 
 		public static Stream Link => GetSvg(Svg.Link);
-		public static Stream Bookmark => Get(Icons.Bookmark);
+		public static Stream Bookmark => Get(Png.Bookmark);
 		public static Stream Import => GetSvg(Svg.Import);
 		public static Stream Screenshot => GetSvg(Svg.Screenshot);
 

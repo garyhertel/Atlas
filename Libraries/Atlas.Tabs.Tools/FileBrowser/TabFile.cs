@@ -39,10 +39,10 @@ public class TabFile : ITab
 		public ToolButton? ButtonSelect { get; set; }
 
 		[Separator]
-		public ToolButton ButtonOpenFolder { get; set; } = new("Open Folder", Icons.Streams.OpenFolder);
+		public ToolButton ButtonOpenFolder { get; set; } = new("Open Folder", Icons.Svg.OpenFolder);
 
 		[Separator]
-		public ToolButton ButtonDelete { get; set; } = new("Delete", Icons.Streams.Delete);
+		public ToolButton ButtonDelete { get; set; } = new("Delete", Icons.Svg.Delete);
 	}
 
 	public class Instance : TabInstance
@@ -66,7 +66,7 @@ public class TabFile : ITab
 			Toolbar toolbar = new();
 			if (Tab.SelectFileDelegate != null)
 			{
-				toolbar.ButtonSelect = new("Select", Icons.Streams.Enter);
+				toolbar.ButtonSelect = new("Select", Icons.Svg.Enter);
 				toolbar.ButtonSelect.Action = SelectClicked;
 			}
 			toolbar.ButtonOpenFolder.Action = OpenFolder;
