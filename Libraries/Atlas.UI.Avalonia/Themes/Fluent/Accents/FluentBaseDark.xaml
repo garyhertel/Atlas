@@ -194,7 +194,8 @@
 
         <!-- Toolbar -->
         <SolidColorBrush x:Key="ToolbarButtonBackgroundBrush" Color="#121212" />
-        <SolidColorBrush x:Key="ToolbarButtonBackgroundHoverBrush" Color="#2040a0" />
+        <SolidColorBrush x:Key="ToolbarButtonBackgroundHoverBrush" Color="#2c2c2c" />
+        <SolidColorBrush x:Key="ToolbarButtonForegroundHoverBrush" Color="#dddddd" />
         <SolidColorBrush x:Key="ToolbarButtonSeparatorBrush" Color="{DynamicResource IconForegroundColor}" />
 
         <SolidColorBrush x:Key="ToolbarLabelForegroundBrush" Color="{DynamicResource TextForegroundColor}" />

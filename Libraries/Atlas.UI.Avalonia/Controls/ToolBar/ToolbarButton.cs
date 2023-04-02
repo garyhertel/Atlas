@@ -37,6 +37,10 @@ public class ToolbarButton : Button, IStyleable, ILayoutable, IDisposable
 	private DateTime? _lastInvoked;
 	private DispatcherTimer? _dispatcherTimer;  // delays auto selection to throttle updates
 
+	private Image? _imageControl;
+	private IImage? _defaultImage;
+	private IImage? _highlightImage;
+
 	public ToolbarButton(TabControlToolbar toolbar, ToolButton toolButton)
 	{
 		Toolbar = toolbar;
@@ -76,27 +80,27 @@ public class ToolbarButton : Button, IStyleable, ILayoutable, IDisposable
 			RowDefinitions = new RowDefinitions("Auto"),
 		};
 
-		IImage sourceImage;
 		if (iconResourceName.EndsWith(".svg"))
 		{
-			sourceImage = SvgUtils.GetSvgImage(iconResourceName);
+			_defaultImage = SvgUtils.GetSvgImage(iconResourceName);
+			_highlightImage = SvgUtils.GetSvgImage(iconResourceName, Theme.ToolbarButtonForegroundHover.Color);
 		}
 		else
 		{
 			Stream stream = Icons.Streams.Get(iconResourceName);
-			sourceImage = new Bitmap(stream);
+			_defaultImage = new Bitmap(stream);
 		}
 
-		Image image = new()
+		_imageControl = new()
 		{
-			Source = sourceImage,
+			Source = _defaultImage,
 			Width = 24,
 			Height = 24,
 			//MaxWidth = 24,
 			//MaxHeight = 24,
 			Stretch = Stretch.None,
 		};
-		grid.Children.Add(image);
+		grid.Children.Add(_imageControl);
 
 		if (Label != null)
 		{
@@ -222,19 +226,21 @@ public class ToolbarButton : Button, IStyleable, ILayoutable, IDisposable
 		}
 	}
 
-	// DefaultTheme.xaml is overriding this currently
 	protected override void OnPointerEnter(PointerEventArgs e)
 	{
 		base.OnPointerEnter(e);
-		BorderBrush = new SolidColorBrush(Colors.Black); // can't overwrite hover border :(
-		Background = Theme.ToolbarButtonBackgroundHover;
+
+		if (_highlightImage != null)
+		{
+			_imageControl!.Source = _highlightImage;
+		}
 	}
 
 	protected override void OnPointerLeave(PointerEventArgs e)
 	{
 		base.OnPointerLeave(e);
-		Background = Theme.ToolbarButtonBackground;
-		BorderBrush = Background;
+
+		_imageControl!.Source = _defaultImage;
 	}
 
 	private void DispatcherTimer_Tick(object? sender, EventArgs e)
