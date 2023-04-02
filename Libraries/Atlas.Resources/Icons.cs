@@ -53,7 +53,7 @@ public static class Icons
 		public const string Enter = "Enter.svg";
 
 		public const string Copy = "Copy.svg";
-		public const string Duplicate = "Duplicate.svg";
+		public const string DuplicateRight = "DuplicateRight.svg";
 		public const string DuplicateRightMultiple = "DuplicateRightMultiple.svg";
 		public const string DuplicateLeft = "DuplicateLeft.svg";
 		public const string DuplicateLeftMultiple = "DuplicateLeftMultiple.svg";
@@ -110,7 +110,7 @@ public static class Icons
 		public static Stream Enter => GetSvg(Svg.Enter);
 
 		public static Stream Copy => GetSvg(Svg.Copy);
-		public static Stream Duplicate => GetSvg(Svg.Duplicate);
+		public static Stream Duplicate => GetSvg(Svg.DuplicateRight);
 		public static Stream DuplicateRightMultiple => GetSvg(Svg.DuplicateRightMultiple);
 		public static Stream DuplicateLeft => GetSvg(Svg.DuplicateLeft);
 		public static Stream DuplicateLeftMultiple => GetSvg(Svg.DuplicateLeftMultiple);
