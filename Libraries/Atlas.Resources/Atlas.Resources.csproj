@@ -59,10 +59,6 @@
     <None Remove="Icons\svg\Copy.svg" />
     <None Remove="Icons\svg\DeleteList.svg" />
     <None Remove="Icons\svg\DownArrow.svg" />
-    <None Remove="Icons\svg\DuplicateLeft.svg" />
-    <None Remove="Icons\svg\DuplicateLeftMultiple.svg" />
-    <None Remove="Icons\svg\DuplicateRight.svg" />
-    <None Remove="Icons\svg\DuplicateRightMultiple.svg" />
     <None Remove="Icons\svg\Enter.svg" />
     <None Remove="Icons\svg\Eraser.svg" />
     <None Remove="Icons\svg\LeftArrow.svg" />
@@ -135,10 +131,6 @@
     <EmbeddedResource Include="Icons\svg\Copy.svg" />
     <EmbeddedResource Include="Icons\svg\DeleteList.svg" />
     <EmbeddedResource Include="Icons\svg\DownArrow.svg" />
-    <EmbeddedResource Include="Icons\svg\DuplicateRight.svg" />
-    <EmbeddedResource Include="Icons\svg\DuplicateLeft.svg" />
-    <EmbeddedResource Include="Icons\svg\DuplicateLeftMultiple.svg" />
-    <EmbeddedResource Include="Icons\svg\DuplicateRightMultiple.svg" />
     <EmbeddedResource Include="Icons\svg\Enter.svg" />
     <EmbeddedResource Include="Icons\svg\Eraser.svg" />
     <EmbeddedResource Include="Icons\svg\LeftArrowCircle.svg" />

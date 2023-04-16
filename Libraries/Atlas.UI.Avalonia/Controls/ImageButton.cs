@@ -1,3 +1,4 @@
+using Atlas.Resources;
 using Atlas.UI.Avalonia.Themes;
 using Atlas.UI.Avalonia.Utilities;
 using Avalonia;
@@ -14,6 +15,12 @@ public class ImageButton : Button, IStyleable, ILayoutable
 	Type IStyleable.StyleKey => typeof(Button);
 
 	public string? Tooltip { get; set; }
+
+	public ImageButton(ResourceView imageResource)
+	{
+		IImage image = LoadImageStream(imageResource.Stream);
+		Initialize(image);
+	}
 
 	public ImageButton(Stream bitmapStream)
 	{
