@@ -22,7 +22,7 @@ using System.Reflection;
 
 namespace Atlas.UI.Avalonia.Controls;
 
-public class TabControlDataGrid : Grid, IDisposable, ITabSelector, ITabItemSelector, ILayoutable, ITabDataControl
+public class TabControlDataGrid : Grid, IDisposable, ITabSelector, ITabItemSelector, ITabDataControl // , ILayoutable
 {
 	private const int ColumnPercentBased = 150;
 	private const int MaxMinColumnWidth = 200;
@@ -82,7 +82,7 @@ public class TabControlDataGrid : Grid, IDisposable, ITabSelector, ITabItemSelec
 			{
 				CollectionView = new DataGridCollectionView(List);
 
-				DataGrid.Items = CollectionView; // DataGrid autoselects on assignment :(
+				DataGrid.ItemsSource = CollectionView; // DataGrid autoselects on assignment :(
 
 				if (AutoSelect == AutoSelectType.None)
 					ClearSelection();
@@ -181,7 +181,7 @@ public class TabControlDataGrid : Grid, IDisposable, ITabSelector, ITabItemSelec
 
 			BorderBrush = Brushes.Black,
 			RowBackground = AtlasTheme.GridBackground,
-			AlternatingRowBackground = AtlasTheme.GridBackground,
+			//AlternatingRowBackground = AtlasTheme.GridBackground,
 			HorizontalAlignment = HorizontalAlignment.Stretch,
 			VerticalAlignment = VerticalAlignment.Stretch,
 			HorizontalScrollBarVisibility = ScrollBarVisibility.Auto,
@@ -202,7 +202,7 @@ public class TabControlDataGrid : Grid, IDisposable, ITabSelector, ITabItemSelec
 			AddColumns();
 
 		CollectionView = new DataGridCollectionView(List);
-		DataGrid.Items = CollectionView;
+		DataGrid.ItemsSource = CollectionView;
 		DataGrid.SelectedItem = null;
 
 		DataGrid.SelectionChanged += DataGrid_SelectionChanged;
@@ -268,6 +268,8 @@ public class TabControlDataGrid : Grid, IDisposable, ITabSelector, ITabItemSelec
 		{
 			if (!column.IsVisible)
 				continue;
+
+			continue;
 
 			DataGridLength originalWidth = originalWidths[column];
 
@@ -444,20 +446,20 @@ public class TabControlDataGrid : Grid, IDisposable, ITabSelector, ITabItemSelec
 		}
 	}
 
-	private static bool IsControlSelectable(IVisual? visual)
+	private static bool IsControlSelectable(IInputElement? inputElement)
 	{
-		if (visual == null)
+		if (inputElement == null)
 			return false;
 
-		Type type = visual.GetType();
+		Type type = inputElement.GetType();
 
 		return
 			typeof(CheckBox).IsAssignableFrom(type) ||
-			typeof(Button).IsAssignableFrom(type) ||
-			IsControlSelectable(visual.VisualParent);
+			typeof(Button).IsAssignableFrom(type);// ||
+			//IsControlSelectable(inputElement.VisualParent);
 	}
 
-	private static DataGrid? GetOwningDataGrid(IControl? control)
+	private static DataGrid? GetOwningDataGrid(StyledElement? control)
 	{
 		if (control == null)
 			return null;
@@ -1144,7 +1146,7 @@ public class TabControlDataGrid : Grid, IDisposable, ITabSelector, ITabItemSelec
 			DataGrid.CellPointerPressed -= DataGrid_CellPointerPressed;
 			DataGrid.ColumnReordered -= DataGrid_ColumnReordered;
 
-			DataGrid.Items = null;
+			DataGrid.ItemsSource = null;
 
 			if (DataGrid.ContextMenu is IDisposable contextMenu)
 			{
@@ -1198,12 +1200,12 @@ public class TabControlDataGrid : Grid, IDisposable, ITabSelector, ITabItemSelec
 	}
 
 	// This sometimes runs into rare issues where this doesn't display when it should
-	public override void Render(DrawingContext context)
+	/*public override void Render(DrawingContext context)
 	{
 		Dispatcher.UIThread.Post(UpdateVisible, DispatcherPriority.ContextIdle);
 
 		base.Render(context);
-	}
+	}*/
 
 	// Hide control when offscreen
 	private void UpdateVisible()

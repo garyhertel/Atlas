@@ -14,7 +14,7 @@ using System.Reflection;
 
 namespace Atlas.UI.Avalonia.Controls;
 
-public class TabControlTextBox : TextBox, IStyleable, ILayoutable
+public class TabControlTextBox : TextBox, IStyleable //, ILayoutable
 {
 	Type IStyleable.StyleKey => typeof(TextBox);
 

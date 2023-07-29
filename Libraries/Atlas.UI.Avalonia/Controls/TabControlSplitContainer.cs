@@ -75,15 +75,15 @@ public class TabControlSplitContainer : Grid
 		Background = AtlasTheme.TabBackground;
 	}
 
-	protected override void OnPointerEnter(PointerEventArgs e)
+	protected override void OnPointerEntered(PointerEventArgs e)
 	{
-		base.OnPointerEnter(e);
+		base.OnPointerEntered(e);
 		Background = AtlasTheme.BackgroundFocused;
 	}
 
-	protected override void OnPointerLeave(PointerEventArgs e)
+	protected override void OnPointerExited(PointerEventArgs e)
 	{
-		base.OnPointerLeave(e);
+		base.OnPointerExited(e);
 		Background = AtlasTheme.TabBackground;
 	}
 
@@ -312,7 +312,7 @@ public class TabControlSplitContainer : Grid
 		// objects might still be referenced and re-added again
 		if (dispose)
 		{
-			foreach (IControl control in Children)
+			foreach (Control control in Children)
 			{
 				if (control is IDisposable disposable)
 					disposable.Dispose(); // does Children.Clear() already handle this?

@@ -80,7 +80,7 @@ public class BaseWindow : Window
 
 		PositionChanged += BaseWindow_PositionChanged;
 
-		this.GetObservable(ClientSizeProperty).Subscribe(Resize);
+		//this.GetObservable(ClientSizeProperty).Subscribe(Resize);
 	}
 
 	public virtual void AddTab(ITab tab)
@@ -203,11 +203,11 @@ public class BaseWindow : Window
 		//SaveWindowSettings();
 	}
 
-	protected override void HandleWindowStateChanged(WindowState state)
+	/*protected override void HandleWindowStateChanged(WindowState state)
 	{
 		base.HandleWindowStateChanged(state);
 		SaveWindowSettings();
-	}
+	}*/
 
 	// this fires too often, could attach a dispatch timer, or add an override method
 	private void BaseWindow_PositionChanged(object? sender, PixelPointEventArgs e)

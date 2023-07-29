@@ -2,7 +2,7 @@ using Atlas.Core;
 using Atlas.Tabs.Tools;
 using Atlas.UI.Avalonia.Tabs;
 using Avalonia;
-using OxyPlot.Avalonia;
+//using OxyPlot.Avalonia;
 
 namespace Atlas.Start.Avalonia;
 
@@ -10,7 +10,7 @@ static class Program
 {
 	static int Main(string[] args)
 	{
-		OxyPlotModule.EnsureLoaded();
+		//OxyPlotModule.EnsureLoaded();
 		AppBuilder builder = BuildAvaloniaApp();
 
 		try
@@ -30,7 +30,7 @@ static class Program
 			.With(new Win32PlatformOptions
 			{
 				//UseDeferredRendering = false, // Causes DataGrid blank columns when scrolling right?
-				AllowEglInitialization = true,
+				//AllowEglInitialization = true,
 			})
 			.LogToTrace();
 }

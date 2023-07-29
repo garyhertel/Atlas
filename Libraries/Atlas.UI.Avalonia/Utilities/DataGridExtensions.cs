@@ -19,7 +19,7 @@ public static class DataGridExtensions
 			return null;
 
 		var sb = new StringBuilder();
-		foreach (var item in dataGrid.Items)
+		foreach (var item in dataGrid.ItemsSource)
 		{
 			Binding binding = (Binding)column.Binding;
 			string propertyName = binding.Path;
@@ -99,7 +99,7 @@ public static class DataGridExtensions
 		if (dataGrid == null)
 			return null;
 
-		GetDataGridContents(dataGrid, dataGrid.Items,
+		GetDataGridContents(dataGrid, dataGrid.ItemsSource,
 			out List<ColumnInfo> columns,
 			out List<List<string>> contentRows);
 
@@ -111,7 +111,7 @@ public static class DataGridExtensions
 		if (dataGrid == null)
 			return null;
 
-		GetDataGridContents(dataGrid, dataGrid.Items,
+		GetDataGridContents(dataGrid, dataGrid.ItemsSource,
 			out List<ColumnInfo> columns,
 			out List<List<string>> contentRows);
 

@@ -131,7 +131,7 @@ public class TabControlAvaloniaEdit : Grid
 		
 		TextEditor.ShowLineNumbers = true;
 
-		foreach (IControl control in TextEditor.TextArea.LeftMargins)
+		foreach (Control control in TextEditor.TextArea.LeftMargins)
 		{
 			if (control is LineNumberMargin margin)
 			{

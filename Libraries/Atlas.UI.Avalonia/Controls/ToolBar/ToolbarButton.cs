@@ -15,7 +15,7 @@ using Avalonia.Threading;
 
 namespace Atlas.UI.Avalonia.Controls;
 
-public class ToolbarButton : Button, IStyleable, ILayoutable, IDisposable
+public class ToolbarButton : Button, IStyleable, IDisposable // , ILayoutable
 {
 	Type IStyleable.StyleKey => typeof(ToolbarButton);
 
@@ -235,9 +235,9 @@ public class ToolbarButton : Button, IStyleable, ILayoutable, IDisposable
 		}
 	}
 
-	protected override void OnPointerEnter(PointerEventArgs e)
+	protected override void OnPointerEntered(PointerEventArgs e)
 	{
-		base.OnPointerEnter(e);
+		base.OnPointerEntered(e);
 
 		if (HighlightImage != null)
 		{
@@ -245,9 +245,9 @@ public class ToolbarButton : Button, IStyleable, ILayoutable, IDisposable
 		}
 	}
 
-	protected override void OnPointerLeave(PointerEventArgs e)
+	protected override void OnPointerExited(PointerEventArgs e)
 	{
-		base.OnPointerLeave(e);
+		base.OnPointerExited(e);
 
 		_imageControl!.Source = _defaultImage;
 	}

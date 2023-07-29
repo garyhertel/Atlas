@@ -287,7 +287,7 @@ public class TabView : Grid, IDisposable
 	{
 		if (_tabParentControls == null) return;
 
-		foreach (IControl control in _tabParentControls.Children)
+		foreach (Control control in _tabParentControls.Children)
 		{
 			if (control is IValidationControl paramsControl)
 			{
@@ -647,20 +647,20 @@ public class TabView : Grid, IDisposable
 			//	return false;
 
 			// don't show if the new control won't have enough room
-			IControl? control = Parent;
+			StyledElement? styledElement = Parent;
 			double offset = _tabChildControls.Bounds.X;
-			while (control != null)
+			while (styledElement != null)
 			{
-				if (control is ScrollViewer scrollViewer)
+				if (styledElement is ScrollViewer scrollViewer)
 				{
 					if (offset - scrollViewer.Offset.X > scrollViewer.Bounds.Width)
 						return false;
 					break;
 				}
-				else
+				else if (styledElement is Control control)
 				{
 					offset += control.Bounds.X;
-					control = control.Parent;
+					styledElement = control.Parent;
 				}
 			}
 			//GetControlOffset(Parent);
@@ -673,20 +673,20 @@ public class TabView : Grid, IDisposable
 
 	private double GetFillerPanelWidth()
 	{
-		IControl? control = Parent;
+		StyledElement? styledElement = Parent;
 		double offset = _tabChildControls!.Bounds.X;
-		while (control != null)
+		while (styledElement != null)
 		{
-			if (control is ScrollViewer scrollViewer)
+			if (styledElement is ScrollViewer scrollViewer)
 			{
 				double width = scrollViewer.Bounds.Width - (offset - scrollViewer.Offset.X);
 				return Math.Max(0, width - 10);
 				//return width;
 			}
-			else
+			else if (styledElement is Control control)
 			{
 				offset += control.Bounds.X;
-				control = control.Parent;
+				styledElement = control.Parent;
 			}
 		}
 		return 0;

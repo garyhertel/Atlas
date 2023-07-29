@@ -183,8 +183,8 @@ public class TabDateTimePicker : Grid, IStyleable
 			[Grid.ColumnProperty] = 2,
 		};
 		button.BorderBrush = button.Background;
-		button.PointerEnter += Button_PointerEnter;
-		button.PointerLeave += Button_PointerLeave;
+		button.PointerEntered += Button_PointerEnter;
+		button.PointerExited += Button_PointerExited;
 
 		//var button = new ToolbarButton(tooltip, command, resource);
 		//AddControl(button);
@@ -199,7 +199,7 @@ public class TabDateTimePicker : Grid, IStyleable
 		button.Background = AtlasTheme.ToolbarButtonBackgroundHover;
 	}
 
-	private void Button_PointerLeave(object? sender, PointerEventArgs e)
+	private void Button_PointerExited(object? sender, PointerEventArgs e)
 	{
 		Button button = (Button)sender!;
 		button.Background = AtlasTheme.TabBackground;

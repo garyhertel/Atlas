@@ -27,7 +27,7 @@ public class DataGridPropertyCheckBoxColumn : DataGridCheckBoxColumn
 		CanUserSort = true;
 	}
 
-	protected override IControl GenerateElement(DataGridCell cell, object dataItem)
+	protected override Control GenerateElement(DataGridCell cell, object dataItem)
 	{
 		var checkBox = (CheckBox)GenerateEditingElementDirect(cell, dataItem);
 		if (Binding != null)

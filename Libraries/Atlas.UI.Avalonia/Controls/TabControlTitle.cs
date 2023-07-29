@@ -136,7 +136,7 @@ public class TabControlTitle : UserControl, IDisposable
 	{
 		if (TextBlock != null)
 		{
-			TextBlock.ContextMenu!.Items = null;
+			TextBlock.ContextMenu!.ItemsSource = null;
 			TextBlock.ContextMenu = null;
 			TextBlock = null;
 		}

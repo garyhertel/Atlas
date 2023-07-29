@@ -118,7 +118,7 @@ public class DataGridPropertyTextColumn : DataGridTextColumn
 		base.RefreshCellContent(element, propertyName);
 	}*/
 
-	protected override IControl GenerateElement(DataGridCell cell, object dataItem)
+	protected override Control GenerateElement(DataGridCell cell, object dataItem)
 	{
 		//cell.MaxHeight = MaxDesiredHeight; // don't let them have more than a few lines each
 
@@ -153,7 +153,7 @@ public class DataGridPropertyTextColumn : DataGridTextColumn
 
 	// Styled columns have a different line color, so we have to draw them manually
 	// They also use different background colors, with different shades for links vs non-links
-	private IControl AddStyling(DataGridCell cell, TextBlock textBlock)
+	private Control AddStyling(DataGridCell cell, TextBlock textBlock)
 	{
 		var border = new Border()
 		{

@@ -27,7 +27,7 @@ public class DataGridBoundTextColumn : DataGridTextColumn
 		//AddHeaderContextMenu();
 	}
 
-	protected override IControl GenerateElement(DataGridCell cell, object dataItem)
+	protected override Control GenerateElement(DataGridCell cell, object dataItem)
 	{
 		cell.MaxHeight = 100; // don't let them have more than a few lines each
 		cell.BorderBrush = Brushes.Black;
@@ -40,7 +40,7 @@ public class DataGridBoundTextColumn : DataGridTextColumn
 		return textBlock;
 	}
 
-	public class TextBlockElement : TextBlock, IStyleable, ILayoutable
+	public class TextBlockElement : TextBlock, IStyleable //, ILayoutable
 	{
 		Type IStyleable.StyleKey => typeof(TextBlock);
 
@@ -141,7 +141,7 @@ public class DataGridBoundTextColumn : DataGridTextColumn
 
 		ContextMenu contextMenu = new()
 		{
-			Items = list,
+			ItemsSource = list,
 		};
 
 		textBlock.ContextMenu = contextMenu;

@@ -9,7 +9,7 @@ using System.Reflection;
 
 namespace Atlas.UI.Avalonia.Controls;
 
-public class TabControlComboBox : ComboBox, IStyleable, ILayoutable
+public class TabControlComboBox : ComboBox, IStyleable //, ILayoutable
 {
 	Type IStyleable.StyleKey => typeof(ComboBox);
 
@@ -24,7 +24,7 @@ public class TabControlComboBox : ComboBox, IStyleable, ILayoutable
 	{
 		InitializeComponent();
 
-		Items = items;
+		ItemsSource = items;
 		SelectedItem = selectedItem;
 	}
 
@@ -41,11 +41,11 @@ public class TabControlComboBox : ComboBox, IStyleable, ILayoutable
 			PropertyInfo propertyInfo = property.Object.GetType().GetProperty(listPropertyName, 
 				BindingFlags.Public | BindingFlags.NonPublic | 
 				BindingFlags.Instance | BindingFlags.Static)!;
-			Items = propertyInfo.GetValue(property.Object) as IEnumerable;
+			ItemsSource = propertyInfo.GetValue(property.Object) as IEnumerable;
 		}
 		else
 		{
-			Items = property.UnderlyingType.GetEnumValues();
+			ItemsSource = property.UnderlyingType.GetEnumValues();
 		}
 		Bind(property.Object, property.PropertyInfo.Name);
 	}

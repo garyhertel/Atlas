@@ -188,7 +188,7 @@ public class TabControlToolbar : Grid, IDisposable
 
 	public void Dispose()
 	{
-		foreach (IControl control in Children)
+		foreach (Control control in Children)
 		{
 			if (control is IDisposable disposable)
 				disposable.Dispose();

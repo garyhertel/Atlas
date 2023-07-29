@@ -44,14 +44,14 @@ public class ScreenCapture : Grid
 		return snapshotButton;
 	}
 
-	public ScreenCapture(TabViewer tabViewer, IVisual visual)
+	public ScreenCapture(TabViewer tabViewer, Control control)
 	{
 		TabViewer = tabViewer;
 
-		InitializeComponent(visual);
+		InitializeComponent(control);
 	}
 
-	private void InitializeComponent(IVisual visual)
+	private void InitializeComponent(Control control)
 	{
 		Background = Brushes.Black;
 
@@ -62,7 +62,7 @@ public class ScreenCapture : Grid
 		RowDefinitions = new RowDefinitions("Auto,*");
 
 		AddToolbar();
-		AddContent(visual);
+		AddContent(control);
 	}
 
 	private void AddToolbar()
@@ -74,7 +74,7 @@ public class ScreenCapture : Grid
 		Children.Add(toolbar);
 	}
 
-	private void AddContent(IVisual visual)
+	private void AddContent(Control control)
 	{
 		_contentGrid = new Grid()
 		{
@@ -85,7 +85,7 @@ public class ScreenCapture : Grid
 		};
 		Children.Add(_contentGrid);
 
-		AddBackgroundImage(visual);
+		AddBackgroundImage(control);
 
 		_selectionImage = new Image()
 		{
@@ -181,15 +181,15 @@ public class ScreenCapture : Grid
 			bitmap.Save(filePath);
 	}
 
-	private Window? GetWindow(IControl control)
+	private Window? GetWindow(StyledElement styledElement)
 	{
-		if (control is Window window)
+		if (styledElement is Window window)
 			return window;
 
-		if (control.Parent == null)
+		if (styledElement.Parent == null)
 			return null;
 
-		return GetWindow(control.Parent);
+		return GetWindow(styledElement.Parent);
 	}
 
 	private void Close(Call call)
@@ -197,18 +197,18 @@ public class ScreenCapture : Grid
 		TabViewer.ClearContent();
 	}
 
-	private void AddBackgroundImage(IVisual visual)
+	private void AddBackgroundImage(Control control)
 	{
-		var bounds = visual.Bounds;
+		var bounds = control.Bounds;
 
 		_originalBitmap = new RenderTargetBitmap(new PixelSize((int)bounds.Right, (int)bounds.Bottom), new Vector(96, 96));
-		_originalBitmap.Render(visual);
+		_originalBitmap.Render(control);
 
 		_backgroundBitmap = new RenderTargetBitmap(new PixelSize((int)bounds.Width, (int)bounds.Height), new Vector(96, 96));
 
-		using (var ctx = _backgroundBitmap.CreateDrawingContext(null))
+		using (var ctx = _backgroundBitmap.CreateDrawingContext())
 		{
-			ctx.DrawBitmap(_originalBitmap.PlatformImpl, 0.5, bounds, bounds);
+			//ctx.DrawBitmap(_originalBitmap.PlatformImpl, 0.5, bounds, bounds); // v11 fix
 		}
 
 		_backgroundImage = new Image()
@@ -230,9 +230,9 @@ public class ScreenCapture : Grid
 
 		var bitmap = new RenderTargetBitmap(new PixelSize((int)destRect.Width, (int)destRect.Height), new Vector(96, 96));
 
-		using (var ctx = bitmap.CreateDrawingContext(null))
+		using (var ctx = bitmap.CreateDrawingContext())
 		{
-			ctx.DrawBitmap(_originalBitmap!.PlatformImpl, 1, _selectionRect, destRect);
+			//ctx.DrawBitmap(_originalBitmap!.PlatformImpl, 1, _selectionRect, destRect); // v11 fix
 		};
 		return bitmap;
 	}
@@ -299,9 +299,9 @@ public class ScreenCapture : Grid
 		var brush = AtlasTheme.ToolbarLabelForeground;
 		var innerPen = new Pen(Brushes.Black, 2, lineCap: PenLineCap.Square);
 		var outerPen = new Pen(brush, 4, lineCap: PenLineCap.Square);
-		using (var ctx = _selectionBitmap.CreateDrawingContext(null))
+		using (var ctx = _selectionBitmap.CreateDrawingContext())
 		{
-			ctx.DrawBitmap(_originalBitmap.PlatformImpl, 1, _selectionRect, _selectionRect);
+			//ctx.DrawBitmap(_originalBitmap.PlatformImpl, 1, _selectionRect, _selectionRect); // v11 fix
 			ctx.DrawRectangle(null, outerPen, borderRect.Inflate(1));
 			ctx.DrawRectangle(null, innerPen, borderRect);
 		}

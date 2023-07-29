@@ -66,7 +66,7 @@ public class DataGridContextMenu : ContextMenu, IStyleable, IDisposable
 		menuItemCopyDataGridCsv.Click += MenuItemCopyDataGridCsv_Click;
 		list.Add(menuItemCopyDataGridCsv);
 
-		Items = list;
+		ItemsSource = list;
 
 		DataGrid.CellPointerPressed += DataGrid_CellPointerPressed;
 	}
@@ -164,6 +164,6 @@ public class DataGridContextMenu : ContextMenu, IStyleable, IDisposable
 		DataGrid.CellPointerPressed -= DataGrid_CellPointerPressed;
 		Column = null;
 		Cell = null;
-		Items = null;
+		ItemsSource = null;
 	}
 }

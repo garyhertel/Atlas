@@ -8,7 +8,7 @@ using System.Reflection;
 
 namespace Atlas.UI.Avalonia;
 
-public class TextBlockElement : TextBlock, IStyleable, ILayoutable
+public class TextBlockElement : TextBlock, IStyleable //, ILayoutable
 {
 	Type IStyleable.StyleKey => typeof(TextBlock);
 

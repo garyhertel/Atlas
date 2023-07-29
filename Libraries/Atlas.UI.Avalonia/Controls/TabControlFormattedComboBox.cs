@@ -9,7 +9,7 @@ using System.Collections;
 
 namespace Atlas.UI.Avalonia.Controls;
 
-public class TabControlFormattedComboBox : ComboBox, IStyleable, ILayoutable
+public class TabControlFormattedComboBox : ComboBox, IStyleable //, ILayoutable
 {
 	Type IStyleable.StyleKey => typeof(ComboBox);
 
@@ -60,7 +60,7 @@ public class TabControlFormattedComboBox : ComboBox, IStyleable, ILayoutable
 		get => base.Items; // todo: return original?
 		set
 		{
-			base.Items = _items = FormattedItem.Create(value);
+			base.ItemsSource = _items = FormattedItem.Create(value);
 
 			SelectPropertyValue();
 		}

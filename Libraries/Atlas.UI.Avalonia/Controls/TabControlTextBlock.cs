@@ -10,7 +10,7 @@ using System.Diagnostics.CodeAnalysis;
 namespace Atlas.UI.Avalonia.Controls;
 
 // ReadOnly string control with wordwrap, scrolling, and clipboard copy
-public class TabControlTextBlock : Border, IStyleable, ILayoutable
+public class TabControlTextBlock : Border, IStyleable //, ILayoutable
 {
 	public string Text { get; set; }
 

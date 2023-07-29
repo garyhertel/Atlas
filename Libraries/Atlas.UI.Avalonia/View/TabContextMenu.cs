@@ -16,11 +16,11 @@ public class TabMenuItem : MenuItem, IStyleable
 	public TabMenuItem(string? header = null)
 	{
 		Header = header;
-		Items = null; // Clear to avoid weak event handler leaks
+		ItemsSource = null; // Clear to avoid weak event handler leaks
 	}
 }
 
-public class TabViewContextMenu : ContextMenu, IStyleable, ILayoutable, IDisposable
+public class TabViewContextMenu : ContextMenu, IStyleable, IDisposable // ILayoutable
 {
 	public TabView? TabView;
 	public TabInstance? TabInstance;
@@ -74,7 +74,7 @@ public class TabViewContextMenu : ContextMenu, IStyleable, ILayoutable, IDisposa
 		list.Add(menuItemAutoLoad);
 #endif
 
-		Items = list;
+		ItemsSource = list;
 	}
 
 	private void MenuItemAutoLoad_Click(object? sender, RoutedEventArgs e)
@@ -115,7 +115,7 @@ public class TabViewContextMenu : ContextMenu, IStyleable, ILayoutable, IDisposa
 	{
 		TabView = null;
 		TabInstance = null;
-		Items = null;
+		ItemsSource = null;
 	}
 }
 

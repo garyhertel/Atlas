@@ -29,8 +29,8 @@ public class TabControlButton : Button, IStyleable
 		//Foreground = ForegroundBrush;
 		BorderBrush = new SolidColorBrush(Colors.Black);
 
-		PointerEnter += Button_PointerEnter;
-		PointerLeave += Button_PointerLeave;
+		PointerEntered += Button_PointerEnter;
+		PointerExited += Button_PointerLeave;
 	}
 
 	private void Button_PointerEnter(object? sender, PointerEventArgs e)

@@ -150,7 +150,7 @@ public class TabViewer : Grid
 	{
 		Flyout flyout = new()
 		{
-			Placement = FlyoutPlacementMode.BottomEdgeAlignedLeft,
+			Placement = PlacementMode.BottomEdgeAlignedLeft,
 		};
 		PostShowFlyout(Toolbar!.ButtonLink!, flyout, "Creating Link ...");
 
@@ -192,7 +192,7 @@ public class TabViewer : Grid
 	{
 		Flyout flyout = new()
 		{
-			Placement = FlyoutPlacementMode.BottomEdgeAlignedLeft,
+			Placement = PlacementMode.BottomEdgeAlignedLeft,
 		};
 		Dispatcher.UIThread.Post(() => ShowFlyout(Toolbar!.ButtonImport!, flyout, "Importing Link ..."));
 
@@ -222,7 +222,7 @@ public class TabViewer : Grid
 		Flyout flyout = new()
 		{
 			Content = "Importing Link ...",
-			Placement = FlyoutPlacementMode.BottomEdgeAlignedLeft,
+			Placement = PlacementMode.BottomEdgeAlignedLeft,
 		};
 		flyout.ShowAt(Toolbar!.ButtonImport!);
 
