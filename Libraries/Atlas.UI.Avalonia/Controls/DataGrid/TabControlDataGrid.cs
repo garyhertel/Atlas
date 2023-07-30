@@ -190,7 +190,7 @@ public class TabControlDataGrid : Grid, IDisposable, ITabSelector, ITabItemSelec
 
 			BorderThickness = new Thickness(1),
 			IsReadOnly = !TabModel.Editing,
-			GridLinesVisibility = DataGridGridLinesVisibility.All,
+			GridLinesVisibility = DataGridGridLinesVisibility.None,
 			MaxWidth = 4000,
 			MaxHeight = this.MaxHeight,
 			[Grid.RowProperty] = 1,
@@ -571,10 +571,6 @@ public class TabControlDataGrid : Grid, IDisposable, ITabSelector, ITabItemSelec
 			propertyColumns
 			.Select(p => p.IsStyled())
 			.Max();
-
-		// Styling lines adds a performance hit, so only add it if necessary
-		if (styleCells)
-			DataGrid.GridLinesVisibility = DataGridGridLinesVisibility.None;
 
 		foreach (TabDataSettings.PropertyColumn propertyColumn in propertyColumns)
 		{

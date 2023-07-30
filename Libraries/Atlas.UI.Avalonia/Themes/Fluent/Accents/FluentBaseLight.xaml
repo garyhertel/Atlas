@@ -156,6 +156,7 @@
         <SolidColorBrush x:Key="ThemeGridStyledLinesBrush" Color="#1c1a34" />
 
         <!-- ScrollBar -->
+        <SolidColorBrush x:Key="ThemeScrollBarBackground" Color="#38409a" />
         <SolidColorBrush x:Key="ThemeScrollBarBackgroundBrush" Color="#38409a" />
         <SolidColorBrush x:Key="ThemeScrollBarThumbBrush" Color="#38409a" />
         <SolidColorBrush x:Key="ThemeScrollBarThumbHoverBrush" Color="#477ed7" />

@@ -213,16 +213,7 @@ public class DataGridPropertyTextColumn : DataGridTextColumn
 		cell.BorderBrush = AtlasTheme.GridBorder;
 		//cell.BorderBrush = Brushes.Black;
 		//cell.BorderThickness = new Thickness(1);
-
-		if (DisplayIndex > 0)
-		{
-			cell.BorderThickness = new Thickness(1, 0, 0, 1); // Left and Bottom
-			//cell.BorderThickness = new Thickness(0, 0, 1, 1); // Right and Bottom
-		}
-		else
-		{
-			cell.BorderThickness = new Thickness(0, 0, 1, 1); // Right and Bottom
-		}
+		cell.BorderThickness = new Thickness(0, 0, 1, 1); // Right and Bottom
 
 		if (Binding != null)
 		{
