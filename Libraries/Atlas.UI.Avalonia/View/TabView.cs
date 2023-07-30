@@ -12,6 +12,7 @@ using Avalonia.Threading;
 using System.Collections;
 using System.Diagnostics;
 using System.Reflection;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace Atlas.UI.Avalonia.View;
 
@@ -411,35 +412,47 @@ public class TabView : Grid, IDisposable
 	{
 		foreach (TabObject tabObject in Model.Objects)
 		{
-			object obj = tabObject.Object!;
-			if (ControlCreators.TryGetValue(obj.GetType(), out IControlCreator? controlCreator))
+			try
 			{
-				controlCreator.AddControl(Instance, _tabParentControls!, obj);
+				AddObject(tabObject);
 			}
-			else if (obj is TabToolbar toolbar)
+			catch (Exception ex)
 			{
-				AddToolbar(toolbar);
-				AddTasks();
+				AddControlString(ex.Message);
 			}
-			else if (obj is ITabSelector tabSelector)
+		}
+	}
+
+	private void AddObject(TabObject tabObject)
+	{
+		object obj = tabObject.Object!;
+		if (ControlCreators.TryGetValue(obj.GetType(), out IControlCreator? controlCreator))
+		{
+			controlCreator.AddControl(Instance, _tabParentControls!, obj);
+		}
+		else if (obj is TabToolbar toolbar)
+		{
+			AddToolbar(toolbar);
+			AddTasks();
+		}
+		else if (obj is ITabSelector tabSelector)
+		{
+			AddITabControl(tabSelector, tabObject.Fill);
+		}
+		else if (obj is Control control)
+		{
+			AddControl(control, tabObject.Fill);
+		}
+		else if (obj is string text)
+		{
+			AddControlString(text);
+		}
+		else
+		{
+			ParamsAttribute? paramsAttribute = obj.GetType().GetCustomAttribute<ParamsAttribute>();
+			if (paramsAttribute != null)
 			{
-				AddITabControl(tabSelector, tabObject.Fill);
-			}
-			else if (obj is Control control)
-			{
-				AddControl(control, tabObject.Fill);
-			}
-			else if (obj is string text)
-			{
-				AddControlString(text);
-			}
-			else
-			{
-				ParamsAttribute? paramsAttribute = obj.GetType().GetCustomAttribute<ParamsAttribute>();
-				if (paramsAttribute != null)
-				{
-					AddControl(new TabControlParams(obj), tabObject.Fill);
-				}
+				AddControl(new TabControlParams(obj), tabObject.Fill);
 			}
 		}
 	}

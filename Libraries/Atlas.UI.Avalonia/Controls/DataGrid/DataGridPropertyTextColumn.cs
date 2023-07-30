@@ -155,11 +155,11 @@ public class DataGridPropertyTextColumn : DataGridTextColumn
 	// They also use different background colors, with different shades for links vs non-links
 	private Control AddStyling(DataGridCell cell, TextBlock textBlock)
 	{
-		var border = new Border()
+		/*var border = new Border()
 		{
 			BorderBrush = AtlasTheme.GridBorder,
 			Child = textBlock,
-		};
+		};*/
 
 		if (PropertyInfo.IsDefined(typeof(StyleValueAttribute)) || 
 			(DisplayIndex == 1 && typeof(DictionaryEntry).IsAssignableFrom(PropertyInfo.DeclaringType)))
@@ -179,7 +179,8 @@ public class DataGridPropertyTextColumn : DataGridTextColumn
 			};
 			textBlock.Bind(TextBlock.ForegroundProperty, foregroundBinding);
 
-			border.BorderBrush = AtlasTheme.GridStyledLines;
+			//border.BorderBrush = AtlasTheme.GridStyledLines;
+			cell.BorderBrush = AtlasTheme.GridStyledLines;
 		}
 
 		if (PropertyInfo.IsDefined(typeof(StyleLabelAttribute)))
@@ -189,14 +190,17 @@ public class DataGridPropertyTextColumn : DataGridTextColumn
 
 		if (DisplayIndex > 0)
 		{
-			border.BorderThickness = new Thickness(1, 0, 0, 1); // Left and Bottom
+			//border.BorderThickness = new Thickness(1, 0, 0, 1); // Left and Bottom
+			cell.BorderThickness = new Thickness(1, 0, 0, 1); // Left and Bottom
+			//cell.BorderThickness = new Thickness(0, 0, 1, 1); // Right and Bottom
 		}
 		else
 		{
-			border.BorderThickness = new Thickness(0, 0, 1, 1); // Right and Bottom
+			//border.BorderThickness = new Thickness(0, 0, 1, 1); // Right and Bottom
+			cell.BorderThickness = new Thickness(0, 0, 1, 1); // Right and Bottom
 		}
 
-		return border;
+		return textBlock;
 	}
 
 	protected TextBlock CreateTextBlock(DataGridCell cell)
@@ -206,8 +210,19 @@ public class DataGridPropertyTextColumn : DataGridTextColumn
 		cell.IsHitTestVisible = true;
 		cell.Focusable = true;
 		cell.Foreground = AtlasTheme.GridForeground;
-		cell.BorderBrush = Brushes.Black;
-		cell.BorderThickness = new Thickness(1);
+		cell.BorderBrush = AtlasTheme.GridBorder;
+		//cell.BorderBrush = Brushes.Black;
+		//cell.BorderThickness = new Thickness(1);
+
+		if (DisplayIndex > 0)
+		{
+			cell.BorderThickness = new Thickness(1, 0, 0, 1); // Left and Bottom
+			//cell.BorderThickness = new Thickness(0, 0, 1, 1); // Right and Bottom
+		}
+		else
+		{
+			cell.BorderThickness = new Thickness(0, 0, 1, 1); // Right and Bottom
+		}
 
 		if (Binding != null)
 		{
