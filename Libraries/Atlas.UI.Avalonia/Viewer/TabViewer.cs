@@ -173,7 +173,7 @@ public class TabViewer : Grid
 			if (uri == null)
 				return;
 
-			await ClipBoardUtils.SetTextAsync(uri);
+			await ClipBoardUtils.SetTextAsync(this, uri);
 			PostShowFlyout(Toolbar!.ButtonLink!, flyout, "Link copied to clipboard");
 		}
 		catch (Exception ex)
@@ -184,7 +184,9 @@ public class TabViewer : Grid
 
 	private async Task ImportClipboardBookmarkAsync(Call call)
 	{
-		string clipboardText = await ClipBoardUtils.GetTextAsync();
+		string? clipboardText = await ClipBoardUtils.GetTextAsync(this);
+		if (clipboardText == null) return;
+
 		await ImportBookmarkAsync(call, clipboardText, true);
 	}
 

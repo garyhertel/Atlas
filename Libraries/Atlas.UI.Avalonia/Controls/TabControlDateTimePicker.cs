@@ -125,7 +125,9 @@ public class TabDateTimePicker : Grid, IStyleable
 
 	private void ButtonImport_Click(object? sender, global::Avalonia.Interactivity.RoutedEventArgs e)
 	{
-		string clipboardText = ClipBoardUtils.GetTextAsync().Result;
+		string? clipboardText = ClipBoardUtils.GetText(this);
+		if (clipboardText == null) return;
+
 		TimeSpan? timeSpan = DateTimeUtils.ConvertTextToTimeSpan(clipboardText);
 		if (timeSpan != null)
 		{
