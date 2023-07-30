@@ -232,7 +232,7 @@ public class ScreenCapture : Grid
 
 		using (var ctx = bitmap.CreateDrawingContext())
 		{
-			//ctx.DrawBitmap(_originalBitmap!.PlatformImpl, 1, _selectionRect, destRect); // v11 fix
+			//ctx.DrawBitmap(_originalBitmap!, 1, _selectionRect, destRect); // v11 fix
 		};
 		return bitmap;
 	}
@@ -301,7 +301,7 @@ public class ScreenCapture : Grid
 		var outerPen = new Pen(brush, 4, lineCap: PenLineCap.Square);
 		using (var ctx = _selectionBitmap.CreateDrawingContext())
 		{
-			//ctx.DrawBitmap(_originalBitmap.PlatformImpl, 1, _selectionRect, _selectionRect); // v11 fix
+			//ctx.DrawBitmap(_originalBitmap, 1, _selectionRect, _selectionRect); // v11 fix
 			ctx.DrawRectangle(null, outerPen, borderRect.Inflate(1));
 			ctx.DrawRectangle(null, innerPen, borderRect);
 		}
