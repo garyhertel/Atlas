@@ -1,7 +1,7 @@
 using Atlas.Start.Avalonia.Tabs;
 using Atlas.Tabs;
 using Atlas.UI.Avalonia;
-//using Atlas.UI.Avalonia.Charts;
+using Atlas.UI.Avalonia.Charts;
 using Atlas.UI.Avalonia.ScreenCapture;
 
 namespace Atlas.Start.Avalonia;
@@ -12,7 +12,7 @@ public class MainWindow : BaseWindow
 	{
 		AddTab(new TabAvalonia());
 
-		//ChartGroupControl.Register();
+		ChartGroupControl.Register();
 		ScreenCapture.AddControlTo(TabViewer);
 	}
 

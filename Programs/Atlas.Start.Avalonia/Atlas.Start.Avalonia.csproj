@@ -49,6 +49,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\Libraries\Atlas.UI.Avalonia.Charts\Atlas.UI.Avalonia.Charts.csproj" />
     <ProjectReference Include="..\..\Libraries\Atlas.UI.Avalonia.ScreenCapture\Atlas.UI.Avalonia.ScreenCapture.csproj" />
     <ProjectReference Include="..\..\Libraries\Atlas.UI.Avalonia\Atlas.UI.Avalonia.csproj" />
     <ProjectReference Include="..\..\Libraries\Atlas.Resources\Atlas.Resources.csproj" />

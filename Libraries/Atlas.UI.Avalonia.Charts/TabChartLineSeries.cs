@@ -1,14 +1,13 @@
 using Atlas.Core;
 using Atlas.Extensions;
 using Avalonia.Threading;
-using OxyPlot;
 using System.Collections;
 using System.Collections.Specialized;
 using System.Reflection;
 
 namespace Atlas.UI.Avalonia.Charts;
 
-public class TabChartLineSeries : OxyPlot.Series.LineSeries
+/*public class TabChartLineSeries : OxyPlot.Series.LineSeries
 {
 	private const int MaxPointsToShowMarkers = 8;
 	private const int MaxTitleLength = 200;
@@ -120,7 +119,7 @@ public class TabChartLineSeries : OxyPlot.Series.LineSeries
 		{2} the x-value
 		{3} the title of the y-axis
 		{4} the y-value
-	*/
+	*//*
 	private void LoadTrackFormat()
 	{
 		string xTrackerFormat = ListSeries.XPropertyName ?? "Index: {2:#,0.###}";
@@ -265,3 +264,4 @@ public class TabChartLineSeries : OxyPlot.Series.LineSeries
 		Dispatcher.UIThread.InvokeAsync(() => Chart.Refresh(), DispatcherPriority.Background);
 	}
 }
+*/

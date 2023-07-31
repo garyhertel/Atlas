@@ -6,10 +6,9 @@ using Avalonia.Controls.Primitives;
 using Avalonia.Layout;
 using Avalonia.Media;
 using Avalonia.Threading;
-using OxyPlot.Avalonia;
 
 namespace Atlas.UI.Avalonia.Charts;
-
+/*
 public class TabControlChartLegend : Grid
 {
 	public TabControlChart TabControlChart;
@@ -248,7 +247,7 @@ public class TabControlChartLegend : Grid
 			}
 			idxLegendItems.Add(series.Title, legendItem);
 			Grid.SetRow(legendItem, row++);
-		}*/
+		}*//*
 
 		Dispatcher.UIThread.InvokeAsync(() => PlotView.Model?.InvalidatePlot(true), DispatcherPriority.Background);
 	}
@@ -278,7 +277,7 @@ public class TabControlChartLegend : Grid
 				}
 			}
 
-			if (series is OxyPlot.Series.ScatterSeries scatterSeries)
+			/*if (series is OxyPlot.Series.ScatterSeries scatterSeries)
 			{
 				if (scatterSeries.Title == null)
 					continue;
@@ -287,7 +286,7 @@ public class TabControlChartLegend : Grid
 				{
 					legendItem.UpdateVisible(scatterSeries);
 				}
-			}
+			}*//*
 		}
 		Dispatcher.UIThread.InvokeAsync(() => PlotView.Model?.InvalidatePlot(true), DispatcherPriority.Background);
 	}
@@ -323,3 +322,4 @@ public class TabControlChartLegend : Grid
 		}
 	}
 }
+*/

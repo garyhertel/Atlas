@@ -5,12 +5,10 @@ using Avalonia.Controls;
 using Avalonia.Controls.Shapes;
 using Avalonia.Input;
 using Avalonia.Media;
-using OxyPlot;
-using OxyPlot.Avalonia;
 using System.Collections;
 
 namespace Atlas.UI.Avalonia.Charts;
-
+/*
 public class TabChartLegendItem : Grid
 {
 	public event EventHandler<EventArgs>? OnSelectionChanged;
@@ -370,3 +368,4 @@ public class TabChartLegendItem : Grid
 		}
 	}
 }
+*/

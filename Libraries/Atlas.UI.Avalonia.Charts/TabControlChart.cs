@@ -10,10 +10,16 @@ using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Media;
 using Avalonia.Threading;
-using OxyPlot;
-using OxyPlot.Annotations;
-using OxyPlot.Avalonia;
-using OxyPlot.Axes;
+using LiveChartsCore;
+using LiveChartsCore.Defaults;
+using LiveChartsCore.Drawing;
+using LiveChartsCore.Measure;
+using LiveChartsCore.SkiaSharpView;
+using LiveChartsCore.SkiaSharpView.Avalonia;
+using LiveChartsCore.SkiaSharpView.Painting;
+using LiveChartsCore.Themes;
+using SkiaSharp;
+using System;
 using System.Collections;
 using System.Reflection;
 using WeakEvent;
@@ -23,14 +29,14 @@ namespace Atlas.UI.Avalonia.Charts;
 public class OxyListSeries
 {
 	public ListSeries ListSeries { get; set; }
-	public OxyPlot.Series.Series OxySeries { get; set; }
+	public ISeries OxySeries { get; set; }
 
 	public bool IsVisible { get; set; } = true;
 	public bool IsSelected { get; set; }
 
 	public override string ToString() => ListSeries.ToString();
 
-	public OxyListSeries(ListSeries listSeries, OxyPlot.Series.Series oxySeries)
+	public OxyListSeries(ListSeries listSeries, ISeries oxySeries)
 	{
 		ListSeries = listSeries;
 		OxySeries = oxySeries;
@@ -78,13 +84,13 @@ public class ChartGroupControl : IControlCreator
 	}
 }
 
-public class TabControlChart : Grid, IDisposable
+public class TabControlChart : Grid //, IDisposable
 {
 	public int SeriesLimit { get; set; } = 25;
 
 	private const double MarginPercent = 0.1; // This needs a min height so this can be lowered
 	private const int MinSelectionWidth = 10;
-	private static readonly OxyColor NowColor = OxyColors.Green;
+	//private static readonly OxyColor NowColor = OxyColors.Green;
 	//private static OxyColor timeTrackerColor = Theme.TitleBackground;
 
 	private readonly TabInstance TabInstance;
@@ -94,7 +100,7 @@ public class TabControlChart : Grid, IDisposable
 
 	//private List<ListSeries> ListSeries { get; set; }
 	public List<OxyListSeries> OxyListSeriesList = new();
-	private Dictionary<string, OxyListSeries> IdxNameToSeries { get; set; } = new();
+	//private Dictionary<string, OxyListSeries> IdxNameToSeries { get; set; } = new();
 	private Dictionary<IList, ListSeries> ListToTabSeries { get; set; } = new();
 	public List<ListSeries> SelectedSeries
 	{
@@ -110,7 +116,9 @@ public class TabControlChart : Grid, IDisposable
 			return selected;
 		}
 	}
-	public OxyPlot.Series.Series? HoverSeries;
+
+	public CartesianChart Chart;
+	/*public OxyPlot.Series.Series? HoverSeries;
 
 	//public SeriesCollection SeriesCollection { get; set; }
 
@@ -122,11 +130,11 @@ public class TabControlChart : Grid, IDisposable
 	private OxyPlot.Axes.CategoryAxis? categoryAxis;
 
 	public OxyPlot.Axes.LinearAxis? LinearAxis;
-	public OxyPlot.Axes.DateTimeAxis? DateTimeAxis;
+	public OxyPlot.Axes.DateTimeAxis? DateTimeAxis;*/
 
 	public TextBlock? TitleTextBlock { get; protected set; }
 
-	private OxyPlot.Annotations.LineAnnotation? _trackerAnnotation;
+	/*private OxyPlot.Annotations.LineAnnotation? _trackerAnnotation;
 
 	private static readonly OxyColor GridLineColor = OxyColor.Parse("#333333");
 	public static OxyColor[] Colors { get; set; } = new OxyColor[]
@@ -148,10 +156,10 @@ public class TabControlChart : Grid, IDisposable
 		OxyColors.MediumSpringGreen,
 	};
 
-	public static OxyColor GetColor(int index) => Colors[index % Colors.Length];
+	public static OxyColor GetColor(int index) => Colors[index % Colors.Length];*/
 
-	private bool UseDateTimeAxis => (xAxisPropertyInfo?.PropertyType == typeof(DateTime)) ||
-									(ListGroup.TimeWindow != null);
+	//private bool UseDateTimeAxis => (xAxisPropertyInfo?.PropertyType == typeof(DateTime)) ||
+	//								(ListGroup.TimeWindow != null);
 
 	public bool IsTitleSelectable { get; set; }
 
@@ -188,7 +196,18 @@ public class TabControlChart : Grid, IDisposable
 		if (TabInstance.TabViewSettings.ChartDataSettings.Count == 0)
 			TabInstance.TabViewSettings.ChartDataSettings.Add(new TabDataSettings());
 
-		PlotView = new PlotView()
+		Chart = new CartesianChart()
+		{
+			//Series = ListGroup.Series.Select(s => AddListSeries(s)).ToList(),
+			XAxes = GetDateTimeAxis(),
+			LegendPosition = LegendPosition.Bottom,
+			MinWidth = 150,
+			MinHeight = 80,
+			Width = 500,
+			Height = 500
+		};
+
+		/*PlotView = new PlotView()
 		{
 			HorizontalAlignment = global::Avalonia.Layout.HorizontalAlignment.Stretch,
 			VerticalAlignment = global::Avalonia.Layout.VerticalAlignment.Stretch,
@@ -207,7 +226,7 @@ public class TabControlChart : Grid, IDisposable
 		// Show Hover text on mouse over instead of requiring holding the mouse down (why isn't this the default?)
 		PlotView.ActualController.UnbindMouseDown(OxyMouseButton.Left); // remove default
 		PlotView.ActualController.BindMouseEnter(PlotCommands.HoverSnapTrack); // show when hovering
-		PointerLeave += PlotView_PointerLeave; // doesn't work on PlotView
+		PointerExited += PlotView_PointerExited; // doesn't work on PlotView
 
 		PlotView.AddHandler(KeyDownEvent, PlotView_KeyDown, RoutingStrategies.Tunnel);
 
@@ -215,12 +234,12 @@ public class TabControlChart : Grid, IDisposable
 			(view, controller, args) =>
 				controller.AddHoverManipulator(view, new MouseHoverManipulator(this), args)));
 
-		LoadPlotModel();
 		/*plotView.Template = new ControlTemplate() // todo: fix
 		{
 			Content = new object(),
 			TargetType = typeof(object),
 		};*/
+		LoadPlotModel();
 
 		var containerGrid = new Grid()
 		{
@@ -247,12 +266,13 @@ public class TabControlChart : Grid, IDisposable
 				TitleTextBlock.HorizontalAlignment = global::Avalonia.Layout.HorizontalAlignment.Center;
 			else
 				TitleTextBlock.Margin = new Thickness(40, 5, 5, 5);
-			TitleTextBlock.PointerEnter += TitleTextBlock_PointerEnter;
-			TitleTextBlock.PointerLeave += TitleTextBlock_PointerLeave;
+			//TitleTextBlock.PointerEntered += TitleTextBlock_PointerEntered;
+			//TitleTextBlock.PointerExited += TitleTextBlock_PointerExited;
 			containerGrid.Children.Add(TitleTextBlock);
 		}
 
-		containerGrid.Children.Add(PlotView);
+		containerGrid.Children.Add(Chart);
+		/*containerGrid.Children.Add(PlotView);
 
 		Legend = new TabControlChartLegend(this);
 		if (ListGroup!.Horizontal)
@@ -274,12 +294,180 @@ public class TabControlChart : Grid, IDisposable
 
 		OnMouseCursorChanged += TabControlChart_OnMouseCursorChanged;
 		if (ListGroup.TimeWindow != null)
-			ListGroup.TimeWindow.OnSelectionChanged += ListGroup_OnTimesChanged;
+			ListGroup.TimeWindow.OnSelectionChanged += ListGroup_OnTimesChanged;*/
 
 		Children.Add(containerGrid);
 	}
 
-	private void PlotView_KeyDown(object? sender, KeyEventArgs e)
+	private List<Axis> GetDateTimeAxis()
+	{
+		return new List<Axis>
+		{
+			new Axis
+			{
+				Labeler = value => new DateTime((long) value).ToString("MMMM dd"),
+				LabelsRotation = 15,
+				UnitWidth = TimeSpan.FromDays(1).Ticks,
+
+                // Not working yet
+                ShowSeparatorLines = true,
+				SeparatorsPaint = new SolidColorPaint(),
+			}
+		};
+	}
+	private readonly LvcColor[] colors = ColorPalletes.FluentDesign;
+
+	private static List<DateTimePoint> GetValues(ListSeries listSeries)
+	{
+		DateTime now = DateTime.Now;
+		return listSeries.Values().Select(t => new DateTimePoint(now = now.AddSeconds(1), t)).ToList();
+
+		/*DateTime dateTime = DateTime.UtcNow;
+
+		double value = s_random.Next(1, 100);
+
+		var values = new List<DateTimePoint>();
+		for (int i = 0; i < DataPointCount; i++)
+		{
+			value += s_random.Next(-5, 5);
+			var point = new DateTimePoint()
+			{
+				DateTime = dateTime.AddHours(i),
+				Value = value,
+			};
+			values.Add(point);
+
+			// Sparse points require visible markers instead of just lines, which can have performance impacts
+			if (sparse && s_random.Next(0, 1) == 1)
+			{
+				i += s_random.Next(1, 20);
+
+				// Show visible gaps between sparse points
+				// Doesn't work (or this is the wrong way)
+				/*var nullPoint = new DateTimePoint()
+				{
+					DateTime = dateTime.AddHours(i),
+					Value = null,
+				};
+				values.Add(nullPoint);*//*
+			}
+		}
+		return values;*/
+	}
+
+	public void LoadListGroup(ListGroup listGroup)
+	{
+		ListGroup = listGroup;
+		LoadPlotModel();
+		//Refresh();
+	}
+
+	public void LoadPlotModel()
+	{
+		RecreatePlotModel();
+
+		IsVisible = true;
+	}
+
+	public void RecreatePlotModel()
+	{
+		/*UnloadModel();
+		PlotModel = new PlotModel()
+		{
+			//Title = ListGroup?.Name,
+			//TitleFontWeight = 400,
+			//TitleFontSize = 16,
+			//TitleFont = "Arial",
+			IsLegendVisible = false,
+			LegendPlacement = LegendPlacement.Outside,
+			//LegendTitleColor = OxyColors.Yellow, // doesn't work
+
+			TitleColor = OxyColors.LightGray,
+			//PlotAreaBorderColor = OxyColors.LightGray,
+			PlotAreaBorderColor = OxyColor.Parse("#888888"),
+			TextColor = OxyColors.Black,
+			LegendTextColor = OxyColors.LightGray,
+			SelectionColor = OxyColors.Blue,
+		};*/
+
+		ListGroup.SortByTotal();
+
+		Chart.Series = ListGroup.Series.Select(s => AddListSeries(s)).ToList();
+		/*foreach (ListSeries listSeries in ListGroup.Series)
+		{
+			AddListSeries(listSeries);
+		}*/
+
+		// would need to be able to disable to use
+		//foreach (ListSeries listSeries in ChartSettings.ListSeries)
+		//	AddSeries(listSeries);
+
+		/*AddAxis();
+		UpdateValueAxis();
+		UpdateLinearAxis();
+		if (ListGroup.TimeWindow == null)
+		{
+			UpdateDateTimeAxisRange();
+		}
+
+		PlotView!.Model = PlotModel;*/
+	}
+
+	public ISeries? AddListSeries(ListSeries listSeries, LvcColor? oxyColor = null)
+	{
+		if (OxyListSeriesList.Count >= SeriesLimit)
+			return null;
+
+
+		//var nextColorIndex = i % colors.Length;
+		//var color = colors[nextColorIndex];
+
+		var values = GetValues(listSeries);
+
+		return new LineSeries<DateTimePoint>
+		{
+			Name = listSeries.Name,
+			Values = values,
+			Fill = null,
+			LineSmoothness = 0, // 1 = Curved
+			GeometrySize = 1,
+			EnableNullSplitting = true,
+
+			//Stroke = new SolidColorPaint(new SKColor(oxyColor.Value.R, oxyColor.Value.G, oxyColor.Value.B)) { StrokeThickness = 2 },
+
+			//Stroke = new SolidColorPaint(.AsSKColor(), 5),
+		};
+
+		/*var lineSeries = new TabChartLineSeries(this, listSeries, UseDateTimeAxis)
+		{
+			Color = oxyColor ?? GetColor(PlotModel!.Series.Count),
+		};
+		xAxisPropertyInfo = lineSeries.XAxisPropertyInfo;
+
+		PlotModel!.Series.Insert(0, lineSeries);
+
+		var oxyListSeries = new OxyListSeries(listSeries, lineSeries);
+
+		lineSeries.MouseDown += (s, e) =>
+		{
+			OnSelectionChanged?.Invoke(s, new SeriesSelectedEventArgs(new List<ListSeries>() { listSeries }));
+			Legend.SelectSeries(lineSeries);
+			e.Handled = true;
+		};
+
+		lineSeries.MouseUp += (s, e) =>
+		{
+			e.Handled = true; // Handle so zooming doesn't use?
+		};
+
+		OxyListSeriesList.Add(oxyListSeries);
+		ListToTabSeries[listSeries.List] = listSeries;
+		if (listSeries.Name != null)
+			IdxNameToSeries[listSeries.Name] = oxyListSeries;
+		return lineSeries;*/
+	}
+
+	/*private void PlotView_KeyDown(object? sender, KeyEventArgs e)
 	{
 		// These keys are used for navigating in the TabViewer
 		if (e.Key == Key.Left || e.Key == Key.Right)
@@ -288,13 +476,13 @@ public class TabControlChart : Grid, IDisposable
 		}
 	}
 
-	private void TitleTextBlock_PointerEnter(object? sender, PointerEventArgs e)
+	private void TitleTextBlock_PointerEntered(object? sender, PointerEventArgs e)
 	{
 		if (IsTitleSelectable)
 			TitleTextBlock!.Foreground = AtlasTheme.GridBackgroundSelected;
 	}
 
-	private void TitleTextBlock_PointerLeave(object? sender, PointerEventArgs e)
+	private void TitleTextBlock_PointerExited(object? sender, PointerEventArgs e)
 	{
 		TitleTextBlock!.Foreground = AtlasTheme.BackgroundText;
 	}
@@ -365,7 +553,7 @@ public class TabControlChart : Grid, IDisposable
 		}
 	}
 
-	private void PlotView_PointerLeave(object? sender, PointerEventArgs e)
+	private void PlotView_PointerExited(object? sender, PointerEventArgs e)
 	{
 		if (HoverSeries != null)
 		{
@@ -384,62 +572,6 @@ public class TabControlChart : Grid, IDisposable
 	private void Legend_OnVisibleChanged(object? sender, EventArgs e)
 	{
 		UpdateValueAxis();
-	}
-
-	public void LoadListGroup(ListGroup listGroup)
-	{
-		ListGroup = listGroup;
-		LoadPlotModel();
-		Refresh();
-	}
-
-	public void LoadPlotModel()
-	{
-		RecreatePlotModel();
-
-		IsVisible = true;
-	}
-
-	public void RecreatePlotModel()
-	{
-		UnloadModel();
-		PlotModel = new PlotModel()
-		{
-			//Title = ListGroup?.Name,
-			//TitleFontWeight = 400,
-			//TitleFontSize = 16,
-			//TitleFont = "Arial",
-			IsLegendVisible = false,
-			LegendPlacement = LegendPlacement.Outside,
-			//LegendTitleColor = OxyColors.Yellow, // doesn't work
-
-			TitleColor = OxyColors.LightGray,
-			//PlotAreaBorderColor = OxyColors.LightGray,
-			PlotAreaBorderColor = OxyColor.Parse("#888888"),
-			TextColor = OxyColors.Black,
-			LegendTextColor = OxyColors.LightGray,
-			SelectionColor = OxyColors.Blue,
-		};
-
-		ListGroup.SortByTotal();
-		foreach (ListSeries listSeries in ListGroup.Series)
-		{
-			AddSeries(listSeries);
-		}
-
-		// would need to be able to disable to use
-		//foreach (ListSeries listSeries in ChartSettings.ListSeries)
-		//	AddSeries(listSeries);
-
-		AddAxis();
-		UpdateValueAxis();
-		UpdateLinearAxis();
-		if (ListGroup.TimeWindow == null)
-		{
-			UpdateDateTimeAxisRange();
-		}
-
-		PlotView!.Model = PlotModel;
 	}
 
 	public void Refresh()
@@ -913,7 +1045,7 @@ public class TabControlChart : Grid, IDisposable
 			INotifyCollectionChanged iNotifyCollectionChanged = listSeries.iList as INotifyCollectionChanged;
 			//if (iNotifyCollectionChanged != null)
 			//	iNotifyCollectionChanged.CollectionChanged -= INotifyCollectionChanged_CollectionChanged;
-		}*/
+		}*//*
 	}
 
 	private void ClearSeries()
@@ -975,41 +1107,7 @@ public class TabControlChart : Grid, IDisposable
 		//ListToTabIndex[listSeries.iList] = ListToTabIndex.Count;
 	}*/
 
-	public OxyPlot.Series.LineSeries? AddListSeries(ListSeries listSeries, OxyColor? oxyColor = null)
-	{
-		if (OxyListSeriesList.Count >= SeriesLimit)
-			return null;
-
-		var lineSeries = new TabChartLineSeries(this, listSeries, UseDateTimeAxis)
-		{
-			Color = oxyColor ?? GetColor(PlotModel!.Series.Count),
-		};
-		xAxisPropertyInfo = lineSeries.XAxisPropertyInfo;
-
-		PlotModel!.Series.Insert(0, lineSeries);
-
-		var oxyListSeries = new OxyListSeries(listSeries, lineSeries);
-
-		lineSeries.MouseDown += (s, e) =>
-		{
-			OnSelectionChanged?.Invoke(s, new SeriesSelectedEventArgs(new List<ListSeries>() { listSeries }));
-			Legend.SelectSeries(lineSeries);
-			e.Handled = true;
-		};
-
-		lineSeries.MouseUp += (s, e) =>
-		{
-			e.Handled = true; // Handle so zooming doesn't use?
-		};
-
-		OxyListSeriesList.Add(oxyListSeries);
-		ListToTabSeries[listSeries.List] = listSeries;
-		if (listSeries.Name != null)
-			IdxNameToSeries[listSeries.Name] = oxyListSeries;
-		return lineSeries;
-	}
-
-	private void AddNowTime()
+	/*private void AddNowTime()
 	{
 		var now = DateTime.UtcNow;
 		if (ListGroup.TimeWindow != null && ListGroup.TimeWindow.EndTime < now.AddMinutes(1))
@@ -1024,9 +1122,9 @@ public class TabControlChart : Grid, IDisposable
 		};
 
 		PlotModel!.Annotations.Add(annotation);
-	}
+	}*/
 
-	private void AddTrackerLine()
+	/*private void AddTrackerLine()
 	{
 		_trackerAnnotation = new OxyPlot.Annotations.LineAnnotation
 		{
@@ -1049,7 +1147,7 @@ public class TabControlChart : Grid, IDisposable
 		PlotModel.MouseLeave += PlotModel_MouseLeave;
 	}
 
-	private bool _selecting;
+	/*private bool _selecting;
 	private ScreenPoint _startScreenPoint;
 	private DataPoint? _startDataPoint;
 	private DataPoint? _endDataPoint;
@@ -1165,9 +1263,9 @@ public class TabControlChart : Grid, IDisposable
 		{
 			UpdateTimeWindow(null);
 		}
-	}
+	}*/
 
-	private void ListGroup_OnTimesChanged(object? sender, TimeWindowEventArgs e)
+	/*private void ListGroup_OnTimesChanged(object? sender, TimeWindowEventArgs e)
 	{
 		UpdateTimeWindow(e.TimeWindow);
 	}
@@ -1196,17 +1294,17 @@ public class TabControlChart : Grid, IDisposable
 	{
 		var moveEvent = new MouseCursorMovedEventArgs(0);
 		_mouseCursorChangedEventSource?.Raise(sender, moveEvent);
-	}
+	}*/
 
 	// Update mouse tracker
-	private void TabControlChart_OnMouseCursorChanged(object? sender, MouseCursorMovedEventArgs e)
+	/*private void TabControlChart_OnMouseCursorChanged(object? sender, MouseCursorMovedEventArgs e)
 	{
 		if (sender == PlotView?.Controller || _trackerAnnotation == null)
 			return;
 
 		_trackerAnnotation.X = e.X;
 		Dispatcher.UIThread.Post(() => PlotModel!.InvalidatePlot(false), DispatcherPriority.Background);
-	}
+	}*/
 
 	/*private void INotifyCollectionChanged_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
 	{
@@ -1219,11 +1317,11 @@ public class TabControlChart : Grid, IDisposable
 		}
 
 		Dispatcher.UIThread.InvokeAsync(() => PlotModel.InvalidatePlot(true), DispatcherPriority.Background);
-	}*/
+	}
 
 	public void Dispose()
 	{
 		ClearListeners();
 		UnloadModel();
-	}
+	}*/
 }
