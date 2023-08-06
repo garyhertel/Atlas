@@ -1,4 +1,5 @@
 using Atlas.Core;
+using Atlas.UI.Avalonia.Charts.LiveCharts;
 using Atlas.UI.Avalonia.Themes;
 using Avalonia;
 using Avalonia.Controls;
@@ -8,25 +9,25 @@ using Avalonia.Media;
 using System.Collections;
 
 namespace Atlas.UI.Avalonia.Charts;
-/*
-public class TabChartLegendItem : Grid
+
+public abstract class TabChartLegendItem<TSeries> : Grid
 {
 	public event EventHandler<EventArgs>? OnSelectionChanged;
 	public event EventHandler<EventArgs>? OnVisibleChanged;
 
-	public readonly TabControlChartLegend Legend;
-	public readonly OxyListSeries OxyListSeries;
+	public readonly TabControlChartLegend<TSeries> Legend;
+	public readonly ChartSeries<TSeries> ChartSeries;
 	public readonly ListGroup ListGroup;
 	
-	public OxyPlot.Series.Series Series;
+	public TSeries Series;
 	
 	public TextBlock? TextBlock;
 	public TextBlock? TextBlockTotal;
 
 	private Polygon? polygon;
 	private Color color = Colors.Green;
-	private OxyColor oxyColor;
-	private MarkerType markerType;
+	//private OxyColor oxyColor;
+	//private MarkerType markerType;
 
 	private int _index;
 	public int Index
@@ -47,8 +48,8 @@ public class TabChartLegendItem : Grid
 		get => _isSelected;
 		set
 		{
-			OxyListSeries.IsSelected = value;
-			OxyListSeries.IsVisible = value;
+			ChartSeries.IsSelected = value;
+			ChartSeries.IsVisible = value;
 			_isSelected = value;
 			SetFilled(value);
 		}
@@ -56,15 +57,15 @@ public class TabChartLegendItem : Grid
 
 	public IEnumerable? ItemsSource { get; internal set; }
 
-	public List<DataPoint>? Points { get; internal set; }
+	//public List<DataPoint>? Points { get; internal set; }
 
-	public override string ToString() => Series.Title;
+	public override string ToString() => ChartSeries.ToString();
 
-	public TabChartLegendItem(TabControlChartLegend legend, OxyListSeries oxyListSeries)
+	public TabChartLegendItem(TabControlChartLegend<TSeries> legend, ChartSeries<TSeries> chartSeries)
 	{
 		Legend = legend;
-		OxyListSeries = oxyListSeries;
-		Series = oxyListSeries.OxySeries;
+		ChartSeries = chartSeries;
+		Series = chartSeries.LineSeries;
 		ListGroup = legend.ListGroup;
 
 		InitializeControls();
@@ -85,8 +86,8 @@ public class TabChartLegendItem : Grid
 		if (ListGroup.ShowOrder && !ListGroup.Horizontal)
 			AddTotalTextBlock();
 
-		PointerEnter += TabChartLegendItem_PointerEnter;
-		PointerLeave += TabChartLegendItem_PointerLeave;
+		PointerEntered += TabChartLegendItem_PointerEntered;
+		PointerExited += TabChartLegendItem_PointerExited;
 	}
 
 	private void SetFilled(bool filled)
@@ -96,19 +97,19 @@ public class TabChartLegendItem : Grid
 
 	public void UpdateTotal()
 	{
-		if (OxyListSeries.ListSeries != null)
+		if (ChartSeries.ListSeries != null)
 		{
-			Total = OxyListSeries.ListSeries.Total;
-			Count = OxyListSeries.ListSeries.List.Count;
+			Total = ChartSeries.ListSeries.Total;
+			Count = ChartSeries.ListSeries.List.Count;
 			if (TextBlockTotal != null)
-				TextBlockTotal.Text = TabControlChart.ValueFormatter(Total);
+				TextBlockTotal.Text = DateTimeFormat.ValueFormatter(Total);
 			return;
 		}
 
 		Total = 0;
 		Count = 0;
 
-		if (Series is OxyPlot.Series.LineSeries lineSeries)
+		/*if (Series is OxyPlot.Series.LineSeries lineSeries)
 		{
 			if (lineSeries.Points.Count > 0)
 			{
@@ -135,12 +136,12 @@ public class TabChartLegendItem : Grid
 			// todo: finish
 			Count = Math.Max(scatterSeries.Points.Count, scatterSeries.ItemsSource.GetEnumerator().MoveNext() ? 1 : 0);
 			Total = Count;
-		}
+		}*/
 	}
 
 	private void AddCheckBox()
 	{
-		if (Series is OxyPlot.Series.LineSeries lineSeries)
+		/*if (Series is OxyPlot.Series.LineSeries lineSeries)
 		{
 			oxyColor = lineSeries.Color;
 			markerType = lineSeries.MarkerType;
@@ -151,7 +152,7 @@ public class TabChartLegendItem : Grid
 			oxyColor = scatterSeries.MarkerFill;
 			markerType = scatterSeries.MarkerType;
 		}
-		color = oxyColor.ToColor();
+		color = oxyColor.ToColor();*/
 
 		int width = 13;
 		int height = 13;
@@ -214,14 +215,14 @@ public class TabChartLegendItem : Grid
 		if (Index > 0 && ListGroup.Series.Count > 1)
 			prefix = Index.ToString() + ". ";
 
-		TextBlock!.Text = prefix + Series.Title;
+		TextBlock!.Text = prefix + ToString();
 	}
 
 	private void AddTotalTextBlock()
 	{
 		TextBlockTotal = new TextBlock
 		{
-			Text = TabControlChart.ValueFormatter(Total),
+			Text = DateTimeFormat.ValueFormatter(Total),
 			Foreground = Brushes.LightGray,
 			Margin = new Thickness(10, 2, 6, 2),
 			HorizontalAlignment = global::Avalonia.Layout.HorizontalAlignment.Right,
@@ -250,7 +251,7 @@ public class TabChartLegendItem : Grid
 				return;
 
 			_highlight = value;
-			if (_highlight)
+			/*if (_highlight)
 			{
 				UpdatePolygonPoints(15, 15);
 				if (Series is OxyPlot.Series.LineSeries lineSeries)
@@ -279,17 +280,17 @@ public class TabChartLegendItem : Grid
 				TextBlock!.Foreground = Brushes.LightGray;
 				if (TextBlockTotal != null)
 					TextBlockTotal.Foreground = Brushes.LightGray;
-			}
+			}*/
 		}
 	}
 
-	private void TabChartLegendItem_PointerEnter(object? sender, PointerEventArgs e)
+	private void TabChartLegendItem_PointerEntered(object? sender, PointerEventArgs e)
 	{
 		Legend.UnhighlightAll(false);
 		Highlight = true;
 	}
 
-	private void TabChartLegendItem_PointerLeave(object? sender, PointerEventArgs e)
+	private void TabChartLegendItem_PointerExited(object? sender, PointerEventArgs e)
 	{
 		Highlight = false;
 	}
@@ -298,64 +299,11 @@ public class TabChartLegendItem : Grid
 	{
 	}
 
-	public void UpdateVisible(OxyPlot.Series.LineSeries lineSeries)
-	{
-		Series = lineSeries;
-		if (IsSelected || _highlight)
-		{
-			if (Points != null)
-			{
-				lineSeries.Points.Clear();
-				lineSeries.Points.AddRange(Points);
-			}
-			//lineSeries.ItemsSource = lineSeries.ItemsSource ?? ItemsSource; // never gonna let you go...
-			//ItemsSource = null;
-			lineSeries.LineStyle = LineStyle.Solid;
-			lineSeries.MarkerType = markerType;
-			lineSeries.Selectable = true;
-		}
-		else
-		{
-			if (lineSeries.Points.Count > 0)
-			{
-				Points = new List<DataPoint>(lineSeries.Points);
-			}
-			lineSeries.Points.Clear();
-			//lineSeries.Points = new List<DataPoint>();
-			//ItemsSource = lineSeries.ItemsSource ?? ItemsSource;
-			//lineSeries.ItemsSource = null;
-			lineSeries.LineStyle = LineStyle.None;
-			lineSeries.MarkerType = MarkerType.None;
-			lineSeries.Selectable = false;
-			//lineSeries.SelectionMode = OxyPlot.SelectionMode.
-			lineSeries.Unselect();
-		}
-	}
-
-	public void UpdateVisible(OxyPlot.Series.ScatterSeries scatterSeries)
-	{
-		Series = scatterSeries;
-		if (IsSelected || Highlight)
-		{
-			scatterSeries.ItemsSource ??= ItemsSource;
-			// ItemsSource = null;
-			scatterSeries.MarkerType = markerType;
-			scatterSeries.Selectable = true;
-		}
-		else
-		{
-			ItemsSource = scatterSeries.ItemsSource ?? ItemsSource;
-			scatterSeries.ItemsSource = null;
-			scatterSeries.MarkerType = MarkerType.None;
-			scatterSeries.Selectable = false;
-			//lineSeries.SelectionMode = OxyPlot.SelectionMode.
-			scatterSeries.Unselect();
-		}
-	}
+	public abstract void UpdateVisible(TSeries lineSeries);
 
 	public void UpdateHighlight(bool showFaded)
 	{
-		OxyColor newColor;
+		/*OxyColor newColor;
 		if (Highlight || !showFaded)
 			newColor = oxyColor;
 		else
@@ -365,7 +313,6 @@ public class TabChartLegendItem : Grid
 		{
 			lineSeries.MarkerFill = newColor;
 			lineSeries.Color = newColor;
-		}
+		}*/
 	}
 }
-*/

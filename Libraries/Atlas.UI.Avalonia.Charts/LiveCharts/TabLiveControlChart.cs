@@ -1,5 +1,4 @@
 using Atlas.Core;
-using Atlas.Extensions;
 using Atlas.Tabs;
 using Atlas.UI.Avalonia.Controls;
 using Atlas.UI.Avalonia.Themes;
@@ -24,22 +23,22 @@ using System.Collections;
 using System.Reflection;
 using WeakEvent;
 
-namespace Atlas.UI.Avalonia.Charts;
+namespace Atlas.UI.Avalonia.Charts.LiveCharts;
 
-public class OxyListSeries
+public class ChartSeries<TSeries>
 {
 	public ListSeries ListSeries { get; set; }
-	public ISeries OxySeries { get; set; }
+	public TSeries LineSeries { get; set; }
 
 	public bool IsVisible { get; set; } = true;
 	public bool IsSelected { get; set; }
 
 	public override string ToString() => ListSeries.ToString();
 
-	public OxyListSeries(ListSeries listSeries, ISeries oxySeries)
+	public ChartSeries(ListSeries listSeries, TSeries lineSeries)
 	{
 		ListSeries = listSeries;
-		OxySeries = oxySeries;
+		LineSeries = lineSeries;
 	}
 }
 
@@ -99,25 +98,27 @@ public class TabControlChart : Grid //, IDisposable
 	public bool FillHeight { get; set; }
 
 	//private List<ListSeries> ListSeries { get; set; }
-	public List<OxyListSeries> OxyListSeriesList = new();
-	//private Dictionary<string, OxyListSeries> IdxNameToSeries { get; set; } = new();
+	public List<ChartSeries<ISeries>> ChartSeries = new();
+	private Dictionary<string, ChartSeries<ISeries>> IdxNameToSeries { get; set; } = new();
 	private Dictionary<IList, ListSeries> ListToTabSeries { get; set; } = new();
 	public List<ListSeries> SelectedSeries
 	{
 		get
 		{
-			List<ListSeries> selected = OxyListSeriesList
+			List<ListSeries> selected = ChartSeries
 				.Where(s => s.IsSelected)
 				.Select(s => s.ListSeries)
 				.ToList();
 
-			if (selected.Count == OxyListSeriesList.Count && selected.Count > 1)
+			if (selected.Count == ChartSeries.Count && selected.Count > 1)
 				selected.Clear(); // If all are selected, none are selected?
 			return selected;
 		}
 	}
 
 	public CartesianChart Chart;
+	public TabControlChartLegend<ISeries> Legend;
+
 	/*public OxyPlot.Series.Series? HoverSeries;
 
 	//public SeriesCollection SeriesCollection { get; set; }
@@ -125,7 +126,6 @@ public class TabControlChart : Grid //, IDisposable
 	public PlotModel? PlotModel;
 	public PlotView? PlotView;
 	private PropertyInfo? xAxisPropertyInfo;
-	public TabControlChartLegend Legend;
 	public OxyPlot.Axes.Axis? ValueAxis; // left/right?
 	private OxyPlot.Axes.CategoryAxis? categoryAxis;
 
@@ -182,10 +182,10 @@ public class TabControlChart : Grid //, IDisposable
 		FillHeight = fillHeight;
 
 		HorizontalAlignment = global::Avalonia.Layout.HorizontalAlignment.Stretch; // OxyPlot import collision
-		if (FillHeight)
-			VerticalAlignment = global::Avalonia.Layout.VerticalAlignment.Top;
-		else
-			VerticalAlignment = global::Avalonia.Layout.VerticalAlignment.Stretch;
+																				   //if (FillHeight)
+																				   //			VerticalAlignment = global::Avalonia.Layout.VerticalAlignment.Top;
+																				   //	else
+		VerticalAlignment = global::Avalonia.Layout.VerticalAlignment.Stretch;
 
 		ColumnDefinitions = new ColumnDefinitions("*");
 		RowDefinitions = new RowDefinitions("*");
@@ -198,13 +198,18 @@ public class TabControlChart : Grid //, IDisposable
 
 		Chart = new CartesianChart()
 		{
+			// Not working?
+			HorizontalAlignment = global::Avalonia.Layout.HorizontalAlignment.Stretch,
+			VerticalAlignment = global::Avalonia.Layout.VerticalAlignment.Stretch,
+
 			//Series = ListGroup.Series.Select(s => AddListSeries(s)).ToList(),
 			XAxes = GetDateTimeAxis(),
-			LegendPosition = LegendPosition.Bottom,
-			MinWidth = 150,
-			MinHeight = 80,
-			Width = 500,
-			Height = 500
+			LegendPosition = LegendPosition.Hidden,
+			//MinWidth = 150,
+			//MinHeight = 80,
+			//Width = 500,
+			//Height = 500,
+			[Grid.RowProperty] = 1,
 		};
 
 		/*PlotView = new PlotView()
@@ -241,6 +246,22 @@ public class TabControlChart : Grid //, IDisposable
 		};*/
 		LoadPlotModel();
 
+
+
+		/*var contentControl = new ContentControl()
+		{
+			Content = Chart,
+		};*/
+
+		/*var containerGrid = new Grid()
+		{
+			ColumnDefinitions = new ColumnDefinitions("*"),
+			RowDefinitions = new RowDefinitions("*"),
+			HorizontalAlignment = global::Avalonia.Layout.HorizontalAlignment.Stretch,
+			VerticalAlignment = global::Avalonia.Layout.VerticalAlignment.Stretch,
+			Background = AtlasTheme.TabBackground, // grid lines look bad when hovering without this
+		};*/
+
 		var containerGrid = new Grid()
 		{
 			ColumnDefinitions = new ColumnDefinitions("*,Auto"),
@@ -272,9 +293,8 @@ public class TabControlChart : Grid //, IDisposable
 		}
 
 		containerGrid.Children.Add(Chart);
-		/*containerGrid.Children.Add(PlotView);
 
-		Legend = new TabControlChartLegend(this);
+		Legend = new TabControlLiveChartLegend(this);
 		if (ListGroup!.Horizontal)
 		{
 			// Bottom
@@ -289,14 +309,15 @@ public class TabControlChart : Grid //, IDisposable
 			Legend.MaxWidth = 300;
 		}
 		containerGrid.Children.Add(Legend);
-		Legend.OnSelectionChanged += Legend_OnSelectionChanged;
-		Legend.OnVisibleChanged += Legend_OnVisibleChanged;
+		//Legend.OnSelectionChanged += Legend_OnSelectionChanged;
+		//Legend.OnVisibleChanged += Legend_OnVisibleChanged;
 
-		OnMouseCursorChanged += TabControlChart_OnMouseCursorChanged;
-		if (ListGroup.TimeWindow != null)
-			ListGroup.TimeWindow.OnSelectionChanged += ListGroup_OnTimesChanged;*/
+		//OnMouseCursorChanged += TabControlChart_OnMouseCursorChanged;
+		//if (ListGroup.TimeWindow != null)
+		//	ListGroup.TimeWindow.OnSelectionChanged += ListGroup_OnTimesChanged;*/
 
 		Children.Add(containerGrid);
+		//Children.Add(Chart);
 	}
 
 	private List<Axis> GetDateTimeAxis()
@@ -359,7 +380,18 @@ public class TabControlChart : Grid //, IDisposable
 	{
 		ListGroup = listGroup;
 		LoadPlotModel();
-		//Refresh();
+		Refresh();
+	}
+
+	public void Refresh()
+	{
+		//UpdateValueAxis();
+		//UpdateLinearAxis();
+
+		Legend.RefreshModel();
+
+		//PlotView!.InvalidatePlot(true);
+		//PlotView.Model.InvalidatePlot(true);
 	}
 
 	public void LoadPlotModel()
@@ -415,7 +447,7 @@ public class TabControlChart : Grid //, IDisposable
 
 	public ISeries? AddListSeries(ListSeries listSeries, LvcColor? oxyColor = null)
 	{
-		if (OxyListSeriesList.Count >= SeriesLimit)
+		if (ChartSeries.Count >= SeriesLimit)
 			return null;
 
 
@@ -424,7 +456,7 @@ public class TabControlChart : Grid //, IDisposable
 
 		var values = GetValues(listSeries);
 
-		return new LineSeries<DateTimePoint>
+		var lineSeries = new LineSeries<DateTimePoint>
 		{
 			Name = listSeries.Name,
 			Values = values,
@@ -458,13 +490,14 @@ public class TabControlChart : Grid //, IDisposable
 		lineSeries.MouseUp += (s, e) =>
 		{
 			e.Handled = true; // Handle so zooming doesn't use?
-		};
+		};*/
 
-		OxyListSeriesList.Add(oxyListSeries);
+		var chartSeries = new ChartSeries<ISeries>(listSeries, lineSeries);
+		ChartSeries.Add(chartSeries);
 		ListToTabSeries[listSeries.List] = listSeries;
 		if (listSeries.Name != null)
-			IdxNameToSeries[listSeries.Name] = oxyListSeries;
-		return lineSeries;*/
+			IdxNameToSeries[listSeries.Name] = chartSeries;
+		return lineSeries;
 	}
 
 	/*private void PlotView_KeyDown(object? sender, KeyEventArgs e)
@@ -572,17 +605,6 @@ public class TabControlChart : Grid //, IDisposable
 	private void Legend_OnVisibleChanged(object? sender, EventArgs e)
 	{
 		UpdateValueAxis();
-	}
-
-	public void Refresh()
-	{
-		UpdateValueAxis();
-		UpdateLinearAxis();
-
-		Legend.RefreshModel();
-
-		PlotView!.InvalidatePlot(true);
-		PlotView.Model.InvalidatePlot(true);
 	}
 
 	public void Unload()
@@ -954,67 +976,6 @@ public class TabControlChart : Grid //, IDisposable
 		}
 
 		//UpdateDateTimeInterval(double duration);
-	}
-
-	// todo: centralize and add units
-	internal static string? ValueFormatter(double d)
-	{
-		double ad = Math.Abs(d);
-		string prefix = "{0:#,0.#} ";
-		if (ad >= 1E12)
-		{
-			return string.Format(prefix + "T", d / 1E12);
-		}
-		else if (ad >= 1E9)
-		{
-			return string.Format(prefix + "G", d / 1E9);
-		}
-		else if (ad >= 1E6)
-		{
-			return string.Format(prefix + "M", d / 1E6);
-		}
-		else if (ad >= 1E3)
-		{
-			return string.Format(prefix + "K", d / 1E3);
-		}
-		else
-		{
-			return d.Formatted();
-		}
-	}
-
-	public class DateTimeFormat
-	{
-		public double Maximum { get; set; }
-		public TimeSpan StepSize { get; set; }
-		public string TextFormat { get; set; }
-
-		public DateTimeFormat(double maximum, TimeSpan stepSize, string textFormat)
-		{
-			Maximum = maximum;
-			StepSize = stepSize;
-			TextFormat = textFormat;
-		}
-	}
-
-	public List<DateTimeFormat> DateFormats = new()
-	{
-		new DateTimeFormat(2 * 60, TimeSpan.FromSeconds(1), "H:mm:ss"),
-		new DateTimeFormat(24 * 60 * 60, TimeSpan.FromMinutes(1), "H:mm"),
-		new DateTimeFormat(3 * 24 * 60 * 60, TimeSpan.FromMinutes(1), "M/d H:mm"),
-		new DateTimeFormat(6 * 30 * 24 * 60 * 60, TimeSpan.FromDays(1), "M/d"),
-		new DateTimeFormat(1000.0 * 12 * 30 * 24 * 60 * 60, TimeSpan.FromDays(1), "yyyy-M-d"),
-	};
-
-	public DateTimeFormat? GetDateTimeFormat(double duration)
-	{
-		foreach (var format in DateFormats)
-		{
-			if (duration < format.Maximum)
-				return format;
-		}
-
-		return null;
 	}
 
 	private void ClearListeners()
