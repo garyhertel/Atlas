@@ -1,5 +1,4 @@
 using Atlas.Core;
-using Atlas.UI.Avalonia.Charts.LiveCharts;
 using Atlas.UI.Avalonia.Themes;
 using Avalonia;
 using Avalonia.Controls;
@@ -24,10 +23,7 @@ public abstract class TabChartLegendItem<TSeries> : Grid
 	public TextBlock? TextBlock;
 	public TextBlock? TextBlockTotal;
 
-	private Polygon? polygon;
-	private Color color = Colors.Green;
-	//private OxyColor oxyColor;
-	//private MarkerType markerType;
+	protected Polygon? _polygon;
 
 	private int _index;
 	public int Index
@@ -56,8 +52,6 @@ public abstract class TabChartLegendItem<TSeries> : Grid
 	}
 
 	public IEnumerable? ItemsSource { get; internal set; }
-
-	//public List<DataPoint>? Points { get; internal set; }
 
 	public override string ToString() => ChartSeries.ToString();
 
@@ -92,7 +86,7 @@ public abstract class TabChartLegendItem<TSeries> : Grid
 
 	private void SetFilled(bool filled)
 	{
-		polygon!.Fill = new SolidColorBrush(filled && Count > 0 ? color : Colors.Transparent);
+		_polygon!.Fill = new SolidColorBrush(filled && Count > 0 ? ChartSeries.Color : Colors.Transparent);
 	}
 
 	public void UpdateTotal()
@@ -108,56 +102,14 @@ public abstract class TabChartLegendItem<TSeries> : Grid
 
 		Total = 0;
 		Count = 0;
-
-		/*if (Series is OxyPlot.Series.LineSeries lineSeries)
-		{
-			if (lineSeries.Points.Count > 0)
-			{
-				Count = lineSeries.Points.Count;
-				foreach (DataPoint dataPoint in lineSeries.Points)
-				{
-					if (!double.IsNaN(dataPoint.Y))
-						Total += dataPoint.Y;
-				}
-			}
-			else if (lineSeries.ItemsSource != null)
-			{
-				// todo: finish
-				Count = lineSeries.ItemsSource.GetEnumerator().MoveNext() ? 1 : 0;
-				Total = Count;
-			}
-		}
-
-		if (Total > 100)
-			Total = Math.Round(Total);
-
-		if (Series is OxyPlot.Series.ScatterSeries scatterSeries)
-		{
-			// todo: finish
-			Count = Math.Max(scatterSeries.Points.Count, scatterSeries.ItemsSource.GetEnumerator().MoveNext() ? 1 : 0);
-			Total = Count;
-		}*/
 	}
 
 	private void AddCheckBox()
 	{
-		/*if (Series is OxyPlot.Series.LineSeries lineSeries)
-		{
-			oxyColor = lineSeries.Color;
-			markerType = lineSeries.MarkerType;
-		}
-
-		if (Series is OxyPlot.Series.ScatterSeries scatterSeries)
-		{
-			oxyColor = scatterSeries.MarkerFill;
-			markerType = scatterSeries.MarkerType;
-		}
-		color = oxyColor.ToColor();*/
-
 		int width = 13;
 		int height = 13;
 
-		polygon = new Polygon
+		_polygon = new Polygon
 		{
 			Width = 16,
 			Height = 16,
@@ -167,12 +119,12 @@ public abstract class TabChartLegendItem<TSeries> : Grid
 		};
 
 		if (Count > 0)
-			polygon.Fill = new SolidColorBrush(color);
+			_polygon.Fill = new SolidColorBrush(ChartSeries.Color);
 		else
 			IsSelected = false;
 
-		polygon.PointerPressed += Polygon_PointerPressed;
-		Children.Add(polygon);
+		_polygon.PointerPressed += Polygon_PointerPressed;
+		Children.Add(_polygon);
 	}
 
 	private static List<Point> GetPolygonPoints(int width, int height)
@@ -191,7 +143,7 @@ public abstract class TabChartLegendItem<TSeries> : Grid
 
 	private void UpdatePolygonPoints(int width, int height)
 	{
-		polygon!.Points = GetPolygonPoints(width, height);
+		_polygon!.Points = GetPolygonPoints(width, height);
 	}
 
 	private void AddTextBlock()
@@ -241,7 +193,7 @@ public abstract class TabChartLegendItem<TSeries> : Grid
 		}
 	}
 
-	private bool _highlight;
+	protected bool _highlight;
 	public bool Highlight
 	{
 		get => _highlight;
@@ -251,17 +203,12 @@ public abstract class TabChartLegendItem<TSeries> : Grid
 				return;
 
 			_highlight = value;
-			/*if (_highlight)
+			if (_highlight)
 			{
 				UpdatePolygonPoints(15, 15);
-				if (Series is OxyPlot.Series.LineSeries lineSeries)
-				{
-					_highlight = true;
-					SetFilled(true);
-					UpdateVisible(lineSeries);
-					Legend.UpdateHighlight(true);
-					OnVisibleChanged?.Invoke(this, EventArgs.Empty);
-				}
+				SetFilled(true);
+				_highlight = true;
+				// Legend.UpdateHighlight(true);
 				TextBlock!.Foreground = AtlasTheme.GridBackgroundSelected;
 				if (TextBlockTotal != null)
 					TextBlockTotal.Foreground = AtlasTheme.GridBackgroundSelected;
@@ -269,18 +216,15 @@ public abstract class TabChartLegendItem<TSeries> : Grid
 			else
 			{
 				UpdatePolygonPoints(13, 13);
-				if (Series is OxyPlot.Series.LineSeries lineSeries)
-				{
-					_highlight = false;
-					UpdateVisible(lineSeries);
-					SetFilled(IsSelected);
-					Legend.UpdateHighlight(false);
-					OnVisibleChanged?.Invoke(this, new());
-				}
+				// Legend.UpdateHighlight(false);
+				_highlight = false;
+				SetFilled(IsSelected);
 				TextBlock!.Foreground = Brushes.LightGray;
 				if (TextBlockTotal != null)
 					TextBlockTotal.Foreground = Brushes.LightGray;
-			}*/
+			}
+
+			UpdateVisible();
 		}
 	}
 
@@ -299,7 +243,7 @@ public abstract class TabChartLegendItem<TSeries> : Grid
 	{
 	}
 
-	public abstract void UpdateVisible(TSeries lineSeries);
+	public abstract void UpdateVisible();
 
 	public void UpdateHighlight(bool showFaded)
 	{

@@ -5,15 +5,13 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
 using Avalonia.Layout;
-using Avalonia.Threading;
 using LiveChartsCore;
 
 namespace Atlas.UI.Avalonia.Charts;
 
 public abstract class TabControlChartLegend<TSeries> : Grid
 {
-	public TabControlChart TabControlChart;
-	//public PlotView? PlotView => TabControlChart.PlotView;
+	public TabControlLiveChart TabControlChart;
 	public ListGroup ListGroup => TabControlChart.ListGroup;
 
 	public List<TabChartLegendItem<TSeries>> LegendItems = new();
@@ -28,7 +26,7 @@ public abstract class TabControlChartLegend<TSeries> : Grid
 
 	public override string? ToString() => ListGroup.ToString();
 
-	public TabControlChartLegend(TabControlChart tabControlChart)
+	public TabControlChartLegend(TabControlLiveChart tabControlChart)
 	{
 		TabControlChart = tabControlChart;
 
@@ -137,16 +135,16 @@ public abstract class TabControlChartLegend<TSeries> : Grid
 		//SetSelectionAll(legendItem.checkBox.IsChecked == true);
 	}
 
-	/*public void SelectSeries(TSeries oxySeries)
+	public void SelectSeries(TSeries series, ListSeries listSeries)
 	{
-		if (oxySeries.Title == null)
+		if (listSeries.Name == null)
 			return;
 
-		if (_idxLegendItems.TryGetValue(oxySeries.Title, out TabChartLegendItem<TSeries>? legendItem))
+		if (_idxLegendItems.TryGetValue(listSeries.Name, out TabChartLegendItem<TSeries>? legendItem))
 		{
 			SelectLegendItem(legendItem);
 		}
-	}*/
+	}
 
 	/*public void HighlightSeries(TSeries oxySeries)
 	{
@@ -195,7 +193,16 @@ public abstract class TabControlChartLegend<TSeries> : Grid
 
 			if (!_idxLegendItems.TryGetValue(title, out TabChartLegendItem<TSeries>? legendItem))
 			{
-				legendItem = AddSeries(new ChartSeries<TSeries>(chartSeries.ListSeries, (TSeries)chartSeries.LineSeries));
+				// Can't cast
+				if (chartSeries is ChartSeries<TSeries> tSeries)
+				{
+					legendItem = AddSeries(tSeries);
+				}
+				else
+				{
+					// Shouldn't ever get here?
+					legendItem = AddSeries(new ChartSeries<TSeries>(chartSeries.ListSeries, (TSeries)chartSeries.LineSeries));
+				}
 			}
 			else
 			{

@@ -1,4 +1,4 @@
-﻿using Atlas.Extensions;
+using Atlas.Extensions;
 
 namespace Atlas.UI.Avalonia.Charts;
 
@@ -14,7 +14,6 @@ public class DateTimeFormat
 		StepSize = stepSize;
 		TextFormat = textFormat;
 	}
-
 
 	// todo: centralize and add units
 	public static string? ValueFormatter(double d)
@@ -42,7 +41,6 @@ public class DateTimeFormat
 			return d.Formatted();
 		}
 	}
-
 
 	public List<DateTimeFormat> DateFormats = new()
 	{
