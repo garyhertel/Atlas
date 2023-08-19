@@ -7,6 +7,7 @@ using Atlas.UI.Avalonia.View;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
+using Avalonia.Layout;
 using Avalonia.Media;
 using System.Collections;
 
@@ -21,12 +22,13 @@ public class ChartSeries<TSeries>
 	public bool IsVisible { get; set; } = true;
 	public bool IsSelected { get; set; }
 
-	public override string ToString() => ListSeries.ToString();
+	public override string? ToString() => ListSeries.Name;
 
-	public ChartSeries(ListSeries listSeries, TSeries lineSeries)
+	public ChartSeries(ListSeries listSeries, TSeries lineSeries, Color color)
 	{
 		ListSeries = listSeries;
 		LineSeries = lineSeries;
+		Color = color;
 	}
 }
 
@@ -116,11 +118,11 @@ public class TabControlChart<TSeries> : Grid //, IDisposable
 		ListGroup = listGroup;
 		FillHeight = fillHeight;
 
-		HorizontalAlignment = global::Avalonia.Layout.HorizontalAlignment.Stretch; // OxyPlot import collision
-																				   //if (FillHeight)
-																				   //			VerticalAlignment = global::Avalonia.Layout.VerticalAlignment.Top;
-																				   //	else
-		VerticalAlignment = global::Avalonia.Layout.VerticalAlignment.Stretch;
+		HorizontalAlignment = HorizontalAlignment.Stretch;
+		//if (FillHeight)
+		//			VerticalAlignment = VerticalAlignment.Top;
+		//	else
+		VerticalAlignment = VerticalAlignment.Stretch;
 
 		ColumnDefinitions = new ColumnDefinitions("*");
 		RowDefinitions = new RowDefinitions("*");
@@ -129,9 +131,15 @@ public class TabControlChart<TSeries> : Grid //, IDisposable
 		MaxHeight = 645; // 25 Items
 
 		if (TabInstance.TabViewSettings.ChartDataSettings.Count == 0)
+		{
 			TabInstance.TabViewSettings.ChartDataSettings.Add(new TabDataSettings());
+		}
 
+		AddTitle();
+	}
 
+	private void AddTitle()
+	{
 		string? title = ListGroup.Name;
 		if (title != null)
 		{
@@ -145,9 +153,13 @@ public class TabControlChart<TSeries> : Grid //, IDisposable
 				[ColumnSpanProperty] = 2,
 			};
 			if (!ListGroup.ShowOrder || ListGroup.Horizontal)
-				TitleTextBlock.HorizontalAlignment = global::Avalonia.Layout.HorizontalAlignment.Center;
+			{
+				TitleTextBlock.HorizontalAlignment = HorizontalAlignment.Center;
+			}
 			else
+			{
 				TitleTextBlock.Margin = new Thickness(40, 5, 5, 5);
+			}
 			TitleTextBlock.PointerEntered += TitleTextBlock_PointerEntered;
 			TitleTextBlock.PointerExited += TitleTextBlock_PointerExited;
 		}
@@ -156,7 +168,9 @@ public class TabControlChart<TSeries> : Grid //, IDisposable
 	private void TitleTextBlock_PointerEntered(object? sender, PointerEventArgs e)
 	{
 		if (IsTitleSelectable)
+		{
 			TitleTextBlock!.Foreground = AtlasTheme.GridBackgroundSelected;
+		}
 	}
 
 	private void TitleTextBlock_PointerExited(object? sender, PointerEventArgs e)

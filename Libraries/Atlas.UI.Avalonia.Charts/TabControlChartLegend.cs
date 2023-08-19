@@ -201,7 +201,7 @@ public abstract class TabControlChartLegend<TSeries> : Grid
 				else
 				{
 					// Shouldn't ever get here?
-					legendItem = AddSeries(new ChartSeries<TSeries>(chartSeries.ListSeries, (TSeries)chartSeries.LineSeries));
+					legendItem = AddSeries(new ChartSeries<TSeries>(chartSeries.ListSeries, (TSeries)chartSeries.LineSeries, chartSeries.Color));
 				}
 			}
 			else

@@ -208,7 +208,7 @@ public abstract class TabChartLegendItem<TSeries> : Grid
 				UpdatePolygonPoints(15, 15);
 				SetFilled(true);
 				_highlight = true;
-				// Legend.UpdateHighlight(true);
+				Legend.UpdateHighlight(true);
 				TextBlock!.Foreground = AtlasTheme.GridBackgroundSelected;
 				if (TextBlockTotal != null)
 					TextBlockTotal.Foreground = AtlasTheme.GridBackgroundSelected;
@@ -216,7 +216,7 @@ public abstract class TabChartLegendItem<TSeries> : Grid
 			else
 			{
 				UpdatePolygonPoints(13, 13);
-				// Legend.UpdateHighlight(false);
+				Legend.UpdateHighlight(false);
 				_highlight = false;
 				SetFilled(IsSelected);
 				TextBlock!.Foreground = Brushes.LightGray;
@@ -227,6 +227,19 @@ public abstract class TabChartLegendItem<TSeries> : Grid
 			UpdateVisible();
 		}
 	}
+
+	public void UpdateHighlight(bool showFaded)
+	{
+		Color newColor;
+		if (Highlight || !showFaded)
+			newColor = ChartSeries.Color;
+		else
+			newColor = Color.FromArgb(32, ChartSeries.Color.R, ChartSeries.Color.G, ChartSeries.Color.B);
+
+		UpdateColor(newColor);
+	}
+
+	public abstract void UpdateColor(Color color);
 
 	private void TabChartLegendItem_PointerEntered(object? sender, PointerEventArgs e)
 	{
@@ -244,19 +257,4 @@ public abstract class TabChartLegendItem<TSeries> : Grid
 	}
 
 	public abstract void UpdateVisible();
-
-	public void UpdateHighlight(bool showFaded)
-	{
-		/*OxyColor newColor;
-		if (Highlight || !showFaded)
-			newColor = oxyColor;
-		else
-			newColor = OxyColor.FromAColor(32, oxyColor);
-
-		if (Series is OxyPlot.Series.LineSeries lineSeries)
-		{
-			lineSeries.MarkerFill = newColor;
-			lineSeries.Color = newColor;
-		}*/
-	}
 }

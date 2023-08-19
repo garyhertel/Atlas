@@ -53,12 +53,13 @@ public class DateTimeFormat
 
 	public DateTimeFormat? GetDateTimeFormat(double duration)
 	{
-		foreach (var format in DateFormats)
+		return DateFormats.FirstOrDefault(format => duration < format.Maximum);
+		/*foreach (var format in DateFormats)
 		{
 			if (duration < format.Maximum)
 				return format;
 		}
 
-		return null;
+		return null;*/
 	}
 }
