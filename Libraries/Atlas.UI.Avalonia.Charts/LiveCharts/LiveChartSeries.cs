@@ -38,8 +38,7 @@ public class LiveChartSeries //: ChartSeries<ISeries>
 		ListSeries = listSeries;
 		UseDateTimeAxis = useDateTimeAxis;
 
-
-		var skColor = new SKColor(color.R, color.G, color.B);
+		SKColor skColor = color.AsSkColor();
 
 		//var values = GetValues(listSeries);
 

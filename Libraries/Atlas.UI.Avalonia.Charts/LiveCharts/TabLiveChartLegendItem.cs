@@ -18,7 +18,7 @@ public class TabLiveChartLegendItem : TabChartLegendItem<ISeries>
 	{
 		if (ChartSeries.LineSeries is LineSeries<ObservablePoint> lineSeries)
 		{
-			var skColor = new SKColor(color.R, color.G, color.B, color.A);
+			var skColor = color.AsSkColor();
 
 			lineSeries.Stroke = new SolidColorPaint(skColor) { StrokeThickness = 2 };
 			lineSeries.GeometryStroke = new SolidColorPaint(skColor) { StrokeThickness = 5 };

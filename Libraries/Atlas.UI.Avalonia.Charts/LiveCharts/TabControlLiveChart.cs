@@ -89,6 +89,8 @@ public class TabControlLiveChart : TabControlChart<ISeries>
 			XAxes = GetXAxis(),
 			YAxes = GetValueAxis(),
 			LegendPosition = LegendPosition.Hidden,
+			TooltipBackgroundPaint = new SolidColorPaint(AtlasTheme.ChartBackgroundSelected.Color.AsSkColor().WithAlpha((byte)64)),
+			TooltipTextPaint = new SolidColorPaint(AtlasTheme.TitleForeground.Color.AsSkColor()),
 			//MinWidth = 150,
 			//MinHeight = 80,
 			[Grid.RowProperty] = 1,
