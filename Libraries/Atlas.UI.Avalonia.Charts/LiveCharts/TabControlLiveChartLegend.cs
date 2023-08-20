@@ -5,10 +5,12 @@ namespace Atlas.UI.Avalonia.Charts.LiveCharts;
 
 public class TabControlLiveChartLegend : TabControlChartLegend<ISeries>
 {
-	public CartesianChart Chart => TabControlChart.Chart;
+	public TabControlLiveChart LiveChart;
+	public CartesianChart Chart => LiveChart.Chart;
 
 	public TabControlLiveChartLegend(TabControlLiveChart tabControlChart) : base(tabControlChart)
 	{
+		LiveChart = tabControlChart;
 	}
 
 	public override TabChartLegendItem<ISeries> AddSeries(ChartSeries<ISeries> chartSeries)

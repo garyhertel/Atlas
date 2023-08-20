@@ -1,17 +1,15 @@
 using Atlas.Core;
-using Atlas.UI.Avalonia.Charts.LiveCharts;
 using Atlas.UI.Avalonia.Themes;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
 using Avalonia.Layout;
-using LiveChartsCore;
 
 namespace Atlas.UI.Avalonia.Charts;
 
 public abstract class TabControlChartLegend<TSeries> : Grid
 {
-	public TabControlLiveChart TabControlChart;
+	public TabControlChart<TSeries> TabControlChart;
 	public ListGroup ListGroup => TabControlChart.ListGroup;
 
 	public List<TabChartLegendItem<TSeries>> LegendItems = new();
@@ -26,7 +24,7 @@ public abstract class TabControlChartLegend<TSeries> : Grid
 
 	public override string? ToString() => ListGroup.ToString();
 
-	public TabControlChartLegend(TabControlLiveChart tabControlChart)
+	public TabControlChartLegend(TabControlChart<TSeries> tabControlChart)
 	{
 		TabControlChart = tabControlChart;
 
@@ -185,7 +183,7 @@ public abstract class TabControlChartLegend<TSeries> : Grid
 			//return;
 
 		_wrapPanel.Children.Clear();
-		foreach (ChartSeries<ISeries> chartSeries in TabControlChart.ChartSeries)
+		foreach (ChartSeries<TSeries> chartSeries in TabControlChart.ChartSeries)
 		{
 			string title = chartSeries.ToString();
 			if (title == null)
@@ -194,15 +192,15 @@ public abstract class TabControlChartLegend<TSeries> : Grid
 			if (!_idxLegendItems.TryGetValue(title, out TabChartLegendItem<TSeries>? legendItem))
 			{
 				// Can't cast
-				if (chartSeries is ChartSeries<TSeries> tSeries)
-				{
-					legendItem = AddSeries(tSeries);
-				}
+				//if (chartSeries is ChartSeries<TSeries> tSeries)
+				//{
+					legendItem = AddSeries(chartSeries);
+				/*}
 				else
 				{
 					// Shouldn't ever get here?
-					legendItem = AddSeries(new ChartSeries<TSeries>(chartSeries.ListSeries, (TSeries)chartSeries.LineSeries, chartSeries.Color));
-				}
+					legendItem = AddSeries(new ChartSeries<TSeries>(chartSeries.ListSeries, chartSeries.LineSeries, chartSeries.Color));
+				}*/
 			}
 			else
 			{
@@ -270,7 +268,7 @@ public abstract class TabControlChartLegend<TSeries> : Grid
 			UpdateVisibleSeries();
 	}
 
-	public void UpdateHighlight(bool showFaded)
+	public virtual void UpdateHighlight(bool showFaded)
 	{
 		foreach (TabChartLegendItem<TSeries> item in LegendItems)
 		{

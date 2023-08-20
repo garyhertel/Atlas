@@ -65,7 +65,8 @@ public class ChartGroupControl : IControlCreator
 
 		foreach (var listGroupPair in chartSettings.ListGroups)
 		{
-			var tabChart = new TabControlLiveChart(tabInstance, listGroupPair.Value, true);
+			var tabChart = new TabControlOxyPlot(tabInstance, listGroupPair.Value, true);
+			//var tabChart = new TabControlLiveChart(tabInstance, listGroupPair.Value, true);
 
 			container.AddControl(tabChart, true, SeparatorType.Spacer);
 			//tabChart.OnSelectionChanged += ListData_OnSelectionChanged;
@@ -109,6 +110,14 @@ public class TabControlChart<TSeries> : Grid //, IDisposable
 	public static Color GetColor(int index) => DefaultColors[index % DefaultColors.Length];
 
 	public bool IsTitleSelectable { get; set; }
+
+	public event EventHandler<SeriesSelectedEventArgs>? SelectionChanged;
+
+	protected virtual void OnSelectionChanged(SeriesSelectedEventArgs e)
+	{
+		// Safely raise the event for all subscribers
+		SelectionChanged?.Invoke(this, e);
+	}
 
 	public override string? ToString() => ListGroup.ToString();
 
