@@ -185,22 +185,13 @@ public abstract class TabControlChartLegend<TSeries> : Grid
 		_wrapPanel.Children.Clear();
 		foreach (ChartSeries<TSeries> chartSeries in TabControlChart.ChartSeries)
 		{
-			string title = chartSeries.ToString();
+			string? title = chartSeries.ToString();
 			if (title == null)
 				continue;
 
 			if (!_idxLegendItems.TryGetValue(title, out TabChartLegendItem<TSeries>? legendItem))
 			{
-				// Can't cast
-				//if (chartSeries is ChartSeries<TSeries> tSeries)
-				//{
-					legendItem = AddSeries(chartSeries);
-				/*}
-				else
-				{
-					// Shouldn't ever get here?
-					legendItem = AddSeries(new ChartSeries<TSeries>(chartSeries.ListSeries, chartSeries.LineSeries, chartSeries.Color));
-				}*/
+				legendItem = AddSeries(chartSeries);
 			}
 			else
 			{

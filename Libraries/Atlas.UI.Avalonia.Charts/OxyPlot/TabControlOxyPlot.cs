@@ -21,20 +21,6 @@ public class TabControlOxyPlot : TabControlChart<OxyPlotLineSeries>
 	private static readonly OxyColor NowColor = OxyColors.Green;
 	//private static OxyColor timeTrackerColor = Theme.TitleBackground;
 
-	public List<ListSeries> SelectedSeries
-	{
-		get
-		{
-			List<ListSeries> selected = ChartSeries
-				.Where(s => s.IsSelected)
-				.Select(s => s.ListSeries)
-				.ToList();
-
-			if (selected.Count == ChartSeries.Count && selected.Count > 1)
-				selected.Clear(); // If all are selected, none are selected?
-			return selected;
-		}
-	}
 	public OxyPlot.Series.Series? HoverSeries;
 
 	//public SeriesCollection SeriesCollection { get; set; }
@@ -48,6 +34,7 @@ public class TabControlOxyPlot : TabControlChart<OxyPlotLineSeries>
 
 	public OxyPlot.Axes.LinearAxis? LinearAxis;
 	public OxyPlot.Axes.DateTimeAxis? DateTimeAxis;
+	public OxyPlot.Axes.Axis? XAxis => DateTimeAxis ?? LinearAxis;
 
 	private OxyPlot.Annotations.LineAnnotation? _trackerAnnotation;
 
@@ -63,8 +50,6 @@ public class TabControlOxyPlot : TabControlChart<OxyPlotLineSeries>
 		add { _mouseCursorChangedEventSource.Subscribe(value); }
 		remove { _mouseCursorChangedEventSource.Unsubscribe(value); }
 	}
-
-	public override string? ToString() => ListGroup.ToString();
 
 	public TabControlOxyPlot(TabInstance tabInstance, ListGroup listGroup, bool fillHeight = false) :
 		base(tabInstance, listGroup, fillHeight)
@@ -363,13 +348,13 @@ public class TabControlOxyPlot : TabControlChart<OxyPlotLineSeries>
 			AddNowTime();
 			if (ListGroup.ShowTimeTracker)
 				AddTrackerLine();
-
-			AddMouseListeners();
 		}
 		else
 		{
 			AddLinearAxis();
 		}
+
+		AddMouseListeners();
 
 		if (ListGroup.Series.Count > 0 && ListGroup.Series[0].IsStacked)
 			AddCategoryAxis();
@@ -926,7 +911,7 @@ public class TabControlOxyPlot : TabControlChart<OxyPlotLineSeries>
 	{
 		if (!_selecting || _startDataPoint == null)
 		{
-			_startDataPoint = OxyPlot.Axes.DateTimeAxis.InverseTransform(e.Position, DateTimeAxis, ValueAxis);
+			_startDataPoint = OxyPlot.Axes.Axis.InverseTransform(e.Position, XAxis, ValueAxis);
 			_startScreenPoint = e.Position;
 			_selecting = true;
 			e.Handled = true;
@@ -935,13 +920,13 @@ public class TabControlOxyPlot : TabControlChart<OxyPlotLineSeries>
 
 	private void PlotModel_MouseMove(object? sender, OxyMouseEventArgs e)
 	{
-		DataPoint dataPoint = OxyPlot.Axes.DateTimeAxis.InverseTransform(e.Position, DateTimeAxis, ValueAxis);
+		DataPoint dataPoint = OxyPlot.Axes.Axis.InverseTransform(e.Position, XAxis, ValueAxis);
 		var moveEvent = new MouseCursorMovedEventArgs(dataPoint.X);
 		_mouseCursorChangedEventSource?.Raise(sender, moveEvent);
 
 		if (_selecting && _startDataPoint != null)
 		{
-			_endDataPoint = OxyPlot.Axes.DateTimeAxis.InverseTransform(e.Position, DateTimeAxis, ValueAxis);
+			_endDataPoint = OxyPlot.Axes.Axis.InverseTransform(e.Position, XAxis, ValueAxis);
 			UpdateMouseSelection(_endDataPoint.Value);
 		}
 	}
@@ -950,7 +935,7 @@ public class TabControlOxyPlot : TabControlChart<OxyPlotLineSeries>
 	{
 		if (_selecting && _startDataPoint != null)
 		{
-			_endDataPoint = OxyPlot.Axes.DateTimeAxis.InverseTransform(e.Position, DateTimeAxis, ValueAxis);
+			_endDataPoint = OxyPlot.Axes.Axis.InverseTransform(e.Position, XAxis, ValueAxis);
 			double width = Math.Abs(e.Position.X - _startScreenPoint.X);
 			if (width > MinSelectionWidth)
 			{

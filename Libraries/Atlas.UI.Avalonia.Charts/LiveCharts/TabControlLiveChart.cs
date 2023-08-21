@@ -27,20 +27,6 @@ public class TabControlLiveChart : TabControlChart<ISeries>
 	//public ChartSettings ChartSettings { get; set; }
 
 	//private List<ListSeries> ListSeries { get; set; }
-	public List<ListSeries> SelectedSeries
-	{
-		get
-		{
-			List<ListSeries> selected = ChartSeries
-				.Where(s => s.IsSelected)
-				.Select(s => s.ListSeries)
-				.ToList();
-
-			if (selected.Count == ChartSeries.Count && selected.Count > 1)
-				selected.Clear(); // If all are selected, none are selected?
-			return selected;
-		}
-	}
 
 	public CartesianChart Chart;
 
@@ -86,7 +72,7 @@ public class TabControlLiveChart : TabControlChart<ISeries>
 			XAxes = GetXAxis(),
 			YAxes = GetValueAxis(),
 			LegendPosition = LegendPosition.Hidden,
-			TooltipBackgroundPaint = new SolidColorPaint(AtlasTheme.ChartBackgroundSelected.Color.AsSkColor().WithAlpha((byte)64)),
+			TooltipBackgroundPaint = new SolidColorPaint(AtlasTheme.ChartBackgroundSelected.Color.AsSkColor().WithAlpha(64)),
 			TooltipTextPaint = new SolidColorPaint(AtlasTheme.TitleForeground.Color.AsSkColor()),
 			//MinWidth = 150,
 			//MinHeight = 80,

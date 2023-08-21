@@ -53,7 +53,7 @@ public abstract class TabChartLegendItem<TSeries> : Grid
 
 	public IEnumerable? ItemsSource { get; internal set; }
 
-	public override string ToString() => ChartSeries.ToString();
+	public override string? ToString() => ChartSeries.ToString();
 
 	public TabChartLegendItem(TabControlChartLegend<TSeries> legend, ChartSeries<TSeries> chartSeries)
 	{

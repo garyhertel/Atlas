@@ -1,6 +1,5 @@
 using Atlas.Core;
 using Atlas.Tabs;
-using Atlas.UI.Avalonia.Charts.LiveCharts;
 using Atlas.UI.Avalonia.Controls;
 using Atlas.UI.Avalonia.Themes;
 using Atlas.UI.Avalonia.View;
@@ -87,6 +86,21 @@ public class TabControlChart<TSeries> : Grid //, IDisposable
 	public List<ChartSeries<TSeries>> ChartSeries = new();
 	protected Dictionary<string, ChartSeries<TSeries>> IdxNameToSeries { get; set; } = new();
 	protected Dictionary<IList, ListSeries> ListToTabSeries { get; set; } = new();
+
+	public List<ListSeries> SelectedSeries
+	{
+		get
+		{
+			List<ListSeries> selected = ChartSeries
+				.Where(s => s.IsSelected)
+				.Select(s => s.ListSeries)
+				.ToList();
+
+			if (selected.Count == ChartSeries.Count && selected.Count > 1)
+				selected.Clear(); // If all are selected, none are selected?
+			return selected;
+		}
+	}
 
 	public TextBlock? TitleTextBlock { get; protected set; }
 	public static Color[] DefaultColors { get; set; } = new Color[]

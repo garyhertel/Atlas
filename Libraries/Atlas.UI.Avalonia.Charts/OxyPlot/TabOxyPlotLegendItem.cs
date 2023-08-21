@@ -148,9 +148,4 @@ public class TabOxyPlotLegendItem : TabChartLegendItem<OxyPlotLineSeries>
 			lineSeries.Color = newColor;
 		}
 	}
-
-	/*public override void UpdateVisible()
-	{
-		ChartSeries.LineSeries.IsVisible = IsSelected || Highlight;
-	}*/
 }
