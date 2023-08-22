@@ -1,4 +1,5 @@
 using Atlas.Extensions;
+using Atlas.UI.Avalonia.Themes;
 using Atlas.UI.Avalonia.View;
 using Avalonia;
 using Avalonia.Collections;
@@ -30,8 +31,8 @@ public class DataGridBoundTextColumn : DataGridTextColumn
 	protected override Control GenerateElement(DataGridCell cell, object dataItem)
 	{
 		cell.MaxHeight = 100; // don't let them have more than a few lines each
-		cell.BorderBrush = Brushes.Black;
-		cell.BorderThickness = new Thickness(1);
+		cell.BorderBrush = AtlasTheme.GridBorder;
+		cell.BorderThickness = new Thickness(0, 0, 1, 1);
 
 		TextBlock textBlock = CreateTextBlock();
 		//TextBlock textBlock = (TextBlock)base.GenerateElement(cell, dataItem);

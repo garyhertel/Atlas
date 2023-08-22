@@ -30,7 +30,7 @@ public class OxyPlotLineSeries : OxyPlot.Series.LineSeries
 	// DataPoint is sealed
 	private readonly Dictionary<DataPoint, object> _datapointLookup = new();
 
-	public override string? ToString() => ListSeries?.ToString();
+	public override string? ToString() => ListSeries?.Name;
 
 	public OxyPlotLineSeries(TabControlOxyPlot chart, ListSeries listSeries, bool useDateTimeAxis)
 	{
