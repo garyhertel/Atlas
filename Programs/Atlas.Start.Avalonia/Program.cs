@@ -32,5 +32,6 @@ static class Program
 				//UseDeferredRendering = false, // Causes DataGrid blank columns when scrolling right?
 				//AllowEglInitialization = true,
 			})
+			.WithInterFont()
 			.LogToTrace();
 }

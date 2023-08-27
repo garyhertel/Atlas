@@ -8,7 +8,6 @@ using Avalonia.Input;
 using Avalonia.Layout;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
-using Avalonia.VisualTree;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 
@@ -208,7 +207,8 @@ public class ScreenCapture : Grid
 
 		using (var ctx = _backgroundBitmap.CreateDrawingContext())
 		{
-			//ctx.DrawBitmap(_originalBitmap.PlatformImpl, 0.5, bounds, bounds); // v11 fix
+			ctx.PushOpacity(0.5);
+			ctx.DrawImage(_originalBitmap, bounds);
 		}
 
 		_backgroundImage = new Image()
@@ -232,7 +232,7 @@ public class ScreenCapture : Grid
 
 		using (var ctx = bitmap.CreateDrawingContext())
 		{
-			//ctx.DrawBitmap(_originalBitmap!, 1, _selectionRect, destRect); // v11 fix
+			ctx.DrawImage(_originalBitmap!, _selectionRect, destRect);
 		};
 		return bitmap;
 	}
@@ -301,7 +301,7 @@ public class ScreenCapture : Grid
 		var outerPen = new Pen(brush, 4, lineCap: PenLineCap.Square);
 		using (var ctx = _selectionBitmap.CreateDrawingContext())
 		{
-			//ctx.DrawBitmap(_originalBitmap, 1, _selectionRect, _selectionRect); // v11 fix
+			ctx.DrawImage(_originalBitmap, _selectionRect, _selectionRect);
 			ctx.DrawRectangle(null, outerPen, borderRect.Inflate(1));
 			ctx.DrawRectangle(null, innerPen, borderRect);
 		}
