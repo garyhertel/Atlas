@@ -9,9 +9,9 @@ using Avalonia.Styling;
 
 namespace Atlas.UI.Avalonia.Controls;
 
-public class TabControlCheckBox : CheckBox, IStyleable //, ILayoutable
+public class TabControlCheckBox : CheckBox //, ILayoutable
 {
-	Type IStyleable.StyleKey => typeof(CheckBox);
+	protected override Type StyleKeyOverride => typeof(CheckBox);
 
 	public TabControlCheckBox()
 	{

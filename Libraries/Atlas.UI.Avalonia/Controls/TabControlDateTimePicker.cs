@@ -15,9 +15,9 @@ using System.Globalization;
 
 namespace Atlas.UI.Avalonia.Controls;
 
-public class TabCalendarDatePicker : CalendarDatePicker, IStyleable
+public class TabCalendarDatePicker : CalendarDatePicker
 {
-	Type IStyleable.StyleKey => typeof(CalendarDatePicker);
+	protected override Type StyleKeyOverride => typeof(CalendarDatePicker);
 
 	// Default behavior increments and decrements Date when scrolling left/right with the mousepad
 	// This is probably useful for Mobile devices, but not Desktop
@@ -27,9 +27,9 @@ public class TabCalendarDatePicker : CalendarDatePicker, IStyleable
 	}
 }
 
-public class TabDateTimePicker : Grid, IStyleable
+public class TabDateTimePicker : Grid
 {
-	Type IStyleable.StyleKey => typeof(TabDateTimePicker);
+	protected override Type StyleKeyOverride => typeof(TabDateTimePicker);
 
 	public readonly ListProperty Property;
 

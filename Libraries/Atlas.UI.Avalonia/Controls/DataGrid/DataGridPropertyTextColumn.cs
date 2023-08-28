@@ -155,12 +155,6 @@ public class DataGridPropertyTextColumn : DataGridTextColumn
 	// They also use different background colors, with different shades for links vs non-links
 	private Control AddStyling(DataGridCell cell, TextBlock textBlock)
 	{
-		/*var border = new Border()
-		{
-			BorderBrush = AtlasTheme.GridBorder,
-			Child = textBlock,
-		};*/
-
 		if (PropertyInfo.IsDefined(typeof(StyleValueAttribute)) || 
 			(DisplayIndex == 1 && typeof(DictionaryEntry).IsAssignableFrom(PropertyInfo.DeclaringType)))
 		{
@@ -179,7 +173,6 @@ public class DataGridPropertyTextColumn : DataGridTextColumn
 			};
 			textBlock.Bind(TextBlock.ForegroundProperty, foregroundBinding);
 
-			//border.BorderBrush = AtlasTheme.GridStyledLines;
 			cell.BorderBrush = AtlasTheme.GridStyledLines;
 		}
 
@@ -211,8 +204,6 @@ public class DataGridPropertyTextColumn : DataGridTextColumn
 		cell.Focusable = true;
 		cell.Foreground = AtlasTheme.GridForeground;
 		cell.BorderBrush = AtlasTheme.GridBorder;
-		//cell.BorderBrush = Brushes.Black;
-		//cell.BorderThickness = new Thickness(1);
 		cell.BorderThickness = new Thickness(0, 0, 1, 1); // Right and Bottom
 
 		if (Binding != null)

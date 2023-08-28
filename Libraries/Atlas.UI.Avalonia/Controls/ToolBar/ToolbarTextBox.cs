@@ -6,9 +6,9 @@ using Avalonia.Styling;
 
 namespace Atlas.UI.Avalonia.Controls;
 
-public class ToolbarTextBox : TextBox, IStyleable //, ILayoutable
+public class ToolbarTextBox : TextBox //, ILayoutable
 {
-	Type IStyleable.StyleKey => typeof(TextBox);
+	protected override Type StyleKeyOverride => typeof(TextBox);
 
 	public ToolbarTextBox(string text)
 	{

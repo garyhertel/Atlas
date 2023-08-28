@@ -196,9 +196,9 @@ public class TabControlToolbar : Grid, IDisposable
 	}
 }
 
-public class ToolbarTextBlock : TextBlock, IStyleable
+public class ToolbarTextBlock : TextBlock
 {
-	Type IStyleable.StyleKey => typeof(TextBlock);
+	protected override Type StyleKeyOverride => typeof(TextBlock);
 
 	public ToolbarTextBlock(string text = "")
 	{
@@ -210,9 +210,9 @@ public class ToolbarTextBlock : TextBlock, IStyleable
 	}
 }
 
-public class ToolbarRadioButton : RadioButton, IStyleable
+public class ToolbarRadioButton : RadioButton
 {
-	Type IStyleable.StyleKey => typeof(RadioButton);
+	protected override Type StyleKeyOverride => typeof(RadioButton);
 
 	public ToolbarRadioButton(string text = "")
 	{

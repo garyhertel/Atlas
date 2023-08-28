@@ -5,7 +5,6 @@ using Avalonia.Collections;
 using Avalonia.Controls;
 using Avalonia.Data;
 using Avalonia.Input;
-using Avalonia.Input.Platform;
 using System.ComponentModel.DataAnnotations;
 
 namespace Atlas.UI.Avalonia;
@@ -37,7 +36,7 @@ public static class AvaloniaUtils
 
 	public static void AddContextMenu(TextBox textBox)
 	{
-		/*var keymap = AvaloniaLocator.Current.GetService<PlatformHotkeyConfiguration>()!;
+		var keymap = Application.Current!.PlatformSettings!.HotkeyConfiguration;
 
 		var list = new AvaloniaList<object>();
 
@@ -66,7 +65,7 @@ public static class AvaloniaUtils
 			ItemsSource = list,
 		};
 
-		textBox.ContextMenu = contextMenu;*/
+		textBox.ContextMenu = contextMenu;
 	}
 
 	private static void SendTextBoxKey(TextBox textBox, List<KeyGesture> keyGestures)

@@ -9,9 +9,9 @@ using System.Collections;
 
 namespace Atlas.UI.Avalonia.Controls;
 
-public class TabControlFormattedComboBox : ComboBox, IStyleable //, ILayoutable
+public class TabControlFormattedComboBox : ComboBox //, ILayoutable
 {
-	Type IStyleable.StyleKey => typeof(ComboBox);
+	protected override Type StyleKeyOverride => typeof(ComboBox);
 
 	public ListProperty Property;
 

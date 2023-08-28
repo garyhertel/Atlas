@@ -8,9 +8,9 @@ using Avalonia.Styling;
 
 namespace Atlas.UI.Avalonia.Controls;
 
-public class TabControlButton : Button, IStyleable
+public class TabControlButton : Button
 {
-	Type IStyleable.StyleKey => typeof(TabControlButton);
+	protected override Type StyleKeyOverride => typeof(TabControlButton);
 
 	public Brush BackgroundBrush = AtlasTheme.ButtonBackground;
 	public Brush ForegroundBrush = AtlasTheme.ButtonForeground;

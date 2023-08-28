@@ -7,9 +7,9 @@ using Avalonia.Styling;
 
 namespace Atlas.UI.Avalonia;
 
-public class DataGridContextMenu : ContextMenu, IStyleable, IDisposable
+public class DataGridContextMenu : ContextMenu, IDisposable
 {
-	Type IStyleable.StyleKey => typeof(ContextMenu);
+	protected override Type StyleKeyOverride => typeof(ContextMenu);
 
 	private const int MaxCellValueLength = 10000;
 

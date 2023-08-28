@@ -8,9 +8,9 @@ using System.Reflection;
 
 namespace Atlas.UI.Avalonia;
 
-public class TextBlockElement : TextBlock, IStyleable //, ILayoutable
+public class TextBlockElement : TextBlock //, ILayoutable
 {
-	Type IStyleable.StyleKey => typeof(TextBlock);
+	protected override Type StyleKeyOverride => typeof(TextBlock);
 
 	public readonly DataGridPropertyTextColumn Column;
 	public readonly PropertyInfo PropertyInfo;

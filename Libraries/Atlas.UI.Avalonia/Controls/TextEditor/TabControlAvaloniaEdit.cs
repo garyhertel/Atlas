@@ -12,9 +12,9 @@ using AvaloniaEdit.Highlighting;
 
 namespace Atlas.UI.Avalonia.Controls;
 
-public class TabControlTextEditor : AvaloniaEdit.TextEditor, IStyleable
+public class TabControlTextEditor : AvaloniaEdit.TextEditor
 {
-	Type IStyleable.StyleKey => typeof(AvaloniaEdit.TextEditor);
+	protected override Type StyleKeyOverride => typeof(AvaloniaEdit.TextEditor);
 
 	protected override Size MeasureOverride(Size constraint)
 	{

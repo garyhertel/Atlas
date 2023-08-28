@@ -10,9 +10,9 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace Atlas.UI.Avalonia.Controls;
 
-public class TabControlSearch : Grid, IStyleable
+public class TabControlSearch : Grid
 {
-	Type IStyleable.StyleKey => typeof(Grid);
+	protected override Type StyleKeyOverride => typeof(Grid);
 
 	public TextBox TextBoxSearch;
 

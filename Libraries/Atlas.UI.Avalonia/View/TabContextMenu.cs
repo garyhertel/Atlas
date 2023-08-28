@@ -9,9 +9,9 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace Atlas.UI.Avalonia.View;
 
-public class TabMenuItem : MenuItem, IStyleable
+public class TabMenuItem : MenuItem
 {
-	Type IStyleable.StyleKey => typeof(MenuItem);
+	protected override Type StyleKeyOverride => typeof(MenuItem);
 
 	public TabMenuItem(string? header = null)
 	{
@@ -20,14 +20,14 @@ public class TabMenuItem : MenuItem, IStyleable
 	}
 }
 
-public class TabViewContextMenu : ContextMenu, IStyleable, IDisposable // ILayoutable
+public class TabViewContextMenu : ContextMenu, IDisposable // ILayoutable
 {
 	public TabView? TabView;
 	public TabInstance? TabInstance;
 
 	private CheckBox _checkboxAutoLoad;
 
-	Type IStyleable.StyleKey => typeof(ContextMenu);
+	protected override Type StyleKeyOverride => typeof(ContextMenu);
 
 	public TabViewContextMenu(TabView tabView, TabInstance tabInstance)
 	{

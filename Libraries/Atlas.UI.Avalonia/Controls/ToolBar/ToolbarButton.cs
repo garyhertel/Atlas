@@ -15,9 +15,9 @@ using Avalonia.Threading;
 
 namespace Atlas.UI.Avalonia.Controls;
 
-public class ToolbarButton : Button, IStyleable, IDisposable // , ILayoutable
+public class ToolbarButton : Button, IDisposable // , ILayoutable
 {
-	Type IStyleable.StyleKey => typeof(ToolbarButton);
+	protected override Type StyleKeyOverride => typeof(ToolbarButton);
 
 	public TabControlToolbar Toolbar;
 	public string? Label { get; set; }
