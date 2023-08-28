@@ -9,7 +9,6 @@ using Avalonia.Input;
 using Avalonia.Layout;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
-using Avalonia.Styling;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 

@@ -7,7 +7,6 @@ using Avalonia.Controls;
 using Avalonia.Input.Platform;
 using Avalonia.Layout;
 using Avalonia.Media;
-using Avalonia.Styling;
 using System.Data;
 
 namespace Atlas.UI.Avalonia;
@@ -41,9 +40,9 @@ public class DataGridBoundTextColumn : DataGridTextColumn
 		return textBlock;
 	}
 
-	public class TextBlockElement : TextBlock, IStyleable //, ILayoutable
+	public class TextBlockElement : TextBlock
 	{
-		Type IStyleable.StyleKey => typeof(TextBlock);
+		protected override Type StyleKeyOverride => typeof(TextBlock);
 
 		public double MaxDesiredWidth = 500;
 

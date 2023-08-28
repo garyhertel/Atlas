@@ -5,11 +5,10 @@ using Avalonia.Controls;
 using Avalonia.Data;
 using Avalonia.Layout;
 using Avalonia.Media;
-using Avalonia.Styling;
 
 namespace Atlas.UI.Avalonia.Controls;
 
-public class TabControlCheckBox : CheckBox //, ILayoutable
+public class TabControlCheckBox : CheckBox
 {
 	protected override Type StyleKeyOverride => typeof(CheckBox);
 

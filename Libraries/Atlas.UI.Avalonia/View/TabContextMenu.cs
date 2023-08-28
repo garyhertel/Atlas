@@ -2,8 +2,6 @@ using Atlas.Serialize;
 using Atlas.Tabs;
 using Avalonia.Collections;
 using Avalonia.Controls;
-using Avalonia.Layout;
-using Avalonia.Styling;
 using Avalonia.Interactivity;
 using System.Diagnostics.CodeAnalysis;
 
@@ -20,7 +18,7 @@ public class TabMenuItem : MenuItem
 	}
 }
 
-public class TabViewContextMenu : ContextMenu, IDisposable // ILayoutable
+public class TabViewContextMenu : ContextMenu, IDisposable
 {
 	public TabView? TabView;
 	public TabInstance? TabInstance;

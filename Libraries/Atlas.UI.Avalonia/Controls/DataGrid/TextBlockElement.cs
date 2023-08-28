@@ -3,12 +3,11 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Layout;
 using Avalonia.Media;
-using Avalonia.Styling;
 using System.Reflection;
 
 namespace Atlas.UI.Avalonia;
 
-public class TextBlockElement : TextBlock //, ILayoutable
+public class TextBlockElement : TextBlock
 {
 	protected override Type StyleKeyOverride => typeof(TextBlock);
 

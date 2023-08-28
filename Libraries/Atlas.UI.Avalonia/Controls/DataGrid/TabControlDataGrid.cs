@@ -22,7 +22,7 @@ using System.Reflection;
 
 namespace Atlas.UI.Avalonia.Controls;
 
-public class TabControlDataGrid : Grid, IDisposable, ITabSelector, ITabItemSelector, ITabDataControl // , ILayoutable
+public class TabControlDataGrid : Grid, IDisposable, ITabSelector, ITabItemSelector, ITabDataControl
 {
 	private const int ColumnPercentBased = 150;
 	private const int MaxMinColumnWidth = 200;

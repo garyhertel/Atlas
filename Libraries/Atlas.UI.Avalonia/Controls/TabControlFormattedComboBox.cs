@@ -4,12 +4,11 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Data;
 using Avalonia.Layout;
-using Avalonia.Styling;
 using System.Collections;
 
 namespace Atlas.UI.Avalonia.Controls;
 
-public class TabControlFormattedComboBox : ComboBox //, ILayoutable
+public class TabControlFormattedComboBox : ComboBox
 {
 	protected override Type StyleKeyOverride => typeof(ComboBox);
 

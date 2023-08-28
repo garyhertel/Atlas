@@ -10,12 +10,11 @@ using Avalonia.Input;
 using Avalonia.Layout;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
-using Avalonia.Styling;
 using Avalonia.Threading;
 
 namespace Atlas.UI.Avalonia.Controls;
 
-public class ToolbarButton : Button, IDisposable // , ILayoutable
+public class ToolbarButton : Button, IDisposable
 {
 	protected override Type StyleKeyOverride => typeof(ToolbarButton);
 
