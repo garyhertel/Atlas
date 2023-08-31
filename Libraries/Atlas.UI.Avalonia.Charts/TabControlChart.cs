@@ -12,6 +12,19 @@ using System.Collections;
 
 namespace Atlas.UI.Avalonia.Charts;
 
+public class ChartAnnotation
+{
+	public string? Text { get; set; }
+	public Color? TextColor { get; set; }
+	public Color? Color { get; set; }
+
+	public bool Horizontal { get; set; } = true;
+	public double? X { get; set; }
+	public double? Y { get; set; }
+
+	public double StrokeThickness { get; set; } = 2;
+}
+
 public class ChartSeries<TSeries>
 {
 	public ListSeries ListSeries { get; set; }
@@ -127,6 +140,8 @@ public class TabControlChart<TSeries> : Grid //, IDisposable
 
 	public event EventHandler<SeriesSelectedEventArgs>? SelectionChanged;
 
+	public List<ChartAnnotation> Annotations { get; set; } = new();
+
 	protected virtual void OnSelectionChanged(SeriesSelectedEventArgs e)
 	{
 		// Safely raise the event for all subscribers
@@ -199,5 +214,10 @@ public class TabControlChart<TSeries> : Grid //, IDisposable
 	private void TitleTextBlock_PointerExited(object? sender, PointerEventArgs e)
 	{
 		TitleTextBlock!.Foreground = AtlasTheme.BackgroundText;
+	}
+
+	public virtual void AddAnnotation(ChartAnnotation chartAnnotation)
+	{
+		Annotations.Add(chartAnnotation);
 	}
 }

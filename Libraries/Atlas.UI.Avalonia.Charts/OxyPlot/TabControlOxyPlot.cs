@@ -1043,6 +1043,25 @@ public class TabControlOxyPlot : TabControlChart<OxyPlotLineSeries>
 		Dispatcher.UIThread.InvokeAsync(() => PlotModel.InvalidatePlot(true), DispatcherPriority.Background);
 	}*/
 
+	public override void AddAnnotation(ChartAnnotation chartAnnotation)
+	{
+		base.AddAnnotation(chartAnnotation);
+
+		var annotationThreshold = new OxyPlot.Annotations.LineAnnotation
+		{
+			Text = chartAnnotation.Text,
+			Type = chartAnnotation.Horizontal ? LineAnnotationType.Horizontal : LineAnnotationType.Vertical,
+			X = chartAnnotation.X ?? 0,
+			Y = chartAnnotation.Y ?? 0,
+			Color = (chartAnnotation.Color ?? chartAnnotation.TextColor)!.Value.ToOxyColor(),
+			TextColor = (chartAnnotation.TextColor ?? chartAnnotation.Color)!.Value.ToOxyColor(),
+			StrokeThickness = 2,
+			LineStyle = LineStyle.Dot,
+		};
+		PlotModel!.Annotations.Add(annotationThreshold);
+		UpdateValueAxis();
+	}
+
 	public void Dispose()
 	{
 		ClearListeners();

@@ -5,6 +5,7 @@ using Avalonia.Controls;
 using Avalonia.Controls.Shapes;
 using Avalonia.Input;
 using Avalonia.Media;
+using OxyPlot.Avalonia;
 using System.Collections;
 
 namespace Atlas.UI.Avalonia.Charts;
@@ -234,7 +235,7 @@ public abstract class TabChartLegendItem<TSeries> : Grid
 		if (Highlight || !showFaded)
 			newColor = ChartSeries.Color;
 		else
-			newColor = Color.FromArgb(32, ChartSeries.Color.R, ChartSeries.Color.G, ChartSeries.Color.B);
+			newColor = Color.FromArgb(32, ChartSeries.Color.R, ChartSeries.Color.G, ChartSeries.Color.B); // Show Faded
 
 		UpdateColor(newColor);
 	}
