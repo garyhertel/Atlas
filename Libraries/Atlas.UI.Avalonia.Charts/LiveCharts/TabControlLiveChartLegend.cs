@@ -17,10 +17,6 @@ public class TabControlLiveChartLegend : TabControlChartLegend<ISeries>
 	{
 		ISeries lineSeries = chartSeries.LineSeries;
 
-		//Color color = Colors.Green;
-		//if (series is OxyPlot.Series.LineSeries lineSeries)
-		//color = lineSeries.Color.ToColor();
-
 		var legendItem = new TabLiveChartLegendItem(this, chartSeries);
 		legendItem.OnSelectionChanged += LegendItem_SelectionChanged;
 		legendItem.OnVisibleChanged += LegendItem_VisibleChanged;
@@ -33,23 +29,6 @@ public class TabControlLiveChartLegend : TabControlChartLegend<ISeries>
 		if (lineSeries.Name != null)
 			_idxLegendItems.Add(lineSeries.Name, legendItem);
 		return legendItem;
-	}
-
-	public override void UpdateVisibleSeries()
-	{
-		if (Chart == null)
-			return;
-
-		foreach (ISeries series in Chart.Series)
-		{
-			if (series.Name == null)
-				continue;
-
-			if (_idxLegendItems.TryGetValue(series.Name, out TabChartLegendItem<ISeries>? legendItem))
-			{
-				legendItem.UpdateVisible();
-			}
-		}
 	}
 }
 

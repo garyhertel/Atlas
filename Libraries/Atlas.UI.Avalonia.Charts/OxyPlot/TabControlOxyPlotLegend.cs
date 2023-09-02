@@ -1,5 +1,4 @@
 using Atlas.Core;
-using Avalonia.Media;
 using Avalonia.Threading;
 using OxyPlot.Avalonia;
 
@@ -21,12 +20,6 @@ public class TabControlOxyPlotLegend : TabControlChartLegend<OxyPlotLineSeries>
 	{
 		OxyPlot.Series.Series series = chartSeries.LineSeries;
 
-		Color color = Colors.Green;
-		if (series is OxyPlot.Series.LineSeries lineSeries)
-			color = lineSeries.Color.ToColor();
-		if (series is OxyPlot.Series.ScatterSeries scatterSeries)
-			color = scatterSeries.MarkerFill.ToColor();
-
 		var legendItem = new TabOxyPlotLegendItem(this, chartSeries);
 		legendItem.OnSelectionChanged += LegendItem_SelectionChanged;
 		legendItem.OnVisibleChanged += LegendItem_VisibleChanged;
@@ -41,52 +34,14 @@ public class TabControlOxyPlotLegend : TabControlChartLegend<OxyPlotLineSeries>
 		return legendItem;
 	}
 
-	public void HighlightSeries(OxyPlot.Series.Series oxySeries)
-	{
-		if (oxySeries.Title == null)
-			return;
-
-		// Clear all first before setting to avoid event race conditions
-		foreach (TabOxyPlotLegendItem item in LegendItems)
-			item.Highlight = false;
-
-		if (_idxLegendItems.TryGetValue(oxySeries.Title, out TabChartLegendItem<OxyPlotLineSeries>? legendItem))
-		{
-			foreach (TabOxyPlotLegendItem item in LegendItems)
-				item.Highlight = (legendItem == item);
-		}
-		UpdateVisibleSeries();
-	}
-
 	public override void UpdateVisibleSeries()
 	{
 		if (PlotView!.Model == null)
 			return;
 
-		foreach (OxyPlot.Series.Series series in PlotView.Model.Series)
-		{
-			if (series is OxyPlot.Series.LineSeries lineSeries)
-			{
-				if (lineSeries.Title == null)
-					continue;
+		base.UpdateVisibleSeries();
 
-				if (_idxLegendItems.TryGetValue(lineSeries.Title, out TabChartLegendItem<OxyPlotLineSeries>? legendItem))
-				{
-					legendItem.UpdateVisible();
-				}
-			}
-
-			if (series is OxyPlot.Series.ScatterSeries scatterSeries)
-			{
-				if (scatterSeries.Title == null)
-					continue;
-
-				if (_idxLegendItems.TryGetValue(scatterSeries.Title, out TabChartLegendItem<OxyPlotLineSeries>? legendItem))
-				{
-					legendItem.UpdateVisible();
-				}
-			}
-		}
+		// Update axis for new visible
 		Dispatcher.UIThread.InvokeAsync(() => PlotView.Model?.InvalidatePlot(true), DispatcherPriority.Background);
 	}
 

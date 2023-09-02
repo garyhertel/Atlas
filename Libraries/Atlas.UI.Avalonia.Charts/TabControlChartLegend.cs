@@ -4,6 +4,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
 using Avalonia.Layout;
+using LiveChartsCore;
 
 namespace Atlas.UI.Avalonia.Charts;
 
@@ -144,22 +145,22 @@ public abstract class TabControlChartLegend<TSeries> : Grid
 		}
 	}
 
-	/*public void HighlightSeries(TSeries oxySeries)
+	public void HighlightSeries(string? name)
 	{
-		if (oxySeries.Title == null)
+		if (name == null)
 			return;
 
 		// Clear all first before setting to avoid event race conditions
 		foreach (TabChartLegendItem<TSeries> item in LegendItems)
 			item.Highlight = false;
 
-		if (_idxLegendItems.TryGetValue(oxySeries.Title, out TabChartLegendItem<TSeries>? legendItem))
+		if (_idxLegendItems.TryGetValue(name, out TabChartLegendItem<TSeries>? legendItem))
 		{
 			foreach (TabChartLegendItem<TSeries> item in LegendItems)
-				item.Highlight = (legendItem == item);
+				item.Highlight = legendItem == item;
 		}
 		UpdateVisibleSeries();
-	}*/
+	}
 
 	public void SetAllVisible(bool selected, bool update = false)
 	{
@@ -234,7 +235,16 @@ public abstract class TabControlChartLegend<TSeries> : Grid
 		LegendItems.Clear();
 	}
 
-	abstract public void UpdateVisibleSeries();
+	public virtual void UpdateVisibleSeries()
+	{
+		if (TabControlChart == null)
+			return;
+
+		foreach (TabChartLegendItem<TSeries> legendItem in LegendItems)
+		{
+			legendItem.UpdateVisible();
+		}
+	}
 
 	protected void LegendItem_SelectionChanged(object? sender, EventArgs e)
 	{

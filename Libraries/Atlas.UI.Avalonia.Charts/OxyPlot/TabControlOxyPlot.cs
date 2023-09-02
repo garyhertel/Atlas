@@ -234,7 +234,7 @@ public class TabControlOxyPlot : TabControlChart<OxyPlotLineSeries>
 
 			if (series != null)
 			{
-				Chart.Legend.HighlightSeries(series);
+				Chart.Legend.HighlightSeries(series.Title);
 			}
 			else
 			{

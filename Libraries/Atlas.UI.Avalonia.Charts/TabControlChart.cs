@@ -1,5 +1,6 @@
 using Atlas.Core;
 using Atlas.Tabs;
+using Atlas.UI.Avalonia.Charts.LiveCharts;
 using Atlas.UI.Avalonia.Controls;
 using Atlas.UI.Avalonia.Themes;
 using Atlas.UI.Avalonia.View;
@@ -86,17 +87,28 @@ public class ChartGroupControl : IControlCreator
 	}
 }
 
-public class TabControlChart<TSeries> : Grid //, IDisposable
+public interface ITabControlChart
+{
+	public static ITabControlChart Create(TabInstance tabInstance, ListGroup listGroup, bool fillHeight = false)
+	{
+		return new TabControlOxyPlot(tabInstance, listGroup, fillHeight);
+		//return new TabControlLiveChart(tabInstance, listGroup, fillHeight);
+	}
+
+	public void AddAnnotation(ChartAnnotation chartAnnotation);
+}
+
+public class TabControlChart<TSeries> : Grid, ITabControlChart //, IDisposable
 {
 	public int SeriesLimit { get; set; } = 25;
 	protected const double MarginPercent = 0.1; // This needs a min height so this can be lowered
 	protected const int MinSelectionWidth = 10;
 
-	public readonly TabInstance TabInstance;
+	public TabInstance TabInstance { get; init; }
 	public ListGroup ListGroup { get; set; }
 	public bool FillHeight { get; set; }
 
-	public List<ChartSeries<TSeries>> ChartSeries = new();
+	public List<ChartSeries<TSeries>> ChartSeries { get; private set; } = new();
 	protected Dictionary<string, ChartSeries<TSeries>> IdxNameToSeries { get; set; } = new();
 	protected Dictionary<IList, ListSeries> ListToTabSeries { get; set; } = new();
 
@@ -138,9 +150,9 @@ public class TabControlChart<TSeries> : Grid //, IDisposable
 
 	public bool IsTitleSelectable { get; set; }
 
-	public event EventHandler<SeriesSelectedEventArgs>? SelectionChanged;
-
 	public List<ChartAnnotation> Annotations { get; set; } = new();
+
+	public event EventHandler<SeriesSelectedEventArgs>? SelectionChanged;
 
 	protected virtual void OnSelectionChanged(SeriesSelectedEventArgs e)
 	{
