@@ -45,7 +45,7 @@ public class LiveChartSeries //: ChartSeries<ISeries>
 		var dataPoints = GetDataPoints(listSeries, listSeries.List, _datapointLookup);
 
 		//LineSeries = new LineSeries<DateTimePoint>
-		LineSeries = new LineSeries<ObservablePoint>
+		var lineSeries = new LineSeries<ObservablePoint>
 		{
 			Name = listSeries.Name,
 			Values = dataPoints,
@@ -55,8 +55,15 @@ public class LiveChartSeries //: ChartSeries<ISeries>
 			EnableNullSplitting = true,
 
 			Stroke = new SolidColorPaint(skColor) { StrokeThickness = 2 },
-			GeometryStroke = new SolidColorPaint(skColor) { StrokeThickness = 5 },
+			GeometryStroke = null,
 		};
+
+		if (listSeries.List.Count > 0 && listSeries.List.Count <= MaxPointsToShowMarkers || HasSinglePoint(dataPoints))
+		{
+			lineSeries.GeometryStroke = new SolidColorPaint(skColor) { StrokeThickness = 5 };
+		}
+
+		LineSeries = lineSeries;
 
 		// Title must be unique among all series
 		/*Title = listSeries.Name;
@@ -89,13 +96,15 @@ public class LiveChartSeries //: ChartSeries<ISeries>
 			MarkerType = MarkerType.Circle;*/
 	}
 
-	/*private bool HasSinglePoint()
+	private bool HasSinglePoint(List<ObservablePoint> dataPoints)
 	{
 		bool prevNan1 = false;
 		bool prevNan2 = false;
-		foreach (ObservablePoint dataPoint in Points)
+		foreach (ObservablePoint dataPoint in dataPoints)
 		{
-			bool nan = double.IsNaN(dataPoint.Y);
+			if (dataPoint.Y == null) return true;
+
+			bool nan = double.IsNaN(dataPoint.Y.Value);
 			if (prevNan2 && !prevNan1 && nan)
 				return true;
 
@@ -106,7 +115,7 @@ public class LiveChartSeries //: ChartSeries<ISeries>
 	}
 
 	// Override the default tracker text
-	public override TrackerHitResult? GetNearestPoint(ScreenPoint point, bool interpolate)
+	/*public override TrackerHitResult? GetNearestPoint(ScreenPoint point, bool interpolate)
 	{
 		TrackerHitResult result = base.GetNearestPoint(point, interpolate);
 		if (result == null)

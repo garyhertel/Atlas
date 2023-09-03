@@ -96,6 +96,8 @@ public interface ITabControlChart
 	}
 
 	public void AddAnnotation(ChartAnnotation chartAnnotation);
+
+	public List<ChartAnnotation> Annotations { get; }
 }
 
 public class TabControlChart<TSeries> : Grid, ITabControlChart //, IDisposable

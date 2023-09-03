@@ -804,7 +804,7 @@ public class TabControlOxyPlot : TabControlChart<OxyPlotLineSeries>
 
 		var lineSeries = new OxyPlotLineSeries(this, listSeries, UseDateTimeAxis)
 		{
-			Color = OxyColor.FromRgb(color.R, color.G, color.B),
+			Color = color.ToOxyColor(),
 		};
 		xAxisPropertyInfo = lineSeries.XAxisPropertyInfo;
 

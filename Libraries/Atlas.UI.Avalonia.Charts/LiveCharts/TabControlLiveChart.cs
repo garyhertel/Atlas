@@ -41,6 +41,7 @@ public class TabControlLiveChart : TabControlChart<ISeries>
 
 	public OxyPlot.Axes.LinearAxis? LinearAxis;
 	public OxyPlot.Axes.DateTimeAxis? DateTimeAxis;*/
+	public List<Axis> XAxis { get; set; }
 
 	/*private OxyPlot.Annotations.LineAnnotation? _trackerAnnotation;*/
 
@@ -69,7 +70,7 @@ public class TabControlLiveChart : TabControlChart<ISeries>
 			VerticalAlignment = VerticalAlignment.Stretch,
 
 			//Series = ListGroup.Series.Select(s => AddListSeries(s)).ToList(),
-			XAxes = GetXAxis(),
+			XAxes = XAxis = GetXAxis(),
 			YAxes = GetValueAxis(),
 			LegendPosition = LegendPosition.Hidden,
 			TooltipBackgroundPaint = new SolidColorPaint(AtlasTheme.ChartBackgroundSelected.Color.AsSkColor().WithAlpha(64)),
@@ -155,13 +156,6 @@ public class TabControlLiveChart : TabControlChart<ISeries>
 			SeparatorsPaint = new SolidColorPaint(GridLineColor),
 			LabelsPaint = new SolidColorPaint(SKColors.LightGray),
 		};
-
-		if (UseDateTimeAxis)
-		{
-			axis.Labeler = value => new DateTime((long)value).ToString("yyyy-M-d H:mm:ss.FFF");
-			axis.LabelsRotation = 15;
-			//axis.UnitWidth = TimeSpan.FromDays(1).Ticks;
-		}
 
 		return new List<Axis>
 		{
@@ -303,11 +297,11 @@ public class TabControlLiveChart : TabControlChart<ISeries>
 
 		/*AddAxis();
 		UpdateValueAxis();
-		UpdateLinearAxis();
-		if (ListGroup.TimeWindow == null)
+		UpdateLinearAxis();*/
+		//if (ListGroup.TimeWindow == null)
 		{
 			UpdateDateTimeAxisRange();
-		}*/
+		}
 
 		IsVisible = true;
 	}
@@ -331,6 +325,25 @@ public class TabControlLiveChart : TabControlChart<ISeries>
 		if (listSeries.Name != null)
 			IdxNameToSeries[listSeries.Name] = chartSeries;
 		return lineSeries.LineSeries;
+	}
+
+	public override void AddAnnotation(ChartAnnotation chartAnnotation)
+	{
+		base.AddAnnotation(chartAnnotation);
+
+		/*var annotationThreshold = new Anno
+		{
+			Text = chartAnnotation.Text,
+			Type = chartAnnotation.Horizontal ? LineAnnotationType.Horizontal : LineAnnotationType.Vertical,
+			X = chartAnnotation.X ?? 0,
+			Y = chartAnnotation.Y ?? 0,
+			Color = (chartAnnotation.Color ?? chartAnnotation.TextColor)!.Value.ToOxyColor(),
+			TextColor = (chartAnnotation.TextColor ?? chartAnnotation.Color)!.Value.ToOxyColor(),
+			StrokeThickness = 2,
+			LineStyle = LineStyle.Dot,
+		};
+		PlotModel!.Annotations.Add(annotationThreshold);
+		UpdateValueAxis();*/
 	}
 
 	/*private void UpdateVisible()
@@ -485,37 +498,40 @@ public class TabControlLiveChart : TabControlChart<ISeries>
 
 		PlotModel!.Axes.Add(DateTimeAxis);
 		return DateTimeAxis;
-	}
+	}*/
 
 	private void UpdateDateTimeAxis(TimeWindow? timeWindow)
 	{
 		if (timeWindow == null)
 		{
-			DateTimeAxis!.Minimum = double.NaN;
-			DateTimeAxis.Maximum = double.NaN;
-			DateTimeAxis.IntervalLength = 75;
-			DateTimeAxis.StringFormat = null;
-			//UpdateDateTimeInterval(timeWindow.Duration.TotalSeconds);
+			//DateTimeAxis!.Minimum = double.NaN;
+			//DateTimeAxis.Maximum = double.NaN;
+			//DateTimeAxis.IntervalLength = 75;
+			//DateTimeAxis.StringFormat = null;
+			////UpdateDateTimeInterval(timeWindow.Duration.TotalSeconds);
 		}
 		else
 		{
-			DateTimeAxis!.Minimum = OxyPlot.Axes.DateTimeAxis.ToDouble(timeWindow.StartTime);
-			DateTimeAxis.Maximum = OxyPlot.Axes.DateTimeAxis.ToDouble(timeWindow.EndTime);
-			//DateTimeAxis.Maximum = OxyPlot.Axes.DateTimeAxis.ToDouble(endTime.AddSeconds(duration / 25.0)); // labels get clipped without this
+			//DateTimeAxis!.Minimum = OxyPlot.Axes.DateTimeAxis.ToDouble(timeWindow.StartTime);
+			//DateTimeAxis.Maximum = OxyPlot.Axes.DateTimeAxis.ToDouble(timeWindow.EndTime);
+			////DateTimeAxis.Maximum = OxyPlot.Axes.DateTimeAxis.ToDouble(endTime.AddSeconds(duration / 25.0)); // labels get clipped without this
 			UpdateDateTimeInterval(timeWindow.Duration.TotalSeconds);
 		}
 	}
 
 	private void UpdateDateTimeInterval(double duration)
 	{
-		var dateFormat = GetDateTimeFormat(duration)!;
-		DateTimeAxis!.StringFormat = dateFormat.TextFormat;
-		DateTimeAxis.MinimumMajorStep = dateFormat.StepSize.TotalDays;
+		var dateFormat = DateTimeFormat.GetDateTimeFormat(duration)!;
 
-		double widthPerLabel = 6 * DateTimeAxis.StringFormat.Length + 25;
-		DateTimeAxis.IntervalLength = Math.Max(50, widthPerLabel);
+		XAxis[0].Labeler = value => new DateTime((long)value).ToString(dateFormat.TextFormat);// "yyyy-M-d H:mm:ss.FFF");
+		//XAxis.LabelsRotation = 15;
+			//axis.UnitWidth = TimeSpan.FromDays(1).Ticks;
+		//DateTimeAxis.MinimumMajorStep = dateFormat.StepSize.TotalDays;
+
+		//double widthPerLabel = 6 * DateTimeAxis.StringFormat.Length + 25;
+		//DateTimeAxis.IntervalLength = Math.Max(50, widthPerLabel);
 	}
-
+	/*
 	private void AddLinearAxis()
 	{
 		LinearAxis = new OxyPlot.Axes.LinearAxis
@@ -702,22 +718,22 @@ public class TabControlLiveChart : TabControlChart<ISeries>
 				ValueAxis.Minimum = minimum - margin;
 			ValueAxis.Maximum = maximum + margin;
 		}
-	}
+	}*/
 
 	private void UpdateDateTimeAxisRange()
 	{
-		if (DateTimeAxis == null)
+		if (XAxis == null || !UseDateTimeAxis)
 			return;
 
 		double minimum = double.MaxValue;
 		double maximum = double.MinValue;
 
-		foreach (OxyPlot.Series.Series series in PlotModel!.Series)
+		foreach (ISeries series in Chart.Series)
 		{
 			if (series is OxyPlot.Series.LineSeries lineSeries)
 			{
-				if (lineSeries.LineStyle == LineStyle.None)
-					continue;
+				//if (lineSeries.LineStyle == LineStyle.None)
+				//	continue;
 
 				foreach (var dataPoint in lineSeries.Points)
 				{
@@ -731,26 +747,26 @@ public class TabControlLiveChart : TabControlChart<ISeries>
 			}
 		}
 
-		if (minimum != double.MaxValue)
+		/*if (minimum != double.MaxValue)
 		{
 			DateTimeAxis.Minimum = minimum;
 			DateTimeAxis.Maximum = maximum;
-		}
+		}*/
 
 		if (ListGroup.TimeWindow == null)
 		{
-			DateTime startTime = OxyPlot.Axes.DateTimeAxis.ToDateTime(DateTimeAxis.Minimum);
-			DateTime endTime = OxyPlot.Axes.DateTimeAxis.ToDateTime(DateTimeAxis.Maximum);
+			DateTime startTime = new DateTime((long)minimum);
+			DateTime endTime = new DateTime((long)maximum);
 
 			ListGroup.TimeWindow = new TimeWindow(startTime, endTime).Trim();
-
-			UpdateDateTimeAxis(ListGroup.TimeWindow);
 		}
+
+		UpdateDateTimeAxis(ListGroup.TimeWindow);
 
 		//UpdateDateTimeInterval(double duration);
 	}
 
-	private void ClearListeners()
+	/*private void ClearListeners()
 	{
 		if (Legend != null)
 		{
