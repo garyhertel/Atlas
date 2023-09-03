@@ -67,18 +67,6 @@ public class SeparatorAttribute : Attribute
 {
 }
 
-// -> For multi-column params
-[AttributeUsage(AttributeTargets.Property)]
-public class ColumnAttribute : Attribute
-{
-	public readonly int Index;
-
-	public ColumnAttribute(int index)
-	{
-		Index = index;
-	}
-}
-
 // If set, this method will appear as an Action (rename to [Action]?)
 /*[AttributeUsage(AttributeTargets.Method)]
 public class VisibleAttribute : Attribute
