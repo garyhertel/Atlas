@@ -1,6 +1,8 @@
 using Atlas.Core;
 using Atlas.Resources;
 using Atlas.Tabs;
+using Atlas.Tabs.Tools;
+using Atlas.UI.Avalonia.Tabs;
 using Atlas.UI.Avalonia.Themes;
 using Avalonia;
 using Avalonia.Controls;
@@ -41,6 +43,8 @@ public class BaseWindow : Window
 	{
 		AtlasInit.Initialize();
 
+		TabFile.RegisterType<TabFileImage>(".png", ".jpg", ".jpeg", ".gif", ".bmp");
+
 		LoadProject(project);
 
 		Opened += BaseWindow_Opened;
@@ -65,7 +69,7 @@ public class BaseWindow : Window
 	{
 		Title = Project.ProjectSettings.Name ?? "<Name>";
 
-		Background = Theme.TabBackground;
+		Background = AtlasTheme.TabBackground;
 
 		MinWidth = MinWindowSize;
 		MinHeight = MinWindowSize;

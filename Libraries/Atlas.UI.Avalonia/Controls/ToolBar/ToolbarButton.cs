@@ -23,6 +23,8 @@ public class ToolbarButton : Button, IStyleable, ILayoutable, IDisposable
 	public string? Label { get; set; }
 	public string? Tooltip { get; set; }
 
+	public ResourceView ImageResource { get; set; }
+
 	public TaskDelegate.CallAction? CallAction;
 	public TaskDelegateAsync.CallActionAsync? CallActionAsync;
 
@@ -39,7 +41,22 @@ public class ToolbarButton : Button, IStyleable, ILayoutable, IDisposable
 
 	private Image? _imageControl;
 	private IImage? _defaultImage;
+
+	protected IImage? HighlightImage => _highlightImage ??= SvgUtils.GetSvgImage(ImageResource, AtlasTheme.ToolbarButtonForegroundHover.Color);
 	private IImage? _highlightImage;
+
+	protected IImage? DisabledImage => _disabledImage ??= SvgUtils.GetSvgImage(ImageResource, AtlasTheme.ToolbarButtonForegroundDisabled.Color);
+	private IImage? _disabledImage;
+
+	public new bool IsEnabled
+	{
+		get => base.IsEnabled;
+		set
+		{
+			base.IsEnabled = value;
+			_imageControl!.Source = value ? _defaultImage : (DisabledImage ?? _defaultImage);
+		}
+	}
 
 	public ToolbarButton(TabControlToolbar toolbar, ToolButton toolButton)
 	{
@@ -48,11 +65,12 @@ public class ToolbarButton : Button, IStyleable, ILayoutable, IDisposable
 		Tooltip = toolButton.Tooltip;
 		ShowTask = toolButton.ShowTask;
 		DisableWhileRunning = toolButton.DisableWhileRunning;
+		ImageResource = toolButton.ImageResource;
 
 		CallAction = toolButton.Action;
 		CallActionAsync = toolButton.ActionAsync;
 
-		Initialize(toolButton.ImageResource);
+		Initialize();
 
 		if (toolButton.Default)
 			SetDefault();
@@ -68,11 +86,12 @@ public class ToolbarButton : Button, IStyleable, ILayoutable, IDisposable
 		Toolbar = toolbar;
 		Label = label;
 		Tooltip = tooltip;
+		ImageResource = imageResource;
 
-		Initialize(imageResource, command);
+		Initialize(command);
 	}
 
-	private void Initialize(ResourceView imageResource, ICommand? command = null)
+	private void Initialize(ICommand? command = null)
 	{
 		Grid grid = new()
 		{
@@ -80,14 +99,13 @@ public class ToolbarButton : Button, IStyleable, ILayoutable, IDisposable
 			RowDefinitions = new RowDefinitions("Auto"),
 		};
 
-		if (imageResource.ResourceType == "svg")
+		if (ImageResource.ResourceType == "svg")
 		{
-			_defaultImage = SvgUtils.GetSvgImage(imageResource);
-			_highlightImage = SvgUtils.GetSvgImage(imageResource, Theme.ToolbarButtonForegroundHover.Color);
+			_defaultImage = SvgUtils.GetSvgImage(ImageResource);
 		}
 		else
 		{
-			Stream stream = imageResource.Stream;
+			Stream stream = ImageResource.Stream;
 			_defaultImage = new Bitmap(stream);
 		}
 
@@ -117,7 +135,7 @@ public class ToolbarButton : Button, IStyleable, ILayoutable, IDisposable
 
 		Content = grid;
 		Command = command;
-		Background = Theme.ToolbarButtonBackground;
+		Background = AtlasTheme.ToolbarButtonBackground;
 		BorderBrush = Background;
 		BorderThickness = new Thickness(0);
 		Margin = new Thickness(1);
@@ -230,9 +248,9 @@ public class ToolbarButton : Button, IStyleable, ILayoutable, IDisposable
 	{
 		base.OnPointerEnter(e);
 
-		if (_highlightImage != null)
+		if (HighlightImage != null)
 		{
-			_imageControl!.Source = _highlightImage;
+			_imageControl!.Source = HighlightImage;
 		}
 	}
 

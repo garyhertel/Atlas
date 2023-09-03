@@ -66,7 +66,7 @@ public class TabControlParams : Grid, IValidationControl
 
 		foreach (ListProperty property in properties)
 		{
-			int columnIndex = property.GetCustomAttribute<ColumnAttribute>()?.Index ?? 0;
+			int columnIndex = property.GetCustomAttribute<ColumnIndexAttribute>()?.Index ?? 0;
 			AddColumnIndex(columnIndex + 1); // label + value controls
 		}
 
@@ -76,18 +76,29 @@ public class TabControlParams : Grid, IValidationControl
 			var newControl = AddPropertyControl(property);
 			if (newControl != null)
 			{
-				if (lastControl != null && Grid.GetRow(lastControl) != Grid.GetRow(newControl))
+				if (lastControl != null && GetRow(lastControl) != GetRow(newControl))
 				{
-					int columnIndex = Grid.GetColumn(lastControl);
-					int columnSpan = Grid.GetColumnSpan(lastControl);
-					if (columnIndex + columnSpan < ColumnDefinitions.Count)
-					{
-						Grid.SetColumnSpan(lastControl, ColumnDefinitions.Count - columnIndex);
-					}
+					FillColumnSpan(lastControl);
 				}
 				_propertyControls[property] = newControl;
 			}
 			lastControl = newControl;
+		}
+
+		if (lastControl != null)
+		{
+			FillColumnSpan(lastControl);
+		}
+	}
+
+	// Fill entire last line if available
+	private void FillColumnSpan(Control lastControl)
+	{
+		int columnIndex = GetColumn(lastControl);
+		int columnSpan = GetColumnSpan(lastControl);
+		if (columnIndex + columnSpan < ColumnDefinitions.Count)
+		{
+			SetColumnSpan(lastControl, ColumnDefinitions.Count - columnIndex);
 		}
 	}
 
@@ -104,12 +115,12 @@ public class TabControlParams : Grid, IValidationControl
 			Text = summaryAttribute.Summary,
 			FontSize = 14,
 			Margin = new Thickness(0, 3, 10, 3),
-			Foreground = Theme.BackgroundText,
+			Foreground = AtlasTheme.BackgroundText,
 			VerticalAlignment = VerticalAlignment.Top,
 			HorizontalAlignment = HorizontalAlignment.Stretch,
 			TextWrapping = TextWrapping.Wrap,
 			MaxWidth = ControlMaxWidth,
-			[Grid.ColumnSpanProperty] = 2,
+			[ColumnSpanProperty] = 2,
 		};
 		Children.Add(textBlock);
 	}
@@ -181,7 +192,7 @@ public class TabControlParams : Grid, IValidationControl
 
 	public Control? AddPropertyControl(ListProperty property)
 	{
-		int columnIndex = property.GetCustomAttribute<ColumnAttribute>()?.Index ?? 0;
+		int columnIndex = property.GetCustomAttribute<ColumnIndexAttribute>()?.Index ?? 0;
 
 		Control? control = CreatePropertyControl(property);
 		if (control == null)
@@ -218,7 +229,7 @@ public class TabControlParams : Grid, IValidationControl
 		{
 			Text = property.Name,
 			Margin = new Thickness(10, 7, 10, 3),
-			Foreground = Theme.BackgroundText,
+			Foreground = AtlasTheme.BackgroundText,
 			VerticalAlignment = VerticalAlignment.Top,
 			MaxWidth = ControlMaxWidth,
 			[Grid.RowProperty] = rowIndex,

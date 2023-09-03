@@ -1,4 +1,6 @@
 using Atlas.Core;
+using Newtonsoft.Json.Linq;
+using System.Collections.Specialized;
 using System.Reflection;
 
 namespace Atlas.Serialize;
@@ -28,7 +30,9 @@ public class DataItemCollection<T> : ItemCollection<DataItem<T>>
 	{
 		var entries = new SortedDictionary<string, DataItem<T>>();
 		foreach (DataItem<T> item in ToList())
+		{
 			entries.Add(item.Key, item);
+		}
 		return entries;
 	}
 
@@ -57,7 +61,16 @@ public class DataItemCollection<T> : ItemCollection<DataItem<T>>
 	{
 		if (Lookup.TryGetValue(key, out DataItem<T>? existingDataItem))
 		{
+			if (Equals(existingDataItem.Value, value)) return;
+
+			int indexOfItem = IndexOf(existingDataItem);
 			existingDataItem!.Value = value;
+			OnCollectionChanged(
+				new NotifyCollectionChangedEventArgs(
+					NotifyCollectionChangedAction.Replace,
+					existingDataItem,
+					existingDataItem,
+					indexOfItem));
 		}
 		else
 		{
@@ -65,6 +78,17 @@ public class DataItemCollection<T> : ItemCollection<DataItem<T>>
 			Add(dataItem);
 			Lookup[key] = dataItem;
 		}
+	}
+
+	public bool TryGetValue(string key, out T? value)
+	{
+		if (Lookup.TryGetValue(key, out DataItem<T>? lookupValue))
+		{
+			value = lookupValue.Value;
+			return true;
+		}
+		value = default;
+		return false;
 	}
 
 	public new void Remove(DataItem<T> item)
