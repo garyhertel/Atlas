@@ -43,7 +43,7 @@ public class ImageButton : Button, IStyleable, ILayoutable
 		};
 		Image image = CreateImage(sourceImage);
 
-		Resources.Add("ButtonBackgroundPointerOver", Theme.ToolbarButtonBackgroundHover);
+		Resources.Add("ButtonBackgroundPointerOver", AtlasTheme.ToolbarButtonBackgroundHover);
 		//button.Resources.Add("ButtonBackgroundPressed", Theme.ToolbarButtonBackgroundHover);
 		//button.Resources.Add("ButtonPlaceholderForegroundFocused", Foreground);
 		//button.Resources.Add("ButtonPlaceholderForegroundPointerOver", Foreground);
@@ -52,12 +52,12 @@ public class ImageButton : Button, IStyleable, ILayoutable
 
 		Content = grid;
 		//Command = command;
-		Background = Theme.ToolbarButtonBackground;
+		Background = AtlasTheme.ToolbarButtonBackground;
 		BorderBrush = Background;
 		BorderThickness = new Thickness(0);
 		Margin = new Thickness(1);
 		Padding = new Thickness(0);
-		//Foreground = new SolidColorBrush(Theme.ButtonForegroundColor),
+		//Foreground = new SolidColorBrush(AtlasTheme.ButtonForegroundColor),
 		//BorderBrush = new SolidColorBrush(Colors.Black),
 		ToolTip.SetTip(this, Tooltip);
 
