@@ -51,15 +51,13 @@ public class DateTimeFormat
 		new DateTimeFormat(1000.0 * 12 * 30 * 24 * 60 * 60, TimeSpan.FromDays(1), "yyyy-M-d"),
 	};
 
-	public static DateTimeFormat? GetDateTimeFormat(double duration)
+	public static DateTimeFormat? GetDateTimeFormat(TimeSpan duration)
 	{
-		return DateFormats.FirstOrDefault(format => duration < format.Maximum);
-		/*foreach (var format in DateFormats)
-		{
-			if (duration < format.Maximum)
-				return format;
-		}
+		return GetDateTimeFormat(duration.TotalSeconds);
+	}
 
-		return null;*/
+	public static DateTimeFormat? GetDateTimeFormat(double durationSeconds)
+	{
+		return DateFormats.FirstOrDefault(format => durationSeconds < format.Maximum);
 	}
 }

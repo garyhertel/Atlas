@@ -9,7 +9,7 @@ public class TabControlOxyPlotLegend : TabControlChartLegend<OxyPlotLineSeries>
 	public TabControlOxyPlot OxyChart;
 	public PlotView? PlotView => OxyChart.PlotView;
 
-	public override string? ToString() => ListGroup.ToString();
+	public override string? ToString() => ChartView.ToString();
 
 	public TabControlOxyPlotLegend(TabControlOxyPlot tabControlChart) : base(tabControlChart)
 	{

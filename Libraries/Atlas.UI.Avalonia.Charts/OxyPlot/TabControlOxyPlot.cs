@@ -41,7 +41,7 @@ public class TabControlOxyPlot : TabControlChart<OxyPlotLineSeries>
 	private static readonly OxyColor GridLineColor = OxyColor.Parse("#333333");
 
 	private bool UseDateTimeAxis => (xAxisPropertyInfo?.PropertyType == typeof(DateTime)) ||
-									(ListGroup.TimeWindow != null);
+									(ChartView.TimeWindow != null);
 
 	private static readonly WeakEventSource<MouseCursorMovedEventArgs> _mouseCursorChangedEventSource = new();
 
@@ -51,8 +51,8 @@ public class TabControlOxyPlot : TabControlChart<OxyPlotLineSeries>
 		remove { _mouseCursorChangedEventSource.Unsubscribe(value); }
 	}
 
-	public TabControlOxyPlot(TabInstance tabInstance, ListGroup listGroup, bool fillHeight = false) :
-		base(tabInstance, listGroup, fillHeight)
+	public TabControlOxyPlot(TabInstance tabInstance, ChartView chartView, bool fillHeight = false) :
+		base(tabInstance, chartView, fillHeight)
 	{
 		HorizontalAlignment = global::Avalonia.Layout.HorizontalAlignment.Stretch; // OxyPlot import collision
 		if (FillHeight)
@@ -112,19 +112,19 @@ public class TabControlOxyPlot : TabControlChart<OxyPlotLineSeries>
 			Background = AtlasTheme.TabBackground, // grid lines look bad when hovering without this
 		};
 
-		string? title = ListGroup?.Name;
+		string? title = ChartView?.Name;
 		if (title != null)
 		{
 			TitleTextBlock = new TextBlock()
 			{
-				Text = ListGroup?.Name,
+				Text = ChartView?.Name,
 				FontSize = 16,
 				Foreground = AtlasTheme.BackgroundText,
 				Margin = new Thickness(10, 5),
 				//FontWeight = FontWeight.Medium,
 				[Grid.ColumnSpanProperty] = 2,
 			};
-			if (!ListGroup!.ShowOrder || ListGroup.Horizontal)
+			if (!ChartView!.ShowOrder || ChartView.Horizontal)
 				TitleTextBlock.HorizontalAlignment = global::Avalonia.Layout.HorizontalAlignment.Center;
 			else
 				TitleTextBlock.Margin = new Thickness(40, 5, 5, 5);
@@ -136,7 +136,7 @@ public class TabControlOxyPlot : TabControlChart<OxyPlotLineSeries>
 		containerGrid.Children.Add(PlotView);
 
 		Legend = new TabControlOxyPlotLegend(this);
-		if (ListGroup!.Horizontal)
+		if (ChartView!.Horizontal)
 		{
 			// Bottom
 			SetRow(Legend, 2);
@@ -154,8 +154,13 @@ public class TabControlOxyPlot : TabControlChart<OxyPlotLineSeries>
 		Legend.OnVisibleChanged += Legend_OnVisibleChanged;
 
 		OnMouseCursorChanged += TabControlOxyPlot_OnMouseCursorChanged;
-		if (ListGroup.TimeWindow != null)
-			ListGroup.TimeWindow.OnSelectionChanged += ListGroup_OnTimesChanged;
+		if (ChartView.TimeWindow != null)
+			ChartView.TimeWindow.OnSelectionChanged += ListGroup_OnTimesChanged;
+
+		foreach (ChartAnnotation chartAnnotation in ChartView.Annotations)
+		{
+			AddAnnotation(chartAnnotation);
+		}
 
 		Children.Add(containerGrid);
 	}
@@ -267,9 +272,9 @@ public class TabControlOxyPlot : TabControlChart<OxyPlotLineSeries>
 		UpdateValueAxis();
 	}
 
-	public void LoadListGroup(ListGroup listGroup)
+	public void LoadListGroup(ChartView chartView)
 	{
-		ListGroup = listGroup;
+		ChartView = chartView;
 		LoadPlotModel();
 		Refresh();
 	}
@@ -302,8 +307,8 @@ public class TabControlOxyPlot : TabControlChart<OxyPlotLineSeries>
 			SelectionColor = OxyColors.Blue,
 		};
 
-		ListGroup.SortByTotal();
-		foreach (ListSeries listSeries in ListGroup.Series)
+		ChartView.SortByTotal();
+		foreach (ListSeries listSeries in ChartView.Series)
 		{
 			AddSeries(listSeries);
 		}
@@ -315,7 +320,7 @@ public class TabControlOxyPlot : TabControlChart<OxyPlotLineSeries>
 		AddAxis();
 		UpdateValueAxis();
 		UpdateLinearAxis();
-		if (ListGroup.TimeWindow == null)
+		if (ChartView.TimeWindow == null)
 		{
 			UpdateDateTimeAxisRange();
 		}
@@ -344,9 +349,9 @@ public class TabControlOxyPlot : TabControlChart<OxyPlotLineSeries>
 	{
 		if (UseDateTimeAxis)
 		{
-			AddDateTimeAxis(ListGroup.TimeWindow);
+			AddDateTimeAxis(ChartView.TimeWindow);
 			AddNowTime();
-			if (ListGroup.ShowTimeTracker)
+			if (ChartView.ShowTimeTracker)
 				AddTrackerLine();
 		}
 		else
@@ -356,7 +361,7 @@ public class TabControlOxyPlot : TabControlChart<OxyPlotLineSeries>
 
 		AddMouseListeners();
 
-		if (ListGroup.Series.Count > 0 && ListGroup.Series[0].IsStacked)
+		if (ChartView.Series.Count > 0 && ChartView.Series[0].IsStacked)
 			AddCategoryAxis();
 		else
 			AddValueAxis();
@@ -420,9 +425,9 @@ public class TabControlOxyPlot : TabControlChart<OxyPlotLineSeries>
 		}
 	}
 
-	private void UpdateDateTimeInterval(double duration)
+	private void UpdateDateTimeInterval(double totalSeconds)
 	{
-		var dateFormat = DateTimeFormat.GetDateTimeFormat(duration)!;
+		var dateFormat = DateTimeFormat.GetDateTimeFormat(totalSeconds)!;
 		DateTimeAxis!.StringFormat = dateFormat.TextFormat;
 		DateTimeAxis.MinimumMajorStep = dateFormat.StepSize.TotalDays;
 
@@ -447,7 +452,7 @@ public class TabControlOxyPlot : TabControlChart<OxyPlotLineSeries>
 
 	public OxyPlot.Axes.Axis AddValueAxis(AxisPosition axisPosition = AxisPosition.Left, string? key = null)
 	{
-		if (ListGroup.Logarithmic)
+		if (ChartView.Logarithmic)
 		{
 			ValueAxis = new OxyPlot.Axes.LogarithmicAxis();
 		}
@@ -514,7 +519,7 @@ public class TabControlOxyPlot : TabControlChart<OxyPlotLineSeries>
 		if (key != null)
 			categoryAxis.Key = key;
 
-		foreach (ListSeries listSeries in ListGroup.Series)
+		foreach (ListSeries listSeries in ChartView.Series)
 		{
 			categoryAxis.Labels.Add(listSeries.Name);
 		}
@@ -633,11 +638,11 @@ public class TabControlOxyPlot : TabControlChart<OxyPlotLineSeries>
 
 		ValueAxis.MinimumMajorStep = hasFraction ? 0 : 1;
 
-		double? minValue = ListGroup.MinValue;
+		double? minValue = ChartView.MinValue;
 		if (minValue != null)
 			minimum = minValue.Value;
 
-		if (ListGroup.Logarithmic)
+		if (ChartView.Logarithmic)
 		{
 			ValueAxis.Minimum = minimum * 0.85;
 			ValueAxis.Maximum = maximum * 1.15;
@@ -692,17 +697,17 @@ public class TabControlOxyPlot : TabControlChart<OxyPlotLineSeries>
 			DateTimeAxis.Maximum = maximum;
 		}
 
-		if (ListGroup.TimeWindow == null)
+		if (ChartView.TimeWindow == null)
 		{
 			DateTime startTime = OxyPlot.Axes.DateTimeAxis.ToDateTime(DateTimeAxis.Minimum);
 			DateTime endTime = OxyPlot.Axes.DateTimeAxis.ToDateTime(DateTimeAxis.Maximum);
 
-			ListGroup.TimeWindow = new TimeWindow(startTime, endTime).Trim();
+			ChartView.TimeWindow = new TimeWindow(startTime, endTime).Trim();
 
-			UpdateDateTimeAxis(ListGroup.TimeWindow);
+			UpdateDateTimeAxis(ChartView.TimeWindow);
 		}
 
-		//UpdateDateTimeInterval(double duration);
+		//UpdateDateTimeInterval(double totalSeconds);
 	}
 
 	private void ClearListeners()
@@ -745,16 +750,16 @@ public class TabControlOxyPlot : TabControlChart<OxyPlotLineSeries>
 		IdxNameToSeries.Clear();
 	}
 
-	public void MergeGroup(ListGroup listGroup)
+	public void MergeGroup(ChartView chartView)
 	{
 		var prevListSeries = IdxNameToSeries;
 		ClearSeries();
 
-		ListGroup.Series = listGroup.Series;
-		ListGroup.TimeWindow = listGroup.TimeWindow ?? ListGroup.TimeWindow;
-		ListGroup.SortByTotal();
+		ChartView.Series = chartView.Series;
+		ChartView.TimeWindow = chartView.TimeWindow ?? ChartView.TimeWindow;
+		ChartView.SortByTotal();
 
-		foreach (var series in ListGroup.Series)
+		foreach (var series in ChartView.Series)
 		{
 			Color? color = null;
 			if (series.Name != null && prevListSeries.TryGetValue(series.Name, out ChartSeries< OxyPlotLineSeries>? prevSeries))
@@ -834,7 +839,7 @@ public class TabControlOxyPlot : TabControlChart<OxyPlotLineSeries>
 	private void AddNowTime()
 	{
 		var now = DateTime.UtcNow;
-		if (ListGroup.TimeWindow != null && ListGroup.TimeWindow.EndTime < now.AddMinutes(1))
+		if (ChartView.TimeWindow != null && ChartView.TimeWindow.EndTime < now.AddMinutes(1))
 			return;
 
 		var annotation = new OxyPlot.Annotations.LineAnnotation
@@ -941,7 +946,7 @@ public class TabControlOxyPlot : TabControlChart<OxyPlotLineSeries>
 			{
 				ZoomIn();
 			}
-			else if (ListGroup.TimeWindow?.Selection != null)
+			else if (ChartView.TimeWindow?.Selection != null)
 			{
 				ZoomOut();
 			}
@@ -970,18 +975,18 @@ public class TabControlOxyPlot : TabControlChart<OxyPlotLineSeries>
 		var timeWindow = new TimeWindow(startTime, endTime).Trim();
 
 		UpdateDateTimeAxis(timeWindow);
-		if (ListGroup.TimeWindow != null)
-			ListGroup.TimeWindow.Select(timeWindow);
+		if (ChartView.TimeWindow != null)
+			ChartView.TimeWindow.Select(timeWindow);
 		else
 			UpdateTimeWindow(timeWindow);
 	}
 
 	private void ZoomOut()
 	{
-		if (ListGroup.TimeWindow != null)
+		if (ChartView.TimeWindow != null)
 		{
-			UpdateDateTimeAxis(ListGroup.TimeWindow);
-			ListGroup.TimeWindow.Select(null);
+			UpdateDateTimeAxis(ChartView.TimeWindow);
+			ChartView.TimeWindow.Select(null);
 		}
 		else
 		{
@@ -999,7 +1004,7 @@ public class TabControlOxyPlot : TabControlChart<OxyPlotLineSeries>
 		UpdateDateTimeAxis(timeWindow);
 		UpdateValueAxis();
 
-		ListGroup.SortByTotal();
+		ChartView.SortByTotal();
 		Legend.RefreshModel();
 
 		PlotView!.InvalidatePlot(true);

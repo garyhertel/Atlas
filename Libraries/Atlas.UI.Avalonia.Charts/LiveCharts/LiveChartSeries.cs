@@ -182,7 +182,6 @@ public class LiveChartSeries //: ChartSeries<ISeries>
 					object? xObj = XAxisPropertyInfo.GetValue(obj);
 					if (xObj is DateTime dateTime)
 					{
-						//x = OxyPlot.Axes.DateTimeAxis.ToDouble(dateTime);
 						x = dateTime.Ticks;
 					}
 					else if (xObj == null)

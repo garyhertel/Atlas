@@ -8,27 +8,27 @@ namespace Atlas.Tabs;
 // Call ChartGroupControl.Register() to register UI Control
 public class ChartSettings
 {
-	private const string DefaultGroupName = "Default";
+	private const string DefaultViewName = "Default";
 
 	public string? Name { get; set; }
-	private ListGroup DefaultListGroup { get; set; } = new(DefaultGroupName);
-	public Dictionary<string, ListGroup> ListGroups { get; set; } = new();
-	//public ItemCollection<ListGroup> ListGroups { get; set; } = new();
+	private ChartView DefaultChartView { get; set; } = new(DefaultViewName);
+	public Dictionary<string, ChartView> ChartViews { get; set; } = new();
+	//public ItemCollection<ChartView> ChartViews { get; set; } = new();
 	public ItemCollection<ListSeries> ListSeries { get; set; } = new();
 
 	public override string ToString() => string.Join(" ", ListSeries);
 
 	public ChartSettings() { }
 
-	public ChartSettings(ListGroup listGroup)
+	public ChartSettings(ChartView chartView)
 	{
-		AddGroup(listGroup);
+		AddView(chartView);
 	}
 
 	public ChartSettings(ListSeries listSeries, string? name = null)
 	{
 		Name = name;
-		DefaultListGroup.Name = name ?? DefaultListGroup.Name;
+		DefaultChartView.Name = name ?? DefaultChartView.Name;
 
 		AddSeries(listSeries);
 	}
@@ -36,7 +36,7 @@ public class ChartSettings
 	public ChartSettings(IList iList, string? name = null)
 	{
 		Name = name;
-		DefaultListGroup.Name = name ?? DefaultListGroup.Name;
+		DefaultChartView.Name = name ?? DefaultChartView.Name;
 		LoadList(iList);
 	}
 
@@ -71,25 +71,25 @@ public class ChartSettings
 				var listSeries = new ListSeries(iList, xAxisPropertyInfo, propertyInfo);
 				//listProperties.Add(listSeries);
 
-				ListGroup? listGroup = DefaultListGroup;
+				ChartView? chartView = DefaultChartView;
 				UnitAttribute? attribute = propertyInfo.GetCustomAttribute<UnitAttribute>();
 				if (attribute != null)
 				{
-					if (!ListGroups.TryGetValue(attribute.Name, out listGroup))
+					if (!ChartViews.TryGetValue(attribute.Name, out chartView))
 					{
-						listGroup = new ListGroup(attribute.Name);
-						ListGroups[attribute.Name] = listGroup;
+						chartView = new ChartView(attribute.Name);
+						ChartViews[attribute.Name] = chartView;
 					}
 				}
 				else
 				{
-					if (!ListGroups.ContainsKey(listGroup.Name!))
+					if (!ChartViews.ContainsKey(chartView.Name!))
 					{
-						ListGroups[listGroup.Name!] = listGroup;
+						ChartViews[chartView.Name!] = chartView;
 					}
 				}
 				// Will add to Default Group if no Unit specified, and add the Default Group if needed
-				listGroup.Series.Add(listSeries);
+				chartView.Series.Add(listSeries);
 				ListSeries.Add(listSeries);
 			}
 		}
@@ -102,38 +102,38 @@ public class ChartSettings
 
 		//if (ListGroups.TryGetValue(label, out ListGroup listGroup)
 
-		ListGroup listGroup = DefaultListGroup;
-		listGroup.Name = label ?? listGroup.Name;
+		ChartView chartView = DefaultChartView;
+		chartView.Name = label ?? chartView.Name;
 		// Will add to Default Group if no Unit specified, and add the Default Group if needed
-		ListGroups.Add(listGroup.Name!, listGroup);
-		listGroup.Series.Add(listSeries);
+		ChartViews.Add(chartView.Name!, chartView);
+		chartView.Series.Add(listSeries);
 		ListSeries.Add(listSeries);
 	}
 
-	public void AddGroup(ListGroup listGroup)
+	public void AddView(ChartView chartView)
 	{
-		ListGroups.Add(listGroup.Name!, listGroup);
-		ListSeries.AddRange(listGroup.Series);
+		ChartViews.Add(chartView.Name!, chartView);
+		ListSeries.AddRange(chartView.Series);
 	}
 
 	public void AddSeries(ListSeries listSeries)
 	{
-		ListGroup listGroup = DefaultListGroup;
-		if (listGroup.Name == DefaultGroupName)
-			listGroup.Name = listSeries.Name ?? listGroup.Name;
+		ChartView chartView = DefaultChartView;
+		if (chartView.Name == DefaultViewName)
+			chartView.Name = listSeries.Name ?? chartView.Name;
 
 		// Will add to Default Group if no Unit specified, and add the Default Group if needed
-		ListGroups.Add(listGroup.Name!, listGroup);
-		listGroup.Series.Add(listSeries);
+		ChartViews.Add(chartView.Name!, chartView);
+		chartView.Series.Add(listSeries);
 		ListSeries.Add(listSeries);
 	}
 
 	public void SetTimeWindow(TimeWindow timeWindow, bool showTimeTracker)
 	{
-		foreach (ListGroup listGroup in ListGroups.Values)
+		foreach (ChartView chartView in ChartViews.Values)
 		{
-			listGroup.TimeWindow = timeWindow;
-			listGroup.ShowTimeTracker = showTimeTracker;
+			chartView.TimeWindow = timeWindow;
+			chartView.ShowTimeTracker = showTimeTracker;
 		}
 	}
 

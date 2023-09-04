@@ -1,10 +1,24 @@
 using Atlas.Extensions;
 using System.Collections;
+using System.Drawing;
 using System.Reflection;
 
 namespace Atlas.Core;
 
-public class ListGroup
+public class ChartAnnotation
+{
+	public string? Text { get; set; }
+	public Color? TextColor { get; set; }
+	public Color? Color { get; set; }
+
+	public bool Horizontal { get; set; } = true;
+	public double? X { get; set; }
+	public double? Y { get; set; }
+
+	public double StrokeThickness { get; set; } = 2;
+}
+
+public class ChartView
 {
 	public string? Name { get; set; }
 	public string? LegendTitle { get; set; }
@@ -22,15 +36,17 @@ public class ListGroup
 
 	public ItemCollection<ListSeries> Series { get; set; } = new();
 
+	public List<ChartAnnotation> Annotations { get; set; } = new();
+
 	public override string? ToString() => Name;
 
-	public ListGroup(string? name = null, TimeWindow? timeWindow = null)
+	public ChartView(string? name = null, TimeWindow? timeWindow = null)
 	{
 		Name = name;
 		TimeWindow = timeWindow;
 	}
 
-	public ListGroup(string? name, DateTime startTime, DateTime endTime)
+	public ChartView(string? name, DateTime startTime, DateTime endTime)
 	{
 		Name = name;
 		TimeWindow = new TimeWindow(startTime, endTime);

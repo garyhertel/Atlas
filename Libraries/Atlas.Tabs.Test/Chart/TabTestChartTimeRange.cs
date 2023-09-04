@@ -1,4 +1,5 @@
 using Atlas.Core;
+using System.Drawing;
 
 namespace Atlas.Tabs.Test.Chart;
 
@@ -15,7 +16,6 @@ public class TabTestChartTimeRangeValue : ITab
 			await Task.Delay(10);
 
 			var list = new List<TimeRangeValue>();
-			var chartSettings = new ChartSettings(list, "Active Connection Count");
 
 			DateTime startTime = DateTime.Now;
 			for (int i = 0; i < 24; i++)
@@ -29,6 +29,19 @@ public class TabTestChartTimeRangeValue : ITab
 				list.Add(value);
 				startTime = startTime.AddHours(1);
 			}
+
+			//var chartGroup = new ChartGroup();
+			//chartGroup.Series.Add(new 
+
+			var chartSettings = new ChartSettings(list, "Active Connection Count");
+			var chartGroup = chartSettings.ChartViews.Values.First();
+			chartGroup.Annotations.Add(new ChartAnnotation()
+			{
+				Text = "Too High",
+				Y = 4,
+				Color = Color.Red,
+			});
+			chartGroup.ShowTimeTracker = true;
 			model.AddObject(chartSettings);
 		}
 	}

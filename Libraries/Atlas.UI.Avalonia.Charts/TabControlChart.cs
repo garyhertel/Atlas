@@ -13,19 +13,6 @@ using System.Collections;
 
 namespace Atlas.UI.Avalonia.Charts;
 
-public class ChartAnnotation
-{
-	public string? Text { get; set; }
-	public Color? TextColor { get; set; }
-	public Color? Color { get; set; }
-
-	public bool Horizontal { get; set; } = true;
-	public double? X { get; set; }
-	public double? Y { get; set; }
-
-	public double StrokeThickness { get; set; } = 2;
-}
-
 public class ChartSeries<TSeries>
 {
 	public ListSeries ListSeries { get; set; }
@@ -76,10 +63,10 @@ public class ChartGroupControl : IControlCreator
 	{
 		var chartSettings = (ChartSettings)obj;
 
-		foreach (var listGroupPair in chartSettings.ListGroups)
+		foreach (var listGroupPair in chartSettings.ChartViews)
 		{
-			var tabChart = new TabControlOxyPlot(tabInstance, listGroupPair.Value, true);
-			//var tabChart = new TabControlLiveChart(tabInstance, listGroupPair.Value, true);
+			//var tabChart = new TabControlOxyPlot(tabInstance, listGroupPair.Value, true);
+			var tabChart = new TabControlLiveChart(tabInstance, listGroupPair.Value, true);
 
 			container.AddControl(tabChart, true, SeparatorType.Spacer);
 			//tabChart.OnSelectionChanged += ListData_OnSelectionChanged;
@@ -89,10 +76,10 @@ public class ChartGroupControl : IControlCreator
 
 public interface ITabControlChart
 {
-	public static ITabControlChart Create(TabInstance tabInstance, ListGroup listGroup, bool fillHeight = false)
+	public static ITabControlChart Create(TabInstance tabInstance, ChartView chartView, bool fillHeight = false)
 	{
-		return new TabControlOxyPlot(tabInstance, listGroup, fillHeight);
-		//return new TabControlLiveChart(tabInstance, listGroup, fillHeight);
+		//return new TabControlOxyPlot(tabInstance, chartView, fillHeight);
+		return new TabControlLiveChart(tabInstance, chartView, fillHeight);
 	}
 
 	public void AddAnnotation(ChartAnnotation chartAnnotation);
@@ -107,7 +94,7 @@ public class TabControlChart<TSeries> : Grid, ITabControlChart //, IDisposable
 	protected const int MinSelectionWidth = 10;
 
 	public TabInstance TabInstance { get; init; }
-	public ListGroup ListGroup { get; set; }
+	public ChartView ChartView { get; set; }
 	public bool FillHeight { get; set; }
 
 	public List<ChartSeries<TSeries>> ChartSeries { get; private set; } = new();
@@ -162,12 +149,12 @@ public class TabControlChart<TSeries> : Grid, ITabControlChart //, IDisposable
 		SelectionChanged?.Invoke(this, e);
 	}
 
-	public override string? ToString() => ListGroup.ToString();
+	public override string? ToString() => ChartView.ToString();
 
-	public TabControlChart(TabInstance tabInstance, ListGroup listGroup, bool fillHeight = false)
+	public TabControlChart(TabInstance tabInstance, ChartView chartView, bool fillHeight = false)
 	{
 		TabInstance = tabInstance;
-		ListGroup = listGroup;
+		ChartView = chartView;
 		FillHeight = fillHeight;
 
 		HorizontalAlignment = HorizontalAlignment.Stretch;
@@ -192,19 +179,19 @@ public class TabControlChart<TSeries> : Grid, ITabControlChart //, IDisposable
 
 	private void AddTitle()
 	{
-		string? title = ListGroup.Name;
+		string? title = ChartView.Name;
 		if (title != null)
 		{
 			TitleTextBlock = new TextBlock()
 			{
-				Text = ListGroup.Name,
+				Text = ChartView.Name,
 				FontSize = 16,
 				Foreground = AtlasTheme.BackgroundText,
 				Margin = new Thickness(10, 5),
 				//FontWeight = FontWeight.Medium,
 				[ColumnSpanProperty] = 2,
 			};
-			if (!ListGroup.ShowOrder || ListGroup.Horizontal)
+			if (!ChartView.ShowOrder || ChartView.Horizontal)
 			{
 				TitleTextBlock.HorizontalAlignment = HorizontalAlignment.Center;
 			}

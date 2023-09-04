@@ -17,7 +17,7 @@ public abstract class TabChartLegendItem<TSeries> : Grid
 
 	public readonly TabControlChartLegend<TSeries> Legend;
 	public readonly ChartSeries<TSeries> ChartSeries;
-	public readonly ListGroup ListGroup;
+	public readonly ChartView ChartView;
 	
 	public TSeries Series;
 	
@@ -61,7 +61,7 @@ public abstract class TabChartLegendItem<TSeries> : Grid
 		Legend = legend;
 		ChartSeries = chartSeries;
 		Series = chartSeries.LineSeries;
-		ListGroup = legend.ListGroup;
+		ChartView = legend.ChartView;
 
 		InitializeControls();
 	}
@@ -78,7 +78,7 @@ public abstract class TabChartLegendItem<TSeries> : Grid
 		AddCheckBox();
 		AddTextBlock();
 
-		if (ListGroup.ShowOrder && !ListGroup.Horizontal)
+		if (ChartView.ShowOrder && !ChartView.Horizontal)
 			AddTotalTextBlock();
 
 		PointerEntered += TabChartLegendItem_PointerEntered;
@@ -165,7 +165,7 @@ public abstract class TabChartLegendItem<TSeries> : Grid
 	private void UpdateTitleText()
 	{
 		string prefix = "";
-		if (Index > 0 && ListGroup.Series.Count > 1)
+		if (Index > 0 && ChartView.Series.Count > 1)
 			prefix = Index.ToString() + ". ";
 
 		TextBlock!.Text = prefix + ToString();

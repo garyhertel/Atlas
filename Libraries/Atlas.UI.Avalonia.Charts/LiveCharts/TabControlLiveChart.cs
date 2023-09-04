@@ -1,4 +1,5 @@
 using Atlas.Core;
+using Atlas.Extensions;
 using Atlas.Tabs;
 using Atlas.UI.Avalonia.Themes;
 using Avalonia.Controls;
@@ -24,10 +25,6 @@ public class TabControlLiveChart : TabControlChart<ISeries>
 	//private static readonly Color NowColor = Colors.Green;
 	//private static OxyColor timeTrackerColor = Theme.TitleBackground;
 
-	//public ChartSettings ChartSettings { get; set; }
-
-	//private List<ListSeries> ListSeries { get; set; }
-
 	public CartesianChart Chart;
 
 	public TabControlChartLegend<ISeries> Legend;
@@ -49,7 +46,7 @@ public class TabControlLiveChart : TabControlChart<ISeries>
 	private readonly LvcColor[] colors = ColorPalletes.FluentDesign;
 
 	private bool UseDateTimeAxis => (_xAxisPropertyInfo?.PropertyType == typeof(DateTime)) ||
-									(ListGroup.TimeWindow != null);
+									(ChartView.TimeWindow != null);
 
 	private static readonly WeakEventSource<MouseCursorMovedEventArgs> _mouseCursorChangedEventSource = new();
 
@@ -59,10 +56,10 @@ public class TabControlLiveChart : TabControlChart<ISeries>
 		remove { _mouseCursorChangedEventSource.Unsubscribe(value); }
 	}
 
-	public TabControlLiveChart(TabInstance tabInstance, ListGroup listGroup, bool fillHeight = false) : 
-		base(tabInstance, listGroup, fillHeight)
+	public TabControlLiveChart(TabInstance tabInstance, ChartView chartView, bool fillHeight = false) : 
+		base(tabInstance, chartView, fillHeight)
 	{
-		_xAxisPropertyInfo = listGroup.Series.FirstOrDefault()?.XPropertyInfo;
+		_xAxisPropertyInfo = chartView.Series.FirstOrDefault()?.XPropertyInfo;
 
 		Chart = new CartesianChart()
 		{
@@ -75,6 +72,7 @@ public class TabControlLiveChart : TabControlChart<ISeries>
 			LegendPosition = LegendPosition.Hidden,
 			TooltipBackgroundPaint = new SolidColorPaint(AtlasTheme.ChartBackgroundSelected.Color.AsSkColor().WithAlpha(64)),
 			TooltipTextPaint = new SolidColorPaint(AtlasTheme.TitleForeground.Color.AsSkColor()),
+			//TooltipFindingStrategy = TooltipFindingStrategy.CompareAllTakeClosest, // Doesn't work well
 			//MinWidth = 150,
 			//MinHeight = 80,
 			[Grid.RowProperty] = 1,
@@ -109,7 +107,7 @@ public class TabControlLiveChart : TabControlChart<ISeries>
 		containerGrid.Children.Add(Chart);
 
 		Legend = new TabControlLiveChartLegend(this);
-		if (ListGroup!.Horizontal)
+		if (ChartView!.Horizontal)
 		{
 			// Bottom
 			SetRow(Legend, 2);
@@ -129,6 +127,11 @@ public class TabControlLiveChart : TabControlChart<ISeries>
 		//OnMouseCursorChanged += TabControlChart_OnMouseCursorChanged;
 		//if (ListGroup.TimeWindow != null)
 		//	ListGroup.TimeWindow.OnSelectionChanged += ListGroup_OnTimesChanged;*/
+
+		foreach (ChartAnnotation chartAnnotation in ChartView.Annotations)
+		{
+			AddAnnotation(chartAnnotation);
+		}
 
 		Children.Add(containerGrid);
 	}
@@ -262,9 +265,9 @@ public class TabControlLiveChart : TabControlChart<ISeries>
 		return values;*/
 	}
 
-	public void LoadListGroup(ListGroup listGroup)
+	public void LoadListGroup(ChartView chartView)
 	{
-		ListGroup = listGroup;
+		ChartView = chartView;
 		ReloadView();
 		Refresh();
 	}
@@ -289,9 +292,9 @@ public class TabControlLiveChart : TabControlChart<ISeries>
 			SelectionColor = OxyColors.Blue,
 		};*/
 
-		ListGroup.SortByTotal();
+		ChartView.SortByTotal();
 
-		Chart.Series = ListGroup.Series
+		Chart.Series = ChartView.Series
 			.Select(s => AddListSeries(s))
 			.ToList();
 
@@ -330,6 +333,24 @@ public class TabControlLiveChart : TabControlChart<ISeries>
 	public override void AddAnnotation(ChartAnnotation chartAnnotation)
 	{
 		base.AddAnnotation(chartAnnotation);
+
+		var section = new RectangularSection
+		{
+			Label = chartAnnotation.Text!,
+			LabelSize = 14,
+			LabelPaint = new SolidColorPaint(SKColors.Red.WithAlpha(220))
+			{
+				SKTypeface = SKTypeface.FromFamilyName("Inter", SKFontStyle.Bold)
+			},
+			Yj = chartAnnotation.Y,
+			Yi = chartAnnotation.Y,
+			Stroke = new SolidColorPaint(SKColors.Red.WithAlpha(200)),
+		};
+
+		Chart.Sections = new List<RectangularSection>()
+		{
+			section,
+		};
 
 		/*var annotationThreshold = new Anno
 		{
@@ -515,17 +536,16 @@ public class TabControlLiveChart : TabControlChart<ISeries>
 			//DateTimeAxis!.Minimum = OxyPlot.Axes.DateTimeAxis.ToDouble(timeWindow.StartTime);
 			//DateTimeAxis.Maximum = OxyPlot.Axes.DateTimeAxis.ToDouble(timeWindow.EndTime);
 			////DateTimeAxis.Maximum = OxyPlot.Axes.DateTimeAxis.ToDouble(endTime.AddSeconds(duration / 25.0)); // labels get clipped without this
-			UpdateDateTimeInterval(timeWindow.Duration.TotalSeconds);
+			UpdateDateTimeInterval(timeWindow.Duration);
 		}
 	}
 
-	private void UpdateDateTimeInterval(double duration)
+	private void UpdateDateTimeInterval(TimeSpan windowDuration)
 	{
-		var dateFormat = DateTimeFormat.GetDateTimeFormat(duration)!;
+		var dateFormat = DateTimeFormat.GetDateTimeFormat(windowDuration)!;
 
 		XAxis[0].Labeler = value => new DateTime((long)value).ToString(dateFormat.TextFormat);// "yyyy-M-d H:mm:ss.FFF");
-		//XAxis.LabelsRotation = 15;
-			//axis.UnitWidth = TimeSpan.FromDays(1).Ticks;
+		XAxis[0].UnitWidth = windowDuration.PeriodDuration(20).Ticks; // Hover depends on this
 		//DateTimeAxis.MinimumMajorStep = dateFormat.StepSize.TotalDays;
 
 		//double widthPerLabel = 6 * DateTimeAxis.StringFormat.Length + 25;
@@ -730,19 +750,19 @@ public class TabControlLiveChart : TabControlChart<ISeries>
 
 		foreach (ISeries series in Chart.Series)
 		{
-			if (series is OxyPlot.Series.LineSeries lineSeries)
+			if (series is LineSeries<ObservablePoint> lineSeries)
 			{
 				//if (lineSeries.LineStyle == LineStyle.None)
 				//	continue;
 
-				foreach (var dataPoint in lineSeries.Points)
+				foreach (ObservablePoint dataPoint in lineSeries.Values!)
 				{
-					double x = dataPoint.X;
-					if (double.IsNaN(x))
+					double? x = dataPoint.X;
+					if (x == null || double.IsNaN(x.Value))
 						continue;
 
-					minimum = Math.Min(minimum, x);
-					maximum = Math.Max(maximum, x);
+					minimum = Math.Min(minimum, x.Value);
+					maximum = Math.Max(maximum, x.Value);
 				}
 			}
 		}
@@ -753,15 +773,15 @@ public class TabControlLiveChart : TabControlChart<ISeries>
 			DateTimeAxis.Maximum = maximum;
 		}*/
 
-		if (ListGroup.TimeWindow == null)
+		if (ChartView.TimeWindow == null && minimum != double.MaxValue)
 		{
 			DateTime startTime = new DateTime((long)minimum);
 			DateTime endTime = new DateTime((long)maximum);
 
-			ListGroup.TimeWindow = new TimeWindow(startTime, endTime).Trim();
+			ChartView.TimeWindow = new TimeWindow(startTime, endTime).Trim();
 		}
 
-		UpdateDateTimeAxis(ListGroup.TimeWindow);
+		UpdateDateTimeAxis(ChartView.TimeWindow);
 
 		//UpdateDateTimeInterval(double duration);
 	}

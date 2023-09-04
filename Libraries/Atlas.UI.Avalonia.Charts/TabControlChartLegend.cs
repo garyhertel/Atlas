@@ -11,7 +11,7 @@ namespace Atlas.UI.Avalonia.Charts;
 public abstract class TabControlChartLegend<TSeries> : Grid
 {
 	public TabControlChart<TSeries> TabControlChart;
-	public ListGroup ListGroup => TabControlChart.ListGroup;
+	public ChartView ChartView => TabControlChart.ChartView;
 
 	public List<TabChartLegendItem<TSeries>> LegendItems = new();
 	protected readonly Dictionary<string, TabChartLegendItem<TSeries>> _idxLegendItems = new();
@@ -23,7 +23,7 @@ public abstract class TabControlChartLegend<TSeries> : Grid
 	public event EventHandler<EventArgs>? OnSelectionChanged;
 	public event EventHandler<EventArgs>? OnVisibleChanged;
 
-	public override string? ToString() => ListGroup.ToString();
+	public override string? ToString() => ChartView.ToString();
 
 	public TabControlChartLegend(TabControlChart<TSeries> tabControlChart)
 	{
@@ -34,7 +34,7 @@ public abstract class TabControlChartLegend<TSeries> : Grid
 
 		_wrapPanel = new WrapPanel()
 		{
-			Orientation = ListGroup.Horizontal ? Orientation.Horizontal : Orientation.Vertical,
+			Orientation = ChartView.Horizontal ? Orientation.Horizontal : Orientation.Vertical,
 			HorizontalAlignment = HorizontalAlignment.Stretch,
 			VerticalAlignment = VerticalAlignment.Stretch,
 			Margin = new Thickness(6),
@@ -51,7 +51,7 @@ public abstract class TabControlChartLegend<TSeries> : Grid
 
 		Children.Add(_scrollViewer);
 
-		if (ListGroup.ShowLegend && ListGroup.ShowOrder && !ListGroup.Horizontal)
+		if (ChartView.ShowLegend && ChartView.ShowOrder && !ChartView.Horizontal)
 		{
 			_textBlockTotal = new TextBlock()
 			{
@@ -68,7 +68,7 @@ public abstract class TabControlChartLegend<TSeries> : Grid
 	{
 		var seriesType = SeriesType.Other;
 
-		foreach (var series in ListGroup.Series)
+		foreach (var series in ChartView.Series)
 		{
 			if (seriesType == SeriesType.Other)
 				seriesType = series.SeriesType;
@@ -100,7 +100,7 @@ public abstract class TabControlChartLegend<TSeries> : Grid
 
 		var ordered = nonzero.OrderByDescending(a => a.Total).ToList();
 		ordered.AddRange(unused);
-		if (ListGroup.ShowLegend && ListGroup.ShowOrder && !ListGroup.Horizontal)
+		if (ChartView.ShowLegend && ChartView.ShowOrder && !ChartView.Horizontal)
 		{
 			for (int i = 0; i < ordered.Count; i++)
 				ordered[i].Index = i + 1;
@@ -206,7 +206,7 @@ public abstract class TabControlChartLegend<TSeries> : Grid
 
 		if (_textBlockTotal != null)
 		{
-			_textBlockTotal.Text = ListGroup.LegendTitle ?? GetTotalName();
+			_textBlockTotal.Text = ChartView.LegendTitle ?? GetTotalName();
 		}
 
 		// Possibly faster? But more likely to cause problems
