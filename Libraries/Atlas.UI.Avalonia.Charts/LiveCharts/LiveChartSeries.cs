@@ -40,8 +40,6 @@ public class LiveChartSeries //: ChartSeries<ISeries>
 
 		SKColor skColor = color.AsSkColor();
 
-		//var values = GetValues(listSeries);
-
 		var dataPoints = GetDataPoints(listSeries, listSeries.List, _datapointLookup);
 
 		//LineSeries = new LineSeries<DateTimePoint>
@@ -70,13 +68,10 @@ public class LiveChartSeries //: ChartSeries<ISeries>
 		if (Title?.Length == 0)
 			Title = "<NA>";
 
-		LineStyle = LineStyle.Solid;
-		StrokeThickness = 2;
 		TextColor = OxyColors.Black;
 		CanTrackerInterpolatePoints = false;
 		MinimumSegmentLength = 2;
 		MarkerSize = 3;
-		MarkerType = listSeries.List.Count <= MaxPointsToShowMarkers ? MarkerType.Circle : MarkerType.None;
 		LoadTrackFormat();
 
 		// can't add gaps with ItemSource so convert to ObservablePoint ourselves
@@ -89,11 +84,7 @@ public class LiveChartSeries //: ChartSeries<ISeries>
 				// can we remove this later when disposing?
 				SeriesChanged(listSeries, e);
 			});
-		}
-
-		// use circle markers if there's a single point all alone, otherwise it won't show
-		if (HasSinglePoint())
-			MarkerType = MarkerType.Circle;*/
+		}*/
 	}
 
 	private bool HasSinglePoint(List<ObservablePoint> dataPoints)

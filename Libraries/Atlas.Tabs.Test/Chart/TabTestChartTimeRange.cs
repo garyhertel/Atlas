@@ -24,7 +24,7 @@ public class TabTestChartTimeRangeValue : ITab
 				{
 					StartTime = startTime,
 					EndTime = startTime.AddHours(1),
-					Value = (_random.Next() % 5),
+					Value = (_random.Next() % int.MaxValue),
 				};
 				list.Add(value);
 				startTime = startTime.AddHours(1);
@@ -38,7 +38,7 @@ public class TabTestChartTimeRangeValue : ITab
 			chartGroup.Annotations.Add(new ChartAnnotation()
 			{
 				Text = "Too High",
-				Y = 4,
+				Y = 2000000000,
 				Color = Color.Red,
 			});
 			chartGroup.ShowTimeTracker = true;

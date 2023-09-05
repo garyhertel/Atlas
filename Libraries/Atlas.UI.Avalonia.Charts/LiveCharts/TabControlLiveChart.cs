@@ -23,7 +23,7 @@ namespace Atlas.UI.Avalonia.Charts.LiveCharts;
 public class TabControlLiveChart : TabControlChart<ISeries>
 {
 	//private static readonly Color NowColor = Colors.Green;
-	//private static OxyColor timeTrackerColor = Theme.TitleBackground;
+	//private static Color timeTrackerColor = Theme.TitleBackground;
 
 	public CartesianChart Chart;
 
@@ -31,8 +31,6 @@ public class TabControlLiveChart : TabControlChart<ISeries>
 	private PropertyInfo? _xAxisPropertyInfo;
 
 	/*public OxyPlot.Series.Series? HoverSeries;
-
-	//public SeriesCollection SeriesCollection { get; set; }
 
 	public OxyPlot.Axes.Axis? ValueAxis; // left/right?
 
@@ -43,7 +41,7 @@ public class TabControlLiveChart : TabControlChart<ISeries>
 	/*private OxyPlot.Annotations.LineAnnotation? _trackerAnnotation;*/
 
 	private static readonly SKColor GridLineColor = SKColor.Parse("#333333");
-	private readonly LvcColor[] colors = ColorPalletes.FluentDesign;
+	//private readonly LvcColor[] colors = ColorPalletes.FluentDesign;
 
 	private bool UseDateTimeAxis => (_xAxisPropertyInfo?.PropertyType == typeof(DateTime)) ||
 									(ChartView.TimeWindow != null);
@@ -72,7 +70,8 @@ public class TabControlLiveChart : TabControlChart<ISeries>
 			LegendPosition = LegendPosition.Hidden,
 			TooltipBackgroundPaint = new SolidColorPaint(AtlasTheme.ChartBackgroundSelected.Color.AsSkColor().WithAlpha(64)),
 			TooltipTextPaint = new SolidColorPaint(AtlasTheme.TitleForeground.Color.AsSkColor()),
-			//TooltipFindingStrategy = TooltipFindingStrategy.CompareAllTakeClosest, // Doesn't work well
+			//Tooltip = new LiveChartTooltip(this),
+			TooltipFindingStrategy = TooltipFindingStrategy.CompareAllTakeClosest, // Doesn't work well
 			//MinWidth = 150,
 			//MinHeight = 80,
 			[Grid.RowProperty] = 1,
@@ -158,6 +157,7 @@ public class TabControlLiveChart : TabControlChart<ISeries>
 			ShowSeparatorLines = true,
 			SeparatorsPaint = new SolidColorPaint(GridLineColor),
 			LabelsPaint = new SolidColorPaint(SKColors.LightGray),
+			//CrosshairPaint = new SolidColorPaint(SKColors.LightGray),
 		};
 
 		return new List<Axis>
@@ -172,9 +172,9 @@ public class TabControlLiveChart : TabControlChart<ISeries>
 		{
 			new Axis
 			{
-				//Name = "Sales amount",
+				//Name = "Amount",
 				//NamePadding = new Padding(0, 15),
-				Labeler = Labelers.Default,
+				Labeler = DateTimeFormat.ValueFormatter,
 				LabelsPaint = new SolidColorPaint(SKColors.LightGray),
 				SeparatorsPaint = new SolidColorPaint(GridLineColor),
 				/*LabelsPaint = new SolidColorPaint
@@ -216,53 +216,11 @@ public class TabControlLiveChart : TabControlChart<ISeries>
 		ValueAxis.MinorGridlineColor = OxyColors.Gray;
 		ValueAxis.TitleColor = OxyColors.LightGray;
 		ValueAxis.TextColor = OxyColors.LightGray;
-		ValueAxis.LabelFormatter = ValueFormatter;
 
 		if (key != null)
 			ValueAxis.Key = key;
 		PlotModel!.Axes.Add(ValueAxis);
 		return ValueAxis;*/
-	}
-
-	private static List<DateTimePoint> GetValues(ListSeries listSeries)
-	{
-		DateTime now = DateTime.Now;
-		return listSeries
-			.Values()
-			.Select(t => new DateTimePoint(now = now.AddSeconds(1), t))
-			.ToList();
-
-		/*DateTime dateTime = DateTime.UtcNow;
-
-		double value = s_random.Next(1, 100);
-
-		var values = new List<DateTimePoint>();
-		for (int i = 0; i < DataPointCount; i++)
-		{
-			value += s_random.Next(-5, 5);
-			var point = new DateTimePoint()
-			{
-				DateTime = dateTime.AddHours(i),
-				Value = value,
-			};
-			values.Add(point);
-
-			// Sparse points require visible markers instead of just lines, which can have performance impacts
-			if (sparse && s_random.Next(0, 1) == 1)
-			{
-				i += s_random.Next(1, 20);
-
-				// Show visible gaps between sparse points
-				// Doesn't work (or this is the wrong way)
-				/*var nullPoint = new DateTimePoint()
-				{
-					DateTime = dateTime.AddHours(i),
-					Value = null,
-				};
-				values.Add(nullPoint);*//*
-			}
-		}
-		return values;*/
 	}
 
 	public void LoadListGroup(ChartView chartView)
@@ -287,7 +245,7 @@ public class TabControlLiveChart : TabControlChart<ISeries>
 		/*
 		PlotModel = new PlotModel()
 		{
-			PlotAreaBorderColor = OxyColor.Parse("#888888"),
+			PlotAreaBorderColor = Color.Parse("#888888"),
 			TextColor = OxyColors.Black,
 			SelectionColor = OxyColors.Blue,
 		};*/
@@ -295,7 +253,7 @@ public class TabControlLiveChart : TabControlChart<ISeries>
 		ChartView.SortByTotal();
 
 		Chart.Series = ChartView.Series
-			.Select(s => AddListSeries(s))
+			.Select(s => AddListSeries(s)!)
 			.ToList();
 
 		/*AddAxis();
@@ -309,15 +267,12 @@ public class TabControlLiveChart : TabControlChart<ISeries>
 		IsVisible = true;
 	}
 
-	public ISeries? AddListSeries(ListSeries listSeries, LvcColor? oxyColor = null)
+	public ISeries? AddListSeries(ListSeries listSeries, Color? defaultColor = null)
 	{
 		if (ChartSeries.Count >= SeriesLimit)
 			return null;
 
-		//var nextColorIndex = i % colors.Length;
-		//var color = colors[nextColorIndex];
-
-		Color color = GetColor(ChartSeries.Count);
+		Color color = defaultColor ?? GetColor(ChartSeries.Count);
 
 		var lineSeries = new LiveChartSeries(this, listSeries, color, UseDateTimeAxis);
 		_xAxisPropertyInfo = lineSeries.XAxisPropertyInfo;
@@ -546,6 +501,9 @@ public class TabControlLiveChart : TabControlChart<ISeries>
 
 		XAxis[0].Labeler = value => new DateTime((long)value).ToString(dateFormat.TextFormat);// "yyyy-M-d H:mm:ss.FFF");
 		XAxis[0].UnitWidth = windowDuration.PeriodDuration(20).Ticks; // Hover depends on this
+		//XAxis[0].MinStep = dateFormat.StepSize.Ticks;
+		XAxis[0].MinStep = windowDuration.PeriodDuration(10).Ticks;
+		//XAxis[0].ForceStepToMin = true;
 		//DateTimeAxis.MinimumMajorStep = dateFormat.StepSize.TotalDays;
 
 		//double widthPerLabel = 6 * DateTimeAxis.StringFormat.Length + 25;
@@ -565,43 +523,6 @@ public class TabControlLiveChart : TabControlChart<ISeries>
 			MinorGridlineColor = OxyColors.Gray,
 		};
 		PlotModel!.Axes.Add(LinearAxis);
-	}
-
-	public OxyPlot.Axes.CategoryAxis AddCategoryAxis(AxisPosition axisPosition = AxisPosition.Left, string? key = null)
-	{
-		categoryAxis = new OxyPlot.Axes.CategoryAxis
-		{
-			Position = axisPosition,
-			IntervalLength = 20,
-			MajorGridlineStyle = LineStyle.Solid,
-			MajorGridlineColor = GridLineColor,
-			MinorGridlineStyle = LineStyle.None,
-			MinorTickSize = 0,
-			MinorStep = 20,
-			MinimumMinorStep = 10,
-			IsAxisVisible = true,
-			IsPanEnabled = false,
-			AxislineColor = GridLineColor,
-			AxislineStyle = LineStyle.Solid,
-			AxislineThickness = 2,
-			TickStyle = TickStyle.Outside,
-			TicklineColor = GridLineColor,
-			//MajorTickSize = 2,
-			MinorGridlineColor = OxyColors.Gray,
-			TitleColor = OxyColors.LightGray,
-			TextColor = OxyColors.LightGray,
-			LabelFormatter = ValueFormatter,
-		};
-		if (key != null)
-			categoryAxis.Key = key;
-
-		foreach (ListSeries listSeries in ListGroup.Series)
-		{
-			categoryAxis.Labels.Add(listSeries.Name);
-		}
-
-		PlotModel!.Axes.Add(categoryAxis);
-		return categoryAxis;
 	}
 
 	private void UpdateLinearAxis()
@@ -837,44 +758,13 @@ public class TabControlLiveChart : TabControlChart<ISeries>
 
 		foreach (var series in ListGroup.Series)
 		{
-			OxyColor? oxyColor = null;
+			Color? oxyColor = null;
 			if (series.Name != null && prevListSeries.TryGetValue(series.Name, out OxyPlotChartSeries? prevSeries))
 				oxyColor = ((TabChartLineSeries)prevSeries.OxySeries).Color;
 
 			AddSeries(series, oxyColor);
 		}
 	}
-
-	public void AddSeries(ListSeries listSeries, OxyColor? oxyColor = null)
-	{
-		//if (listSeries.IsStacked)
-		//	AddBarSeries(listSeries);
-		//else
-		AddListSeries(listSeries, oxyColor);
-	}
-
-	/*private void AddBarSeries(ListSeries listSeries)
-	{
-		var barSeries = new OxyPlot.Series.BarSeries
-		{
-			Title = listSeries.Name,
-			StrokeThickness = 2,
-			FillColor = GetColor(plotModel.Series.Count),
-			TextColor = OxyColors.Black,
-			IsStacked = listSeries.IsStacked,
-			TrackerFormatString = "{0}\nTime: {2:yyyy-M-d H:mm:ss.FFF}\nValue: {4:#,0.###}",
-		};
-		var dataPoints = GetDataPoints(listSeries, listSeries.iList);
-		foreach (DataPoint dataPoint in dataPoints)
-		{
-			barSeries.Items.Add(new BarItem(dataPoint.X, (int)dataPoint.Y));
-		}
-
-		plotModel.Series.Add(barSeries);
-
-		//ListToTabSeries[listSeries.iList] = listSeries;
-		//ListToTabIndex[listSeries.iList] = ListToTabIndex.Count;
-	}*/
 
 	/*private void AddNowTime()
 	{
@@ -928,8 +818,8 @@ public class TabControlLiveChart : TabControlChart<ISeries>
 		{
 			_rectangleAnnotation = new OxyPlot.Annotations.RectangleAnnotation()
 			{
-				Fill = OxyColor.FromAColor((byte)AtlasTheme.ChartBackgroundSelectedAlpha, AtlasTheme.ChartBackgroundSelected.ToOxyColor()),
-				Stroke = OxyColor.FromAColor((byte)180, AtlasTheme.ChartBackgroundSelected.ToOxyColor()),
+				Fill = Color.FromAColor((byte)AtlasTheme.ChartBackgroundSelectedAlpha, AtlasTheme.ChartBackgroundSelected.ToOxyColor()),
+				Stroke = Color.FromAColor((byte)180, AtlasTheme.ChartBackgroundSelected.ToOxyColor()),
 				StrokeThickness = 1,
 			};
 		}

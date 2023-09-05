@@ -23,8 +23,6 @@ public class TabControlOxyPlot : TabControlChart<OxyPlotLineSeries>
 
 	public OxyPlot.Series.Series? HoverSeries;
 
-	//public SeriesCollection SeriesCollection { get; set; }
-
 	public PlotModel? PlotModel;
 	public PlotView? PlotView;
 	private PropertyInfo? xAxisPropertyInfo;
@@ -97,11 +95,6 @@ public class TabControlOxyPlot : TabControlChart<OxyPlotLineSeries>
 				controller.AddHoverManipulator(view, new MouseHoverManipulator(this), args)));
 
 		LoadPlotModel();
-		/*plotView.Template = new ControlTemplate() // todo: fix
-		{
-			Content = new object(),
-			TargetType = typeof(object),
-		};*/
 
 		var containerGrid = new Grid()
 		{
@@ -291,13 +284,8 @@ public class TabControlOxyPlot : TabControlChart<OxyPlotLineSeries>
 		UnloadModel();
 		PlotModel = new PlotModel()
 		{
-			//Title = ListGroup?.Name,
-			//TitleFontWeight = 400,
-			//TitleFontSize = 16,
-			//TitleFont = "Arial",
 			IsLegendVisible = false,
 			LegendPlacement = LegendPlacement.Outside,
-			//LegendTitleColor = OxyColors.Yellow, // doesn't work
 
 			TitleColor = OxyColors.LightGray,
 			//PlotAreaBorderColor = OxyColors.LightGray,

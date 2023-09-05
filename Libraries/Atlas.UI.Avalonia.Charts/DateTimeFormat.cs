@@ -16,7 +16,7 @@ public class DateTimeFormat
 	}
 
 	// todo: centralize and add units
-	public static string? ValueFormatter(double d)
+	public static string ValueFormatter(double d)
 	{
 		double ad = Math.Abs(d);
 		string prefix = "{0:#,0.#} ";
@@ -38,7 +38,7 @@ public class DateTimeFormat
 		}
 		else
 		{
-			return d.Formatted();
+			return d.Formatted()!;
 		}
 	}
 
