@@ -10,6 +10,7 @@ using Avalonia.Input;
 using Avalonia.Layout;
 using Avalonia.Media;
 using System.Collections;
+using System.Reflection;
 
 namespace Atlas.UI.Avalonia.Charts;
 
@@ -117,6 +118,8 @@ public class TabControlChart<TSeries> : Grid, ITabControlChart //, IDisposable
 	}
 
 	public TextBlock? TitleTextBlock { get; protected set; }
+
+	private static readonly System.Drawing.Color NowColor = System.Drawing.Color.Green;
 	public static Color[] DefaultColors { get; set; } = new Color[]
 	{
 		Colors.LawnGreen,
@@ -136,6 +139,10 @@ public class TabControlChart<TSeries> : Grid, ITabControlChart //, IDisposable
 		Colors.MediumSpringGreen,
 	};
 	public static Color GetColor(int index) => DefaultColors[index % DefaultColors.Length];
+
+	protected PropertyInfo? _xAxisPropertyInfo;
+	public bool UseDateTimeAxis => (_xAxisPropertyInfo?.PropertyType == typeof(DateTime)) ||
+									(ChartView.TimeWindow != null);
 
 	public bool IsTitleSelectable { get; set; }
 
@@ -173,6 +180,8 @@ public class TabControlChart<TSeries> : Grid, ITabControlChart //, IDisposable
 		{
 			TabInstance.TabViewSettings.ChartDataSettings.Add(new TabDataSettings());
 		}
+
+		_xAxisPropertyInfo = chartView.Series.FirstOrDefault()?.XPropertyInfo;
 
 		AddTitle();
 	}
@@ -220,5 +229,23 @@ public class TabControlChart<TSeries> : Grid, ITabControlChart //, IDisposable
 	public virtual void AddAnnotation(ChartAnnotation chartAnnotation)
 	{
 		Annotations.Add(chartAnnotation);
+	}
+
+	public void AddNowTime()
+	{
+		var now = DateTime.UtcNow;
+		if (ChartView.TimeWindow != null && ChartView.TimeWindow.EndTime < now.AddMinutes(1))
+			return;
+
+		var annotation = new ChartAnnotation
+		{
+			Text = "Now",
+			Horizontal = false,
+			X = now.Ticks,
+			Color = NowColor,
+			// LineStyle = LineStyle.Dot,
+		};
+
+		ChartView.Annotations.Add(annotation);
 	}
 }

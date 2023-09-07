@@ -24,7 +24,7 @@ public class TabTestChartTimeRangeValue : ITab
 				{
 					StartTime = startTime,
 					EndTime = startTime.AddHours(1),
-					Value = (_random.Next() % int.MaxValue),
+					Value = _random.Next() % int.MaxValue,
 				};
 				list.Add(value);
 				startTime = startTime.AddHours(1);

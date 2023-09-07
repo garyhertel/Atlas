@@ -25,7 +25,6 @@ public class TabControlOxyPlot : TabControlChart<OxyPlotLineSeries>
 
 	public PlotModel? PlotModel;
 	public PlotView? PlotView;
-	private PropertyInfo? xAxisPropertyInfo;
 	public TabControlOxyPlotLegend Legend;
 	public OxyPlot.Axes.Axis? ValueAxis; // left/right?
 	private OxyPlot.Axes.CategoryAxis? categoryAxis;
@@ -37,9 +36,6 @@ public class TabControlOxyPlot : TabControlChart<OxyPlotLineSeries>
 	private OxyPlot.Annotations.LineAnnotation? _trackerAnnotation;
 
 	private static readonly OxyColor GridLineColor = OxyColor.Parse("#333333");
-
-	private bool UseDateTimeAxis => (xAxisPropertyInfo?.PropertyType == typeof(DateTime)) ||
-									(ChartView.TimeWindow != null);
 
 	private static readonly WeakEventSource<MouseCursorMovedEventArgs> _mouseCursorChangedEventSource = new();
 
@@ -799,7 +795,6 @@ public class TabControlOxyPlot : TabControlChart<OxyPlotLineSeries>
 		{
 			Color = color.ToOxyColor(),
 		};
-		xAxisPropertyInfo = lineSeries.XAxisPropertyInfo;
 
 		PlotModel!.Series.Insert(0, lineSeries);
 
@@ -1040,15 +1035,16 @@ public class TabControlOxyPlot : TabControlChart<OxyPlotLineSeries>
 	{
 		base.AddAnnotation(chartAnnotation);
 
+		var oxyColor = chartAnnotation.Color!.Value.ToOxyColor();
 		var annotationThreshold = new OxyPlot.Annotations.LineAnnotation
 		{
 			Text = chartAnnotation.Text,
 			Type = chartAnnotation.Horizontal ? LineAnnotationType.Horizontal : LineAnnotationType.Vertical,
 			X = chartAnnotation.X ?? 0,
 			Y = chartAnnotation.Y ?? 0,
-			Color = (chartAnnotation.Color ?? chartAnnotation.TextColor)!.Value.ToOxyColor(),
-			TextColor = (chartAnnotation.TextColor ?? chartAnnotation.Color)!.Value.ToOxyColor(),
-			StrokeThickness = 2,
+			Color = oxyColor,
+			TextColor = oxyColor,
+			StrokeThickness = chartAnnotation.StrokeThickness,
 			LineStyle = LineStyle.Dot,
 		};
 		PlotModel!.Annotations.Add(annotationThreshold);

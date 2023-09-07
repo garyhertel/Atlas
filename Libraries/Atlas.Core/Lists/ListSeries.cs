@@ -210,4 +210,18 @@ public class ListSeries
 		}
 		return new TimeWindow(startTime, endTime);
 	}
+
+	private PropertyInfo? GetXAxisProperty()
+	{
+		if (XPropertyInfo != null) return XPropertyInfo;
+
+		Type elementType = List.GetType().GetElementTypeForAll()!;
+		foreach (PropertyInfo propertyInfo in elementType.GetProperties())
+		{
+			if (propertyInfo.GetCustomAttribute<XAxisAttribute>() != null)
+				return propertyInfo;
+		}
+
+		return null;
+	}
 }

@@ -8,7 +8,7 @@ namespace Atlas.Core;
 public class ChartAnnotation
 {
 	public string? Text { get; set; }
-	public Color? TextColor { get; set; }
+	//public Color? TextColor { get; set; }
 	public Color? Color { get; set; }
 
 	public bool Horizontal { get; set; } = true;

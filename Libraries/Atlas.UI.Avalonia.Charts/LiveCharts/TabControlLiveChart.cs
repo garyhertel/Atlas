@@ -15,7 +15,6 @@ using LiveChartsCore.SkiaSharpView.Avalonia;
 using LiveChartsCore.SkiaSharpView.Painting;
 using LiveChartsCore.Themes;
 using SkiaSharp;
-using System.Reflection;
 using WeakEvent;
 
 namespace Atlas.UI.Avalonia.Charts.LiveCharts;
@@ -28,7 +27,6 @@ public class TabControlLiveChart : TabControlChart<ISeries>
 	public CartesianChart Chart;
 
 	public TabControlChartLegend<ISeries> Legend;
-	private PropertyInfo? _xAxisPropertyInfo;
 
 	/*public OxyPlot.Series.Series? HoverSeries;
 
@@ -43,9 +41,6 @@ public class TabControlLiveChart : TabControlChart<ISeries>
 	private static readonly SKColor GridLineColor = SKColor.Parse("#333333");
 	//private readonly LvcColor[] colors = ColorPalletes.FluentDesign;
 
-	private bool UseDateTimeAxis => (_xAxisPropertyInfo?.PropertyType == typeof(DateTime)) ||
-									(ChartView.TimeWindow != null);
-
 	private static readonly WeakEventSource<MouseCursorMovedEventArgs> _mouseCursorChangedEventSource = new();
 
 	public static event EventHandler<MouseCursorMovedEventArgs> OnMouseCursorChanged
@@ -57,8 +52,6 @@ public class TabControlLiveChart : TabControlChart<ISeries>
 	public TabControlLiveChart(TabInstance tabInstance, ChartView chartView, bool fillHeight = false) : 
 		base(tabInstance, chartView, fillHeight)
 	{
-		_xAxisPropertyInfo = chartView.Series.FirstOrDefault()?.XPropertyInfo;
-
 		Chart = new CartesianChart()
 		{
 			HorizontalAlignment = HorizontalAlignment.Stretch,
@@ -71,7 +64,7 @@ public class TabControlLiveChart : TabControlChart<ISeries>
 			TooltipBackgroundPaint = new SolidColorPaint(AtlasTheme.ChartBackgroundSelected.Color.AsSkColor().WithAlpha(64)),
 			TooltipTextPaint = new SolidColorPaint(AtlasTheme.TitleForeground.Color.AsSkColor()),
 			//Tooltip = new LiveChartTooltip(this),
-			TooltipFindingStrategy = TooltipFindingStrategy.CompareAllTakeClosest, // Doesn't work well
+			TooltipFindingStrategy = TooltipFindingStrategy.CompareOnlyXTakeClosest, // All doesn't work well
 			//MinWidth = 150,
 			//MinHeight = 80,
 			[Grid.RowProperty] = 1,
@@ -82,7 +75,6 @@ public class TabControlLiveChart : TabControlChart<ISeries>
 		{
 			Background = Brushes.Transparent,
 			BorderBrush = Brushes.LightGray,
-			IsMouseWheelEnabled = false,
 			ClipToBounds = false,
 		};
 		ClipToBounds = true; // Slows things down too much without this, could possible change while tracker visible?
@@ -127,10 +119,14 @@ public class TabControlLiveChart : TabControlChart<ISeries>
 		//if (ListGroup.TimeWindow != null)
 		//	ListGroup.TimeWindow.OnSelectionChanged += ListGroup_OnTimesChanged;*/
 
-		foreach (ChartAnnotation chartAnnotation in ChartView.Annotations)
+		if (UseDateTimeAxis)
 		{
-			AddAnnotation(chartAnnotation);
+			AddNowTime();
 		}
+
+		Chart.Sections = ChartView.Annotations
+			.Select(a => CreateAnnotation(a))
+			.ToList();
 
 		Children.Add(containerGrid);
 	}
@@ -288,38 +284,36 @@ public class TabControlLiveChart : TabControlChart<ISeries>
 	public override void AddAnnotation(ChartAnnotation chartAnnotation)
 	{
 		base.AddAnnotation(chartAnnotation);
+	}
 
+	public RectangularSection CreateAnnotation(ChartAnnotation chartAnnotation)
+	{
+		var c = chartAnnotation.Color!.Value;
+		var color = new SKColor(c.R, c.G, c.B, c.A);
 		var section = new RectangularSection
 		{
-			Label = chartAnnotation.Text!,
+			Label = chartAnnotation.Text ?? "",
 			LabelSize = 14,
-			LabelPaint = new SolidColorPaint(SKColors.Red.WithAlpha(220))
+			LabelPaint = new SolidColorPaint(color.WithAlpha(220))
 			{
-				SKTypeface = SKTypeface.FromFamilyName("Inter", SKFontStyle.Bold)
+				SKTypeface = SKTypeface.FromFamilyName("Inter", SKFontStyle.Bold),
 			},
-			Yj = chartAnnotation.Y,
-			Yi = chartAnnotation.Y,
-			Stroke = new SolidColorPaint(SKColors.Red.WithAlpha(200)),
+			Stroke = new SolidColorPaint(color.WithAlpha(200)),
 		};
 
-		Chart.Sections = new List<RectangularSection>()
+		if (chartAnnotation.X != null)
 		{
-			section,
-		};
+			section.Xj = chartAnnotation.X;
+			section.Xi = chartAnnotation.X;
+		}
 
-		/*var annotationThreshold = new Anno
+		if (chartAnnotation.Y != null)
 		{
-			Text = chartAnnotation.Text,
-			Type = chartAnnotation.Horizontal ? LineAnnotationType.Horizontal : LineAnnotationType.Vertical,
-			X = chartAnnotation.X ?? 0,
-			Y = chartAnnotation.Y ?? 0,
-			Color = (chartAnnotation.Color ?? chartAnnotation.TextColor)!.Value.ToOxyColor(),
-			TextColor = (chartAnnotation.TextColor ?? chartAnnotation.Color)!.Value.ToOxyColor(),
-			StrokeThickness = 2,
-			LineStyle = LineStyle.Dot,
-		};
-		PlotModel!.Annotations.Add(annotationThreshold);
-		UpdateValueAxis();*/
+			section.Yj = chartAnnotation.Y;
+			section.Yi = chartAnnotation.Y;
+		}
+
+		return section;
 	}
 
 	/*private void UpdateVisible()
@@ -594,30 +588,6 @@ public class TabControlLiveChart : TabControlChart<ISeries>
 					maximum = Math.Max(maximum, y);
 				}
 			}
-
-			if (series is OxyPlot.Series.ScatterSeries scatterSeries)
-			{
-				if (scatterSeries.ItemsSource == null)
-					continue;
-
-				//if (axisKey == "right" && lineSeries.YAxisKey != "right")
-				//	continue;
-
-				PropertyInfo? propertyInfo = null;
-				foreach (var item in scatterSeries.ItemsSource)
-				{
-					if (propertyInfo == null)
-						propertyInfo = item.GetType().GetProperty(scatterSeries.DataFieldY);
-
-					var value = propertyInfo!.GetValue(item);
-					double d = Convert.ToDouble(value);
-					if (double.IsNaN(d))
-						continue;
-
-					minimum = Math.Min(minimum, d);
-					maximum = Math.Max(maximum, d);
-				}
-			}
 		}
 
 		if (minimum == double.MaxValue)
@@ -764,23 +734,6 @@ public class TabControlLiveChart : TabControlChart<ISeries>
 
 			AddSeries(series, oxyColor);
 		}
-	}
-
-	/*private void AddNowTime()
-	{
-		var now = DateTime.UtcNow;
-		if (ListGroup.TimeWindow != null && ListGroup.TimeWindow.EndTime < now.AddMinutes(1))
-			return;
-
-		var annotation = new OxyPlot.Annotations.LineAnnotation
-		{
-			Type = LineAnnotationType.Vertical,
-			X = OxyPlot.Axes.DateTimeAxis.ToDouble(now.ToUniversalTime()),
-			Color = NowColor,
-			// LineStyle = LineStyle.Dot, // doesn't work for vertical?
-		};
-
-		PlotModel!.Annotations.Add(annotation);
 	}*/
 
 	/*private void AddTrackerLine()
