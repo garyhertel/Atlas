@@ -2,9 +2,12 @@ using Atlas.Core;
 using Atlas.Extensions;
 using Atlas.Tabs;
 using Atlas.UI.Avalonia.Themes;
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Layout;
 using Avalonia.Media;
+using Avalonia.Threading;
+using AvaloniaEdit.Utils;
 using LiveChartsCore;
 using LiveChartsCore.Defaults;
 using LiveChartsCore.Drawing;
@@ -15,6 +18,7 @@ using LiveChartsCore.SkiaSharpView.Avalonia;
 using LiveChartsCore.SkiaSharpView.Painting;
 using LiveChartsCore.Themes;
 using SkiaSharp;
+using System.Diagnostics;
 using WeakEvent;
 
 namespace Atlas.UI.Avalonia.Charts.LiveCharts;
@@ -36,18 +40,11 @@ public class TabControlLiveChart : TabControlChart<ISeries>
 	public OxyPlot.Axes.DateTimeAxis? DateTimeAxis;*/
 	public List<Axis> XAxis { get; set; }
 
-	/*private OxyPlot.Annotations.LineAnnotation? _trackerAnnotation;*/
+	private RectangularSection? _trackerAnnotation;
+	private RectangularSection? _zoomSection;
 
 	private static readonly SKColor GridLineColor = SKColor.Parse("#333333");
 	//private readonly LvcColor[] colors = ColorPalletes.FluentDesign;
-
-	private static readonly WeakEventSource<MouseCursorMovedEventArgs> _mouseCursorChangedEventSource = new();
-
-	public static event EventHandler<MouseCursorMovedEventArgs> OnMouseCursorChanged
-	{
-		add { _mouseCursorChangedEventSource.Subscribe(value); }
-		remove { _mouseCursorChangedEventSource.Unsubscribe(value); }
-	}
 
 	public TabControlLiveChart(TabInstance tabInstance, ChartView chartView, bool fillHeight = false) : 
 		base(tabInstance, chartView, fillHeight)
@@ -67,6 +64,7 @@ public class TabControlLiveChart : TabControlChart<ISeries>
 			TooltipFindingStrategy = TooltipFindingStrategy.CompareOnlyXTakeClosest, // All doesn't work well
 			//MinWidth = 150,
 			//MinHeight = 80,
+			AnimationsSpeed = TimeSpan.Zero,
 			[Grid.RowProperty] = 1,
 		};
 		Chart.ChartPointPointerDown += Chart_ChartPointPointerDown;
@@ -115,7 +113,7 @@ public class TabControlLiveChart : TabControlChart<ISeries>
 		//Legend.OnSelectionChanged += Legend_OnSelectionChanged;
 		//Legend.OnVisibleChanged += Legend_OnVisibleChanged;
 
-		//OnMouseCursorChanged += TabControlChart_OnMouseCursorChanged;
+		OnMouseCursorChanged += TabControlChart_OnMouseCursorChanged;
 		//if (ListGroup.TimeWindow != null)
 		//	ListGroup.TimeWindow.OnSelectionChanged += ListGroup_OnTimesChanged;*/
 
@@ -124,11 +122,63 @@ public class TabControlLiveChart : TabControlChart<ISeries>
 			AddNowTime();
 		}
 
-		Chart.Sections = ChartView.Annotations
+		_sections = ChartView.Annotations
 			.Select(a => CreateAnnotation(a))
 			.ToList();
+		if (UseDateTimeAxis && ChartView.ShowTimeTracker)
+		{
+			_sections.Add(CreateTrackerLine());
+
+			var skColor = AtlasTheme.ChartBackgroundSelected.Color.AsSkColor();
+			_zoomSection = new RectangularSection
+			{
+				Label = "",
+				//LabelSize = 14,
+				/*LabelPaint = new SolidColorPaint(color.WithAlpha(220))
+				{
+					SKTypeface = SKTypeface.FromFamilyName("Inter", SKFontStyle.Bold),
+				},*/
+				Stroke = new SolidColorPaint(skColor.WithAlpha(180)),
+				Fill = new SolidColorPaint(skColor.WithAlpha((byte)AtlasTheme.ChartBackgroundSelectedAlpha)),
+				IsVisible = false,
+			};
+			_sections.Add(_zoomSection);
+
+			AddMouseListeners();
+		}
+
+		Chart.Sections = _sections;
 
 		Children.Add(containerGrid);
+	}
+
+	private List<RectangularSection> _sections = new();
+
+	private RectangularSection CreateTrackerLine()
+	{
+		_trackerAnnotation = new RectangularSection
+		{
+			Label = "",
+			//LabelSize = 14,
+			/*LabelPaint = new SolidColorPaint(color.WithAlpha(220))
+			{
+				SKTypeface = SKTypeface.FromFamilyName("Inter", SKFontStyle.Bold),
+			},*/
+			//Stroke = new SolidColorPaint(SKColors.LightCoral.WithAlpha(200)),
+			Stroke = new SolidColorPaint(AtlasTheme.GridBackgroundSelected.Color.AsSkColor()),
+		};
+		return _trackerAnnotation;
+	}
+
+	// Update mouse tracker
+	private void TabControlChart_OnMouseCursorChanged(object? sender, MouseCursorMovedEventArgs e)
+	{
+		if (_trackerAnnotation == null) // sender == Chart |
+			return;
+
+		_trackerAnnotation.Xi = e.X;
+		_trackerAnnotation.Xj = e.X;
+		Dispatcher.UIThread.Post(() => Chart!.InvalidateVisual(), DispatcherPriority.Background);
 	}
 
 	private void Chart_ChartPointPointerDown(IChartView chart, LiveChartsCore.Kernel.ChartPoint? point)
@@ -316,6 +366,25 @@ public class TabControlLiveChart : TabControlChart<ISeries>
 		return section;
 	}
 
+	/*private void AddAxis()
+	{
+		if (UseDateTimeAxis)
+		{
+			AddDateTimeAxis(ListGroup.TimeWindow);
+			AddNowTime();
+			if (ListGroup.ShowTimeTracker)
+				AddTrackerLine();
+
+			AddMouseListeners();
+		}
+		else
+		{
+			AddLinearAxis();
+		}
+
+		AddValueAxis();
+	}*/
+
 	/*private void UpdateVisible()
 	{
 		if (PlotView == null)
@@ -407,28 +476,6 @@ public class TabControlLiveChart : TabControlChart<ISeries>
 	{
 		IsVisible = false;
 		UnloadModel();
-	}
-
-	private void AddAxis()
-	{
-		if (UseDateTimeAxis)
-		{
-			AddDateTimeAxis(ListGroup.TimeWindow);
-			AddNowTime();
-			if (ListGroup.ShowTimeTracker)
-				AddTrackerLine();
-
-			AddMouseListeners();
-		}
-		else
-		{
-			AddLinearAxis();
-		}
-
-		if (ListGroup.Series.Count > 0 && ListGroup.Series[0].IsStacked)
-			AddCategoryAxis();
-		else
-			AddValueAxis();
 	}
 
 	public OxyPlot.Axes.DateTimeAxis AddDateTimeAxis(TimeWindow? timeWindow = null)
@@ -736,75 +783,127 @@ public class TabControlLiveChart : TabControlChart<ISeries>
 		}
 	}*/
 
-	/*private void AddTrackerLine()
-	{
-		_trackerAnnotation = new OxyPlot.Annotations.LineAnnotation
-		{
-			Type = LineAnnotationType.Vertical,
-			//Color = Theme.TitleBackground.ToOxyColor(),
-			//Color = Color.Parse("#21a094").ToOxyColor(),
-			Color = AtlasTheme.GridBackgroundSelected.ToOxyColor(),
-			//Color = timeTrackerColor,
-			// LineStyle = LineStyle.Dot, // doesn't work for vertical?
-		};
-
-		PlotModel!.Annotations.Add(_trackerAnnotation);
-	}
+	private bool _selecting;
+	private Point _startScreenPoint;
+	private LvcPointD? _startDataPoint;
+	private LvcPointD? _endDataPoint;
 
 	private void AddMouseListeners()
 	{
-		PlotModel!.MouseDown += PlotModel_MouseDown;
-		PlotModel.MouseMove += PlotModel_MouseMove;
-		PlotModel.MouseUp += PlotModel_MouseUp;
-		PlotModel.MouseLeave += PlotModel_MouseLeave;
+		PointerPressed += TabControlLiveChart_PointerPressed;
+		PointerReleased += TabControlLiveChart_PointerReleased;
+
+		//Chart!.PointerMoved += TabControlLiveChart_PointerMoved;
+		PointerMoved += TabControlLiveChart_PointerMoved;
+
+		//PlotModel.MouseMove += PlotModel_MouseMove;
+		//PlotModel.MouseUp += PlotModel_MouseUp;
+		//PlotModel.MouseLeave += PlotModel_MouseLeave;
 	}
 
-	/*private bool _selecting;
-	private ScreenPoint _startScreenPoint;
-	private DataPoint? _startDataPoint;
-	private DataPoint? _endDataPoint;
-	private OxyPlot.Annotations.RectangleAnnotation? _rectangleAnnotation;
-
-	private void UpdateMouseSelection(DataPoint endDataPoint)
+	private void TabControlLiveChart_PointerMoved(object? sender, global::Avalonia.Input.PointerEventArgs e)
 	{
-		if (_rectangleAnnotation == null)
-		{
-			_rectangleAnnotation = new OxyPlot.Annotations.RectangleAnnotation()
-			{
-				Fill = Color.FromAColor((byte)AtlasTheme.ChartBackgroundSelectedAlpha, AtlasTheme.ChartBackgroundSelected.ToOxyColor()),
-				Stroke = Color.FromAColor((byte)180, AtlasTheme.ChartBackgroundSelected.ToOxyColor()),
-				StrokeThickness = 1,
-			};
-		}
+		//XAxis.
+		e.Pointer.Capture(this);
 
-		try
-		{
-			if (!PlotModel!.Annotations.Contains(_rectangleAnnotation))
-				PlotModel.Annotations.Add(_rectangleAnnotation);
-		}
-		catch (Exception)
-		{
-		}
+		// store the mouse down point, check it when mouse button is released to determine if the context menu should be shown
+		var point = e.GetPosition(this);
+		LvcPointD dataPoint = Chart!.ScalePixelsToData(new LvcPointD(point.X, point.Y));
 
-		_rectangleAnnotation.MinimumX = Math.Min(_startDataPoint!.Value.X, endDataPoint.X);
-		_rectangleAnnotation.MaximumX = Math.Max(_startDataPoint.Value.X, endDataPoint.X);
+		var moveEvent = new MouseCursorMovedEventArgs(dataPoint.X);
+		_mouseCursorChangedEventSource?.Raise(sender, moveEvent);
 
-		_rectangleAnnotation.MinimumY = ValueAxis!.Minimum;
-		_rectangleAnnotation.MaximumY = ValueAxis.Maximum;
+		Debug.WriteLine("pointer moved" + sender.GetType());
 
-		Dispatcher.UIThread.Post(() => PlotModel!.InvalidatePlot(false), DispatcherPriority.Background);
+		UpdateMouseSelection(dataPoint);
 	}
 
-	private void PlotModel_MouseDown(object? sender, OxyMouseDownEventArgs e)
+	private void TabControlLiveChart_PointerPressed(object? sender, global::Avalonia.Input.PointerPressedEventArgs e)
 	{
 		if (!_selecting || _startDataPoint == null)
 		{
-			_startDataPoint = OxyPlot.Axes.DateTimeAxis.InverseTransform(e.Position, DateTimeAxis, ValueAxis);
-			_startScreenPoint = e.Position;
+			var point = e.GetPosition(this);
+			_startScreenPoint = point;
+			_startDataPoint = Chart!.ScalePixelsToData(new LvcPointD(point.X, point.Y));
+
+			//_startDataPoint = OxyPlot.Axes.DateTimeAxis.InverseTransform(e.Position, DateTimeAxis, ValueAxis);
+			//_startScreenPoint = dataPoint;
+			_zoomSection!.IsVisible = true;
 			_selecting = true;
 			e.Handled = true;
 		}
 	}
+
+	private void TabControlLiveChart_PointerReleased(object? sender, global::Avalonia.Input.PointerReleasedEventArgs e)
+	{
+		if (_selecting && _startDataPoint != null)
+		{
+			var point = e.GetPosition(this);
+			_endDataPoint = Chart!.ScalePixelsToData(new LvcPointD(point.X, point.Y));
+			double width = Math.Abs(point.X - _startScreenPoint.X);
+			/*if (width > MinSelectionWidth)
+			{
+				ZoomIn();
+			}
+			else if (ListGroup.TimeWindow?.Selection != null)
+			{
+				ZoomOut();
+			}
+			else
+			{
+				// Deselect All
+				Legend.SetAllVisible(true, true);
+			}*/
+			StopSelecting();
+		}
+	}
+
+	private void UpdateMouseSelection(LvcPointD endDataPoint)
+	{
+		/*if (_zoomSection == null)
+		{
+			_zoomSection = new RectangularSection
+			{
+				Label = "",
+				//LabelSize = 14,
+				Stroke = new SolidColorPaint(SKColors.LightCoral),
+				Fill = new SolidColorPaint(SKColors.LightCoral.WithAlpha(200)),
+			};
+		}*/
+
+		/*try
+		{
+			if (!_sections.Contains(_zoomSection))
+				_sections.Add(_zoomSection);
+		}
+		catch (Exception)
+		{
+		}*/
+		if (_zoomSection == null || _startDataPoint == null) return;
+
+		_zoomSection.Xi = Math.Min(_startDataPoint!.Value.X, endDataPoint.X);
+		_zoomSection.Xj = Math.Max(_startDataPoint.Value.X, endDataPoint.X);
+
+		Debug.WriteLine($"Start: {_zoomSection.Xi}, End: {_zoomSection.Xj}");
+
+		Dispatcher.UIThread.Post(() => Chart!.InvalidateVisual(), DispatcherPriority.Background);
+
+		//_zoomSection.Yi = ValueAxis!.Minimum;
+		//_zoomSection.Xj = ValueAxis.Maximum;
+
+		//Dispatcher.UIThread.Post(() => PlotModel!.InvalidatePlot(false), DispatcherPriority.Background);*/
+	}
+
+	private void StopSelecting()
+	{
+		_zoomSection!.IsVisible = false;
+		//if (_zoomSection != null)
+		//	PlotModel!.Annotations.Remove(_zoomSection);
+		_selecting = false;
+	}
+
+
+	/*
 
 	private void PlotModel_MouseMove(object? sender, OxyMouseEventArgs e)
 	{
@@ -818,6 +917,19 @@ public class TabControlLiveChart : TabControlChart<ISeries>
 			UpdateMouseSelection(_endDataPoint.Value);
 		}
 	}
+	
+	private void PlotModel_MouseDown(object? sender, OxyMouseDownEventArgs e)
+	{
+		if (!_selecting || _startDataPoint == null)
+		{
+			_startDataPoint = OxyPlot.Axes.DateTimeAxis.InverseTransform(e.Position, DateTimeAxis, ValueAxis);
+			_startScreenPoint = e.Position;
+			_selecting = true;
+			e.Handled = true;
+		}
+	}*/
+
+	/*
 
 	private void PlotModel_MouseUp(object? sender, OxyMouseEventArgs e)
 	{
@@ -894,28 +1006,11 @@ public class TabControlLiveChart : TabControlChart<ISeries>
 		PlotView.Model.InvalidatePlot(true);
 	}
 
-	private void StopSelecting()
-	{
-		if (_rectangleAnnotation != null)
-			PlotModel!.Annotations.Remove(_rectangleAnnotation);
-		_selecting = false;
-	}
-
 	// Hide cursor when out of scope
 	private void PlotModel_MouseLeave(object? sender, OxyMouseEventArgs e)
 	{
 		var moveEvent = new MouseCursorMovedEventArgs(0);
 		_mouseCursorChangedEventSource?.Raise(sender, moveEvent);
-	}*/
-
-	// Update mouse tracker
-	/*private void TabControlChart_OnMouseCursorChanged(object? sender, MouseCursorMovedEventArgs e)
-	{
-		if (sender == PlotView?.Controller || _trackerAnnotation == null)
-			return;
-
-		_trackerAnnotation.X = e.X;
-		Dispatcher.UIThread.Post(() => PlotModel!.InvalidatePlot(false), DispatcherPriority.Background);
 	}*/
 
 	/*private void INotifyCollectionChanged_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)

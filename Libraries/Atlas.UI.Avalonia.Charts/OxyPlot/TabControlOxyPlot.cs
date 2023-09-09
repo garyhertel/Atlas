@@ -37,14 +37,6 @@ public class TabControlOxyPlot : TabControlChart<OxyPlotLineSeries>
 
 	private static readonly OxyColor GridLineColor = OxyColor.Parse("#333333");
 
-	private static readonly WeakEventSource<MouseCursorMovedEventArgs> _mouseCursorChangedEventSource = new();
-
-	public static event EventHandler<MouseCursorMovedEventArgs> OnMouseCursorChanged
-	{
-		add { _mouseCursorChangedEventSource.Subscribe(value); }
-		remove { _mouseCursorChangedEventSource.Unsubscribe(value); }
-	}
-
 	public TabControlOxyPlot(TabInstance tabInstance, ChartView chartView, bool fillHeight = false) :
 		base(tabInstance, chartView, fillHeight)
 	{

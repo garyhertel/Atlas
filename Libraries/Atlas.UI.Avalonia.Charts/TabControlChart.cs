@@ -11,6 +11,7 @@ using Avalonia.Layout;
 using Avalonia.Media;
 using System.Collections;
 using System.Reflection;
+using WeakEvent;
 
 namespace Atlas.UI.Avalonia.Charts;
 
@@ -147,6 +148,14 @@ public class TabControlChart<TSeries> : Grid, ITabControlChart //, IDisposable
 	public bool IsTitleSelectable { get; set; }
 
 	public List<ChartAnnotation> Annotations { get; set; } = new();
+
+	protected static readonly WeakEventSource<MouseCursorMovedEventArgs> _mouseCursorChangedEventSource = new();
+
+	public static event EventHandler<MouseCursorMovedEventArgs> OnMouseCursorChanged
+	{
+		add { _mouseCursorChangedEventSource.Subscribe(value); }
+		remove { _mouseCursorChangedEventSource.Unsubscribe(value); }
+	}
 
 	public event EventHandler<SeriesSelectedEventArgs>? SelectionChanged;
 
