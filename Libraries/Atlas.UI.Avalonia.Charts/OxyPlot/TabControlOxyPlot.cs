@@ -12,7 +12,6 @@ using OxyPlot.Annotations;
 using OxyPlot.Avalonia;
 using OxyPlot.Axes;
 using System.Reflection;
-using WeakEvent;
 
 namespace Atlas.UI.Avalonia.Charts;
 
