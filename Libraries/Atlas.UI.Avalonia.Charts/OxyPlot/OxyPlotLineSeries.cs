@@ -149,7 +149,6 @@ public class OxyPlotLineSeries : OxyPlot.Series.LineSeries
 			// faster than using ItemSource?
 			foreach (object obj in iList)
 			{
-				object? value = listSeries.YPropertyInfo.GetValue(obj);
 				if (XAxisPropertyInfo != null)
 				{
 					object? xObj = XAxisPropertyInfo.GetValue(obj);
@@ -166,6 +165,8 @@ public class OxyPlotLineSeries : OxyPlot.Series.LineSeries
 						x = Convert.ToDouble(xObj);
 					}
 				}
+
+				object? value = listSeries.YPropertyInfo.GetValue(obj);
 				double d = double.NaN;
 				if (value != null)
 					d = Convert.ToDouble(value);

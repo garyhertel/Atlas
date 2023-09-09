@@ -30,12 +30,11 @@ public class TabControlLiveChart : TabControlChart<ISeries>
 
 	public TabControlChartLegend<ISeries> Legend;
 
-	/*public OxyPlot.Series.Series? HoverSeries;
+	public ChartSeries<ISeries>? HoverSeries;
 
-	public OxyPlot.Axes.Axis? ValueAxis; // left/right?
-
-	public OxyPlot.Axes.LinearAxis? LinearAxis;
+	/*public OxyPlot.Axes.LinearAxis? LinearAxis;
 	public OxyPlot.Axes.DateTimeAxis? DateTimeAxis;*/
+	public Axis ValueAxis { get; set; } // left/right?
 	public Axis XAxis { get; set; }
 
 	private RectangularSection? _trackerAnnotation;
@@ -44,10 +43,13 @@ public class TabControlLiveChart : TabControlChart<ISeries>
 	private static readonly SKColor GridLineColor = SKColor.Parse("#333333");
 	//private readonly LvcColor[] colors = ColorPalletes.FluentDesign;
 
+	public List<LiveChartSeries> LiveChartSeries { get; private set; } = new();
+
 	public TabControlLiveChart(TabInstance tabInstance, ChartView chartView, bool fillHeight = false) : 
 		base(tabInstance, chartView, fillHeight)
 	{
 		XAxis = GetXAxis();
+		ValueAxis = GetValueAxis();
 		Chart = new CartesianChart()
 		{
 			HorizontalAlignment = HorizontalAlignment.Stretch,
@@ -55,12 +57,13 @@ public class TabControlLiveChart : TabControlChart<ISeries>
 
 			//Series = ListGroup.Series.Select(s => AddListSeries(s)).ToList(),
 			XAxes = new List<Axis> { XAxis },
-			YAxes = GetValueAxis(),
+			YAxes = new List<Axis> { ValueAxis },
 			LegendPosition = LegendPosition.Hidden,
 			TooltipBackgroundPaint = new SolidColorPaint(AtlasTheme.ChartBackgroundSelected.Color.AsSkColor().WithAlpha(64)),
 			TooltipTextPaint = new SolidColorPaint(AtlasTheme.TitleForeground.Color.AsSkColor()),
 			//Tooltip = new LiveChartTooltip(this),
-			TooltipFindingStrategy = TooltipFindingStrategy.CompareOnlyXTakeClosest, // All doesn't work well
+			//TooltipFindingStrategy = TooltipFindingStrategy.CompareOnlyXTakeClosest, // All doesn't work well
+			TooltipFindingStrategy = TooltipFindingStrategy.CompareAllTakeClosest,
 			//MinWidth = 150,
 			//MinHeight = 80,
 			AnimationsSpeed = TimeSpan.Zero,
@@ -210,24 +213,22 @@ public class TabControlLiveChart : TabControlChart<ISeries>
 		};
 	}
 
-	public List<Axis> GetValueAxis()//AxisPosition axisPosition = AxisPosition.Left, string? key = null)
+	public Axis GetValueAxis()//AxisPosition axisPosition = AxisPosition.Left, string? key = null)
 	{
-		return new List<Axis>
+		return new Axis
 		{
-			new Axis
+			//Name = "Amount",
+			//NamePadding = new Padding(0, 15),
+			Labeler = DateTimeFormat.ValueFormatter,
+			LabelsPaint = new SolidColorPaint(SKColors.LightGray),
+			SeparatorsPaint = new SolidColorPaint(GridLineColor),
+			//UnitWidth = 1000000000,
+			/*LabelsPaint = new SolidColorPaint
 			{
-				//Name = "Amount",
-				//NamePadding = new Padding(0, 15),
-				Labeler = DateTimeFormat.ValueFormatter,
-				LabelsPaint = new SolidColorPaint(SKColors.LightGray),
-				SeparatorsPaint = new SolidColorPaint(GridLineColor),
-				/*LabelsPaint = new SolidColorPaint
-				{
-					Color = SKColors.Blue,
-					FontFamily = "Times New Roman",
-					SKFontStyle = new SKFontStyle(SKFontStyleWeight.ExtraBold, SKFontStyleWidth.Normal, SKFontStyleSlant.Italic)
-				},*/
-			}
+				Color = SKColors.Blue,
+				FontFamily = "Times New Roman",
+				SKFontStyle = new SKFontStyle(SKFontStyleWeight.ExtraBold, SKFontStyleWidth.Normal, SKFontStyleSlant.Italic)
+			},*/
 		};
 
 		/*if (ListGroup.Logarithmic)
@@ -266,6 +267,80 @@ public class TabControlLiveChart : TabControlChart<ISeries>
 		PlotModel!.Axes.Add(ValueAxis);
 		return ValueAxis;*/
 	}
+	public void UpdateValueAxis() // OxyPlot.Axes.LinearAxis valueAxis, string axisKey = null
+	{
+		//if (ValueAxis == null)
+			return;
+
+		double minimum = double.MaxValue;
+		double maximum = double.MinValue;
+		bool hasFraction = false;
+
+		foreach (LiveChartSeries series in LiveChartSeries)
+		{
+			//if (lineSeries.LineStyle == LineStyle.None)
+			//	continue;
+
+			foreach (var dataPoint in series.LineSeries.Values)
+			{
+				double? y = dataPoint.Y;
+				if (y == null || double.IsNaN(y.Value))
+					continue;
+
+				if (XAxis != null && (dataPoint.X < XAxis.MinLimit || dataPoint.X > XAxis.MaxLimit))
+					continue;
+
+				hasFraction |= (y % 1 != 0.0);
+
+				minimum = Math.Min(minimum, y.Value);
+				maximum = Math.Max(maximum, y.Value);
+			}
+		}
+
+		if (minimum == double.MaxValue)
+		{
+			// didn't find any values
+			minimum = 0;
+			maximum = 1;
+		}
+		else
+		{
+			ValueAxis.UnitWidth = (maximum - minimum) * 0.10;
+		}
+
+		/*foreach (OxyPlot.Annotations.Annotation annotation in PlotModel.Annotations)
+		{
+			if (annotation is OxyPlot.Annotations.LineAnnotation lineAnnotation)
+				maximum = Math.Max(lineAnnotation.Y * 1.1, maximum);
+		}
+
+		ValueAxis.MinimumMajorStep = hasFraction ? 0 : 1;
+
+		double? minValue = ListGroup.MinValue;
+		if (minValue != null)
+			minimum = minValue.Value;
+
+		if (ListGroup.Logarithmic)
+		{
+			ValueAxis.Minimum = minimum * 0.85;
+			ValueAxis.Maximum = maximum * 1.15;
+		}
+		else
+		{
+			var margin = (maximum - minimum) * MarginPercent;
+			if (minimum == maximum)
+				margin = Math.Abs(minimum);
+
+			if (margin == 0)
+				margin = 1;
+
+			if (minValue != null)
+				ValueAxis.Minimum = Math.Max(minimum - margin, minValue.Value - Math.Abs(margin) * 0.05);
+			else
+				ValueAxis.Minimum = minimum - margin;
+			ValueAxis.Maximum = maximum + margin;
+		}*/
+	}
 
 	public void LoadListGroup(ChartView chartView)
 	{
@@ -300,8 +375,8 @@ public class TabControlLiveChart : TabControlChart<ISeries>
 			.Select(s => AddListSeries(s)!)
 			.ToList();
 
-		/*AddAxis();
 		UpdateValueAxis();
+		/*AddAxis();
 		UpdateLinearAxis();*/
 		//if (ListGroup.TimeWindow == null)
 		{
@@ -318,15 +393,37 @@ public class TabControlLiveChart : TabControlChart<ISeries>
 
 		Color color = defaultColor ?? GetColor(ChartSeries.Count);
 
-		var lineSeries = new LiveChartSeries(this, listSeries, color, UseDateTimeAxis);
-		_xAxisPropertyInfo = lineSeries.XAxisPropertyInfo;
+		var liveChartSeries = new LiveChartSeries(this, listSeries, color, UseDateTimeAxis);
+		_xAxisPropertyInfo = liveChartSeries.XAxisPropertyInfo;
+		//lineSeries.LineSeries.ChartPointPointerHover += LineSeries_ChartPointPointerHover;
+		liveChartSeries.Hover += LineSeries_Hover;
+		liveChartSeries.HoverLost += LineSeries_HoverLost;
 
-		var chartSeries = new ChartSeries<ISeries>(listSeries, lineSeries.LineSeries, color);
+		var chartSeries = new ChartSeries<ISeries>(listSeries, liveChartSeries.LineSeries, color);
+		LiveChartSeries.Add(liveChartSeries);
 		ChartSeries.Add(chartSeries);
 		ListToTabSeries[listSeries.List] = listSeries;
 		if (listSeries.Name != null)
 			IdxNameToSeries[listSeries.Name] = chartSeries;
-		return lineSeries.LineSeries;
+		return liveChartSeries.LineSeries;
+	}
+
+	private void LineSeries_Hover(object? sender, SeriesHoverEventArgs e)
+	{
+		string name = e.Series.Name!;
+		Legend.HighlightSeries(name);
+		if (IdxNameToSeries.TryGetValue(name, out ChartSeries<ISeries>? series))
+		{
+			HoverSeries = series;
+		}
+	}
+
+	private void LineSeries_HoverLost(object? sender, SeriesHoverEventArgs e)
+	{
+		if (HoverSeries?.ListSeries == e.Series)
+		{
+			Legend.UnhighlightAll(true);
+		}
 	}
 
 	public override void AddAnnotation(ChartAnnotation chartAnnotation)
@@ -811,80 +908,6 @@ public class TabControlLiveChart : TabControlChart<ISeries>
 
 		LinearAxis.Minimum = minimum;
 		LinearAxis.Maximum = maximum;
-	}
-
-	public void UpdateValueAxis() // OxyPlot.Axes.LinearAxis valueAxis, string axisKey = null
-	{
-		if (ValueAxis == null)
-			return;
-
-		double minimum = double.MaxValue;
-		double maximum = double.MinValue;
-		bool hasFraction = false;
-
-		foreach (OxyPlot.Series.Series series in PlotModel!.Series)
-		{
-			if (series is OxyPlot.Series.LineSeries lineSeries)
-			{
-				if (lineSeries.LineStyle == LineStyle.None)
-					continue;
-
-				foreach (var dataPoint in lineSeries.Points)
-				{
-					double y = dataPoint.Y;
-					if (double.IsNaN(y))
-						continue;
-
-					if (DateTimeAxis != null && (dataPoint.X < DateTimeAxis.Minimum || dataPoint.X > DateTimeAxis.Maximum))
-						continue;
-
-					hasFraction |= (y % 1 != 0.0);
-
-					minimum = Math.Min(minimum, y);
-					maximum = Math.Max(maximum, y);
-				}
-			}
-		}
-
-		if (minimum == double.MaxValue)
-		{
-			// didn't find any values
-			minimum = 0;
-			maximum = 1;
-		}
-
-		foreach (OxyPlot.Annotations.Annotation annotation in PlotModel.Annotations)
-		{
-			if (annotation is OxyPlot.Annotations.LineAnnotation lineAnnotation)
-				maximum = Math.Max(lineAnnotation.Y * 1.1, maximum);
-		}
-
-		ValueAxis.MinimumMajorStep = hasFraction ? 0 : 1;
-
-		double? minValue = ListGroup.MinValue;
-		if (minValue != null)
-			minimum = minValue.Value;
-
-		if (ListGroup.Logarithmic)
-		{
-			ValueAxis.Minimum = minimum * 0.85;
-			ValueAxis.Maximum = maximum * 1.15;
-		}
-		else
-		{
-			var margin = (maximum - minimum) * MarginPercent;
-			if (minimum == maximum)
-				margin = Math.Abs(minimum);
-
-			if (margin == 0)
-				margin = 1;
-
-			if (minValue != null)
-				ValueAxis.Minimum = Math.Max(minimum - margin, minValue.Value - Math.Abs(margin) * 0.05);
-			else
-				ValueAxis.Minimum = minimum - margin;
-			ValueAxis.Maximum = maximum + margin;
-		}
 	}
 
 	private void ClearListeners()

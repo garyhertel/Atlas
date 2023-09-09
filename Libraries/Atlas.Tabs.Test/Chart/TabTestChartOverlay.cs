@@ -26,16 +26,16 @@ public class TabTestChartOverlay : ITab
 			public DateTime TimeStamp { get; set; }
 
 			[Unit("B")]
-			public int SeriesAlpha { get; set; }
+			public int? SeriesAlpha { get; set; }
 
 			[Unit("A")]
-			public int SeriesBeta { get; set; }
+			public int? SeriesBeta { get; set; }
 
 			[Unit("A")]
-			public int SeriesGamma { get; set; }
+			public int? SeriesGamma { get; set; }
 
 			[Unit("B")]
-			public int SeriesEpsilon { get; set; }  // High Value, small delta
+			public int? SeriesEpsilon { get; set; }  // High Value, small delta
 
 			public TestItem TestItem { get; set; } = new();
 
@@ -54,7 +54,14 @@ public class TabTestChartOverlay : ITab
 
 			for (int i = 0; i < 10; i++)
 			{
-				AddSample(i);
+				if (i == 4 || i == 6)
+				{
+					AddNullSample(i);
+				}
+				else
+				{
+					AddSample(i);
+				}
 			}
 			var chartSettings = new ChartSettings(_samples);
 			model.AddObject(chartSettings, true);
@@ -87,6 +94,20 @@ public class TabTestChartOverlay : ITab
 				SeriesBeta = _random.Next(50, 100),
 				SeriesGamma = _random.Next(50, 100),
 				SeriesEpsilon = _random.Next(50, 100),
+				TestItem = new TestItem()
+				{
+					Amount = _random.Next(0, 100),
+				},
+			};
+			_samples.Add(sample);
+		}
+
+		private void AddNullSample(int i)
+		{
+			ChartSample sample = new()
+			{
+				Name = "Name " + i.ToString(),
+				TimeStamp = _baseDateTime.AddMinutes(i),
 				TestItem = new TestItem()
 				{
 					Amount = _random.Next(0, 100),

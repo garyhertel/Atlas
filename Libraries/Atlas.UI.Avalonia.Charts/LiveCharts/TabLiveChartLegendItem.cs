@@ -20,9 +20,13 @@ public class TabLiveChartLegendItem : TabChartLegendItem<ISeries>
 			var skColor = color.AsSkColor();
 
 			lineSeries.Stroke = new SolidColorPaint(skColor) { StrokeThickness = 2 };
-			if (lineSeries.GeometryStroke != null)
+			/*if (lineSeries.GeometryStroke != null)
 			{
-				lineSeries.GeometryStroke = new SolidColorPaint(skColor) { StrokeThickness = 5 };
+				lineSeries.GeometryStroke = new SolidColorPaint(skColor) { StrokeThickness = 2 };
+			}*/
+			if (lineSeries.GeometryFill != null)
+			{
+				lineSeries.GeometryFill = new SolidColorPaint(skColor);
 			}
 		}
 	}

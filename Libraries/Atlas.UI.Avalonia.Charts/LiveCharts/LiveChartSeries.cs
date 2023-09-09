@@ -12,8 +12,21 @@ using System.Collections.Specialized;
 using System.Reflection;
 using Avalonia.Media;
 using Avalonia;
+using LiveChartsCore.SkiaSharpView.Drawing.Geometries;
+using System.Diagnostics;
 
 namespace Atlas.UI.Avalonia.Charts;
+
+
+public class SeriesHoverEventArgs : EventArgs
+{
+	public ListSeries Series { get; set; }
+
+	public SeriesHoverEventArgs(ListSeries series)
+	{
+		Series = series;
+	}
+}
 
 public class LiveChartSeries //: ChartSeries<ISeries>
 {
@@ -23,12 +36,15 @@ public class LiveChartSeries //: ChartSeries<ISeries>
 	public readonly TabControlLiveChart Chart;
 	public readonly ListSeries ListSeries;
 	public readonly bool UseDateTimeAxis;
-	public ISeries LineSeries;
+	public LineSeries<ObservablePoint> LineSeries;
 
 	public PropertyInfo? XAxisPropertyInfo;
 
 	// ObservablePoint is sealed
 	private readonly Dictionary<ObservablePoint, object> _datapointLookup = new();
+
+	public event EventHandler<SeriesHoverEventArgs>? Hover;
+	public event EventHandler<SeriesHoverEventArgs>? HoverLost;
 
 	public override string? ToString() => ListSeries?.ToString();
 
@@ -49,16 +65,21 @@ public class LiveChartSeries //: ChartSeries<ISeries>
 			Values = dataPoints,
 			Fill = null,
 			LineSmoothness = 0, // 1 = Curved
-			GeometrySize = 1,
+			GeometrySize = 7,
 			EnableNullSplitting = true,
 
 			Stroke = new SolidColorPaint(skColor) { StrokeThickness = 2 },
 			GeometryStroke = null,
+			GeometryFill = null,
 		};
+
+		lineSeries.ChartPointPointerHover += LineSeries_ChartPointPointerHover;
+		lineSeries.ChartPointPointerHoverLost += LineSeries_ChartPointPointerHoverLost;
 
 		if (listSeries.List.Count > 0 && listSeries.List.Count <= MaxPointsToShowMarkers || HasSinglePoint(dataPoints))
 		{
-			lineSeries.GeometryStroke = new SolidColorPaint(skColor) { StrokeThickness = 5 };
+			//lineSeries.GeometryStroke = new SolidColorPaint(skColor) { StrokeThickness = 2f };
+			lineSeries.GeometryFill = new SolidColorPaint(skColor);
 		}
 
 		LineSeries = lineSeries;
@@ -85,6 +106,18 @@ public class LiveChartSeries //: ChartSeries<ISeries>
 				SeriesChanged(listSeries, e);
 			});
 		}*/
+	}
+
+	private void LineSeries_ChartPointPointerHover(LiveChartsCore.Kernel.Sketches.IChartView chart, LiveChartsCore.Kernel.ChartPoint<ObservablePoint, CircleGeometry, LabelGeometry>? point)
+	{
+		Debug.WriteLine($"Hover {ToString()}");
+		Hover?.Invoke(this, new SeriesHoverEventArgs(ListSeries));
+	}
+
+	private void LineSeries_ChartPointPointerHoverLost(LiveChartsCore.Kernel.Sketches.IChartView chart, LiveChartsCore.Kernel.ChartPoint<ObservablePoint, CircleGeometry, LabelGeometry>? point)
+	{
+		Debug.WriteLine($"HoverLost {ToString()}");
+		HoverLost?.Invoke(this, new SeriesHoverEventArgs(ListSeries));
 	}
 
 	private bool HasSinglePoint(List<ObservablePoint> dataPoints)
@@ -167,7 +200,6 @@ public class LiveChartSeries //: ChartSeries<ISeries>
 			// faster than using ItemSource?
 			foreach (object obj in iList)
 			{
-				object? value = listSeries.YPropertyInfo.GetValue(obj);
 				if (XAxisPropertyInfo != null)
 				{
 					object? xObj = XAxisPropertyInfo.GetValue(obj);
@@ -184,12 +216,14 @@ public class LiveChartSeries //: ChartSeries<ISeries>
 						x = Convert.ToDouble(xObj);
 					}
 				}
-				double d = double.NaN;
+
+				object? value = listSeries.YPropertyInfo.GetValue(obj);
+				double? d = null;
 				if (value != null)
 					d = Convert.ToDouble(value);
 
 				var dataPoint = new ObservablePoint(x++, d);
-				if (datapointLookup != null && !double.IsNaN(d) && !datapointLookup.ContainsKey(dataPoint))
+				if (datapointLookup != null && !datapointLookup.ContainsKey(dataPoint)) // && !double.IsNaN(d)
 					datapointLookup.Add(dataPoint, obj);
 				dataPoints.Add(dataPoint);
 			}

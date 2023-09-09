@@ -854,13 +854,13 @@ public class TabControlOxyPlot : TabControlChart<OxyPlotLineSeries>
 	private ScreenPoint _startScreenPoint;
 	private DataPoint? _startDataPoint;
 	private DataPoint? _endDataPoint;
-	private OxyPlot.Annotations.RectangleAnnotation? _rectangleAnnotation;
+	private OxyPlot.Annotations.RectangleAnnotation? _zoomAnnotation;
 
 	private void UpdateMouseSelection(DataPoint endDataPoint)
 	{
-		if (_rectangleAnnotation == null)
+		if (_zoomAnnotation == null)
 		{
-			_rectangleAnnotation = new OxyPlot.Annotations.RectangleAnnotation()
+			_zoomAnnotation = new OxyPlot.Annotations.RectangleAnnotation()
 			{
 				Fill = OxyColor.FromAColor((byte)AtlasTheme.ChartBackgroundSelectedAlpha, AtlasTheme.ChartBackgroundSelected.ToOxyColor()),
 				Stroke = OxyColor.FromAColor((byte)180, AtlasTheme.ChartBackgroundSelected.ToOxyColor()),
@@ -870,18 +870,18 @@ public class TabControlOxyPlot : TabControlChart<OxyPlotLineSeries>
 
 		try
 		{
-			if (!PlotModel!.Annotations.Contains(_rectangleAnnotation))
-				PlotModel.Annotations.Add(_rectangleAnnotation);
+			if (!PlotModel!.Annotations.Contains(_zoomAnnotation))
+				PlotModel.Annotations.Add(_zoomAnnotation);
 		}
 		catch (Exception)
 		{
 		}
 
-		_rectangleAnnotation.MinimumX = Math.Min(_startDataPoint!.Value.X, endDataPoint.X);
-		_rectangleAnnotation.MaximumX = Math.Max(_startDataPoint.Value.X, endDataPoint.X);
+		_zoomAnnotation.MinimumX = Math.Min(_startDataPoint!.Value.X, endDataPoint.X);
+		_zoomAnnotation.MaximumX = Math.Max(_startDataPoint.Value.X, endDataPoint.X);
 
-		_rectangleAnnotation.MinimumY = ValueAxis!.Minimum;
-		_rectangleAnnotation.MaximumY = ValueAxis.Maximum;
+		_zoomAnnotation.MinimumY = ValueAxis!.Minimum;
+		_zoomAnnotation.MaximumY = ValueAxis.Maximum;
 
 		Dispatcher.UIThread.Post(() => PlotModel!.InvalidatePlot(false), DispatcherPriority.Background);
 	}
@@ -987,8 +987,8 @@ public class TabControlOxyPlot : TabControlChart<OxyPlotLineSeries>
 
 	private void StopSelecting()
 	{
-		if (_rectangleAnnotation != null)
-			PlotModel!.Annotations.Remove(_rectangleAnnotation);
+		if (_zoomAnnotation != null)
+			PlotModel!.Annotations.Remove(_zoomAnnotation);
 		_selecting = false;
 	}
 
