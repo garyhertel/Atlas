@@ -220,7 +220,12 @@ public class LiveChartSeries //: ChartSeries<ISeries>
 				object? value = listSeries.YPropertyInfo.GetValue(obj);
 				double? d = null;
 				if (value != null)
+				{
 					d = Convert.ToDouble(value);
+					if (double.IsNaN(d.Value))
+						d = null;
+				}
+				
 
 				var dataPoint = new ObservablePoint(x++, d);
 				if (datapointLookup != null && !datapointLookup.ContainsKey(dataPoint)) // && !double.IsNaN(d)

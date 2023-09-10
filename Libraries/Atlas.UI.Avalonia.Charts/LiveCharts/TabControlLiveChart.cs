@@ -34,10 +34,10 @@ public class TabControlLiveChart : TabControlChart<ISeries>
 
 	/*public OxyPlot.Axes.LinearAxis? LinearAxis;
 	public OxyPlot.Axes.DateTimeAxis? DateTimeAxis;*/
-	public Axis ValueAxis { get; set; } // left/right?
 	public Axis XAxis { get; set; }
+	public Axis ValueAxis { get; set; } // left/right?
 
-	private RectangularSection? _trackerAnnotation;
+	private RectangularSection? _trackerSection;
 	private RectangularSection? _zoomSection;
 
 	private static readonly SKColor GridLineColor = SKColor.Parse("#333333");
@@ -117,13 +117,21 @@ public class TabControlLiveChart : TabControlChart<ISeries>
 
 		OnMouseCursorChanged += TabControlChart_OnMouseCursorChanged;
 		if (ChartView.TimeWindow != null)
+		{
 			ChartView.TimeWindow.OnSelectionChanged += TimeWindow_OnSelectionChanged;
+		}
 
 		if (UseDateTimeAxis)
 		{
 			AddNowTime();
 		}
+		AddSections();
 
+		Children.Add(containerGrid);
+	}
+
+	private void AddSections()
+	{
 		_sections = ChartView.Annotations
 			.Select(a => CreateAnnotation(a))
 			.ToList();
@@ -150,8 +158,6 @@ public class TabControlLiveChart : TabControlChart<ISeries>
 		}
 
 		Chart.Sections = _sections;
-
-		Children.Add(containerGrid);
 	}
 
 	private void TimeWindow_OnSelectionChanged(object? sender, TimeWindowEventArgs e)
@@ -163,7 +169,7 @@ public class TabControlLiveChart : TabControlChart<ISeries>
 
 	private RectangularSection CreateTrackerLine()
 	{
-		_trackerAnnotation = new RectangularSection
+		_trackerSection = new RectangularSection
 		{
 			Label = "",
 			//LabelSize = 14,
@@ -172,18 +178,21 @@ public class TabControlLiveChart : TabControlChart<ISeries>
 				SKTypeface = SKTypeface.FromFamilyName("Inter", SKFontStyle.Bold),
 			},*/
 			Stroke = new SolidColorPaint(AtlasTheme.GridBackgroundSelected.Color.AsSkColor()),
+			IsVisible = false,
 		};
-		return _trackerAnnotation;
+		return _trackerSection;
 	}
 
 	// Update mouse tracker
 	private void TabControlChart_OnMouseCursorChanged(object? sender, MouseCursorMovedEventArgs e)
 	{
-		if (_trackerAnnotation == null) // sender == Chart |
+		if (_trackerSection == null) // sender == Chart |
 			return;
 
-		_trackerAnnotation.Xi = e.X;
-		_trackerAnnotation.Xj = e.X;
+		_trackerSection.Xi = e.X;
+		_trackerSection.Xj = e.X;
+		_trackerSection.IsVisible = true;
+
 		Dispatcher.UIThread.Post(() => Chart!.InvalidateVisual(), DispatcherPriority.Background);
 	}
 
