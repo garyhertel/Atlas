@@ -110,13 +110,13 @@ public class LiveChartSeries //: ChartSeries<ISeries>
 
 	private void LineSeries_ChartPointPointerHover(LiveChartsCore.Kernel.Sketches.IChartView chart, LiveChartsCore.Kernel.ChartPoint<ObservablePoint, CircleGeometry, LabelGeometry>? point)
 	{
-		Debug.WriteLine($"Hover {ToString()}");
+		//Debug.WriteLine($"Hover {ToString()}");
 		Hover?.Invoke(this, new SeriesHoverEventArgs(ListSeries));
 	}
 
 	private void LineSeries_ChartPointPointerHoverLost(LiveChartsCore.Kernel.Sketches.IChartView chart, LiveChartsCore.Kernel.ChartPoint<ObservablePoint, CircleGeometry, LabelGeometry>? point)
 	{
-		Debug.WriteLine($"HoverLost {ToString()}");
+		//Debug.WriteLine($"HoverLost {ToString()}");
 		HoverLost?.Invoke(this, new SeriesHoverEventArgs(ListSeries));
 	}
 

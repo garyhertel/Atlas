@@ -6,6 +6,7 @@ using Atlas.UI.Avalonia.View;
 using Avalonia;
 using Avalonia.Collections;
 using Avalonia.Controls;
+using Avalonia.Controls.Presenters;
 using Avalonia.Controls.Primitives;
 using Avalonia.Data;
 using Avalonia.Input;
@@ -436,7 +437,9 @@ public class TabControlDataGrid : Grid, IDisposable, ITabSelector, ITabItemSelec
 		var pointer = e.PointerPressedEventArgs.GetCurrentPoint(this);
 		if (pointer.Properties.IsLeftButtonPressed && e.Row != null && DataGrid.SelectedItems != null && DataGrid.SelectedItems.Count == 1)
 		{
-			if (e.Cell.Content is CheckBox)
+			Type type = e.Cell.Content!.GetType();
+			if (typeof(CheckBox).IsAssignableFrom(type) ||
+				typeof(Button).IsAssignableFrom(type))
 				return;
 
 			if (DataGrid.SelectedItems.Contains(e.Row.DataContext))
@@ -455,8 +458,8 @@ public class TabControlDataGrid : Grid, IDisposable, ITabSelector, ITabItemSelec
 
 		return
 			typeof(CheckBox).IsAssignableFrom(type) ||
-			typeof(Button).IsAssignableFrom(type);// ||
-			//IsControlSelectable(inputElement.VisualParent);
+			typeof(Button).IsAssignableFrom(type) ||
+			(inputElement is Visual visual && IsControlSelectable(visual.GetVisualParent() as IInputElement));
 	}
 
 	private static DataGrid? GetOwningDataGrid(StyledElement? control)

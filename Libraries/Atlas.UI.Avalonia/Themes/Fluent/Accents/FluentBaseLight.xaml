@@ -55,6 +55,7 @@
 
         <SolidColorBrush x:Key="ComboBoxBackground" Color="#ffffff" />
         <SolidColorBrush x:Key="ComboBoxBackgroundPointerOver" Color="#ffffff" />
+        <SolidColorBrush x:Key="ComboBoxBackgroundPressed" Color="#ffffff" />
         <SolidColorBrush x:Key="ComboBoxBorderBrushPointerOver" Color="{DynamicResource ThemeControlBorderHighColor}" />
 
         <SolidColorBrush x:Key="ComboBoxItemBackgroundPointerOver" Color="#92F397" />
