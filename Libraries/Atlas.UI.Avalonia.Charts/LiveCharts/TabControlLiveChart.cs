@@ -224,21 +224,32 @@ public class TabControlLiveChart : TabControlChart<ISeries>
 
 	public Axis GetValueAxis()//AxisPosition axisPosition = AxisPosition.Left, string? key = null)
 	{
-		return new Axis
+		if (ChartView.Logarithmic)
 		{
-			//Name = "Amount",
-			//NamePadding = new Padding(0, 15),
-			Labeler = DateTimeFormat.ValueFormatter,
-			LabelsPaint = new SolidColorPaint(SKColors.LightGray),
-			SeparatorsPaint = new SolidColorPaint(GridLineColor),
-			//UnitWidth = 1000000000,
-			/*LabelsPaint = new SolidColorPaint
+			return new LogaritmicAxis(2)
 			{
-				Color = SKColors.Blue,
-				FontFamily = "Times New Roman",
-				SKFontStyle = new SKFontStyle(SKFontStyleWeight.ExtraBold, SKFontStyleWidth.Normal, SKFontStyleSlant.Italic)
-			},*/
-		};
+				LabelsPaint = new SolidColorPaint(SKColors.LightGray),
+				SeparatorsPaint = new SolidColorPaint(GridLineColor),
+			};
+		}
+		else
+		{
+			return new Axis
+			{
+				//Name = "Amount",
+				//NamePadding = new Padding(0, 15),
+				Labeler = DateTimeFormat.ValueFormatter,
+				LabelsPaint = new SolidColorPaint(SKColors.LightGray),
+				SeparatorsPaint = new SolidColorPaint(GridLineColor),
+				//UnitWidth = 1000000000,
+				/*LabelsPaint = new SolidColorPaint
+				{
+					Color = SKColors.Blue,
+					FontFamily = "Times New Roman",
+					SKFontStyle = new SKFontStyle(SKFontStyleWeight.ExtraBold, SKFontStyleWidth.Normal, SKFontStyleSlant.Italic)
+				},*/
+			};
+		}
 
 		/*if (ListGroup.Logarithmic)
 		{
