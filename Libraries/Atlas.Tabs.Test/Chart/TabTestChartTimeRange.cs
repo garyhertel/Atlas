@@ -34,14 +34,15 @@ public class TabTestChartTimeRangeValue : ITab
 			//chartGroup.Series.Add(new 
 
 			var chartSettings = new ChartSettings(list, "Active Connection Count");
-			var chartGroup = chartSettings.ChartViews.Values.First();
-			chartGroup.Annotations.Add(new ChartAnnotation()
+			var chartView = chartSettings.ChartViews.Values.First();
+			chartView.Annotations.Add(new ChartAnnotation()
 			{
 				Text = "Too High",
 				Y = 2000000000,
 				Color = Color.Red,
 			});
-			chartGroup.ShowTimeTracker = true;
+			chartView.ShowTimeTracker = true;
+			chartView.Logarithmic = true;
 			model.AddObject(chartSettings);
 		}
 	}

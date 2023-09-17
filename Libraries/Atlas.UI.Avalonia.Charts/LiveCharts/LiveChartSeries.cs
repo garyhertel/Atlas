@@ -17,7 +17,6 @@ using System.Diagnostics;
 
 namespace Atlas.UI.Avalonia.Charts;
 
-
 public class SeriesHoverEventArgs : EventArgs
 {
 	public ListSeries Series { get; set; }
@@ -59,7 +58,7 @@ public class LiveChartSeries //: ChartSeries<ISeries>
 		var dataPoints = GetDataPoints(listSeries, listSeries.List, _datapointLookup);
 
 		//LineSeries = new LineSeries<DateTimePoint>
-		var lineSeries = new LineSeries<ObservablePoint>
+		LineSeries = new LineSeries<ObservablePoint>
 		{
 			Name = listSeries.Name,
 			Values = dataPoints,
@@ -73,16 +72,14 @@ public class LiveChartSeries //: ChartSeries<ISeries>
 			GeometryFill = null,
 		};
 
-		lineSeries.ChartPointPointerHover += LineSeries_ChartPointPointerHover;
-		lineSeries.ChartPointPointerHoverLost += LineSeries_ChartPointPointerHoverLost;
+		LineSeries.ChartPointPointerHover += LineSeries_ChartPointPointerHover;
+		LineSeries.ChartPointPointerHoverLost += LineSeries_ChartPointPointerHoverLost;
 
 		if (listSeries.List.Count > 0 && listSeries.List.Count <= MaxPointsToShowMarkers || HasSinglePoint(dataPoints))
 		{
 			//lineSeries.GeometryStroke = new SolidColorPaint(skColor) { StrokeThickness = 2f };
-			lineSeries.GeometryFill = new SolidColorPaint(skColor);
+			LineSeries.GeometryFill = new SolidColorPaint(skColor);
 		}
-
-		LineSeries = lineSeries;
 
 		// Title must be unique among all series
 		/*Title = listSeries.Name;

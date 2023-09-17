@@ -32,8 +32,8 @@ public class TabControlLiveChart : TabControlChart<ISeries>
 
 	public ChartSeries<ISeries>? HoverSeries;
 
-	/*public OxyPlot.Axes.LinearAxis? LinearAxis;
-	public OxyPlot.Axes.DateTimeAxis? DateTimeAxis;*/
+	/*public Axis? LinearAxis;
+	public DateTimeAxis? DateTimeAxis;*/
 	public Axis XAxis { get; set; }
 	public Axis ValueAxis { get; set; } // left/right?
 
@@ -48,6 +48,7 @@ public class TabControlLiveChart : TabControlChart<ISeries>
 	public TabControlLiveChart(TabInstance tabInstance, ChartView chartView, bool fillHeight = false) : 
 		base(tabInstance, chartView, fillHeight)
 	{
+		var backColor = SKColor.Parse("#102670").WithAlpha(185);
 		XAxis = GetXAxis();
 		ValueAxis = GetValueAxis();
 		Chart = new CartesianChart()
@@ -55,20 +56,20 @@ public class TabControlLiveChart : TabControlChart<ISeries>
 			HorizontalAlignment = HorizontalAlignment.Stretch,
 			VerticalAlignment = VerticalAlignment.Stretch,
 
-			//Series = ListGroup.Series.Select(s => AddListSeries(s)).ToList(),
 			XAxes = new List<Axis> { XAxis },
 			YAxes = new List<Axis> { ValueAxis },
 			LegendPosition = LegendPosition.Hidden,
-			TooltipBackgroundPaint = new SolidColorPaint(AtlasTheme.ChartBackgroundSelected.Color.AsSkColor().WithAlpha(64)),
+			TooltipBackgroundPaint = new SolidColorPaint(backColor),
+			//TooltipBackgroundPaint = new SolidColorPaint(AtlasTheme.ChartBackgroundSelected.Color.AsSkColor().WithAlpha((byte)200)),
 			TooltipTextPaint = new SolidColorPaint(AtlasTheme.TitleForeground.Color.AsSkColor()),
 			//Tooltip = new LiveChartTooltip(this),
-			//TooltipFindingStrategy = TooltipFindingStrategy.CompareOnlyXTakeClosest, // All doesn't work well
 			TooltipFindingStrategy = TooltipFindingStrategy.CompareAllTakeClosest,
 			//MinWidth = 150,
 			//MinHeight = 80,
 			AnimationsSpeed = TimeSpan.Zero,
 			[Grid.RowProperty] = 1,
 		};
+		Chart.VisualElementsPointerDown += Chart_VisualElementsPointerDown;
 		Chart.ChartPointPointerDown += Chart_ChartPointPointerDown;
 
 		/*PlotView = new PlotView()
@@ -128,6 +129,12 @@ public class TabControlLiveChart : TabControlChart<ISeries>
 		AddSections();
 
 		Children.Add(containerGrid);
+	}
+
+	private void Chart_VisualElementsPointerDown(IChartView chart, LiveChartsCore.Kernel.Events.VisualElementsEventArgs<LiveChartsCore.SkiaSharpView.Drawing.SkiaSharpDrawingContext> visualElementsArgs)
+	{
+		var points = Chart.GetPointsAt(visualElementsArgs.PointerLocation, TooltipFindingStrategy.CompareAllTakeClosest).ToList();
+		var visualElements = visualElementsArgs.VisualElements.ToList();
 	}
 
 	private void AddSections()
@@ -193,6 +200,11 @@ public class TabControlLiveChart : TabControlChart<ISeries>
 		_trackerSection.Xj = e.X;
 		_trackerSection.IsVisible = true;
 
+		InvalidateChart();
+	}
+
+	private void InvalidateChart()
+	{
 		Dispatcher.UIThread.Post(() => Chart!.InvalidateVisual(), DispatcherPriority.Background);
 	}
 
@@ -226,8 +238,9 @@ public class TabControlLiveChart : TabControlChart<ISeries>
 	{
 		if (ChartView.Logarithmic)
 		{
-			return new LogaritmicAxis(2)
+			return new LogaritmicAxis(10)
 			{
+				Labeler = DateTimeFormat.ValueFormatter,
 				LabelsPaint = new SolidColorPaint(SKColors.LightGray),
 				SeparatorsPaint = new SolidColorPaint(GridLineColor),
 			};
@@ -641,25 +654,6 @@ public class TabControlLiveChart : TabControlChart<ISeries>
 
 	private void UpdateMouseSelection(LvcPointD endDataPoint)
 	{
-		/*if (_zoomSection == null)
-		{
-			_zoomSection = new RectangularSection
-			{
-				Label = "",
-				//LabelSize = 14,
-				Stroke = new SolidColorPaint(SKColors.LightCoral),
-				Fill = new SolidColorPaint(SKColors.LightCoral.WithAlpha(200)),
-			};
-		}*/
-
-		/*try
-		{
-			if (!_sections.Contains(_zoomSection))
-				_sections.Add(_zoomSection);
-		}
-		catch (Exception)
-		{
-		}*/
 		if (_zoomSection == null || _startDataPoint == null) return;
 
 		_zoomSection.Xi = Math.Min(_startDataPoint!.Value.X, endDataPoint.X);
@@ -667,15 +661,13 @@ public class TabControlLiveChart : TabControlChart<ISeries>
 
 		Debug.WriteLine($"Start: {_zoomSection.Xi}, End: {_zoomSection.Xj}");
 
-		Dispatcher.UIThread.Post(() => Chart!.InvalidateVisual(), DispatcherPriority.Background);
+		InvalidateChart();
 	}
 
 	private void StopSelecting()
 	{
 		_zoomSection!.IsVisible = false;
 		_startDataPoint = null;
-		//if (_zoomSection != null)
-		//	PlotModel!.Annotations.Remove(_zoomSection);
 		_selecting = false;
 	}
 
@@ -723,7 +715,6 @@ public class TabControlLiveChart : TabControlChart<ISeries>
 		Legend.RefreshModel();
 
 		//PlotView!.InvalidatePlot(true);
-		//PlotView.Model.InvalidatePlot(true);
 	}
 
 	/*private void AddAxis()
