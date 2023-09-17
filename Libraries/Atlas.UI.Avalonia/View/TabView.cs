@@ -418,7 +418,7 @@ public class TabView : Grid, IDisposable
 			}
 			catch (Exception ex)
 			{
-				AddControlString(ex.Message);
+				AddControlString(ex.ToString());
 			}
 		}
 	}

@@ -30,20 +30,19 @@ public class TabTestChartTimeRangeValue : ITab
 				startTime = startTime.AddHours(1);
 			}
 
-			//var chartGroup = new ChartGroup();
-			//chartGroup.Series.Add(new 
-
-			var chartSettings = new ChartSettings(list, "Active Connection Count");
-			var chartView = chartSettings.ChartViews.Values.First();
+			var chartView = new ChartView("Active Connection Count")
+			{
+				ShowTimeTracker = true,
+				Logarithmic = true,
+			};
+			chartView.AddSeries("Connections", list);
 			chartView.Annotations.Add(new ChartAnnotation()
 			{
 				Text = "Too High",
-				Y = 2000000000,
+				Y = 2_000_000_000,
 				Color = Color.Red,
 			});
-			chartView.ShowTimeTracker = true;
-			chartView.Logarithmic = true;
-			model.AddObject(chartSettings);
+			model.AddObject(chartView);
 		}
 	}
 }

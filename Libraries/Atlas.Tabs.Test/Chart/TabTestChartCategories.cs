@@ -3,7 +3,7 @@ using Atlas.Extensions;
 
 namespace Atlas.Tabs.Test.Chart;
 
-public class TabTestChartOverlay : ITab
+public class TabTestChartCategories : ITab
 {
 	public TabInstance Create() => new Instance();
 
@@ -25,17 +25,9 @@ public class TabTestChartOverlay : ITab
 			[XAxis]
 			public DateTime TimeStamp { get; set; }
 
-			[Unit("B")]
-			public int? SeriesAlpha { get; set; }
+			public string? Category { get; set; }
 
-			[Unit("A")]
-			public int? SeriesBeta { get; set; }
-
-			[Unit("A")]
-			public int? SeriesGamma { get; set; }
-
-			[Unit("B")]
-			public int? SeriesEpsilon { get; set; }  // High Value, small delta
+			public int? Value { get; set; }
 
 			public TestItem TestItem { get; set; } = new();
 
@@ -44,27 +36,35 @@ public class TabTestChartOverlay : ITab
 
 		public override void Load(Call call, TabModel model)
 		{
-			//tabModel.Items = items;
-
 			model.Actions = new List<TaskCreator>()
 			{
 				new TaskDelegate("Add Entry", AddEntry),
 				new TaskDelegate("Start: 1 Entry / second", StartTask, true),
 			};
+			AddSeries("Cats");
+			AddSeries("Dogs");
 
+			var chartSettings = new ChartView();
+			chartSettings.AddDimensions(_samples,
+				nameof(ChartSample.Category),
+				nameof(ChartSample.TimeStamp),
+				nameof(ChartSample.Value));
+			model.AddObject(chartSettings, true);
+		}
+
+		private void AddSeries(string category)
+		{
 			for (int i = 0; i < 10; i++)
 			{
 				if (i == 4 || i == 6)
 				{
-					AddNullSample(i);
+					AddNullSample(category, i);
 				}
 				else
 				{
-					AddSample(i);
+					AddSample(category, i);
 				}
 			}
-			var chartSettings = new ChartSettings(_samples);
-			model.AddObject(chartSettings, true);
 		}
 
 		private void AddEntry(Call call)
@@ -84,16 +84,14 @@ public class TabTestChartOverlay : ITab
 			}
 		}
 
-		private void AddSample(int i)
+		private void AddSample(string category, int i)
 		{
 			ChartSample sample = new()
 			{
 				Name = "Name " + i.ToString(),
 				TimeStamp = _baseDateTime.AddMinutes(i),
-				SeriesAlpha = _random.Next(50, 100),
-				SeriesBeta = _random.Next(50, 100),
-				SeriesGamma = _random.Next(50, 100),
-				SeriesEpsilon = _random.Next(50, 100),
+				Category = category,
+				Value = _random.Next(50, 100),
 				TestItem = new TestItem()
 				{
 					Amount = _random.Next(0, 100),
@@ -102,12 +100,13 @@ public class TabTestChartOverlay : ITab
 			_samples.Add(sample);
 		}
 
-		private void AddNullSample(int i)
+		private void AddNullSample(string category, int i)
 		{
 			ChartSample sample = new()
 			{
 				Name = "Name " + i.ToString(),
 				TimeStamp = _baseDateTime.AddMinutes(i),
+				Category = category,
 				TestItem = new TestItem()
 				{
 					Amount = _random.Next(0, 100),
@@ -119,7 +118,8 @@ public class TabTestChartOverlay : ITab
 		// UI context
 		private void AddSampleUI(Call call, object state)
 		{
-			AddSample(_samples.Count);
+			AddSample("Cats", _samples.Count);
+			AddSample("Dogs", _samples.Count);
 		}
 	}
 }

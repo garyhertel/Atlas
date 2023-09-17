@@ -52,6 +52,11 @@ public class ChartView
 		TimeWindow = new TimeWindow(startTime, endTime);
 	}
 
+	public void AddSeries(string name, IList list, string? xPropertyName = null, string? yPropertyName = null)
+	{
+		Series.Add(new ListSeries(name, list, xPropertyName, yPropertyName));
+	}
+
 	public void AddDimensions(IList iList, string categoryPropertyName, string xPropertyName, string yPropertyName)
 	{
 		Type listType = iList.GetType();
@@ -115,18 +120,3 @@ public class ChartView
 		return new TimeWindow(startTime, endTime);
 	}
 }
-
-/*
-TabSeries
-	Pros
-		Has iList
-			
-ListChart(x) -> ListChartItem(x) -> ListSeries -> ItemSeries -> ItemList
-	Cons
-		Bad name
-
-Binding an iList
-Who should update
-
-
-*/

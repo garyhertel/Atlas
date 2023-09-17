@@ -76,6 +76,25 @@ public class ChartGroupControl : IControlCreator
 	}
 }
 
+public class ChartViewControl : IControlCreator
+{
+	public static void Register()
+	{
+		TabView.ControlCreators[typeof(ChartView)] = new ChartViewControl();
+	}
+
+	public void AddControl(TabInstance tabInstance, TabControlSplitContainer container, object obj)
+	{
+		var chartView = (ChartView)obj;
+
+		//var tabChart = new TabControlOxyPlot(tabInstance, chartView, true);
+		var tabChart = new TabControlLiveChart(tabInstance, chartView, true);
+
+		container.AddControl(tabChart, true, SeparatorType.Spacer);
+		//tabChart.OnSelectionChanged += ListData_OnSelectionChanged;
+	}
+}
+
 public interface ITabControlChart
 {
 	public static ITabControlChart Create(TabInstance tabInstance, ChartView chartView, bool fillHeight = false)

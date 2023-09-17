@@ -13,6 +13,7 @@ public class MainWindow : BaseWindow
 		AddTab(new TabAvalonia());
 
 		ChartGroupControl.Register();
+		ChartViewControl.Register();
 		ScreenCapture.AddControlTo(TabViewer);
 	}
 

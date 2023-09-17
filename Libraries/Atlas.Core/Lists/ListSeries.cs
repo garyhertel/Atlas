@@ -60,7 +60,7 @@ public class ListSeries
 			Name = attribute.Name;
 	}
 
-	public ListSeries(string? name, IList list, string xPropertyName, string? yPropertyName = null)
+	public ListSeries(string? name, IList list, string? xPropertyName, string? yPropertyName = null)
 	{
 		Name = name;
 		List = list;
@@ -68,9 +68,23 @@ public class ListSeries
 		YPropertyName = yPropertyName;
 
 		Type elementType = list.GetType().GetElementTypeForAll()!;
-		XPropertyInfo = elementType.GetProperty(xPropertyName);
+		if (xPropertyName != null)
+		{
+			XPropertyInfo = elementType.GetProperty(xPropertyName);
+		}
+		else
+		{
+			XPropertyInfo = elementType.GetPropertyWithAttribute<XAxisAttribute>();
+		}
+
 		if (yPropertyName != null)
+		{
 			YPropertyInfo = elementType.GetProperty(yPropertyName);
+		}
+		else
+		{
+			YPropertyInfo = elementType.GetPropertyWithAttribute<YAxisAttribute>();
+		}
 	}
 
 	[MemberNotNull(nameof(List))]

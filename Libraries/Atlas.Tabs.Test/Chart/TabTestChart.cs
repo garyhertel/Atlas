@@ -6,7 +6,7 @@ namespace Atlas.Tabs.Test.Chart;
 public class TabTestChart
 {
 	public static TabTestChartList List => new();
-	public static TabTestChartSplit Split => new();
-	public static TabTestChartOverlay Overlay => new();
+	public static TabTestChartProperties Properties => new();
+	public static TabTestChartCategories Categories => new();
 	public static TabTestChartTimeRangeValue TimeRange => new();
 }
