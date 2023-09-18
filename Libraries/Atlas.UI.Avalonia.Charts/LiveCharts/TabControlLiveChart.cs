@@ -424,7 +424,10 @@ public class TabControlLiveChart : TabControlChart<ISeries>
 		if (ChartSeries.Count >= SeriesLimit)
 			return null;
 
-		Color color = defaultColor ?? GetColor(ChartSeries.Count);
+		Color color = 
+			defaultColor ?? 
+			listSeries.Color?.AsAvaloniaColor() ?? 
+			GetColor(ChartSeries.Count);
 
 		var liveChartSeries = new LiveChartSeries(this, listSeries, color, UseDateTimeAxis);
 		_xAxisPropertyInfo = liveChartSeries.XAxisPropertyInfo;
@@ -443,11 +446,13 @@ public class TabControlLiveChart : TabControlChart<ISeries>
 
 	private void LineSeries_Hover(object? sender, SeriesHoverEventArgs e)
 	{
-		string name = e.Series.Name!;
-		Legend.HighlightSeries(name);
-		if (IdxNameToSeries.TryGetValue(name, out ChartSeries<ISeries>? series))
+		if (e.Series.Name is string name)
 		{
-			HoverSeries = series;
+			Legend.HighlightSeries(name);
+			if (IdxNameToSeries.TryGetValue(name, out ChartSeries<ISeries>? series))
+			{
+				HoverSeries = series;
+			}
 		}
 	}
 

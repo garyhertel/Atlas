@@ -1,6 +1,7 @@
 using Atlas.Extensions;
 using System.Collections;
 using System.Diagnostics.CodeAnalysis;
+using System.Drawing;
 using System.Reflection;
 
 namespace Atlas.Core;
@@ -33,6 +34,7 @@ public class ListSeries
 	public bool IsStacked { get; set; }
 	public TimeSpan? PeriodDuration { get; set; }
 	public SeriesType SeriesType { get; set; } = SeriesType.Sum;
+	public Color? Color { get; set; }
 	public double Total { get; set; }
 
 	public override string ToString() => Name + "[" + List?.Count + "]";

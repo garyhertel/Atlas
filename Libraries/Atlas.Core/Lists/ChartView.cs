@@ -52,9 +52,11 @@ public class ChartView
 		TimeWindow = new TimeWindow(startTime, endTime);
 	}
 
-	public void AddSeries(string name, IList list, string? xPropertyName = null, string? yPropertyName = null)
+	public ListSeries AddSeries(string name, IList list, string? xPropertyName = null, string? yPropertyName = null)
 	{
-		Series.Add(new ListSeries(name, list, xPropertyName, yPropertyName));
+		var series = new ListSeries(name, list, xPropertyName, yPropertyName);
+		Series.Add(series);
+		return series;
 	}
 
 	public void AddDimensions(IList iList, string categoryPropertyName, string xPropertyName, string yPropertyName)

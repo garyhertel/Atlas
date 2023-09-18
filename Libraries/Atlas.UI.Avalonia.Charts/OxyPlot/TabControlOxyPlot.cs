@@ -1,4 +1,5 @@
 using Atlas.Core;
+using Atlas.Extensions;
 using Atlas.Tabs;
 using Atlas.UI.Avalonia.Themes;
 using Avalonia;
@@ -780,7 +781,10 @@ public class TabControlOxyPlot : TabControlChart<OxyPlotLineSeries>
 		if (ChartSeries.Count >= SeriesLimit)
 			return null;
 
-		var color = defaultColor ?? GetColor(ChartSeries.Count);
+		Color color =
+			defaultColor ??
+			listSeries.Color?.AsAvaloniaColor() ??
+			GetColor(ChartSeries.Count);
 
 		var lineSeries = new OxyPlotLineSeries(this, listSeries, UseDateTimeAxis)
 		{

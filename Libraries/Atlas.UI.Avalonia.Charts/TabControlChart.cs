@@ -54,28 +54,6 @@ public class MouseCursorMovedEventArgs : EventArgs
 	}
 }
 
-public class ChartGroupControl : IControlCreator
-{
-	public static void Register()
-	{
-		TabView.ControlCreators[typeof(ChartSettings)] = new ChartGroupControl();
-	}
-
-	public void AddControl(TabInstance tabInstance, TabControlSplitContainer container, object obj)
-	{
-		var chartSettings = (ChartSettings)obj;
-
-		foreach (var listGroupPair in chartSettings.ChartViews)
-		{
-			//var tabChart = new TabControlOxyPlot(tabInstance, listGroupPair.Value, true);
-			var tabChart = new TabControlLiveChart(tabInstance, listGroupPair.Value, true);
-
-			container.AddControl(tabChart, true, SeparatorType.Spacer);
-			//tabChart.OnSelectionChanged += ListData_OnSelectionChanged;
-		}
-	}
-}
-
 public class ChartViewControl : IControlCreator
 {
 	public static void Register()
