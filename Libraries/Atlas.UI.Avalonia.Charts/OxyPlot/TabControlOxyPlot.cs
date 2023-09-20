@@ -289,10 +289,6 @@ public class TabControlOxyPlot : TabControlChart<OxyPlotLineSeries>
 			AddSeries(listSeries);
 		}
 
-		// would need to be able to disable to use
-		//foreach (ListSeries listSeries in ChartSettings.ListSeries)
-		//	AddSeries(listSeries);
-
 		AddAxis();
 		UpdateValueAxis();
 		UpdateLinearAxis();
@@ -836,11 +832,8 @@ public class TabControlOxyPlot : TabControlChart<OxyPlotLineSeries>
 		_trackerAnnotation = new OxyPlot.Annotations.LineAnnotation
 		{
 			Type = LineAnnotationType.Vertical,
-			//Color = Theme.TitleBackground.ToOxyColor(),
-			//Color = Color.Parse("#21a094").ToOxyColor(),
 			Color = AtlasTheme.GridBackgroundSelected.ToOxyColor(),
 			//Color = timeTrackerColor,
-			// LineStyle = LineStyle.Dot, // doesn't work for vertical?
 		};
 
 		PlotModel!.Annotations.Add(_trackerAnnotation);
@@ -1013,19 +1006,6 @@ public class TabControlOxyPlot : TabControlChart<OxyPlotLineSeries>
 		Dispatcher.UIThread.Post(() => PlotModel!.InvalidatePlot(false), DispatcherPriority.Background);
 	}
 
-	/*private void INotifyCollectionChanged_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
-	{
-		lock (PlotModel.SyncRoot)
-		{
-			//Update();
-			int index = ListToTabIndex[(IList)sender];
-			ListSeries listSeries = ListToTabSeries[(IList)sender];
-			AddPoints((OxyPlot.Series.LineSeries)plotModel.Series[index], listSeries, e.NewItems);
-		}
-
-		Dispatcher.UIThread.InvokeAsync(() => PlotModel.InvalidatePlot(true), DispatcherPriority.Background);
-	}*/
-
 	public override void AddAnnotation(ChartAnnotation chartAnnotation)
 	{
 		base.AddAnnotation(chartAnnotation);
@@ -1051,4 +1031,17 @@ public class TabControlOxyPlot : TabControlChart<OxyPlotLineSeries>
 		ClearListeners();
 		UnloadModel();
 	}
+
+	/*private void INotifyCollectionChanged_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+	{
+		lock (PlotModel.SyncRoot)
+		{
+			//Update();
+			int index = ListToTabIndex[(IList)sender];
+			ListSeries listSeries = ListToTabSeries[(IList)sender];
+			AddPoints((OxyPlot.Series.LineSeries)plotModel.Series[index], listSeries, e.NewItems);
+		}
+
+		Dispatcher.UIThread.InvokeAsync(() => PlotModel.InvalidatePlot(true), DispatcherPriority.Background);
+	}*/
 }

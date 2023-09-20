@@ -74,6 +74,7 @@ public class TabControlLiveChart : TabControlChart<ISeries>
 
 		/*PlotView = new PlotView()
 		{
+			PlotAreaBorderColor = Color.Parse("#888888"),
 			Background = Brushes.Transparent,
 			BorderBrush = Brushes.LightGray,
 			ClipToBounds = false,
@@ -150,11 +151,6 @@ public class TabControlLiveChart : TabControlChart<ISeries>
 			_zoomSection = new RectangularSection
 			{
 				Label = "",
-				//LabelSize = 14,
-				/*LabelPaint = new SolidColorPaint(color.WithAlpha(220))
-				{
-					SKTypeface = SKTypeface.FromFamilyName("Inter", SKFontStyle.Bold),
-				},*/
 				Stroke = new SolidColorPaint(skColor.WithAlpha(180)),
 				Fill = new SolidColorPaint(skColor.WithAlpha((byte)AtlasTheme.ChartBackgroundSelectedAlpha)),
 				IsVisible = false,
@@ -394,14 +390,6 @@ public class TabControlLiveChart : TabControlChart<ISeries>
 
 	public void ReloadView()
 	{
-		/*
-		PlotModel = new PlotModel()
-		{
-			PlotAreaBorderColor = Color.Parse("#888888"),
-			TextColor = OxyColors.Black,
-			SelectionColor = OxyColors.Blue,
-		};*/
-
 		ChartView.SortByTotal();
 
 		Chart.Series = ChartView.Series
