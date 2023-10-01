@@ -18,13 +18,19 @@ public class ChartAnnotation
 	public double StrokeThickness { get; set; } = 2;
 }
 
+public enum ChartLegendPosition
+{
+	Hidden,
+	Right,
+	Bottom,
+}
+
 public class ChartView
 {
 	public string? Name { get; set; }
+	public ChartLegendPosition LegendPosition { get; set; } = ChartLegendPosition.Right;
 	public string? LegendTitle { get; set; }
 
-	public bool Horizontal { get; set; }
-	public bool ShowLegend { get; set; } = true;
 	public bool ShowOrder { get; set; } = true;
 	public bool ShowTimeTracker { get; set; }
 	public bool Logarithmic { get; set; }
@@ -98,15 +104,9 @@ public class ChartView
 			timeWindow = GetSeriesTimeWindow();
 		}
 
-		var sums = new Dictionary<ListSeries, double>();
-		foreach (var listSeries in Series)
-		{
-			sums.Add(listSeries, listSeries.CalculateTotal(timeWindow));
-		}
+		var orderedSeries = Series.OrderByDescending(series => series.CalculateTotal(timeWindow));
 
-		var sortedDict = from entry in sums orderby entry.Value descending select entry.Key;
-
-		Series = new ItemCollection<ListSeries>(sortedDict);
+		Series = new ItemCollection<ListSeries>(orderedSeries);
 	}
 
 	public TimeWindow GetSeriesTimeWindow()

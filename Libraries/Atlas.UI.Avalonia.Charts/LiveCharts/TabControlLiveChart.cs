@@ -45,6 +45,8 @@ public class TabControlLiveChart : TabControlChart<ISeries>
 
 	public List<LiveChartSeries> LiveChartSeries { get; private set; } = new();
 
+	private LiveChartsCore.Kernel.ChartPoint? _pointClicked;
+
 	public TabControlLiveChart(TabInstance tabInstance, ChartView chartView, bool fillHeight = false) : 
 		base(tabInstance, chartView, fillHeight)
 	{
@@ -55,7 +57,6 @@ public class TabControlLiveChart : TabControlChart<ISeries>
 		{
 			HorizontalAlignment = HorizontalAlignment.Stretch,
 			VerticalAlignment = VerticalAlignment.Stretch,
-
 			XAxes = new List<Axis> { XAxis },
 			YAxes = new List<Axis> { ValueAxis },
 			LegendPosition = LegendPosition.Hidden,
@@ -71,6 +72,7 @@ public class TabControlLiveChart : TabControlChart<ISeries>
 		};
 		Chart.VisualElementsPointerDown += Chart_VisualElementsPointerDown;
 		Chart.ChartPointPointerDown += Chart_ChartPointPointerDown;
+		Chart.DataPointerDown += Chart_DataPointerDown;
 
 		/*PlotView = new PlotView()
 		{
@@ -100,18 +102,22 @@ public class TabControlLiveChart : TabControlChart<ISeries>
 		containerGrid.Children.Add(Chart);
 
 		Legend = new TabControlLiveChartLegend(this);
-		if (ChartView!.Horizontal)
+		if (ChartView!.LegendPosition == ChartLegendPosition.Bottom)
 		{
 			// Bottom
 			SetRow(Legend, 2);
 			Legend.MaxHeight = 100;
 		}
-		else
+		else if (ChartView!.LegendPosition == ChartLegendPosition.Right)
 		{
 			// Right Side
 			SetRow(Legend, 1);
 			SetColumn(Legend, 1);
 			Legend.MaxWidth = 300;
+		}
+		else
+		{
+			Legend.IsVisible = false;
 		}
 		containerGrid.Children.Add(Legend);
 		//Legend.OnSelectionChanged += Legend_OnSelectionChanged;
@@ -130,6 +136,10 @@ public class TabControlLiveChart : TabControlChart<ISeries>
 		AddSections();
 
 		Children.Add(containerGrid);
+	}
+
+	private void Chart_DataPointerDown(IChartView chart, IEnumerable<LiveChartsCore.Kernel.ChartPoint> points)
+	{
 	}
 
 	private void Chart_VisualElementsPointerDown(IChartView chart, LiveChartsCore.Kernel.Events.VisualElementsEventArgs<LiveChartsCore.SkiaSharpView.Drawing.SkiaSharpDrawingContext> visualElementsArgs)
@@ -156,9 +166,9 @@ public class TabControlLiveChart : TabControlChart<ISeries>
 				IsVisible = false,
 			};
 			_sections.Add(_zoomSection);
-
-			AddMouseListeners();
 		}
+
+		AddMouseListeners();
 
 		Chart.Sections = _sections;
 	}
@@ -206,6 +216,7 @@ public class TabControlLiveChart : TabControlChart<ISeries>
 
 	private void Chart_ChartPointPointerDown(IChartView chart, LiveChartsCore.Kernel.ChartPoint? point)
 	{
+		_pointClicked = point;
 		if (point == null) return;
 
 		// todo: check for background click
@@ -590,7 +601,7 @@ public class TabControlLiveChart : TabControlChart<ISeries>
 		//e.Pointer.Capture(this); // Steals focus
 
 		// store the mouse down point, check it when mouse button is released to determine if the context menu should be shown
-		var point = e.GetPosition(this);
+		var point = e.GetPosition(Chart);
 		try
 		{
 			LvcPointD dataPoint = Chart!.ScalePixelsToData(new LvcPointD(point.X, point.Y));
@@ -610,12 +621,17 @@ public class TabControlLiveChart : TabControlChart<ISeries>
 
 	private void TabControlLiveChart_PointerPressed(object? sender, global::Avalonia.Input.PointerPressedEventArgs e)
 	{
+		var point = e.GetPosition(Chart);
+		_startScreenPoint = point;
+		_startDataPoint = Chart!.ScalePixelsToData(new LvcPointD(point.X, point.Y));
+
 		if (!_selecting)// || _startDataPoint == null)
 		{
-			var point = e.GetPosition(this);
-			_startScreenPoint = point;
-			_startDataPoint = Chart!.ScalePixelsToData(new LvcPointD(point.X, point.Y));
-			_zoomSection!.IsVisible = true;
+			if (_zoomSection != null)
+			{
+				UpdateMouseSelection(_startDataPoint!.Value);
+				_zoomSection.IsVisible = true;
+			}
 			_selecting = true;
 			e.Handled = true;
 		}
@@ -623,9 +639,15 @@ public class TabControlLiveChart : TabControlChart<ISeries>
 
 	private void TabControlLiveChart_PointerReleased(object? sender, global::Avalonia.Input.PointerReleasedEventArgs e)
 	{
+		if (_pointClicked != null)
+		{
+			StopSelecting();
+			return;
+		}
+
 		if (_selecting && _startDataPoint != null)
 		{
-			var point = e.GetPosition(this);
+			var point = e.GetPosition(Chart);
 			_endDataPoint = Chart!.ScalePixelsToData(new LvcPointD(point.X, point.Y));
 			double width = Math.Abs(point.X - _startScreenPoint.X);
 			if (width > MinSelectionWidth)
@@ -643,6 +665,11 @@ public class TabControlLiveChart : TabControlChart<ISeries>
 			}
 			StopSelecting();
 		}
+		else
+		{
+			// Deselect All
+			Legend.SetAllVisible(true, true);
+		}
 	}
 
 	private void UpdateMouseSelection(LvcPointD endDataPoint)
@@ -652,20 +679,25 @@ public class TabControlLiveChart : TabControlChart<ISeries>
 		_zoomSection.Xi = Math.Min(_startDataPoint!.Value.X, endDataPoint.X);
 		_zoomSection.Xj = Math.Max(_startDataPoint.Value.X, endDataPoint.X);
 
-		Debug.WriteLine($"Start: {_zoomSection.Xi}, End: {_zoomSection.Xj}");
+		//Debug.WriteLine($"Start: {_zoomSection.Xi}, End: {_zoomSection.Xj}");
 
 		InvalidateChart();
 	}
 
 	private void StopSelecting()
 	{
-		_zoomSection!.IsVisible = false;
+		if (_zoomSection != null)
+		{
+			_zoomSection!.IsVisible = false;
+		}
 		_startDataPoint = null;
 		_selecting = false;
 	}
 
 	private void ZoomIn()
 	{
+		if (!UseDateTimeAxis) return;
+
 		double left = Math.Min(_startDataPoint!.Value.X, _endDataPoint!.Value.X);
 		double right = Math.Max(_startDataPoint.Value.X, _endDataPoint!.Value.X);
 

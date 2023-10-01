@@ -37,6 +37,12 @@ public class TabControlOxyPlot : TabControlChart<OxyPlotLineSeries>
 
 	private static readonly OxyColor GridLineColor = OxyColor.Parse("#333333");
 
+	private bool _selecting;
+	private ScreenPoint _startScreenPoint;
+	private DataPoint? _startDataPoint;
+	private DataPoint? _endDataPoint;
+	private OxyPlot.Annotations.RectangleAnnotation? _zoomAnnotation;
+
 	public TabControlOxyPlot(TabInstance tabInstance, ChartView chartView, bool fillHeight = false) :
 		base(tabInstance, chartView, fillHeight)
 	{
@@ -53,7 +59,9 @@ public class TabControlOxyPlot : TabControlChart<OxyPlotLineSeries>
 		MaxHeight = 645; // 25 Items
 
 		if (TabInstance.TabViewSettings.ChartDataSettings.Count == 0)
+		{
 			TabInstance.TabViewSettings.ChartDataSettings.Add(new TabDataSettings());
+		}
 
 		PlotView = new PlotView()
 		{
@@ -105,10 +113,14 @@ public class TabControlOxyPlot : TabControlChart<OxyPlotLineSeries>
 				//FontWeight = FontWeight.Medium,
 				[Grid.ColumnSpanProperty] = 2,
 			};
-			if (!ChartView!.ShowOrder || ChartView.Horizontal)
+			if (!ChartView!.ShowOrder || ChartView.LegendPosition == ChartLegendPosition.Right)
+			{
 				TitleTextBlock.HorizontalAlignment = global::Avalonia.Layout.HorizontalAlignment.Center;
+			}
 			else
+			{
 				TitleTextBlock.Margin = new Thickness(40, 5, 5, 5);
+			}
 			TitleTextBlock.PointerEntered += TitleTextBlock_PointerEntered;
 			TitleTextBlock.PointerExited += TitleTextBlock_PointerExited;
 			containerGrid.Children.Add(TitleTextBlock);
@@ -117,15 +129,13 @@ public class TabControlOxyPlot : TabControlChart<OxyPlotLineSeries>
 		containerGrid.Children.Add(PlotView);
 
 		Legend = new TabControlOxyPlotLegend(this);
-		if (ChartView!.Horizontal)
+		if (ChartView!.LegendPosition == ChartLegendPosition.Bottom)
 		{
-			// Bottom
 			SetRow(Legend, 2);
 			Legend.MaxHeight = 100;
 		}
-		else
+		else if (ChartView!.LegendPosition == ChartLegendPosition.Right)
 		{
-			// Right Side
 			SetRow(Legend, 1);
 			SetColumn(Legend, 1);
 			Legend.MaxWidth = 300;
@@ -136,7 +146,9 @@ public class TabControlOxyPlot : TabControlChart<OxyPlotLineSeries>
 
 		OnMouseCursorChanged += TabControlOxyPlot_OnMouseCursorChanged;
 		if (ChartView.TimeWindow != null)
+		{
 			ChartView.TimeWindow.OnSelectionChanged += ListGroup_OnTimesChanged;
+		}
 
 		foreach (ChartAnnotation chartAnnotation in ChartView.Annotations)
 		{
@@ -345,7 +357,6 @@ public class TabControlOxyPlot : TabControlChart<OxyPlotLineSeries>
 		{
 			Position = AxisPosition.Bottom,
 			//MinorIntervalType = DateTimeIntervalType.Days,
-			//IntervalType = DateTimeIntervalType.Days,
 			IntervalType = DateTimeIntervalType.Hours,
 			MajorGridlineStyle = LineStyle.Solid,
 			MajorGridlineColor = GridLineColor,
@@ -515,7 +526,7 @@ public class TabControlOxyPlot : TabControlChart<OxyPlotLineSeries>
 				if (lineSeries.LineStyle == LineStyle.None)
 					continue;
 
-				foreach (var dataPoint in lineSeries.Points)
+				foreach (DataPoint dataPoint in lineSeries.Points)
 				{
 					double x = dataPoint.X;
 					if (double.IsNaN(x))
@@ -563,7 +574,7 @@ public class TabControlOxyPlot : TabControlChart<OxyPlotLineSeries>
 					if (DateTimeAxis != null && (dataPoint.X < DateTimeAxis.Minimum || dataPoint.X > DateTimeAxis.Maximum))
 						continue;
 
-					hasFraction |= (y % 1 != 0.0);
+					hasFraction |= y % 1 != 0.0;
 
 					minimum = Math.Min(minimum, y);
 					maximum = Math.Max(maximum, y);
@@ -846,12 +857,6 @@ public class TabControlOxyPlot : TabControlChart<OxyPlotLineSeries>
 		PlotModel.MouseUp += PlotModel_MouseUp;
 		PlotModel.MouseLeave += PlotModel_MouseLeave;
 	}
-
-	private bool _selecting;
-	private ScreenPoint _startScreenPoint;
-	private DataPoint? _startDataPoint;
-	private DataPoint? _endDataPoint;
-	private OxyPlot.Annotations.RectangleAnnotation? _zoomAnnotation;
 
 	private void UpdateMouseSelection(DataPoint endDataPoint)
 	{

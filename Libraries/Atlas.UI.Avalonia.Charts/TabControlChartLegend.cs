@@ -33,7 +33,7 @@ public abstract class TabControlChartLegend<TSeries> : Grid
 
 		_wrapPanel = new WrapPanel()
 		{
-			Orientation = ChartView.Horizontal ? Orientation.Horizontal : Orientation.Vertical,
+			Orientation = ChartView.LegendPosition == ChartLegendPosition.Right ? Orientation.Vertical : Orientation.Horizontal,
 			HorizontalAlignment = HorizontalAlignment.Stretch,
 			VerticalAlignment = VerticalAlignment.Stretch,
 			Margin = new Thickness(6),
@@ -50,7 +50,7 @@ public abstract class TabControlChartLegend<TSeries> : Grid
 
 		Children.Add(_scrollViewer);
 
-		if (ChartView.ShowLegend && ChartView.ShowOrder && !ChartView.Horizontal)
+		if (ChartView.ShowOrder && ChartView.LegendPosition == ChartLegendPosition.Right)
 		{
 			_textBlockTotal = new TextBlock()
 			{
@@ -99,7 +99,7 @@ public abstract class TabControlChartLegend<TSeries> : Grid
 
 		var ordered = nonzero.OrderByDescending(a => a.Total).ToList();
 		ordered.AddRange(unused);
-		if (ChartView.ShowLegend && ChartView.ShowOrder && !ChartView.Horizontal)
+		if (ChartView.ShowOrder && ChartView.LegendPosition == ChartLegendPosition.Right)
 		{
 			for (int i = 0; i < ordered.Count; i++)
 				ordered[i].Index = i + 1;

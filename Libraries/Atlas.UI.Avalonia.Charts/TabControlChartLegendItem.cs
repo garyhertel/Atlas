@@ -78,8 +78,10 @@ public abstract class TabChartLegendItem<TSeries> : Grid
 		AddCheckBox();
 		AddTextBlock();
 
-		if (ChartView.ShowOrder && !ChartView.Horizontal)
+		if (ChartView.ShowOrder && ChartView.LegendPosition == ChartLegendPosition.Right)
+		{
 			AddTotalTextBlock();
+		}
 
 		PointerEntered += TabChartLegendItem_PointerEntered;
 		PointerExited += TabChartLegendItem_PointerExited;
@@ -97,7 +99,9 @@ public abstract class TabChartLegendItem<TSeries> : Grid
 			Total = ChartSeries.ListSeries.Total;
 			Count = ChartSeries.ListSeries.List.Count;
 			if (TextBlockTotal != null)
+			{
 				TextBlockTotal.Text = DateTimeFormat.ValueFormatter(Total);
+			}
 			return;
 		}
 

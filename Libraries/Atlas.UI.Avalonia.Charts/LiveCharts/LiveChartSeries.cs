@@ -1,19 +1,15 @@
 using Atlas.Core;
 using Atlas.Extensions;
 using Atlas.UI.Avalonia.Charts.LiveCharts;
-using Avalonia.Threading;
-using LiveChartsCore;
 using LiveChartsCore.Defaults;
 using LiveChartsCore.SkiaSharpView.Painting;
-using LiveChartsCore.SkiaSharpView;
 using SkiaSharp;
 using System.Collections;
-using System.Collections.Specialized;
 using System.Reflection;
 using Avalonia.Media;
-using Avalonia;
 using LiveChartsCore.SkiaSharpView.Drawing.Geometries;
-using System.Diagnostics;
+using LiveChartsCore.Kernel.Sketches;
+using LiveChartsCore.Kernel;
 
 namespace Atlas.UI.Avalonia.Charts;
 
@@ -35,7 +31,7 @@ public class LiveChartSeries //: ChartSeries<ISeries>
 	public readonly TabControlLiveChart Chart;
 	public readonly ListSeries ListSeries;
 	public readonly bool UseDateTimeAxis;
-	public LineSeries<ObservablePoint> LineSeries;
+	public LiveChartLineSeries LineSeries;
 
 	public PropertyInfo? XAxisPropertyInfo;
 
@@ -58,7 +54,7 @@ public class LiveChartSeries //: ChartSeries<ISeries>
 		var dataPoints = GetDataPoints(listSeries, listSeries.List, _datapointLookup);
 
 		//LineSeries = new LineSeries<DateTimePoint>
-		LineSeries = new LineSeries<ObservablePoint>
+		LineSeries = new LiveChartLineSeries
 		{
 			Name = listSeries.Name,
 			Values = dataPoints,
@@ -105,13 +101,13 @@ public class LiveChartSeries //: ChartSeries<ISeries>
 		}*/
 	}
 
-	private void LineSeries_ChartPointPointerHover(LiveChartsCore.Kernel.Sketches.IChartView chart, LiveChartsCore.Kernel.ChartPoint<ObservablePoint, CircleGeometry, LabelGeometry>? point)
+	private void LineSeries_ChartPointPointerHover(IChartView chart, ChartPoint<ObservablePoint, CircleGeometry, LabelGeometry>? point)
 	{
 		//Debug.WriteLine($"Hover {ToString()}");
 		Hover?.Invoke(this, new SeriesHoverEventArgs(ListSeries));
 	}
 
-	private void LineSeries_ChartPointPointerHoverLost(LiveChartsCore.Kernel.Sketches.IChartView chart, LiveChartsCore.Kernel.ChartPoint<ObservablePoint, CircleGeometry, LabelGeometry>? point)
+	private void LineSeries_ChartPointPointerHoverLost(IChartView chart, ChartPoint<ObservablePoint, CircleGeometry, LabelGeometry>? point)
 	{
 		//Debug.WriteLine($"HoverLost {ToString()}");
 		HoverLost?.Invoke(this, new SeriesHoverEventArgs(ListSeries));

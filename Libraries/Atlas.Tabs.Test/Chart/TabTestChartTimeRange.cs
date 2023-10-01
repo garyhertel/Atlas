@@ -15,9 +15,29 @@ public class TabTestChartTimeRangeValue : ITab
 		{
 			await Task.Delay(10);
 
-			var list = new List<TimeRangeValue>();
+			var chartView = new ChartView("Animals")
+			{
+				ShowTimeTracker = true,
+				//Logarithmic = true,
+			};
 
 			DateTime startTime = DateTime.Now;
+			chartView.AddSeries("Cats", CreateSeries(startTime));
+			chartView.AddSeries("Dogs", CreateSeries(startTime));
+
+			chartView.Annotations.Add(new ChartAnnotation()
+			{
+				Text = "Too Many",
+				Y = 2_000_000_000,
+				Color = Color.Red,
+			});
+
+			model.AddObject(chartView);
+		}
+
+		private List<TimeRangeValue> CreateSeries(DateTime startTime)
+		{
+			var list = new List<TimeRangeValue>();
 			for (int i = 0; i < 24; i++)
 			{
 				var value = new TimeRangeValue()
@@ -30,19 +50,7 @@ public class TabTestChartTimeRangeValue : ITab
 				startTime = startTime.AddHours(1);
 			}
 
-			var chartView = new ChartView("Active Connection Count")
-			{
-				ShowTimeTracker = true,
-				Logarithmic = true,
-			};
-			chartView.AddSeries("Connections", list);
-			chartView.Annotations.Add(new ChartAnnotation()
-			{
-				Text = "Too High",
-				Y = 2_000_000_000,
-				Color = Color.Red,
-			});
-			model.AddObject(chartView);
+			return list;
 		}
 	}
 }
