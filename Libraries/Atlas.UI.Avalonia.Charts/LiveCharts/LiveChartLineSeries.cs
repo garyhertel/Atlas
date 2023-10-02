@@ -1,4 +1,4 @@
-﻿using LiveChartsCore;
+using LiveChartsCore;
 using LiveChartsCore.Defaults;
 using LiveChartsCore.SkiaSharpView;
 using LiveChartsCore.Kernel.Sketches;
@@ -11,6 +11,13 @@ namespace Atlas.UI.Avalonia.Charts;
 
 public class LiveChartLineSeries : LineSeries<ObservablePoint>, ISeries
 {
+	public LiveChartSeries LiveChartSeries;
+
+	public LiveChartLineSeries(LiveChartSeries liveChartSeries)
+	{
+		LiveChartSeries = liveChartSeries;
+	}
+
 	IEnumerable<ChartPoint> ISeries.FindHitPoints(IChart chart, LvcPoint pointerPosition, TooltipFindingStrategy strategy)
 	{
 		return FindHitPoints(chart, pointerPosition, 30);

@@ -23,11 +23,15 @@ public class TabControlLiveChartLegend : TabControlChartLegend<ISeries>
 		legendItem.TextBlock!.PointerPressed += (s, e) =>
 		{
 			if (e.GetCurrentPoint(this).Properties.IsLeftButtonPressed)
+			{
 				SelectLegendItem(legendItem);
+			}
 		};
 		LegendItems.Add(legendItem);
 		if (lineSeries.Name != null)
+		{
 			_idxLegendItems.Add(lineSeries.Name, legendItem);
+		}
 		return legendItem;
 	}
 }

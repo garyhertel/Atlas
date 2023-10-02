@@ -1,6 +1,7 @@
 using Atlas.Core;
 using Atlas.Extensions;
 using Atlas.Tabs;
+using Atlas.UI.Avalonia.Charts;
 using Atlas.UI.Avalonia.Themes;
 using Avalonia;
 using Avalonia.Controls;
@@ -466,7 +467,7 @@ public class TabControlOxyPlot : TabControlChart<OxyPlotLineSeries>
 		ValueAxis.MinorGridlineColor = OxyColors.Gray;
 		ValueAxis.TitleColor = OxyColors.LightGray;
 		ValueAxis.TextColor = OxyColors.LightGray;
-		ValueAxis.LabelFormatter = DateTimeFormat.ValueFormatter;
+		ValueAxis.LabelFormatter = NumberExtensions.FormattedShortDecimal;
 
 		if (key != null)
 			ValueAxis.Key = key;
@@ -497,7 +498,7 @@ public class TabControlOxyPlot : TabControlChart<OxyPlotLineSeries>
 			MinorGridlineColor = OxyColors.Gray,
 			TitleColor = OxyColors.LightGray,
 			TextColor = OxyColors.LightGray,
-			LabelFormatter = DateTimeFormat.ValueFormatter,
+			LabelFormatter = NumberExtensions.FormattedShortDecimal,
 		};
 		if (key != null)
 			categoryAxis.Key = key;

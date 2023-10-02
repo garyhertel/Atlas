@@ -10,6 +10,7 @@ using Avalonia.Media;
 using LiveChartsCore.SkiaSharpView.Drawing.Geometries;
 using LiveChartsCore.Kernel.Sketches;
 using LiveChartsCore.Kernel;
+using System.Text;
 
 namespace Atlas.UI.Avalonia.Charts;
 
@@ -54,7 +55,7 @@ public class LiveChartSeries //: ChartSeries<ISeries>
 		var dataPoints = GetDataPoints(listSeries, listSeries.List, _datapointLookup);
 
 		//LineSeries = new LineSeries<DateTimePoint>
-		LineSeries = new LiveChartLineSeries
+		LineSeries = new LiveChartLineSeries(this)
 		{
 			Name = listSeries.Name,
 			Values = dataPoints,
@@ -131,39 +132,43 @@ public class LiveChartSeries //: ChartSeries<ISeries>
 		return false;
 	}
 
-	// Override the default tracker text
-	/*public override TrackerHitResult? GetNearestPoint(ScreenPoint point, bool interpolate)
+	public string? GetTooltipTitle()
 	{
-		TrackerHitResult result = base.GetNearestPoint(point, interpolate);
-		if (result == null)
-			return null;
+		string? title = ListSeries.Name;
+		if (title != null && title.Length > MaxTitleLength)
+			title = title[..MaxTitleLength] + "...";
+		return title;
+	}
 
-		string valueLabel = ListSeries.YPropertyLabel ?? "Value";
-
-		if (_datapointLookup.TryGetValue(result.ObservablePoint, out object? obj))
+	public string[] GetTooltipLines(ChartPoint point)
+	{
+		List<string> lines = new();
+		if (_datapointLookup.TryGetValue((ObservablePoint)point.Context.DataSource!, out object? obj))
 		{
 			if (obj is TimeRangeValue timeRangeValue)
 			{
-				string? title = ListSeries.Name;
-				if (title != null && title.Length > MaxTitleLength)
-					title = title[..MaxTitleLength] + "...";
-
-				result.Text = title + "\n\nTime: " + timeRangeValue.TimeText + "\nDuration: " + timeRangeValue.Duration.FormattedDecimal() + "\n" + valueLabel + ": " + timeRangeValue.Value.Formatted();
+				string valueLabel = ListSeries.YPropertyLabel ?? "Value";
+				lines.Add($"Time: {timeRangeValue.TimeText}");
+				lines.Add($"Duration: {timeRangeValue.Duration.FormattedDecimal()}");
+				lines.Add($"{valueLabel}: {timeRangeValue.Value.Formatted()}");
 			}
 
 			if (obj is ITags tags && tags.Tags.Count > 0)
 			{
-				result.Text += "\n";
+				lines.Add("");
 
 				foreach (Tag tag in tags.Tags)
 				{
-					result.Text += "\n" + tag.Name + ": " + tag.Value;
+					lines.Add($"{tag.Name}: {tag.Value}");
 				}
 			}
 		}
 		if (ListSeries.Description != null)
-			result.Text += "\n\n" + ListSeries.Description;
-		return result;
+		{
+			lines.Add("");
+			lines.Add(ListSeries.Description);
+		}
+		return lines.ToArray();
 	}
 
 	/*

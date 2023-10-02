@@ -1,11 +1,11 @@
 using Atlas.Core;
+using Atlas.Extensions;
 using Atlas.UI.Avalonia.Themes;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Shapes;
 using Avalonia.Input;
 using Avalonia.Media;
-using OxyPlot.Avalonia;
 using System.Collections;
 
 namespace Atlas.UI.Avalonia.Charts;
@@ -100,7 +100,7 @@ public abstract class TabChartLegendItem<TSeries> : Grid
 			Count = ChartSeries.ListSeries.List.Count;
 			if (TextBlockTotal != null)
 			{
-				TextBlockTotal.Text = DateTimeFormat.ValueFormatter(Total);
+				TextBlockTotal.Text = Total.FormattedShortDecimal();
 			}
 			return;
 		}
@@ -179,7 +179,7 @@ public abstract class TabChartLegendItem<TSeries> : Grid
 	{
 		TextBlockTotal = new TextBlock
 		{
-			Text = DateTimeFormat.ValueFormatter(Total),
+			Text = Total.FormattedShortDecimal(),
 			Foreground = Brushes.LightGray,
 			Margin = new Thickness(10, 2, 6, 2),
 			HorizontalAlignment = global::Avalonia.Layout.HorizontalAlignment.Right,

@@ -94,8 +94,6 @@ public class OxyPlotLineSeries : OxyPlot.Series.LineSeries
 		if (result == null)
 			return null;
 
-		string valueLabel = ListSeries.YPropertyLabel ?? "Value";
-
 		if (_datapointLookup.TryGetValue(result.DataPoint, out object? obj))
 		{
 			if (obj is TimeRangeValue timeRangeValue)
@@ -104,6 +102,7 @@ public class OxyPlotLineSeries : OxyPlot.Series.LineSeries
 				if (title != null && title.Length > MaxTitleLength)
 					title = title[..MaxTitleLength] + "...";
 
+				string valueLabel = ListSeries.YPropertyLabel ?? "Value";
 				result.Text = title + "\n\nTime: " + timeRangeValue.TimeText + "\nDuration: " + timeRangeValue.Duration.FormattedDecimal() + "\n" + valueLabel + ": " + timeRangeValue.Value.Formatted();
 			}
 

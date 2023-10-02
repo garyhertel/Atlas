@@ -50,9 +50,9 @@ public class TabControlLiveChart : TabControlChart<ISeries>
 	public TabControlLiveChart(TabInstance tabInstance, ChartView chartView, bool fillHeight = false) : 
 		base(tabInstance, chartView, fillHeight)
 	{
-		var backColor = SKColor.Parse("#102670").WithAlpha(185);
-		XAxis = GetXAxis();
-		ValueAxis = GetValueAxis();
+		var backgroundColor = SKColor.Parse("#102670").WithAlpha(185);
+		XAxis = CreateXAxis();
+		ValueAxis = CreateValueAxis();
 		Chart = new CartesianChart()
 		{
 			HorizontalAlignment = HorizontalAlignment.Stretch,
@@ -60,10 +60,10 @@ public class TabControlLiveChart : TabControlChart<ISeries>
 			XAxes = new List<Axis> { XAxis },
 			YAxes = new List<Axis> { ValueAxis },
 			LegendPosition = LegendPosition.Hidden,
-			TooltipBackgroundPaint = new SolidColorPaint(backColor),
+			TooltipBackgroundPaint = new SolidColorPaint(backgroundColor),
 			//TooltipBackgroundPaint = new SolidColorPaint(AtlasTheme.ChartBackgroundSelected.Color.AsSkColor().WithAlpha((byte)200)),
 			TooltipTextPaint = new SolidColorPaint(AtlasTheme.TitleForeground.Color.AsSkColor()),
-			//Tooltip = new LiveChartTooltip(this),
+			Tooltip = new LiveChartTooltip2(),
 			TooltipFindingStrategy = TooltipFindingStrategy.CompareAllTakeClosest,
 			//MinWidth = 150,
 			//MinHeight = 80,
@@ -227,7 +227,7 @@ public class TabControlLiveChart : TabControlChart<ISeries>
 		}
 	}
 
-	private Axis GetXAxis()
+	private Axis CreateXAxis()
 	{
 		return new Axis
 		{
@@ -241,71 +241,52 @@ public class TabControlLiveChart : TabControlChart<ISeries>
 		};
 	}
 
-	public Axis GetValueAxis()//AxisPosition axisPosition = AxisPosition.Left, string? key = null)
+	public Axis CreateValueAxis()//AxisPosition axisPosition = AxisPosition.Left, string? key = null)
 	{
+		Axis axis;
 		if (ChartView.Logarithmic)
 		{
-			return new LogaritmicAxis(10)
-			{
-				Labeler = DateTimeFormat.ValueFormatter,
-				LabelsPaint = new SolidColorPaint(SKColors.LightGray),
-				SeparatorsPaint = new SolidColorPaint(GridLineColor),
-			};
+			// Doesn't work yet
+			axis = new LogaritmicAxis(10);
 		}
 		else
 		{
-			return new Axis
-			{
-				//Name = "Amount",
-				//NamePadding = new Padding(0, 15),
-				Labeler = DateTimeFormat.ValueFormatter,
-				LabelsPaint = new SolidColorPaint(SKColors.LightGray),
-				SeparatorsPaint = new SolidColorPaint(GridLineColor),
-				//UnitWidth = 1000000000,
-				/*LabelsPaint = new SolidColorPaint
-				{
-					Color = SKColors.Blue,
-					FontFamily = "Times New Roman",
-					SKFontStyle = new SKFontStyle(SKFontStyleWeight.ExtraBold, SKFontStyleWidth.Normal, SKFontStyleSlant.Italic)
-				},*/
-			};
+			axis = new Axis();
 		}
 
-		/*if (ListGroup.Logarithmic)
-		{
-			ValueAxis = new OxyPlot.Axes.LogarithmicAxis();
-		}
-		else
-		{
-			ValueAxis = new OxyPlot.Axes.LinearAxis()
-			{
-				IntervalLength = 25,
-			};
-		}
+		axis.Padding = new Padding(10, 2);
+		axis.Labeler = NumberExtensions.FormattedShortDecimal;
+		axis.SeparatorsPaint = new SolidColorPaint(GridLineColor);
+		axis.LabelsPaint = new SolidColorPaint(SKColors.LightGray);
 
-		ValueAxis.Position = axisPosition;
-		ValueAxis.MajorGridlineStyle = LineStyle.Solid;
-		ValueAxis.MinorGridlineStyle = LineStyle.None;
-		//ValueAxis.MinorStep = 20;
-		//ValueAxis.MajorStep = 10;
-		//ValueAxis.MinimumMinorStep = 20;
-		ValueAxis.MinorTickSize = 0;
-		ValueAxis.IsAxisVisible = true;
-		ValueAxis.IsPanEnabled = false;
-		ValueAxis.AxislineColor = GridLineColor;
-		ValueAxis.AxislineStyle = LineStyle.Solid;
-		ValueAxis.AxislineThickness = 2;
-		ValueAxis.TickStyle = TickStyle.Outside;
-		ValueAxis.TicklineColor = GridLineColor;
-		//ValueAxis.MajorTickSize = 2;
-		ValueAxis.MinorGridlineColor = OxyColors.Gray;
-		ValueAxis.TitleColor = OxyColors.LightGray;
-		ValueAxis.TextColor = OxyColors.LightGray;
+		//axis.Name = "Amount";
+		//axis.NamePadding = new Padding(0, 15);
+		//axis.UnitWidth = 1000000000;
+		/*axis.LabelsPaint = new SolidColorPaint
+		{
+			Color = SKColors.Blue,
+			FontFamily = "Times New Roman",
+			SKFontStyle = new SKFontStyle(SKFontStyleWeight.ExtraBold, SKFontStyleWidth.Normal, SKFontStyleSlant.Italic)
+		};*/
+
+		return axis;
+
+		/*
+		axis.Position = axisPosition;
+		//axis.MinStep = 20;
+		axis.IsAxisVisible = true;
+		axis.IsPanEnabled = false;
+		axis.AxislineColor = GridLineColor;
+		axis.AxislineStyle = LineStyle.Solid;
+		axis.AxislineThickness = 2;
+		axis.TickStyle = TickStyle.Outside;
+		axis.TicklineColor = GridLineColor;
+		axis.TitleColor = OxyColors.LightGray;
+		axis.TextColor = OxyColors.LightGray;
 
 		if (key != null)
-			ValueAxis.Key = key;
-		PlotModel!.Axes.Add(ValueAxis);
-		return ValueAxis;*/
+			axis.Key = key;
+		*/
 	}
 	public void UpdateValueAxis() // OxyPlot.Axes.LinearAxis valueAxis, string axisKey = null
 	{
@@ -742,25 +723,7 @@ public class TabControlLiveChart : TabControlChart<ISeries>
 		//PlotView!.InvalidatePlot(true);
 	}
 
-	/*private void AddAxis()
-	{
-		if (UseDateTimeAxis)
-		{
-			AddDateTimeAxis(ListGroup.TimeWindow);
-			AddNowTime();
-			if (ListGroup.ShowTimeTracker)
-				AddTrackerLine();
-
-			AddMouseListeners();
-		}
-		else
-		{
-			AddLinearAxis();
-		}
-
-		AddValueAxis();
-	}
-
+	/*
 	private void UpdateVisible()
 	{
 		if (PlotView == null)
@@ -777,6 +740,12 @@ public class TabControlLiveChart : TabControlChart<ISeries>
 		}
 	}
 
+	public override void Render(DrawingContext context)
+	{
+		Dispatcher.UIThread.Post(UpdateVisible, DispatcherPriority.Background);
+		base.Render(context);
+	}
+
 	// Anchor the chart to the top and stretch to max height, available size gets set to max :(
 	protected override Size MeasureOverride(Size availableSize)
 	{
@@ -784,12 +753,6 @@ public class TabControlLiveChart : TabControlChart<ISeries>
 		if (FillHeight)
 			size = size.WithHeight(Math.Max(size.Height, Math.Min(MaxHeight, availableSize.Height)));
 		return size;
-	}
-
-	public override void Render(DrawingContext context)
-	{
-		Dispatcher.UIThread.Post(UpdateVisible, DispatcherPriority.Background);
-		base.Render(context);
 	}
 
 	public class MouseHoverManipulator : TrackerManipulator

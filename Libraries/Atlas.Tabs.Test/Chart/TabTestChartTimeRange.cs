@@ -1,4 +1,5 @@
 using Atlas.Core;
+using Atlas.Extensions;
 using System.Drawing;
 
 namespace Atlas.Tabs.Test.Chart;
@@ -21,7 +22,7 @@ public class TabTestChartTimeRangeValue : ITab
 				//Logarithmic = true,
 			};
 
-			DateTime startTime = DateTime.Now;
+			DateTime startTime = DateTime.Now.Trim(TimeSpan.TicksPerHour);
 			chartView.AddSeries("Cats", CreateSeries(startTime));
 			chartView.AddSeries("Dogs", CreateSeries(startTime));
 
