@@ -64,8 +64,8 @@ public class TabControlLiveChart : TabControlChart<ISeries>
 			TooltipTextPaint = new SolidColorPaint(AtlasTheme.TitleForeground.Color.AsSkColor()),
 			Tooltip = new LiveChartTooltip2(),
 			TooltipFindingStrategy = TooltipFindingStrategy.CompareAllTakeClosest,
-			//MinWidth = 150,
-			//MinHeight = 80,
+			MinWidth = 150,
+			MinHeight = 120,
 			AnimationsSpeed = TimeSpan.Zero,
 			[Grid.RowProperty] = 1,
 		};

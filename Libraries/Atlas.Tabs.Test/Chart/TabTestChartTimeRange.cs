@@ -8,14 +8,12 @@ public class TabTestChartTimeRangeValue : ITab
 {
 	public TabInstance Create() => new Instance();
 
-	public class Instance : TabInstance, ITabAsync
+	public class Instance : TabInstance
 	{
 		private readonly Random _random = new();
 
-		public async Task LoadAsync(Call call, TabModel model)
+		public override void Load(Call call, TabModel model)
 		{
-			await Task.Delay(10);
-
 			var chartView = new ChartView("Animals")
 			{
 				ShowTimeTracker = true,

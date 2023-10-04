@@ -58,7 +58,7 @@ public class LiveChartSeries //: ChartSeries<ISeries>
 			Values = dataPoints,
 			Fill = null,
 			LineSmoothness = 0, // 1 = Curved
-			GeometrySize = 7,
+			GeometrySize = 5,
 			EnableNullSplitting = true,
 
 			Stroke = new SolidColorPaint(skColor) { StrokeThickness = 2 },
