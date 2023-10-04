@@ -15,7 +15,6 @@ using LiveChartsCore.Measure;
 using LiveChartsCore.SkiaSharpView;
 using LiveChartsCore.SkiaSharpView.Avalonia;
 using LiveChartsCore.SkiaSharpView.Painting;
-using LiveChartsCore.Themes;
 using SkiaSharp;
 using System.Diagnostics;
 
@@ -41,7 +40,8 @@ public class TabControlLiveChart : TabControlChart<ISeries>
 	private RectangularSection? _zoomSection;
 
 	private static readonly SKColor GridLineColor = SKColor.Parse("#333333");
-	//private readonly LvcColor[] colors = ColorPalletes.FluentDesign;
+	private static readonly SKColor TooltipBackgroundColor = SKColor.Parse("#102670").WithAlpha(185);
+	//private static readonly SKColor TooltipBackgroundColor = SKColor.Parse(AtlasTheme.ChartBackgroundSelected.Color.AsSkColor().WithAlpha((byte)200));
 
 	public List<LiveChartSeries> LiveChartSeries { get; private set; } = new();
 
@@ -50,9 +50,9 @@ public class TabControlLiveChart : TabControlChart<ISeries>
 	public TabControlLiveChart(TabInstance tabInstance, ChartView chartView, bool fillHeight = false) : 
 		base(tabInstance, chartView, fillHeight)
 	{
-		var backgroundColor = SKColor.Parse("#102670").WithAlpha(185);
 		XAxis = CreateXAxis();
 		ValueAxis = CreateValueAxis();
+
 		Chart = new CartesianChart()
 		{
 			HorizontalAlignment = HorizontalAlignment.Stretch,
@@ -60,8 +60,7 @@ public class TabControlLiveChart : TabControlChart<ISeries>
 			XAxes = new List<Axis> { XAxis },
 			YAxes = new List<Axis> { ValueAxis },
 			LegendPosition = LegendPosition.Hidden,
-			TooltipBackgroundPaint = new SolidColorPaint(backgroundColor),
-			//TooltipBackgroundPaint = new SolidColorPaint(AtlasTheme.ChartBackgroundSelected.Color.AsSkColor().WithAlpha((byte)200)),
+			TooltipBackgroundPaint = new SolidColorPaint(TooltipBackgroundColor),
 			TooltipTextPaint = new SolidColorPaint(AtlasTheme.TitleForeground.Color.AsSkColor()),
 			Tooltip = new LiveChartTooltip2(),
 			TooltipFindingStrategy = TooltipFindingStrategy.CompareAllTakeClosest,
@@ -120,7 +119,7 @@ public class TabControlLiveChart : TabControlChart<ISeries>
 			Legend.IsVisible = false;
 		}
 		containerGrid.Children.Add(Legend);
-		//Legend.OnSelectionChanged += Legend_OnSelectionChanged;
+		Legend.OnSelectionChanged += Legend_OnSelectionChanged;
 		//Legend.OnVisibleChanged += Legend_OnVisibleChanged;
 
 		OnMouseCursorChanged += TabControlChart_OnMouseCursorChanged;
@@ -185,11 +184,6 @@ public class TabControlLiveChart : TabControlChart<ISeries>
 		_trackerSection = new RectangularSection
 		{
 			Label = "",
-			//LabelSize = 14,
-			/*LabelPaint = new SolidColorPaint(color.WithAlpha(220))
-			{
-				SKTypeface = SKTypeface.FromFamilyName("Inter", SKFontStyle.Bold),
-			},*/
 			Stroke = new SolidColorPaint(AtlasTheme.GridBackgroundSelected.Color.AsSkColor()),
 			IsVisible = false,
 		};
@@ -199,7 +193,7 @@ public class TabControlLiveChart : TabControlChart<ISeries>
 	// Update mouse tracker
 	private void TabControlChart_OnMouseCursorChanged(object? sender, MouseCursorMovedEventArgs e)
 	{
-		if (_trackerSection == null) // sender == Chart |
+		if (_trackerSection == null)
 			return;
 
 		_trackerSection.Xi = e.X;
@@ -219,7 +213,6 @@ public class TabControlLiveChart : TabControlChart<ISeries>
 		_pointClicked = point;
 		if (point == null) return;
 
-		// todo: check for background click
 		if (IdxNameToSeries.TryGetValue(point!.Context.Series.Name!, out var series))
 		{
 			OnSelectionChanged(new SeriesSelectedEventArgs(new List<ListSeries>() { series.ListSeries }));
@@ -237,7 +230,6 @@ public class TabControlLiveChart : TabControlChart<ISeries>
 			ShowSeparatorLines = true,
 			SeparatorsPaint = new SolidColorPaint(GridLineColor),
 			LabelsPaint = new SolidColorPaint(SKColors.LightGray),
-			//CrosshairPaint = new SolidColorPaint(SKColors.LightGray),
 		};
 	}
 
@@ -566,21 +558,15 @@ public class TabControlLiveChart : TabControlChart<ISeries>
 
 	private void AddMouseListeners()
 	{
-		PointerPressed += TabControlLiveChart_PointerPressed;
-		PointerReleased += TabControlLiveChart_PointerReleased;
-		PointerMoved += TabControlLiveChart_PointerMoved;
+		Chart.PointerPressed += TabControlLiveChart_PointerPressed;
+		Chart.PointerReleased += TabControlLiveChart_PointerReleased;
+		Chart.PointerMoved += TabControlLiveChart_PointerMoved;
 
-		//Chart!.PointerMoved += TabControlLiveChart_PointerMoved;
-
-		//PlotModel.MouseMove += PlotModel_MouseMove;
-		//PlotModel.MouseUp += PlotModel_MouseUp;
-		//PlotModel.MouseLeave += PlotModel_MouseLeave;
+		//Chart.MouseLeave += PlotModel_MouseLeave;
 	}
 
 	private void TabControlLiveChart_PointerMoved(object? sender, global::Avalonia.Input.PointerEventArgs e)
 	{
-		//e.Pointer.Capture(this); // Steals focus
-
 		// store the mouse down point, check it when mouse button is released to determine if the context menu should be shown
 		var point = e.GetPosition(Chart);
 		try
@@ -589,8 +575,6 @@ public class TabControlLiveChart : TabControlChart<ISeries>
 
 			var moveEvent = new MouseCursorMovedEventArgs(dataPoint.X);
 			_mouseCursorChangedEventSource?.Raise(sender, moveEvent);
-
-			//Debug.WriteLine("pointer moved" + sender.GetType());
 
 			UpdateMouseSelection(dataPoint);
 		}
@@ -660,8 +644,6 @@ public class TabControlLiveChart : TabControlChart<ISeries>
 		_zoomSection.Xi = Math.Min(_startDataPoint!.Value.X, endDataPoint.X);
 		_zoomSection.Xj = Math.Max(_startDataPoint.Value.X, endDataPoint.X);
 
-		//Debug.WriteLine($"Start: {_zoomSection.Xi}, End: {_zoomSection.Xj}");
-
 		InvalidateChart();
 	}
 
@@ -721,6 +703,13 @@ public class TabControlLiveChart : TabControlChart<ISeries>
 		Legend.RefreshModel();
 
 		//PlotView!.InvalidatePlot(true);
+	}
+
+	private void Legend_OnSelectionChanged(object? sender, EventArgs e)
+	{
+		StopSelecting();
+		UpdateValueAxis();
+		OnSelectionChanged(new SeriesSelectedEventArgs(SelectedSeries));
 	}
 
 	/*
@@ -797,13 +786,6 @@ public class TabControlLiveChart : TabControlChart<ISeries>
 			HoverSeries = null;
 			Legend.UnhighlightAll(true);
 		}
-	}
-
-	private void Legend_OnSelectionChanged(object? sender, EventArgs e)
-	{
-		StopSelecting();
-		UpdateValueAxis();
-		OnSelectionChanged?.Invoke(sender, new SeriesSelectedEventArgs(SelectedSeries));
 	}
 
 	private void Legend_OnVisibleChanged(object? sender, EventArgs e)

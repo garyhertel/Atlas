@@ -10,7 +10,6 @@ using Avalonia.Media;
 using LiveChartsCore.SkiaSharpView.Drawing.Geometries;
 using LiveChartsCore.Kernel.Sketches;
 using LiveChartsCore.Kernel;
-using System.Text;
 
 namespace Atlas.UI.Avalonia.Charts;
 
@@ -36,7 +35,6 @@ public class LiveChartSeries //: ChartSeries<ISeries>
 
 	public PropertyInfo? XAxisPropertyInfo;
 
-	// ObservablePoint is sealed
 	private readonly Dictionary<ObservablePoint, object> _datapointLookup = new();
 
 	public event EventHandler<SeriesHoverEventArgs>? Hover;
@@ -54,7 +52,6 @@ public class LiveChartSeries //: ChartSeries<ISeries>
 
 		var dataPoints = GetDataPoints(listSeries, listSeries.List, _datapointLookup);
 
-		//LineSeries = new LineSeries<DateTimePoint>
 		LineSeries = new LiveChartLineSeries(this)
 		{
 			Name = listSeries.Name,
@@ -136,7 +133,9 @@ public class LiveChartSeries //: ChartSeries<ISeries>
 	{
 		string? title = ListSeries.Name;
 		if (title != null && title.Length > MaxTitleLength)
+		{
 			title = title[..MaxTitleLength] + "...";
+		}
 		return title;
 	}
 
