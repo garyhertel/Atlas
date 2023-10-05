@@ -9,7 +9,18 @@ using LiveChartsCore.SkiaSharpView.Drawing;
 
 namespace Atlas.UI.Avalonia.Charts;
 
-public class LiveChartLineSeries : LineSeries<ObservablePoint>, ISeries
+
+public class LiveChartPoint : ObservablePoint
+{
+	public object Object { get; set; }
+
+	public LiveChartPoint(object obj, double? x, double? y) : base(x, y)
+	{
+		Object = obj;
+	}
+}
+
+public class LiveChartLineSeries : LineSeries<LiveChartPoint>, ISeries
 {
 	public LiveChartSeries LiveChartSeries;
 

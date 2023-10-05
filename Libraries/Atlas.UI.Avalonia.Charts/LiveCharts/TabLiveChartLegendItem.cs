@@ -1,6 +1,5 @@
 using Avalonia.Media;
 using LiveChartsCore;
-using LiveChartsCore.Defaults;
 using LiveChartsCore.SkiaSharpView;
 using LiveChartsCore.SkiaSharpView.Painting;
 
@@ -15,7 +14,7 @@ public class TabLiveChartLegendItem : TabChartLegendItem<ISeries>
 
 	public override void UpdateColor(Color color)
 	{
-		if (ChartSeries.LineSeries is LineSeries<ObservablePoint> lineSeries)
+		if (ChartSeries.LineSeries is LineSeries<LiveChartPoint> lineSeries)
 		{
 			var skColor = color.AsSkColor();
 

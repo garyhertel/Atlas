@@ -8,7 +8,6 @@ using Avalonia.Layout;
 using Avalonia.Media;
 using Avalonia.Threading;
 using LiveChartsCore;
-using LiveChartsCore.Defaults;
 using LiveChartsCore.Drawing;
 using LiveChartsCore.Kernel.Sketches;
 using LiveChartsCore.Measure;
@@ -230,6 +229,7 @@ public class TabControlLiveChart : TabControlChart<ISeries>
 			ShowSeparatorLines = true,
 			SeparatorsPaint = new SolidColorPaint(GridLineColor),
 			LabelsPaint = new SolidColorPaint(SKColors.LightGray),
+			TextSize = 14,
 		};
 	}
 
@@ -250,6 +250,7 @@ public class TabControlLiveChart : TabControlChart<ISeries>
 		axis.Labeler = NumberExtensions.FormattedShortDecimal;
 		axis.SeparatorsPaint = new SolidColorPaint(GridLineColor);
 		axis.LabelsPaint = new SolidColorPaint(SKColors.LightGray);
+		axis.TextSize = 14;
 
 		//axis.Name = "Amount";
 		//axis.NamePadding = new Padding(0, 15);
@@ -515,12 +516,12 @@ public class TabControlLiveChart : TabControlChart<ISeries>
 
 		foreach (ISeries series in Chart.Series)
 		{
-			if (series is LineSeries<ObservablePoint> lineSeries)
+			if (series is LineSeries<LiveChartPoint> lineSeries)
 			{
 				//if (lineSeries.LineStyle == LineStyle.None)
 				//	continue;
 
-				foreach (ObservablePoint dataPoint in lineSeries.Values!)
+				foreach (LiveChartPoint dataPoint in lineSeries.Values!)
 				{
 					double? x = dataPoint.X;
 					if (x == null || double.IsNaN(x.Value))

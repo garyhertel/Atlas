@@ -1,7 +1,6 @@
 using Atlas.Core;
 using Atlas.Extensions;
 using Atlas.UI.Avalonia.Charts.LiveCharts;
-using LiveChartsCore.Defaults;
 using LiveChartsCore.SkiaSharpView.Painting;
 using SkiaSharp;
 using System.Collections;
@@ -35,8 +34,6 @@ public class LiveChartSeries //: ChartSeries<ISeries>
 
 	public PropertyInfo? XAxisPropertyInfo;
 
-	private readonly Dictionary<ObservablePoint, object> _datapointLookup = new();
-
 	public event EventHandler<SeriesHoverEventArgs>? Hover;
 	public event EventHandler<SeriesHoverEventArgs>? HoverLost;
 
@@ -50,7 +47,7 @@ public class LiveChartSeries //: ChartSeries<ISeries>
 
 		SKColor skColor = color.AsSkColor();
 
-		var dataPoints = GetDataPoints(listSeries, listSeries.List, _datapointLookup);
+		var dataPoints = GetDataPoints(listSeries, listSeries.List);
 
 		LineSeries = new LiveChartLineSeries(this)
 		{
@@ -86,7 +83,7 @@ public class LiveChartSeries //: ChartSeries<ISeries>
 		MarkerSize = 3;
 		LoadTrackFormat();
 
-		// can't add gaps with ItemSource so convert to ObservablePoint ourselves
+		// can't add gaps with ItemSource so convert to LiveChartPoint ourselves
 
 		if (listSeries.List is INotifyCollectionChanged iNotifyCollectionChanged)
 		{
@@ -99,23 +96,23 @@ public class LiveChartSeries //: ChartSeries<ISeries>
 		}*/
 	}
 
-	private void LineSeries_ChartPointPointerHover(IChartView chart, ChartPoint<ObservablePoint, CircleGeometry, LabelGeometry>? point)
+	private void LineSeries_ChartPointPointerHover(IChartView chart, ChartPoint<LiveChartPoint, CircleGeometry, LabelGeometry>? point)
 	{
 		//Debug.WriteLine($"Hover {ToString()}");
 		Hover?.Invoke(this, new SeriesHoverEventArgs(ListSeries));
 	}
 
-	private void LineSeries_ChartPointPointerHoverLost(IChartView chart, ChartPoint<ObservablePoint, CircleGeometry, LabelGeometry>? point)
+	private void LineSeries_ChartPointPointerHoverLost(IChartView chart, ChartPoint<LiveChartPoint, CircleGeometry, LabelGeometry>? point)
 	{
 		//Debug.WriteLine($"HoverLost {ToString()}");
 		HoverLost?.Invoke(this, new SeriesHoverEventArgs(ListSeries));
 	}
 
-	private bool HasSinglePoint(List<ObservablePoint> dataPoints)
+	private bool HasSinglePoint(List<LiveChartPoint> dataPoints)
 	{
 		bool prevNan1 = false;
 		bool prevNan2 = false;
-		foreach (ObservablePoint dataPoint in dataPoints)
+		foreach (LiveChartPoint dataPoint in dataPoints)
 		{
 			if (dataPoint.Y == null) return true;
 
@@ -142,17 +139,22 @@ public class LiveChartSeries //: ChartSeries<ISeries>
 	public string[] GetTooltipLines(ChartPoint point)
 	{
 		List<string> lines = new();
-		if (_datapointLookup.TryGetValue((ObservablePoint)point.Context.DataSource!, out object? obj))
+
+		if (point.Context.DataSource is LiveChartPoint liveChartPoint)
 		{
-			if (obj is TimeRangeValue timeRangeValue)
+			string valueLabel = ListSeries.YPropertyLabel ?? "Value";
+			if (liveChartPoint.Object is TimeRangeValue timeRangeValue)
 			{
-				string valueLabel = ListSeries.YPropertyLabel ?? "Value";
 				lines.Add($"Time: {timeRangeValue.TimeText}");
 				lines.Add($"Duration: {timeRangeValue.Duration.FormattedDecimal()}");
 				lines.Add($"{valueLabel}: {timeRangeValue.Value.Formatted()}");
 			}
+			else
+			{
+				lines.Add($"{valueLabel}: {liveChartPoint.Y!.Formatted()}");
+			}
 
-			if (obj is ITags tags && tags.Tags.Count > 0)
+			if (liveChartPoint.Object is ITags tags && tags.Tags.Count > 0)
 			{
 				lines.Add("");
 
@@ -187,15 +189,16 @@ public class LiveChartSeries //: ChartSeries<ISeries>
 		//TrackerFormatString = "{0}\n" + xTrackerFormat + "\nValue: {4:#,0.###}";
 	}
 
-	private List<ObservablePoint> GetDataPoints(ListSeries listSeries, IList iList, Dictionary<ObservablePoint, object>? datapointLookup = null)
+	private List<LiveChartPoint> GetDataPoints(ListSeries listSeries, IList iList)
 	{
 		UpdateXAxisProperty(listSeries);
 		double x = 0; // Points.Count;
-		var dataPoints = new List<ObservablePoint>();
-		if (listSeries.YPropertyInfo != null)
+		var dataPoints = new List<LiveChartPoint>();
+		// faster than using ItemSource?
+		foreach (object obj in iList)
 		{
-			// faster than using ItemSource?
-			foreach (object obj in iList)
+			double? d = null;
+			if (listSeries.YPropertyInfo != null)
 			{
 				if (XAxisPropertyInfo != null)
 				{
@@ -215,35 +218,31 @@ public class LiveChartSeries //: ChartSeries<ISeries>
 				}
 
 				object? value = listSeries.YPropertyInfo.GetValue(obj);
-				double? d = null;
+				d = null;
 				if (value != null)
 				{
 					d = Convert.ToDouble(value);
 					if (double.IsNaN(d.Value))
 						d = null;
 				}
-				
-
-				var dataPoint = new ObservablePoint(x++, d);
-				if (datapointLookup != null && !datapointLookup.ContainsKey(dataPoint)) // && !double.IsNaN(d)
-					datapointLookup.Add(dataPoint, obj);
-				dataPoints.Add(dataPoint);
 			}
-			dataPoints = dataPoints.OrderBy(d => d.X).ToList();
-
-			/*if (dataPoints.Count > 0 && listSeries.XBinSize > 0)
+			else
 			{
-				dataPoints = BinDataPoints(dataPoints, listSeries.XBinSize);
-			}*/
+				d = Convert.ToDouble(obj);
+			}
+
+			var dataPoint = new LiveChartPoint(obj, x++, d);
+			dataPoints.Add(dataPoint);
 		}
-		else
+
+		dataPoints = dataPoints
+			.OrderBy(d => d.X)
+			.ToList();
+
+		/*if (dataPoints.Count > 0 && listSeries.XBinSize > 0)
 		{
-			foreach (object obj in iList)
-			{
-				double value = Convert.ToDouble(obj);
-				dataPoints.Add(new ObservablePoint(x++, value));
-			}
-		}
+			dataPoints = BinDataPoints(dataPoints, listSeries.XBinSize);
+		}*/
 		return dataPoints;
 	}
 
@@ -266,21 +265,21 @@ public class LiveChartSeries //: ChartSeries<ISeries>
 		}
 	}
 
-	/*private static List<ObservablePoint> BinDataPoints(List<ObservablePoint> dataPoints, double xBinSize)
+	/*private static List<LiveChartPoint> BinDataPoints(List<LiveChartPoint> dataPoints, double xBinSize)
 	{
 		double firstX = dataPoints.First().X;
 		double firstBinX = ((int)(firstX / xBinSize)) * xBinSize; // use start of interval
 		double lastBinX = dataPoints.Last().X;
 		int numBins = (int)Math.Ceiling((lastBinX - firstBinX) / xBinSize) + 1;
 		double[] bins = new double[numBins];
-		foreach (ObservablePoint dataPoint in dataPoints)
+		foreach (LiveChartPoint dataPoint in dataPoints)
 		{
 			int bin = (int)((dataPoint.X - firstBinX) / xBinSize);
 			bins[bin] += dataPoint.Y;
 		}
 
 		bool prevNan = false;
-		var binDataPoints = new List<ObservablePoint>();
+		var binDataPoints = new List<LiveChartPoint>();
 		for (int i = 0; i < numBins; i++)
 		{
 			double value = bins[i];
@@ -296,7 +295,7 @@ public class LiveChartSeries //: ChartSeries<ISeries>
 			{
 				prevNan = true;
 			}
-			binDataPoints.Add(new ObservablePoint(firstBinX + i * xBinSize, value));
+			binDataPoints.Add(new LiveChartPoint(firstBinX + i * xBinSize, value));
 		}
 
 		return binDataPoints;
@@ -314,7 +313,7 @@ public class LiveChartSeries //: ChartSeries<ISeries>
 			else if (e.Action == NotifyCollectionChangedAction.Remove)
 			{
 				var dataPoints = GetDataPoints(listSeries, e.OldItems!);
-				foreach (ObservablePoint datapoint in dataPoints)
+				foreach (LiveChartPoint datapoint in dataPoints)
 				{
 					if (Points.FirstOrDefault().X == datapoint.X)
 					{
