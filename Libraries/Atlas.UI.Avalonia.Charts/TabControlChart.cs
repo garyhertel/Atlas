@@ -123,16 +123,11 @@ public class TabControlChart<TSeries> : Grid, ITabControlChart //, IDisposable
 		Colors.LawnGreen,
 		Colors.Fuchsia,
 		Colors.Cyan,
-		//Colors.Aquamarine, // too close to Cyan (but more matte)
 		Colors.Gold,
 		Colors.DodgerBlue,
 		Colors.Red,
 		Colors.BlueViolet,
-		//Colors.SlateBlue,
 		Colors.Orange,
-		//Colors.Pink,
-		//Colors.Coral,
-		//Colors.YellowGreen,
 		Colors.Salmon,
 		Colors.MediumSpringGreen,
 	};

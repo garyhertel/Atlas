@@ -27,7 +27,7 @@ public class OxyPlotLineSeries : OxyPlot.Series.LineSeries
 
 	public PropertyInfo? XAxisPropertyInfo;
 
-	// DataPoint is sealed
+	// DataPoint is a struct which can't be inherited
 	private readonly Dictionary<DataPoint, object> _datapointLookup = new();
 
 	public override string? ToString() => ListSeries?.Name;

@@ -21,7 +21,6 @@ namespace Atlas.UI.Avalonia.Charts.LiveCharts;
 
 public class TabControlLiveChart : TabControlChart<ISeries>
 {
-	//private static readonly Color NowColor = Colors.Green;
 	//private static Color timeTrackerColor = Theme.TitleBackground;
 
 	public CartesianChart Chart;
@@ -35,6 +34,7 @@ public class TabControlLiveChart : TabControlChart<ISeries>
 	public Axis XAxis { get; set; }
 	public Axis ValueAxis { get; set; } // left/right?
 
+	private List<RectangularSection> _sections = new();
 	private RectangularSection? _trackerSection;
 	private RectangularSection? _zoomSection;
 
@@ -74,9 +74,7 @@ public class TabControlLiveChart : TabControlChart<ISeries>
 
 		/*PlotView = new PlotView()
 		{
-			PlotAreaBorderColor = Color.Parse("#888888"),
 			Background = Brushes.Transparent,
-			BorderBrush = Brushes.LightGray,
 			ClipToBounds = false,
 		};
 		ClipToBounds = true; // Slows things down too much without this, could possible change while tracker visible?
@@ -102,13 +100,11 @@ public class TabControlLiveChart : TabControlChart<ISeries>
 		Legend = new TabControlLiveChartLegend(this);
 		if (ChartView!.LegendPosition == ChartLegendPosition.Bottom)
 		{
-			// Bottom
 			SetRow(Legend, 2);
 			Legend.MaxHeight = 100;
 		}
 		else if (ChartView!.LegendPosition == ChartLegendPosition.Right)
 		{
-			// Right Side
 			SetRow(Legend, 1);
 			SetColumn(Legend, 1);
 			Legend.MaxWidth = 300;
@@ -151,6 +147,7 @@ public class TabControlLiveChart : TabControlChart<ISeries>
 		_sections = ChartView.Annotations
 			.Select(a => CreateAnnotation(a))
 			.ToList();
+
 		if (UseDateTimeAxis && ChartView.ShowTimeTracker)
 		{
 			_sections.Add(CreateTrackerLine());
@@ -175,8 +172,6 @@ public class TabControlLiveChart : TabControlChart<ISeries>
 	{
 		UpdateTimeWindow(e.TimeWindow);
 	}
-
-	private List<RectangularSection> _sections = new();
 
 	private RectangularSection CreateTrackerLine()
 	{
@@ -404,7 +399,6 @@ public class TabControlLiveChart : TabControlChart<ISeries>
 
 		var liveChartSeries = new LiveChartSeries(this, listSeries, color, UseDateTimeAxis);
 		_xAxisPropertyInfo = liveChartSeries.XAxisPropertyInfo;
-		//lineSeries.LineSeries.ChartPointPointerHover += LineSeries_ChartPointPointerHover;
 		liveChartSeries.Hover += LineSeries_Hover;
 		liveChartSeries.HoverLost += LineSeries_HoverLost;
 
@@ -518,8 +512,7 @@ public class TabControlLiveChart : TabControlChart<ISeries>
 		{
 			if (series is LineSeries<LiveChartPoint> lineSeries)
 			{
-				//if (lineSeries.LineStyle == LineStyle.None)
-				//	continue;
+				// if (!lineSeries.IsVisible) continue;
 
 				foreach (LiveChartPoint dataPoint in lineSeries.Values!)
 				{

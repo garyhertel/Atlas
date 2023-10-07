@@ -19,7 +19,6 @@ namespace Atlas.UI.Avalonia.Charts;
 
 public class TabControlOxyPlot : TabControlChart<OxyPlotLineSeries>
 {
-	private static readonly OxyColor NowColor = OxyColors.Green;
 	//private static OxyColor timeTrackerColor = Theme.TitleBackground;
 
 	public OxyPlot.Series.Series? HoverSeries;
@@ -822,7 +821,7 @@ public class TabControlOxyPlot : TabControlChart<OxyPlotLineSeries>
 		return lineSeries;
 	}
 
-	private void AddNowTime()
+	/*private void AddNowTime()
 	{
 		var now = DateTime.UtcNow;
 		if (ChartView.TimeWindow != null && ChartView.TimeWindow.EndTime < now.AddMinutes(1))
@@ -837,7 +836,7 @@ public class TabControlOxyPlot : TabControlChart<OxyPlotLineSeries>
 		};
 
 		PlotModel!.Annotations.Add(annotation);
-	}
+	}*/
 
 	private void AddTrackerLine()
 	{

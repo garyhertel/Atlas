@@ -9,4 +9,5 @@ public class TabTestChart
 	public static TabTestChartProperties Properties => new();
 	public static TabTestChartCategories Categories => new();
 	public static TabTestChartTimeRangeValue TimeRange => new();
+	public static TabTestChartNoData NoData => new();
 }

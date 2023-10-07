@@ -22,6 +22,8 @@ public class LiveChartPoint : ObservablePoint
 
 public class LiveChartLineSeries : LineSeries<LiveChartPoint>, ISeries
 {
+	private const int MaxFindDistance = 30;
+
 	public LiveChartSeries LiveChartSeries;
 
 	public LiveChartLineSeries(LiveChartSeries liveChartSeries)
@@ -31,7 +33,7 @@ public class LiveChartLineSeries : LineSeries<LiveChartPoint>, ISeries
 
 	IEnumerable<ChartPoint> ISeries.FindHitPoints(IChart chart, LvcPoint pointerPosition, TooltipFindingStrategy strategy)
 	{
-		return FindHitPoints(chart, pointerPosition, 30);
+		return FindHitPoints(chart, pointerPosition, MaxFindDistance);
 	}
 
 	List<ChartPoint> FindHitPoints(IChart chart, LvcPoint pointerPosition, double maxDistance)
