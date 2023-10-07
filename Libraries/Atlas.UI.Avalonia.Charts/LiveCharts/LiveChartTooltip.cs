@@ -15,6 +15,7 @@ using Avalonia.Threading;
 using System.Reflection;
 using LiveChartsCore.SkiaSharpView.Painting.ImageFilters;
 using Atlas.Extensions;
+using LiveChartsCore.SkiaSharpView.Avalonia;
 
 namespace Atlas.UI.Avalonia.Charts.LiveCharts;
 
@@ -180,9 +181,11 @@ public class LiveChartTooltip2 : IChartTooltip<SkiaSharpDrawingContext>
 
 	internal StackPanel<PopUpGeometry, SkiaSharpDrawingContext>? _panel;
 	private IPaint<SkiaSharpDrawingContext>? _backgroundPaint;
+	public TabControlLiveChart LiveChart;
 
-	public LiveChartTooltip2()
+	public LiveChartTooltip2(TabControlLiveChart liveChart)
 	{
+		LiveChart = liveChart;
 		FontPaint = new SolidColorPaint(new SKColor(28, 49, 58));
 		BackgroundPaint = new SolidColorPaint(new SKColor(235, 235, 235, 230))
 		{
@@ -250,62 +253,66 @@ public class LiveChartTooltip2 : IChartTooltip<SkiaSharpDrawingContext>
 
 		var lw = (float)MaxTooltipsAndLegendsLabelsWidth;
 
+		if (LiveChart.CursorPosition == null || !foundPoints.Any()) return;
+		var cursorPosition = LiveChart.CursorPosition.Value;
+		var cursorPoint = new LvcPoint(cursorPosition.X, cursorPosition.Y);
+
+		ChartPoint closestPoint = foundPoints
+			.Select(x => new { distance = LiveChartLineSeries.GetDistanceTo(x, cursorPoint), point = x })
+			.MinBy(x => x.distance)!
+			.point;
+
 		// Points are in chart series order, not closest
 		// Use pointer moved value in chart to find closest?
-		var i = 0;
-		foreach (var point in foundPoints)
+		if (closestPoint.Context.Series is LiveChartLineSeries lineSeries)
 		{
-			if (point.Context.Series is LiveChartLineSeries lineSeries)
+			string? title = lineSeries.LiveChartSeries.GetTooltipTitle();
+			if (title != null)
 			{
-				string? title = lineSeries.LiveChartSeries.GetTooltipTitle();
-				if (title != null)
+				_panel.Children.Add(
+					new LabelVisual
+					{
+						Text = title,
+						Paint = FontPaint,
+						TextSize = TextSize,
+						Padding = new Padding(0, 0, 0, 0),
+						MaxWidth = lw,
+						VerticalAlignment = Align.Start,
+						HorizontalAlignment = Align.Start,
+						ClippingMode = LiveChartsCore.Measure.ClipMode.XY
+					});
+
+				_panel.Children.Add(
+					new StackPanel<LiveChartsCore.SkiaSharpView.Drawing.Geometries.RectangleGeometry, SkiaSharpDrawingContext> { Padding = new(0, 8) });
+			}
+
+			var lines = lineSeries.LiveChartSeries.GetTooltipLines(closestPoint);
+
+			for (int j = 0; j < lines.Length; j++)
+			{
+				string line = lines[j];
+				if (!line.IsNullOrEmpty())
 				{
-					_panel.Children.Add(
+					tableLayout.AddChild(
 						new LabelVisual
 						{
-							Text = title,
+							Text = lines[j],
 							Paint = FontPaint,
 							TextSize = TextSize,
 							Padding = new Padding(0, 0, 0, 0),
 							MaxWidth = lw,
 							VerticalAlignment = Align.Start,
-							HorizontalAlignment = Align.Middle,
+							HorizontalAlignment = Align.Start,
 							ClippingMode = LiveChartsCore.Measure.ClipMode.None
-						});
-
-					_panel.Children.Add(
-						new StackPanel<LiveChartsCore.SkiaSharpView.Drawing.Geometries.RectangleGeometry, SkiaSharpDrawingContext> { Padding = new(0, 8) });
+						}, j, 1, horizontalAlign: Align.Start);
 				}
-
-				var lines = lineSeries.LiveChartSeries.GetTooltipLines(point);
-
-				for (int j = 0; j < lines.Length; j++)
+				else
 				{
-					string line = lines[j];
-					if (!line.IsNullOrEmpty())
-					{
-						tableLayout.AddChild(
-							new LabelVisual
-							{
-								Text = lines[j],
-								Paint = FontPaint,
-								TextSize = TextSize,
-								Padding = new Padding(0, 0, 0, 0),
-								MaxWidth = lw,
-								VerticalAlignment = Align.Start,
-								HorizontalAlignment = Align.Start,
-								ClippingMode = LiveChartsCore.Measure.ClipMode.None
-							}, j, 1, horizontalAlign: Align.Start);
-					}
-					else
-					{
-						tableLayout.AddChild(
-							new StackPanel<LiveChartsCore.SkiaSharpView.Drawing.Geometries.RectangleGeometry, SkiaSharpDrawingContext> { Padding = new(0, 8) }, j, 1);
-					}
+					tableLayout.AddChild(
+						new StackPanel<LiveChartsCore.SkiaSharpView.Drawing.Geometries.RectangleGeometry, SkiaSharpDrawingContext> { Padding = new(0, 8) }, j, 1);
 				}
-
-				break;
 			}
+
 
 			/*var series = (IChartSeries<SkiaSharpDrawingContext>)point.Context.Series;
 
@@ -337,7 +344,6 @@ public class LiveChartTooltip2 : IChartTooltip<SkiaSharpDrawingContext>
 					ClippingMode = LiveChartsCore.Measure.ClipMode.None
 				}, i, 2, horizontalAlign: Align.End);
 			*/
-			i++;
 		}
 
 		_panel.Children.Add(tableLayout);

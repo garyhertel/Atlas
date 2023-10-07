@@ -201,7 +201,7 @@ public class TabControlChart<TSeries> : Grid, ITabControlChart //, IDisposable
 				//FontWeight = FontWeight.Medium,
 				[ColumnSpanProperty] = 2,
 			};
-			if (!ChartView.ShowOrder || ChartView.LegendPosition == ChartLegendPosition.Right)
+			if (!ChartView.ShowOrder || ChartView.LegendPosition == ChartLegendPosition.Bottom)
 			{
 				TitleTextBlock.HorizontalAlignment = HorizontalAlignment.Center;
 			}

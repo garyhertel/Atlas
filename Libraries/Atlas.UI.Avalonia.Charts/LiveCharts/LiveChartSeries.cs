@@ -34,9 +34,6 @@ public class LiveChartSeries //: ChartSeries<ISeries>
 
 	public PropertyInfo? XAxisPropertyInfo;
 
-	public event EventHandler<SeriesHoverEventArgs>? Hover;
-	public event EventHandler<SeriesHoverEventArgs>? HoverLost;
-
 	public override string? ToString() => ListSeries?.ToString();
 
 	public LiveChartSeries(TabControlLiveChart chart, ListSeries listSeries, Color color, bool useDateTimeAxis)
@@ -62,9 +59,6 @@ public class LiveChartSeries //: ChartSeries<ISeries>
 			GeometryStroke = null,
 			GeometryFill = null,
 		};
-
-		LineSeries.ChartPointPointerHover += LineSeries_ChartPointPointerHover;
-		LineSeries.ChartPointPointerHoverLost += LineSeries_ChartPointPointerHoverLost;
 
 		if (listSeries.List.Count > 0 && listSeries.List.Count <= MaxPointsToShowMarkers || HasSinglePoint(dataPoints))
 		{
@@ -94,16 +88,6 @@ public class LiveChartSeries //: ChartSeries<ISeries>
 				SeriesChanged(listSeries, e);
 			});
 		}*/
-	}
-
-	private void LineSeries_ChartPointPointerHover(IChartView chart, ChartPoint<LiveChartPoint, CircleGeometry, LabelGeometry>? point)
-	{
-		Hover?.Invoke(this, new SeriesHoverEventArgs(ListSeries));
-	}
-
-	private void LineSeries_ChartPointPointerHoverLost(IChartView chart, ChartPoint<LiveChartPoint, CircleGeometry, LabelGeometry>? point)
-	{
-		HoverLost?.Invoke(this, new SeriesHoverEventArgs(ListSeries));
 	}
 
 	private bool HasSinglePoint(List<LiveChartPoint> dataPoints)

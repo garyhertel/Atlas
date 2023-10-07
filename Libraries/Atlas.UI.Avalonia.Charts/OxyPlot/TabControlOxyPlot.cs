@@ -101,28 +101,8 @@ public class TabControlOxyPlot : TabControlChart<OxyPlotLineSeries>
 			Background = AtlasTheme.TabBackground, // grid lines look bad when hovering without this
 		};
 
-		string? title = ChartView?.Name;
-		if (title != null)
+		if (TitleTextBlock != null)
 		{
-			TitleTextBlock = new TextBlock()
-			{
-				Text = ChartView?.Name,
-				FontSize = 16,
-				Foreground = AtlasTheme.BackgroundText,
-				Margin = new Thickness(10, 5),
-				//FontWeight = FontWeight.Medium,
-				[Grid.ColumnSpanProperty] = 2,
-			};
-			if (!ChartView!.ShowOrder || ChartView.LegendPosition == ChartLegendPosition.Right)
-			{
-				TitleTextBlock.HorizontalAlignment = global::Avalonia.Layout.HorizontalAlignment.Center;
-			}
-			else
-			{
-				TitleTextBlock.Margin = new Thickness(40, 5, 5, 5);
-			}
-			TitleTextBlock.PointerEntered += TitleTextBlock_PointerEntered;
-			TitleTextBlock.PointerExited += TitleTextBlock_PointerExited;
 			containerGrid.Children.Add(TitleTextBlock);
 		}
 

@@ -9,6 +9,7 @@ using Avalonia.Media;
 using Avalonia.Threading;
 using LiveChartsCore;
 using LiveChartsCore.Drawing;
+using LiveChartsCore.Kernel;
 using LiveChartsCore.Kernel.Sketches;
 using LiveChartsCore.Measure;
 using LiveChartsCore.SkiaSharpView;
@@ -44,7 +45,8 @@ public class TabControlLiveChart : TabControlChart<ISeries>
 
 	public List<LiveChartSeries> LiveChartSeries { get; private set; } = new();
 
-	private LiveChartsCore.Kernel.ChartPoint? _pointClicked;
+	private ChartPoint? _pointClicked;
+	public Point? CursorPosition;
 
 	public TabControlLiveChart(TabInstance tabInstance, ChartView chartView, bool fillHeight = false) : 
 		base(tabInstance, chartView, fillHeight)
@@ -61,7 +63,7 @@ public class TabControlLiveChart : TabControlChart<ISeries>
 			LegendPosition = LegendPosition.Hidden,
 			TooltipBackgroundPaint = new SolidColorPaint(TooltipBackgroundColor),
 			TooltipTextPaint = new SolidColorPaint(AtlasTheme.TitleForeground.Color.AsSkColor()),
-			Tooltip = new LiveChartTooltip2(),
+			Tooltip = new LiveChartTooltip2(this),
 			TooltipFindingStrategy = TooltipFindingStrategy.CompareAllTakeClosest,
 			MinWidth = 150,
 			MinHeight = 120,
@@ -399,8 +401,6 @@ public class TabControlLiveChart : TabControlChart<ISeries>
 
 		var liveChartSeries = new LiveChartSeries(this, listSeries, color, UseDateTimeAxis);
 		_xAxisPropertyInfo = liveChartSeries.XAxisPropertyInfo;
-		liveChartSeries.Hover += LineSeries_Hover;
-		liveChartSeries.HoverLost += LineSeries_HoverLost;
 
 		var chartSeries = new ChartSeries<ISeries>(listSeries, liveChartSeries.LineSeries, color);
 		LiveChartSeries.Add(liveChartSeries);
@@ -409,26 +409,6 @@ public class TabControlLiveChart : TabControlChart<ISeries>
 		if (listSeries.Name != null)
 			IdxNameToSeries[listSeries.Name] = chartSeries;
 		return liveChartSeries.LineSeries;
-	}
-
-	private void LineSeries_Hover(object? sender, SeriesHoverEventArgs e)
-	{
-		if (e.Series.Name is string name)
-		{
-			Legend.HighlightSeries(name);
-			if (IdxNameToSeries.TryGetValue(name, out ChartSeries<ISeries>? series))
-			{
-				HoverSeries = series;
-			}
-		}
-	}
-
-	private void LineSeries_HoverLost(object? sender, SeriesHoverEventArgs e)
-	{
-		if (HoverSeries?.ListSeries == e.Series)
-		{
-			Legend.UnhighlightAll(true);
-		}
 	}
 
 	public override void AddAnnotation(ChartAnnotation chartAnnotation)
@@ -563,8 +543,30 @@ public class TabControlLiveChart : TabControlChart<ISeries>
 	{
 		// store the mouse down point, check it when mouse button is released to determine if the context menu should be shown
 		var point = e.GetPosition(Chart);
+		CursorPosition = point;
 		try
 		{
+			ChartPoint? hitPoint = FindClosestPoint(new LvcPoint(point.X, point.Y), 30);
+			if (hitPoint != null)
+			{
+				if (hitPoint.Context.Series.Name is string name)
+				{
+					Legend.HighlightSeries(name);
+					if (IdxNameToSeries.TryGetValue(name, out ChartSeries<ISeries>? series))
+					{
+						HoverSeries = series;
+					}
+				}
+			}
+			else
+			{
+				if (HoverSeries != null)
+				{
+					HoverSeries = null;
+					Legend.UnhighlightAll(true);
+				}
+			}
+
 			LvcPointD dataPoint = Chart!.ScalePixelsToData(new LvcPointD(point.X, point.Y));
 
 			var moveEvent = new MouseCursorMovedEventArgs(dataPoint.X);
@@ -576,6 +578,16 @@ public class TabControlLiveChart : TabControlChart<ISeries>
 		{
 			Debug.WriteLine(ex);
 		}
+	}
+
+	private ChartPoint? FindClosestPoint(LvcPoint pointerPosition, double maxDistance)
+	{
+		return LiveChartSeries
+			.SelectMany(s => s.LineSeries.Fetch(Chart.CoreChart))
+			.Select(x => new { distance = LiveChartLineSeries.GetDistanceTo(x, pointerPosition), point = x })
+			.Where(x => x.distance < maxDistance)
+			.MinBy(x => x.distance)
+			?.point;
 	}
 
 	private void TabControlLiveChart_PointerPressed(object? sender, global::Avalonia.Input.PointerPressedEventArgs e)

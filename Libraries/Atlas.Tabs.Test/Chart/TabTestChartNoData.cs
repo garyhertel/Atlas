@@ -8,8 +8,6 @@ public class TabTestChartNoData : ITab
 
 	public class Instance : TabInstance
 	{
-		private readonly Random _random = new();
-
 		public override void Load(Call call, TabModel model)
 		{
 			var chartView = new ChartView("Animals");

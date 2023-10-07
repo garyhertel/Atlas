@@ -31,6 +31,8 @@ public class LiveChartLineSeries : LineSeries<LiveChartPoint>, ISeries
 		LiveChartSeries = liveChartSeries;
 	}
 
+	public new IEnumerable<ChartPoint> Fetch(IChart chart) => base.Fetch(chart);
+
 	IEnumerable<ChartPoint> ISeries.FindHitPoints(IChart chart, LvcPoint pointerPosition, TooltipFindingStrategy strategy)
 	{
 		return FindHitPoints(chart, pointerPosition, MaxFindDistance);
