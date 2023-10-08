@@ -70,9 +70,7 @@ public class TabControlLiveChart : TabControlChart<ISeries>
 			AnimationsSpeed = TimeSpan.Zero,
 			[Grid.RowProperty] = 1,
 		};
-		Chart.VisualElementsPointerDown += Chart_VisualElementsPointerDown;
 		Chart.ChartPointPointerDown += Chart_ChartPointPointerDown;
-		Chart.DataPointerDown += Chart_DataPointerDown;
 
 		/*PlotView = new PlotView()
 		{
@@ -132,16 +130,6 @@ public class TabControlLiveChart : TabControlChart<ISeries>
 		AddSections();
 
 		Children.Add(containerGrid);
-	}
-
-	private void Chart_DataPointerDown(IChartView chart, IEnumerable<LiveChartsCore.Kernel.ChartPoint> points)
-	{
-	}
-
-	private void Chart_VisualElementsPointerDown(IChartView chart, LiveChartsCore.Kernel.Events.VisualElementsEventArgs<LiveChartsCore.SkiaSharpView.Drawing.SkiaSharpDrawingContext> visualElementsArgs)
-	{
-		var points = Chart.GetPointsAt(visualElementsArgs.PointerLocation, TooltipFindingStrategy.CompareAllTakeClosest).ToList();
-		var visualElements = visualElementsArgs.VisualElements.ToList();
 	}
 
 	private void AddSections()
@@ -204,7 +192,7 @@ public class TabControlLiveChart : TabControlChart<ISeries>
 		Dispatcher.UIThread.Post(() => Chart!.InvalidateVisual(), DispatcherPriority.Background);
 	}
 
-	private void Chart_ChartPointPointerDown(IChartView chart, LiveChartsCore.Kernel.ChartPoint? point)
+	private void Chart_ChartPointPointerDown(IChartView chart, ChartPoint? point)
 	{
 		_pointClicked = point;
 		if (point == null) return;
@@ -748,41 +736,6 @@ public class TabControlLiveChart : TabControlChart<ISeries>
 		if (FillHeight)
 			size = size.WithHeight(Math.Max(size.Height, Math.Min(MaxHeight, availableSize.Height)));
 		return size;
-	}
-
-	public class MouseHoverManipulator : TrackerManipulator
-	{
-		public TabControlChart Chart;
-
-		public MouseHoverManipulator(TabControlChart chart)
-			: base(chart.PlotView)
-		{
-			Chart = chart;
-			LockToInitialSeries = false;
-			Snap = true;
-			PointsOnly = false;
-		}
-
-		public override void Delta(OxyMouseEventArgs e)
-		{
-			base.Delta(e);
-
-			var series = PlotView.ActualModel.GetSeriesFromPoint(e.Position, 20);
-			if (Chart.HoverSeries == series)
-				return;
-
-			if (series != null)
-			{
-				Chart.Legend.HighlightSeries(series);
-			}
-			else
-			{
-				Chart.Legend.UnhighlightAll(true);
-			}
-			Chart.HoverSeries = series;
-
-			// todo: replace tracker here
-		}
 	}
 
 	private void PlotView_PointerExited(object? sender, PointerEventArgs e)
