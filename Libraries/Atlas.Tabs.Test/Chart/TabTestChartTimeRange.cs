@@ -6,7 +6,7 @@ namespace Atlas.Tabs.Test.Chart;
 
 public class TabTestChartTimeRangeValue : ITab
 {
-	public TabInstance Create() => new Instance();
+	public TabInstance Create() => new();
 
 	public class Instance : TabInstance
 	{

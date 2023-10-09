@@ -4,7 +4,7 @@ namespace Atlas.Tabs.Test.Chart;
 
 public class TabTestChartProperties : ITab
 {
-	public TabInstance Create() => new Instance();
+	public TabInstance Create() => new();
 
 	public class Instance : TabInstance
 	{
