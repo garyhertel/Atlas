@@ -23,7 +23,7 @@ public class TabControlOxyPlotLegend : TabControlChartLegend<OxyPlotLineSeries>
 		var legendItem = new TabOxyPlotLegendItem(this, chartSeries);
 		legendItem.OnSelectionChanged += LegendItem_SelectionChanged;
 		legendItem.OnVisibleChanged += LegendItem_VisibleChanged;
-		legendItem.TextBlock!.PointerPressed += (s, e) =>
+		legendItem.PointerPressed += (s, e) =>
 		{
 			if (e.GetCurrentPoint(this).Properties.IsLeftButtonPressed)
 				SelectLegendItem(legendItem);

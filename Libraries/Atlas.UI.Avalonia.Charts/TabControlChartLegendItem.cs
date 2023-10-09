@@ -161,7 +161,6 @@ public abstract class TabChartLegendItem<TSeries> : Grid
 			[Grid.ColumnProperty] = 1,
 		};
 		UpdateTitleText();
-		TextBlock.Tapped += TextBox_Tapped;
 		Children.Add(TextBlock);
 	}
 
@@ -184,7 +183,6 @@ public abstract class TabChartLegendItem<TSeries> : Grid
 			HorizontalAlignment = global::Avalonia.Layout.HorizontalAlignment.Right,
 			[Grid.ColumnProperty] = 2,
 		};
-		TextBlockTotal.Tapped += TextBox_Tapped;
 		Children.Add(TextBlockTotal);
 	}
 
@@ -254,10 +252,6 @@ public abstract class TabChartLegendItem<TSeries> : Grid
 	private void TabChartLegendItem_PointerExited(object? sender, PointerEventArgs e)
 	{
 		Highlight = false;
-	}
-
-	private void TextBox_Tapped(object? sender, global::Avalonia.Interactivity.RoutedEventArgs e)
-	{
 	}
 
 	public abstract void UpdateVisible();
