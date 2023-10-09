@@ -22,7 +22,7 @@ public class LiveChartPoint : ObservablePoint
 
 public class LiveChartLineSeries : LineSeries<LiveChartPoint>, ISeries
 {
-	private const int MaxFindDistance = 30;
+	public const int MaxFindDistance = 30;
 
 	public LiveChartSeries LiveChartSeries;
 

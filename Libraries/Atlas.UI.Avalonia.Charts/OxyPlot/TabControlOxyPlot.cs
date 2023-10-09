@@ -17,7 +17,7 @@ using System.Reflection;
 
 namespace Atlas.UI.Avalonia.Charts;
 
-public class TabControlOxyPlot : TabControlChart<OxyPlotLineSeries>
+public class TabControlOxyPlot : TabControlChart<OxyPlotLineSeries>, IDisposable
 {
 	//private static OxyColor timeTrackerColor = Theme.TitleBackground;
 
@@ -245,7 +245,7 @@ public class TabControlOxyPlot : TabControlChart<OxyPlotLineSeries>
 		UpdateValueAxis();
 	}
 
-	public void LoadListGroup(ChartView chartView)
+	public void LoadView(ChartView chartView)
 	{
 		ChartView = chartView;
 		LoadPlotModel();
@@ -268,7 +268,6 @@ public class TabControlOxyPlot : TabControlChart<OxyPlotLineSeries>
 			LegendPlacement = LegendPlacement.Outside,
 
 			TitleColor = OxyColors.LightGray,
-			//PlotAreaBorderColor = OxyColors.LightGray,
 			PlotAreaBorderColor = OxyColor.Parse("#888888"),
 			TextColor = OxyColors.Black,
 			LegendTextColor = OxyColors.LightGray,
@@ -336,11 +335,9 @@ public class TabControlOxyPlot : TabControlChart<OxyPlotLineSeries>
 		DateTimeAxis = new OxyPlot.Axes.DateTimeAxis
 		{
 			Position = AxisPosition.Bottom,
-			//MinorIntervalType = DateTimeIntervalType.Days,
 			IntervalType = DateTimeIntervalType.Hours,
 			MajorGridlineStyle = LineStyle.Solid,
 			MajorGridlineColor = GridLineColor,
-			//MinorGridlineStyle = LineStyle.None,
 			IntervalLength = 75,
 			IsAxisVisible = true,
 			IsPanEnabled = false,
@@ -350,12 +347,8 @@ public class TabControlOxyPlot : TabControlChart<OxyPlotLineSeries>
 			AxislineThickness = 2,
 			TickStyle = TickStyle.Outside,
 			TicklineColor = GridLineColor,
-			//MajorTickSize = 5,
 			MinorGridlineColor = OxyColors.Gray,
-			//MinorTicklineColor = GridLineColor,
-			//MinorTickSize = 5,
 			AxisTickToLabelDistance = 2,
-			//MinimumMajorStep = TimeSpan.FromSeconds(1).TotalDays,
 			TitleColor = OxyColors.LightGray,
 			TextColor = OxyColors.LightGray,
 		};
@@ -431,9 +424,6 @@ public class TabControlOxyPlot : TabControlChart<OxyPlotLineSeries>
 		ValueAxis.MajorGridlineStyle = LineStyle.Solid;
 		ValueAxis.MajorGridlineColor = GridLineColor;
 		ValueAxis.MinorGridlineStyle = LineStyle.None;
-		//ValueAxis.MinorStep = 20;
-		//ValueAxis.MajorStep = 10;
-		//ValueAxis.MinimumMinorStep = 20;
 		ValueAxis.MinorTickSize = 0;
 		ValueAxis.IsAxisVisible = true;
 		ValueAxis.IsPanEnabled = false;
@@ -442,7 +432,6 @@ public class TabControlOxyPlot : TabControlChart<OxyPlotLineSeries>
 		ValueAxis.AxislineThickness = 2;
 		ValueAxis.TickStyle = TickStyle.Outside;
 		ValueAxis.TicklineColor = GridLineColor;
-		//ValueAxis.MajorTickSize = 2;
 		ValueAxis.MinorGridlineColor = OxyColors.Gray;
 		ValueAxis.TitleColor = OxyColors.LightGray;
 		ValueAxis.TextColor = OxyColors.LightGray;
@@ -473,7 +462,6 @@ public class TabControlOxyPlot : TabControlChart<OxyPlotLineSeries>
 			AxislineThickness = 2,
 			TickStyle = TickStyle.Outside,
 			TicklineColor = GridLineColor,
-			//MajorTickSize = 2,
 			MinorGridlineColor = OxyColors.Gray,
 			TitleColor = OxyColors.LightGray,
 			TextColor = OxyColors.LightGray,
@@ -693,15 +681,6 @@ public class TabControlOxyPlot : TabControlChart<OxyPlotLineSeries>
 		Legend?.Unload();
 
 		ClearSeries();
-
-		//if (plotModel != null)
-		//	plotModel.Series.Clear();
-		/*foreach (ListSeries listSeries in ChartSettings.ListSeries)
-		{
-			INotifyCollectionChanged iNotifyCollectionChanged = listSeries.iList as INotifyCollectionChanged;
-			//if (iNotifyCollectionChanged != null)
-			//	iNotifyCollectionChanged.CollectionChanged -= INotifyCollectionChanged_CollectionChanged;
-		}*/
 	}
 
 	private void ClearSeries()
@@ -711,6 +690,15 @@ public class TabControlOxyPlot : TabControlChart<OxyPlotLineSeries>
 		ChartSeries.Clear();
 		ListToTabSeries.Clear();
 		IdxNameToSeries.Clear();
+
+		//if (plotModel != null)
+		//	plotModel.Series.Clear();
+		/*foreach (ListSeries listSeries in ChartSeries)
+		{
+			INotifyCollectionChanged iNotifyCollectionChanged = listSeries.iList as INotifyCollectionChanged;
+			//if (iNotifyCollectionChanged != null)
+			//	iNotifyCollectionChanged.CollectionChanged -= INotifyCollectionChanged_CollectionChanged;
+		}*/
 	}
 
 	public void MergeGroup(ChartView chartView)

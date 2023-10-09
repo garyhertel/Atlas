@@ -21,8 +21,7 @@ public class ChartSeries<TSeries>
 	public TSeries LineSeries { get; set; }
 	public Color Color { get; set; }
 
-	public bool IsVisible { get; set; } = true;
-	public bool IsSelected { get; set; }
+	public bool IsSelected { get; set; } = true; // Visible = Selected
 
 	public override string? ToString() => ListSeries.Name;
 

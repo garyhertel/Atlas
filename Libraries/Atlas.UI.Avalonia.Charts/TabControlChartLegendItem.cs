@@ -46,7 +46,6 @@ public abstract class TabChartLegendItem<TSeries> : Grid
 		set
 		{
 			ChartSeries.IsSelected = value;
-			ChartSeries.IsVisible = value;
 			_isSelected = value;
 			SetFilled(value);
 		}

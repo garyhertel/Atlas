@@ -20,7 +20,7 @@ using System.Diagnostics;
 
 namespace Atlas.UI.Avalonia.Charts.LiveCharts;
 
-public class TabControlLiveChart : TabControlChart<ISeries>
+public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 {
 	//private static Color timeTrackerColor = Theme.TitleBackground;
 
@@ -47,6 +47,11 @@ public class TabControlLiveChart : TabControlChart<ISeries>
 
 	private ChartPoint? _pointClicked;
 	public Point? CursorPosition;
+
+	private bool _selecting;
+	private Point _startScreenPoint;
+	private LvcPointD? _startDataPoint;
+	private LvcPointD? _endDataPoint;
 
 	public TabControlLiveChart(TabInstance tabInstance, ChartView chartView, bool fillHeight = false) : 
 		base(tabInstance, chartView, fillHeight)
@@ -251,16 +256,12 @@ public class TabControlLiveChart : TabControlChart<ISeries>
 
 		/*
 		axis.Position = axisPosition;
-		//axis.MinStep = 20;
 		axis.IsAxisVisible = true;
-		axis.IsPanEnabled = false;
 		axis.AxislineColor = GridLineColor;
 		axis.AxislineStyle = LineStyle.Solid;
 		axis.AxislineThickness = 2;
 		axis.TickStyle = TickStyle.Outside;
 		axis.TicklineColor = GridLineColor;
-		axis.TitleColor = OxyColors.LightGray;
-		axis.TextColor = OxyColors.LightGray;
 
 		if (key != null)
 			axis.Key = key;
@@ -268,7 +269,7 @@ public class TabControlLiveChart : TabControlChart<ISeries>
 	}
 	public void UpdateValueAxis() // OxyPlot.Axes.LinearAxis valueAxis, string axisKey = null
 	{
-		//if (ValueAxis == null)
+		if (ValueAxis == null)
 			return;
 
 		double minimum = double.MaxValue;
@@ -277,10 +278,9 @@ public class TabControlLiveChart : TabControlChart<ISeries>
 
 		foreach (LiveChartSeries series in LiveChartSeries)
 		{
-			//if (lineSeries.LineStyle == LineStyle.None)
-			//	continue;
+			if (!series.LineSeries.IsVisible) continue;
 
-			foreach (var dataPoint in series.LineSeries.Values)
+			foreach (var dataPoint in series.LineSeries.Values!)
 			{
 				double? y = dataPoint.Y;
 				if (y == null || double.IsNaN(y.Value))
@@ -311,18 +311,18 @@ public class TabControlLiveChart : TabControlChart<ISeries>
 		{
 			if (annotation is OxyPlot.Annotations.LineAnnotation lineAnnotation)
 				maximum = Math.Max(lineAnnotation.Y * 1.1, maximum);
-		}
+		}*/
 
-		ValueAxis.MinimumMajorStep = hasFraction ? 0 : 1;
+		ValueAxis.MinStep = hasFraction ? 0 : 1;
 
-		double? minValue = ListGroup.MinValue;
+		double? minValue = ChartView.MinValue;
 		if (minValue != null)
 			minimum = minValue.Value;
 
-		if (ListGroup.Logarithmic)
+		if (ChartView.Logarithmic)
 		{
-			ValueAxis.Minimum = minimum * 0.85;
-			ValueAxis.Maximum = maximum * 1.15;
+			ValueAxis.MinLimit = minimum * 0.85;
+			ValueAxis.MaxLimit = maximum * 1.15;
 		}
 		else
 		{
@@ -334,14 +334,14 @@ public class TabControlLiveChart : TabControlChart<ISeries>
 				margin = 1;
 
 			if (minValue != null)
-				ValueAxis.Minimum = Math.Max(minimum - margin, minValue.Value - Math.Abs(margin) * 0.05);
+				ValueAxis.MinLimit = Math.Max(minimum - margin, minValue.Value - Math.Abs(margin) * 0.05);
 			else
-				ValueAxis.Minimum = minimum - margin;
-			ValueAxis.Maximum = maximum + margin;
-		}*/
+				ValueAxis.MinLimit = minimum - margin;
+			ValueAxis.MaxLimit = maximum + margin;
+		}
 	}
 
-	public void LoadListGroup(ChartView chartView)
+	public void LoadView(ChartView chartView)
 	{
 		ChartView = chartView;
 		ReloadView();
@@ -350,7 +350,6 @@ public class TabControlLiveChart : TabControlChart<ISeries>
 
 	public void Refresh()
 	{
-		//UpdateValueAxis();
 		//UpdateLinearAxis();
 
 		Legend.RefreshModel();
@@ -363,7 +362,8 @@ public class TabControlLiveChart : TabControlChart<ISeries>
 		ChartView.SortByTotal();
 
 		Chart.Series = ChartView.Series
-			.Select(s => AddListSeries(s)!)
+			.Take(SeriesLimit)
+			.Select(s => AddListSeries(s))
 			.ToList();
 
 		UpdateValueAxis();
@@ -377,11 +377,8 @@ public class TabControlLiveChart : TabControlChart<ISeries>
 		IsVisible = true;
 	}
 
-	public ISeries? AddListSeries(ListSeries listSeries, Color? defaultColor = null)
+	public ISeries AddListSeries(ListSeries listSeries, Color? defaultColor = null)
 	{
-		if (ChartSeries.Count >= SeriesLimit)
-			return null;
-
 		Color color = 
 			defaultColor ?? 
 			listSeries.Color?.AsAvaloniaColor() ?? 
@@ -494,11 +491,11 @@ public class TabControlLiveChart : TabControlChart<ISeries>
 			}
 		}
 
-		if (minimum != double.MaxValue)
+		/*if (minimum != double.MaxValue)
 		{
 			XAxis.MinLimit = minimum;
 			XAxis.MaxLimit = maximum;
-		}
+		}*/
 
 		if (ChartView.TimeWindow == null && minimum != double.MaxValue)
 		{
@@ -512,11 +509,6 @@ public class TabControlLiveChart : TabControlChart<ISeries>
 
 		//UpdateDateTimeInterval(double duration);
 	}
-
-	private bool _selecting;
-	private Point _startScreenPoint;
-	private LvcPointD? _startDataPoint;
-	private LvcPointD? _endDataPoint;
 
 	private void AddMouseListeners()
 	{
@@ -534,7 +526,7 @@ public class TabControlLiveChart : TabControlChart<ISeries>
 		CursorPosition = point;
 		try
 		{
-			ChartPoint? hitPoint = FindClosestPoint(new LvcPoint(point.X, point.Y), 30);
+			ChartPoint? hitPoint = FindClosestPoint(new LvcPoint(point.X, point.Y), LiveChartLineSeries.MaxFindDistance);
 			if (hitPoint != null)
 			{
 				if (hitPoint.Context.Series.Name is string name)
@@ -560,7 +552,7 @@ public class TabControlLiveChart : TabControlChart<ISeries>
 			var moveEvent = new MouseCursorMovedEventArgs(dataPoint.X);
 			_mouseCursorChangedEventSource?.Raise(sender, moveEvent);
 
-			UpdateMouseSelection(dataPoint);
+			UpdateZoomSection(dataPoint);
 		}
 		catch (Exception ex)
 		{
@@ -571,6 +563,7 @@ public class TabControlLiveChart : TabControlChart<ISeries>
 	private ChartPoint? FindClosestPoint(LvcPoint pointerPosition, double maxDistance)
 	{
 		return LiveChartSeries
+			.Where(series => series.LineSeries.IsVisible)
 			.SelectMany(s => s.LineSeries.Fetch(Chart.CoreChart))
 			.Select(x => new { distance = LiveChartLineSeries.GetDistanceTo(x, pointerPosition), point = x })
 			.Where(x => x.distance < maxDistance)
@@ -584,11 +577,11 @@ public class TabControlLiveChart : TabControlChart<ISeries>
 		_startScreenPoint = point;
 		_startDataPoint = Chart!.ScalePixelsToData(new LvcPointD(point.X, point.Y));
 
-		if (!_selecting)// || _startDataPoint == null)
+		if (!_selecting)
 		{
 			if (_zoomSection != null)
 			{
-				UpdateMouseSelection(_startDataPoint!.Value);
+				UpdateZoomSection(_startDataPoint!.Value);
 				_zoomSection.IsVisible = true;
 			}
 			_selecting = true;
@@ -631,7 +624,7 @@ public class TabControlLiveChart : TabControlChart<ISeries>
 		}
 	}
 
-	private void UpdateMouseSelection(LvcPointD endDataPoint)
+	private void UpdateZoomSection(LvcPointD endDataPoint)
 	{
 		if (_zoomSection == null || _startDataPoint == null) return;
 
@@ -659,7 +652,9 @@ public class TabControlLiveChart : TabControlChart<ISeries>
 		double right = Math.Max(_startDataPoint.Value.X, _endDataPoint!.Value.X);
 
 		if (XAxis.MinLimit == null || double.IsNaN(XAxis.MinLimit.Value))
+		{
 			UpdateDateTimeAxisRange();
+		}
 
 		XAxis.MinLimit = Math.Max(left, XAxis.MinLimit!.Value);
 		XAxis.MaxLimit = Math.Min(right, XAxis.MaxLimit!.Value);
@@ -670,9 +665,13 @@ public class TabControlLiveChart : TabControlChart<ISeries>
 
 		UpdateDateTimeAxis(timeWindow);
 		if (ChartView.TimeWindow != null)
+		{
 			ChartView.TimeWindow.Select(timeWindow);
+		}
 		else
+		{
 			UpdateTimeWindow(timeWindow);
+		}
 	}
 
 	private void ZoomOut()
@@ -704,6 +703,46 @@ public class TabControlLiveChart : TabControlChart<ISeries>
 		StopSelecting();
 		UpdateValueAxis();
 		OnSelectionChanged(new SeriesSelectedEventArgs(SelectedSeries));
+	}
+
+	private void ClearListeners()
+	{
+		if (Legend != null)
+		{
+			Legend.OnSelectionChanged -= Legend_OnSelectionChanged;
+			//Legend.OnVisibleChanged -= Legend_OnVisibleChanged;
+		}
+
+		Chart.PointerPressed -= TabControlLiveChart_PointerPressed;
+		Chart.PointerReleased -= TabControlLiveChart_PointerReleased;
+		Chart.PointerMoved -= TabControlLiveChart_PointerMoved;
+		Chart.ChartPointPointerDown -= Chart_ChartPointPointerDown;
+		OnMouseCursorChanged -= TabControlChart_OnMouseCursorChanged;
+
+		if (ChartView.TimeWindow != null)
+		{
+			ChartView.TimeWindow.OnSelectionChanged -= TimeWindow_OnSelectionChanged;
+		}
+
+	}
+
+	private void UnloadModel()
+	{
+		//PlotView!.Model = null;
+		//XAxis = null;
+
+		Legend?.Unload();
+
+		ClearSeries();
+	}
+
+	private void ClearSeries()
+	{
+		//Chart?.Series.Clear();
+
+		LiveChartSeries.Clear();
+		ListToTabSeries.Clear();
+		IdxNameToSeries.Clear();
 	}
 
 	/*
@@ -758,60 +797,6 @@ public class TabControlLiveChart : TabControlChart<ISeries>
 		UnloadModel();
 	}
 
-	public OxyPlot.Axes.DateTimeAxis AddDateTimeAxis(TimeWindow? timeWindow = null)
-	{
-		DateTimeAxis = new OxyPlot.Axes.DateTimeAxis
-		{
-			Position = AxisPosition.Bottom,
-			//MinorIntervalType = DateTimeIntervalType.Days,
-			//IntervalType = DateTimeIntervalType.Days,
-			IntervalType = DateTimeIntervalType.Hours,
-			MajorGridlineStyle = LineStyle.Solid,
-			MajorGridlineColor = GridLineColor,
-			//MinorGridlineStyle = LineStyle.None,
-			IntervalLength = 75,
-			IsAxisVisible = true,
-			IsPanEnabled = false,
-			AxislineColor = OxyColors.Black,
-			//AxislineColor = GridLineColor,
-			AxislineStyle = LineStyle.Solid,
-			AxislineThickness = 2,
-			TickStyle = TickStyle.Outside,
-			TicklineColor = GridLineColor,
-			//MajorTickSize = 5,
-			MinorGridlineColor = OxyColors.Gray,
-			//MinorTicklineColor = GridLineColor,
-			//MinorTickSize = 5,
-			AxisTickToLabelDistance = 2,
-			//MinimumMajorStep = TimeSpan.FromSeconds(1).TotalDays,
-			TitleColor = OxyColors.LightGray,
-			TextColor = OxyColors.LightGray,
-		};
-
-		if (timeWindow != null)
-		{
-			UpdateDateTimeAxis(timeWindow);
-		}
-
-		PlotModel!.Axes.Add(DateTimeAxis);
-		return DateTimeAxis;
-	}
-
-	private void AddLinearAxis()
-	{
-		LinearAxis = new OxyPlot.Axes.LinearAxis
-		{
-			Position = AxisPosition.Bottom,
-			MajorGridlineStyle = LineStyle.Solid,
-			MajorGridlineColor = GridLineColor,
-			TitleColor = OxyColors.LightGray,
-			TextColor = OxyColors.LightGray,
-			TicklineColor = GridLineColor,
-			MinorGridlineColor = OxyColors.Gray,
-		};
-		PlotModel!.Axes.Add(LinearAxis);
-	}
-
 	private void UpdateLinearAxis()
 	{
 		if (LinearAxis == null)
@@ -848,46 +833,6 @@ public class TabControlLiveChart : TabControlChart<ISeries>
 
 		LinearAxis.Minimum = minimum;
 		LinearAxis.Maximum = maximum;
-	}
-
-	private void ClearListeners()
-	{
-		if (Legend != null)
-		{
-			Legend.OnSelectionChanged -= Legend_OnSelectionChanged;
-			Legend.OnVisibleChanged -= Legend_OnVisibleChanged;
-		}
-
-		OnMouseCursorChanged -= TabControlChart_OnMouseCursorChanged;
-	}
-
-	private void UnloadModel()
-	{
-		PlotView!.Model = null;
-		LinearAxis = null;
-		DateTimeAxis = null;
-
-		Legend?.Unload();
-
-		ClearSeries();
-
-		//if (plotModel != null)
-		//	plotModel.Series.Clear();
-		/*foreach (ListSeries listSeries in ChartSettings.ListSeries)
-		{
-			INotifyCollectionChanged iNotifyCollectionChanged = listSeries.iList as INotifyCollectionChanged;
-			//if (iNotifyCollectionChanged != null)
-			//	iNotifyCollectionChanged.CollectionChanged -= INotifyCollectionChanged_CollectionChanged;
-		}*//*
-	}
-
-	private void ClearSeries()
-	{
-		PlotModel?.Series.Clear();
-
-		OxyListSeriesList.Clear();
-		ListToTabSeries.Clear();
-		IdxNameToSeries.Clear();
 	}
 
 	public void MergeGroup(ListGroup listGroup)
@@ -927,11 +872,11 @@ public class TabControlLiveChart : TabControlChart<ISeries>
 		}
 
 		Dispatcher.UIThread.InvokeAsync(() => PlotModel.InvalidatePlot(true), DispatcherPriority.Background);
-	}
+	}*/
 
 	public void Dispose()
 	{
 		ClearListeners();
 		UnloadModel();
-	}*/
+	}
 }

@@ -32,6 +32,19 @@ public class TabLiveChartLegendItem : TabChartLegendItem<ISeries>
 
 	public override void UpdateVisible()
 	{
-		ChartSeries.LineSeries.IsVisible = IsSelected || Highlight;
+		/*if (ChartSeries.LineSeries is LineSeries<LiveChartPoint> lineSeries)
+		{
+			if (IsSelected || _highlight)
+			{
+				UpdateHighlight(!_highlight);
+				lineSeries.IsVisible = true;
+			}
+			else
+			{
+				UpdateColor(Colors.Transparent);
+				lineSeries.IsVisible = false;
+			}
+		}*/
+		ChartSeries.LineSeries.IsVisible = IsSelected || Highlight; // Doesn't always remove rendered line
 	}
 }
