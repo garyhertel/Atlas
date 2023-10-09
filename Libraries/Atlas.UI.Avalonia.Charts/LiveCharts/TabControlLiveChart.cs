@@ -40,7 +40,7 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 	private RectangularSection? _zoomSection;
 
 	private static readonly SKColor GridLineColor = SKColor.Parse("#333333");
-	private static readonly SKColor TooltipBackgroundColor = SKColor.Parse("#102670").WithAlpha(185);
+	private static readonly SKColor TooltipBackgroundColor = SKColor.Parse("#102670").WithAlpha(190);
 	//private static readonly SKColor TooltipBackgroundColor = SKColor.Parse(AtlasTheme.ChartBackgroundSelected.Color.AsSkColor().WithAlpha((byte)200));
 
 	public List<LiveChartSeries> LiveChartSeries { get; private set; } = new();
@@ -304,7 +304,12 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 		}
 		else
 		{
-			ValueAxis.UnitWidth = (maximum - minimum) * 0.10;
+			double difference = maximum - minimum;
+			if (difference > 10)
+			{
+				// todo: needs better rounding for large units
+				ValueAxis.UnitWidth = Math.Round(difference * 0.10);
+			}
 		}
 
 		/*foreach (OxyPlot.Annotations.Annotation annotation in PlotModel.Annotations)
@@ -326,18 +331,26 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 		}
 		else
 		{
-			var margin = (maximum - minimum) * MarginPercent;
 			if (minimum == maximum)
-				margin = Math.Abs(minimum);
-
-			if (margin == 0)
-				margin = 1;
-
-			if (minValue != null)
-				ValueAxis.MinLimit = Math.Max(minimum - margin, minValue.Value - Math.Abs(margin) * 0.05);
+			{
+				ValueAxis.MinLimit = null;
+				ValueAxis.MaxLimit = null;
+			}
 			else
-				ValueAxis.MinLimit = minimum - margin;
-			ValueAxis.MaxLimit = maximum + margin;
+			{
+				var margin = (maximum - minimum) * MarginPercent;
+				if (minimum == maximum)
+					margin = Math.Abs(minimum);
+
+				if (margin == 0)
+					margin = 1;
+
+				if (minValue != null)
+					ValueAxis.MinLimit = Math.Max(minimum - margin, minValue.Value - Math.Abs(margin) * 0.05);
+				else
+					ValueAxis.MinLimit = minimum - margin;
+				ValueAxis.MaxLimit = maximum + margin;
+			}
 		}
 	}
 

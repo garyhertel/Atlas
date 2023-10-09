@@ -85,7 +85,7 @@ public interface ITabControlChart
 	public List<ChartAnnotation> Annotations { get; }
 }
 
-public class TabControlChart<TSeries> : Grid, ITabControlChart //, IDisposable
+public class TabControlChart<TSeries> : Grid, ITabControlChart
 {
 	public int SeriesLimit { get; set; } = 25;
 	protected const double MarginPercent = 0.1; // This needs a min height so this can be lowered

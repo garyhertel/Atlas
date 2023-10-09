@@ -62,12 +62,13 @@ public class ListSeries
 			Name = attribute.Name;
 	}
 
-	public ListSeries(string? name, IList list, string? xPropertyName, string? yPropertyName = null)
+	public ListSeries(string? name, IList list, string? xPropertyName, string? yPropertyName = null, SeriesType seriesType = SeriesType.Sum)
 	{
 		Name = name;
 		List = list;
 		XPropertyName = xPropertyName;
 		YPropertyName = yPropertyName;
+		SeriesType = seriesType;
 
 		Type elementType = list.GetType().GetElementTypeForAll()!;
 		if (xPropertyName != null)

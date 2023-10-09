@@ -58,9 +58,9 @@ public class ChartView
 		TimeWindow = new TimeWindow(startTime, endTime);
 	}
 
-	public ListSeries AddSeries(string name, IList list, string? xPropertyName = null, string? yPropertyName = null)
+	public ListSeries AddSeries(string name, IList list, string? xPropertyName = null, string? yPropertyName = null, SeriesType seriesType = SeriesType.Sum)
 	{
-		var series = new ListSeries(name, list, xPropertyName, yPropertyName);
+		var series = new ListSeries(name, list, xPropertyName, yPropertyName, seriesType);
 		Series.Add(series);
 		return series;
 	}
