@@ -192,6 +192,7 @@ public abstract class TabChartLegendItem<TSeries> : Grid
 		{
 			IsSelected = !IsSelected;
 			OnSelectionChanged?.Invoke(this, EventArgs.Empty);
+			e.Handled = true;
 		}
 	}
 
