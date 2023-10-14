@@ -1,8 +1,9 @@
 using Atlas.Core;
 using Atlas.Extensions;
 using Atlas.Tabs;
-using Atlas.UI.Avalonia.Charts;
+using Atlas.UI.Avalonia.Controls;
 using Atlas.UI.Avalonia.Themes;
+using Atlas.UI.Avalonia.View;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
@@ -15,7 +16,24 @@ using OxyPlot.Avalonia;
 using OxyPlot.Axes;
 using System.Reflection;
 
-namespace Atlas.UI.Avalonia.Charts;
+namespace Atlas.UI.Avalonia.Charts.OxyPlotCharts;
+
+public class OxyPlotChartCreator : IControlCreator
+{
+	public static void Register()
+	{
+		TabView.ControlCreators[typeof(ChartView)] = new OxyPlotChartCreator();
+	}
+
+	public void AddControl(TabInstance tabInstance, TabControlSplitContainer container, object obj)
+	{
+		var chartView = (ChartView)obj;
+
+		var tabChart = new TabControlOxyPlot(tabInstance, chartView, true);
+
+		container.AddControl(tabChart, true, SeparatorType.Spacer);
+	}
+}
 
 public class TabControlOxyPlot : TabControlChart<OxyPlotLineSeries>, IDisposable
 {
@@ -659,6 +677,11 @@ public class TabControlOxyPlot : TabControlChart<OxyPlotLineSeries>, IDisposable
 		}
 
 		//UpdateDateTimeInterval(double totalSeconds);
+	}
+
+	public override void InvalidateChart(bool reload = false)
+	{
+		Dispatcher.UIThread.InvokeAsync(() => PlotView?.Model?.InvalidatePlot(true), DispatcherPriority.Background);
 	}
 
 	private void ClearListeners()

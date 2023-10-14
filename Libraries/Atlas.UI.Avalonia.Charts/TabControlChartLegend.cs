@@ -224,7 +224,7 @@ public abstract class TabControlChartLegend<TSeries> : Grid
 			Grid.SetRow(legendItem, row++);
 		}*/
 
-		//Dispatcher.UIThread.InvokeAsync(() => PlotView.Model?.InvalidatePlot(true), DispatcherPriority.Background);
+		//TabControlChart.InvalidateChart();
 	}
 
 	public void Unload()

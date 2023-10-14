@@ -34,5 +34,12 @@ public class TabControlLiveChartLegend : TabControlChartLegend<ISeries>
 		}
 		return legendItem;
 	}
+
+	public override void UpdateHighlight(bool showFaded)
+	{
+		base.UpdateHighlight(showFaded);
+
+		LiveChart.InvalidateChart();
+	}
 }
 

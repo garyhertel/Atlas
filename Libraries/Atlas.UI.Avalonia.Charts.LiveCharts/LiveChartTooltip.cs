@@ -15,7 +15,6 @@ using Avalonia.Threading;
 using System.Reflection;
 using LiveChartsCore.SkiaSharpView.Painting.ImageFilters;
 using Atlas.Extensions;
-using LiveChartsCore.SkiaSharpView.Avalonia;
 
 namespace Atlas.UI.Avalonia.Charts.LiveCharts;
 

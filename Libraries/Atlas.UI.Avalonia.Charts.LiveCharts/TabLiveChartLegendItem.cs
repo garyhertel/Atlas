@@ -2,6 +2,7 @@ using Avalonia.Media;
 using LiveChartsCore;
 using LiveChartsCore.SkiaSharpView;
 using LiveChartsCore.SkiaSharpView.Painting;
+using System.Diagnostics;
 
 namespace Atlas.UI.Avalonia.Charts.LiveCharts;
 
@@ -14,7 +15,7 @@ public class TabLiveChartLegendItem : TabChartLegendItem<ISeries>
 
 	public override void UpdateColor(Color color)
 	{
-		if (ChartSeries.LineSeries is LineSeries<LiveChartPoint> lineSeries)
+		if (ChartSeries.LineSeries is LiveChartLineSeries lineSeries)
 		{
 			var skColor = color.AsSkColor();
 
@@ -32,19 +33,20 @@ public class TabLiveChartLegendItem : TabChartLegendItem<ISeries>
 
 	public override void UpdateVisible()
 	{
-		/*if (ChartSeries.LineSeries is LineSeries<LiveChartPoint> lineSeries)
+		/*if (ChartSeries.LineSeries is LiveChartLineSeries lineSeries)
 		{
 			if (IsSelected || _highlight)
 			{
 				UpdateHighlight(!_highlight);
-				lineSeries.IsVisible = true;
+				//lineSeries.IsVisible = true;
 			}
 			else
 			{
 				UpdateColor(Colors.Transparent);
-				lineSeries.IsVisible = false;
+				//lineSeries.IsVisible = false;
 			}
 		}*/
 		ChartSeries.LineSeries.IsVisible = IsSelected || Highlight; // Doesn't always remove rendered line
+		//Debug.WriteLine($"{ChartSeries}: Visible: {ChartSeries.LineSeries.IsVisible}");
 	}
 }

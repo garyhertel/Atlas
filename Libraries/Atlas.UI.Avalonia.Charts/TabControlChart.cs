@@ -1,9 +1,6 @@
 using Atlas.Core;
 using Atlas.Tabs;
-using Atlas.UI.Avalonia.Charts.LiveCharts;
-using Atlas.UI.Avalonia.Controls;
 using Atlas.UI.Avalonia.Themes;
-using Atlas.UI.Avalonia.View;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
@@ -53,32 +50,13 @@ public class MouseCursorMovedEventArgs : EventArgs
 	}
 }
 
-public class ChartViewControl : IControlCreator
-{
-	public static void Register()
-	{
-		TabView.ControlCreators[typeof(ChartView)] = new ChartViewControl();
-	}
-
-	public void AddControl(TabInstance tabInstance, TabControlSplitContainer container, object obj)
-	{
-		var chartView = (ChartView)obj;
-
-		//var tabChart = new TabControlOxyPlot(tabInstance, chartView, true);
-		var tabChart = new TabControlLiveChart(tabInstance, chartView, true);
-
-		container.AddControl(tabChart, true, SeparatorType.Spacer);
-		//tabChart.OnSelectionChanged += ListData_OnSelectionChanged;
-	}
-}
-
 public interface ITabControlChart
 {
-	public static ITabControlChart Create(TabInstance tabInstance, ChartView chartView, bool fillHeight = false)
+	/*public static ITabControlChart Create(TabInstance tabInstance, ChartView chartView, bool fillHeight = false)
 	{
-		//return new TabControlOxyPlot(tabInstance, chartView, fillHeight);
-		return new TabControlLiveChart(tabInstance, chartView, fillHeight);
-	}
+		return new TabControlOxyPlot(tabInstance, chartView, fillHeight);
+		//return new TabControlLiveChart(tabInstance, chartView, fillHeight);
+	}*/
 
 	public void AddAnnotation(ChartAnnotation chartAnnotation);
 
@@ -247,5 +225,9 @@ public class TabControlChart<TSeries> : Grid, ITabControlChart
 		};
 
 		ChartView.Annotations.Add(annotation);
+	}
+
+	public virtual void InvalidateChart(bool reload = false) 
+	{
 	}
 }

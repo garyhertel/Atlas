@@ -7,8 +7,7 @@ using LiveChartsCore.Drawing;
 using LiveChartsCore.Measure;
 using LiveChartsCore.SkiaSharpView.Drawing;
 
-namespace Atlas.UI.Avalonia.Charts;
-
+namespace Atlas.UI.Avalonia.Charts.LiveCharts;
 
 public class LiveChartPoint : ObservablePoint
 {
@@ -25,6 +24,8 @@ public class LiveChartLineSeries : LineSeries<LiveChartPoint>, ISeries
 	public const int MaxFindDistance = 30;
 
 	public LiveChartSeries LiveChartSeries;
+
+	public override string? ToString() => LiveChartSeries.ToString();
 
 	public LiveChartLineSeries(LiveChartSeries liveChartSeries)
 	{

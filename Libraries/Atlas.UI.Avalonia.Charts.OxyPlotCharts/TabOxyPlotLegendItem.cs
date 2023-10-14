@@ -1,7 +1,7 @@
 using Avalonia.Media;
 using OxyPlot;
 
-namespace Atlas.UI.Avalonia.Charts;
+namespace Atlas.UI.Avalonia.Charts.OxyPlotCharts;
 
 public class TabOxyPlotLegendItem : TabChartLegendItem<OxyPlotLineSeries>
 {

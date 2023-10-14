@@ -1,7 +1,9 @@
 using Atlas.Core;
 using Atlas.Extensions;
 using Atlas.Tabs;
+using Atlas.UI.Avalonia.Controls;
 using Atlas.UI.Avalonia.Themes;
+using Atlas.UI.Avalonia.View;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Layout;
@@ -19,6 +21,23 @@ using SkiaSharp;
 using System.Diagnostics;
 
 namespace Atlas.UI.Avalonia.Charts.LiveCharts;
+
+public class LiveChartCreator : IControlCreator
+{
+	public static void Register()
+	{
+		TabView.ControlCreators[typeof(ChartView)] = new LiveChartCreator();
+	}
+
+	public void AddControl(TabInstance tabInstance, TabControlSplitContainer container, object obj)
+	{
+		var chartView = (ChartView)obj;
+
+		var tabChart = new TabControlLiveChart(tabInstance, chartView, true);
+
+		container.AddControl(tabChart, true, SeparatorType.Spacer);
+	}
+}
 
 public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 {
@@ -192,9 +211,24 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 		InvalidateChart();
 	}
 
-	private void InvalidateChart()
+	public override void InvalidateChart(bool reload = false)
 	{
+		/*Debug.WriteLine("InvalidateChart");
+		foreach (var series in ChartSeries)
+		{
+			Debug.WriteLine($"{series}: {series.LineSeries.IsVisible}");
+		}
+
+		if (reload)
+		{
+			Chart.Series = LiveChartSeries
+				.Where(s => s.LineSeries.IsVisible)
+				.Select(s => s.LineSeries)
+				.ToList();
+		}*/
 		Dispatcher.UIThread.Post(() => Chart!.InvalidateVisual(), DispatcherPriority.Background);
+		//Dispatcher.UIThread.Post(() => Chart!.InvalidateArrange(), DispatcherPriority.Background);
+		//Dispatcher.UIThread.Post(() => Chart!.InvalidateMeasure(), DispatcherPriority.Background);
 	}
 
 	private void Chart_ChartPointPointerDown(IChartView chart, ChartPoint? point)
@@ -708,7 +742,7 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 		ChartView.SortByTotal();
 		Legend.RefreshModel();
 
-		//PlotView!.InvalidatePlot(true);
+		//InvalidateChart();
 	}
 
 	private void Legend_OnSelectionChanged(object? sender, EventArgs e)
@@ -769,8 +803,7 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 		{
 			PlotView.IsVisible = visible;
 			Legend.IsVisible = visible;
-			//PlotModel.InvalidatePlot(false);
-			PlotView.InvalidateArrange();
+			//InvalidateChart();
 			Legend.InvalidateArrange();
 		}
 	}
@@ -884,7 +917,7 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 			AddPoints((OxyPlot.Series.LineSeries)plotModel.Series[index], listSeries, e.NewItems);
 		}
 
-		Dispatcher.UIThread.InvokeAsync(() => PlotModel.InvalidatePlot(true), DispatcherPriority.Background);
+		InvalidateChart();
 	}*/
 
 	public void Dispose()

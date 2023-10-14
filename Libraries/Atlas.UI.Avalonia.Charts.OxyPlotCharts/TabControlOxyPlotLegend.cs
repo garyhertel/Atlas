@@ -1,8 +1,7 @@
 using Atlas.Core;
-using Avalonia.Threading;
 using OxyPlot.Avalonia;
 
-namespace Atlas.UI.Avalonia.Charts;
+namespace Atlas.UI.Avalonia.Charts.OxyPlotCharts;
 
 public class TabControlOxyPlotLegend : TabControlChartLegend<OxyPlotLineSeries>
 {
@@ -42,13 +41,13 @@ public class TabControlOxyPlotLegend : TabControlChartLegend<OxyPlotLineSeries>
 		base.UpdateVisibleSeries();
 
 		// Update axis for new visible
-		Dispatcher.UIThread.InvokeAsync(() => PlotView.Model?.InvalidatePlot(true), DispatcherPriority.Background);
+		OxyChart.InvalidateChart();
 	}
 
 	public override void UpdateHighlight(bool showFaded)
 	{
 		base.UpdateHighlight(showFaded);
 
-		Dispatcher.UIThread.InvokeAsync(() => PlotView?.Model?.InvalidatePlot(true), DispatcherPriority.Background);
+		OxyChart.InvalidateChart();
 	}
 }

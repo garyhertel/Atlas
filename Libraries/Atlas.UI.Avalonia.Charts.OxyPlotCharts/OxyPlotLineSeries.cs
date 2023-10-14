@@ -7,7 +7,7 @@ using System.Collections;
 using System.Collections.Specialized;
 using System.Reflection;
 
-namespace Atlas.UI.Avalonia.Charts;
+namespace Atlas.UI.Avalonia.Charts.OxyPlotCharts;
 
 public class OxyPlotChartSeries : ChartSeries<OxyPlotLineSeries>
 {

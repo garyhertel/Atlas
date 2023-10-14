@@ -6,11 +6,9 @@ using SkiaSharp;
 using System.Collections;
 using System.Reflection;
 using Avalonia.Media;
-using LiveChartsCore.SkiaSharpView.Drawing.Geometries;
-using LiveChartsCore.Kernel.Sketches;
 using LiveChartsCore.Kernel;
 
-namespace Atlas.UI.Avalonia.Charts;
+namespace Atlas.UI.Avalonia.Charts.LiveCharts;
 
 public class SeriesHoverEventArgs : EventArgs
 {

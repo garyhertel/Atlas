@@ -6,6 +6,7 @@ using Avalonia.Controls;
 using Avalonia.Controls.Shapes;
 using Avalonia.Input;
 using Avalonia.Media;
+using Avalonia.Threading;
 using System.Collections;
 
 namespace Atlas.UI.Avalonia.Charts;
@@ -228,6 +229,12 @@ public abstract class TabChartLegendItem<TSeries> : Grid
 			}
 
 			UpdateVisible();
+
+			//Dispatcher.UIThread.Post(() => UpdateVisible(), DispatcherPriority.Background);
+
+			//Legend.UpdateVisibleSeries();
+
+			//Legend.TabControlChart.InvalidateChart(true);
 		}
 	}
 

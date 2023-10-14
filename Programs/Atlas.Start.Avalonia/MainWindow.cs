@@ -1,7 +1,8 @@
 using Atlas.Start.Avalonia.Tabs;
 using Atlas.Tabs;
 using Atlas.UI.Avalonia;
-using Atlas.UI.Avalonia.Charts;
+using Atlas.UI.Avalonia.Charts.LiveCharts;
+using Atlas.UI.Avalonia.Charts.OxyPlotCharts;
 using Atlas.UI.Avalonia.ScreenCapture;
 
 namespace Atlas.Start.Avalonia;
@@ -12,7 +13,8 @@ public class MainWindow : BaseWindow
 	{
 		AddTab(new TabAvalonia());
 
-		ChartViewControl.Register();
+		//LiveChartCreator.Register();
+		OxyPlotChartCreator.Register();
 		ScreenCapture.AddControlTo(TabViewer);
 	}
 
