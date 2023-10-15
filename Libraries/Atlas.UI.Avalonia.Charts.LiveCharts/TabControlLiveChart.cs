@@ -51,21 +51,22 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 
 	public TabControlChartLegend<ISeries> Legend;
 
-	public ChartSeries<ISeries>? HoverSeries;
-
 	/*public Axis? LinearAxis;
 	public DateTimeAxis? DateTimeAxis;*/
 	public Axis XAxis { get; set; }
 	public Axis ValueAxis { get; set; } // left/right?
 
+	public List<LiveChartSeries> LiveChartSeries { get; private set; } = new();
+
+	public ChartSeries<ISeries>? HoverSeries;
+
 	private List<RectangularSection> _sections = new();
 	private RectangularSection? _trackerSection;
 	private RectangularSection? _zoomSection;
 
-	public List<LiveChartSeries> LiveChartSeries { get; private set; } = new();
+	public Point? CursorPosition;
 
 	private ChartPoint? _pointClicked;
-	public Point? CursorPosition;
 
 	private bool _selecting;
 	private Point _startScreenPoint;
@@ -247,9 +248,6 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 	{
 		return new Axis
 		{
-			//Labeler,
-			//UnitWidth = TimeSpan.FromDays(1).Ticks,
-
 			ShowSeparatorLines = true,
 			SeparatorsPaint = new SolidColorPaint(GridLineSkColor),
 			LabelsPaint = new SolidColorPaint(TextSkColor),
@@ -257,7 +255,7 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 		};
 	}
 
-	public Axis CreateValueAxis()//AxisPosition axisPosition = AxisPosition.Left, string? key = null)
+	public Axis CreateValueAxis() // AxisPosition axisPosition = AxisPosition.Left, string? key = null)
 	{
 		Axis axis;
 		if (ChartView.Logarithmic)
@@ -276,6 +274,8 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 		axis.LabelsPaint = new SolidColorPaint(TextSkColor);
 		axis.TextSize = 14;
 
+		return axis;
+
 		//axis.Name = "Amount";
 		//axis.NamePadding = new Padding(0, 15);
 		//axis.UnitWidth = 1000000000;
@@ -285,8 +285,6 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 			FontFamily = "Times New Roman",
 			SKFontStyle = new SKFontStyle(SKFontStyleWeight.ExtraBold, SKFontStyleWidth.Normal, SKFontStyleSlant.Italic)
 		};*/
-
-		return axis;
 
 		/*
 		axis.Position = axisPosition;
@@ -484,8 +482,6 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 		{
 			XAxis.MinLimit = null;
 			XAxis.MaxLimit = null;
-			//xAxis.IntervalLength = 75;
-			//xAxis.StringFormat = null;
 			////UpdateDateTimeInterval(timeWindow.Duration.TotalSeconds);
 		}
 		else

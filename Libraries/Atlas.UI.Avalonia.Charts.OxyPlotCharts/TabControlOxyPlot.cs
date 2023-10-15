@@ -41,13 +41,11 @@ public class TabControlOxyPlot : TabControlChart<OxyPlotLineSeries>, IDisposable
 	public static OxyColor GridLineOxyColor = GridLineColor.ToOxyColor();
 	public static OxyColor TextOxyColor = TextColor.ToOxyColor();
 
-	public OxyPlot.Series.Series? HoverSeries;
-
 	public PlotModel? PlotModel;
 	public PlotView? PlotView;
 	public TabControlOxyPlotLegend Legend;
 	public OxyPlot.Axes.Axis? ValueAxis; // left/right?
-	private OxyPlot.Axes.CategoryAxis? categoryAxis;
+	public OxyPlot.Axes.CategoryAxis? CategoryAxis;
 
 	public OxyPlot.Axes.LinearAxis? LinearAxis;
 	public OxyPlot.Axes.DateTimeAxis? DateTimeAxis;
@@ -60,6 +58,8 @@ public class TabControlOxyPlot : TabControlChart<OxyPlotLineSeries>, IDisposable
 	private DataPoint? _startDataPoint;
 	private DataPoint? _endDataPoint;
 	private OxyPlot.Annotations.RectangleAnnotation? _zoomAnnotation;
+
+	public OxyPlot.Series.Series? HoverSeries;
 
 	public TabControlOxyPlot(TabInstance tabInstance, ChartView chartView, bool fillHeight = false) :
 		base(tabInstance, chartView, fillHeight)
@@ -167,7 +167,9 @@ public class TabControlOxyPlot : TabControlChart<OxyPlotLineSeries>, IDisposable
 	private void TitleTextBlock_PointerEntered(object? sender, PointerEventArgs e)
 	{
 		if (IsTitleSelectable)
+		{
 			TitleTextBlock!.Foreground = AtlasTheme.GridBackgroundSelected;
+		}
 	}
 
 	private void TitleTextBlock_PointerExited(object? sender, PointerEventArgs e)
@@ -180,7 +182,9 @@ public class TabControlOxyPlot : TabControlChart<OxyPlotLineSeries>, IDisposable
 	{
 		Size size = base.MeasureOverride(availableSize);
 		if (FillHeight)
+		{
 			size = size.WithHeight(Math.Max(size.Height, Math.Min(MaxHeight, availableSize.Height)));
+		}
 		return size;
 	}
 
@@ -458,7 +462,7 @@ public class TabControlOxyPlot : TabControlChart<OxyPlotLineSeries>, IDisposable
 
 	public OxyPlot.Axes.CategoryAxis AddCategoryAxis(AxisPosition axisPosition = AxisPosition.Left, string? key = null)
 	{
-		categoryAxis = new OxyPlot.Axes.CategoryAxis
+		CategoryAxis = new OxyPlot.Axes.CategoryAxis
 		{
 			Position = axisPosition,
 			IntervalLength = 20,
@@ -479,15 +483,15 @@ public class TabControlOxyPlot : TabControlChart<OxyPlotLineSeries>, IDisposable
 			LabelFormatter = NumberExtensions.FormattedShortDecimal,
 		};
 		if (key != null)
-			categoryAxis.Key = key;
+			CategoryAxis.Key = key;
 
 		foreach (ListSeries listSeries in ChartView.Series)
 		{
-			categoryAxis.Labels.Add(listSeries.Name);
+			CategoryAxis.Labels.Add(listSeries.Name);
 		}
 
-		PlotModel!.Axes.Add(categoryAxis);
-		return categoryAxis;
+		PlotModel!.Axes.Add(CategoryAxis);
+		return CategoryAxis;
 	}
 
 	private void UpdateLinearAxis()
@@ -729,7 +733,7 @@ public class TabControlOxyPlot : TabControlChart<OxyPlotLineSeries>, IDisposable
 		foreach (var series in ChartView.Series)
 		{
 			Color? color = null;
-			if (series.Name != null && prevListSeries.TryGetValue(series.Name, out ChartSeries< OxyPlotLineSeries>? prevSeries))
+			if (series.Name != null && prevListSeries.TryGetValue(series.Name, out ChartSeries<OxyPlotLineSeries>? prevSeries))
 				color = prevSeries.Color;
 
 			AddSeries(series, color);

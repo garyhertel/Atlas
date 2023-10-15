@@ -85,7 +85,9 @@ public abstract class TabControlChartLegend<TSeries> : Grid
 	{
 		_wrapPanel.Children.Clear();
 		if (_textBlockTotal != null)
+		{
 			_wrapPanel.Children.Add(_textBlockTotal);
+		}
 
 		var nonzero = new List<TabChartLegendItem<TSeries>>();
 		var unused = new List<TabChartLegendItem<TSeries>>();
@@ -102,19 +104,16 @@ public abstract class TabControlChartLegend<TSeries> : Grid
 		if (ChartView.ShowOrder && ChartView.LegendPosition == ChartLegendPosition.Right)
 		{
 			for (int i = 0; i < ordered.Count; i++)
+			{
 				ordered[i].Index = i + 1;
+			}
 		}
 		_wrapPanel.Children.AddRange(ordered);
 	}
 
 	protected void SelectLegendItem(TabChartLegendItem<TSeries> legendItem)
 	{
-		int selectedCount = 0;
-		foreach (TabChartLegendItem<TSeries> item in LegendItems)
-		{
-			if (item.IsSelected)
-				selectedCount++;
-		}
+		int selectedCount = LegendItems.Count(item => item.IsSelected);
 
 		if (legendItem.IsSelected == false || selectedCount > 1)
 		{
@@ -129,14 +128,11 @@ public abstract class TabControlChartLegend<TSeries> : Grid
 
 		UpdateVisibleSeries();
 		OnSelectionChanged?.Invoke(this, EventArgs.Empty);
-		//if (legendItem.checkBox.IsChecked == true)
-		//SetSelectionAll(legendItem.checkBox.IsChecked == true);
 	}
 
 	public void SelectSeries(TSeries series, ListSeries listSeries)
 	{
-		if (listSeries.Name == null)
-			return;
+		if (listSeries.Name == null) return;
 
 		if (_idxLegendItems.TryGetValue(listSeries.Name, out TabChartLegendItem<TSeries>? legendItem))
 		{
@@ -146,17 +142,20 @@ public abstract class TabControlChartLegend<TSeries> : Grid
 
 	public void HighlightSeries(string? name)
 	{
-		if (name == null)
-			return;
+		if (name == null) return;
 
 		// Clear all first before setting to avoid event race conditions
 		foreach (TabChartLegendItem<TSeries> item in LegendItems)
+		{
 			item.Highlight = false;
+		}
 
 		if (_idxLegendItems.TryGetValue(name, out TabChartLegendItem<TSeries>? legendItem))
 		{
 			foreach (TabChartLegendItem<TSeries> item in LegendItems)
+			{
 				item.Highlight = legendItem == item;
+			}
 		}
 		UpdateVisibleSeries();
 	}
@@ -179,15 +178,11 @@ public abstract class TabControlChartLegend<TSeries> : Grid
 
 	public void RefreshModel()
 	{
-		//if (PlotView!.Model == null)
-			//return;
-
 		_wrapPanel.Children.Clear();
 		foreach (ChartSeries<TSeries> chartSeries in TabControlChart.ChartSeries)
 		{
 			string? title = chartSeries.ToString();
-			if (title == null)
-				continue;
+			if (title == null) continue;
 
 			if (!_idxLegendItems.TryGetValue(title, out TabChartLegendItem<TSeries>? legendItem))
 			{
@@ -223,8 +218,6 @@ public abstract class TabControlChartLegend<TSeries> : Grid
 			idxLegendItems.Add(series.Title, legendItem);
 			Grid.SetRow(legendItem, row++);
 		}*/
-
-		//TabControlChart.InvalidateChart();
 	}
 
 	public void Unload()
@@ -236,8 +229,7 @@ public abstract class TabControlChartLegend<TSeries> : Grid
 
 	public virtual void UpdateVisibleSeries()
 	{
-		if (TabControlChart == null)
-			return;
+		if (TabControlChart == null) return;
 
 		foreach (TabChartLegendItem<TSeries> legendItem in LegendItems)
 		{
