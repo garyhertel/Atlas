@@ -212,24 +212,9 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 		InvalidateChart();
 	}
 
-	public override void InvalidateChart(bool reload = false)
+	public override void InvalidateChart()
 	{
-		/*Debug.WriteLine("InvalidateChart");
-		foreach (var series in ChartSeries)
-		{
-			Debug.WriteLine($"{series}: {series.LineSeries.IsVisible}");
-		}
-
-		if (reload)
-		{
-			Chart.Series = LiveChartSeries
-				.Where(s => s.LineSeries.IsVisible)
-				.Select(s => s.LineSeries)
-				.ToList();
-		}*/
 		Dispatcher.UIThread.Post(() => Chart!.InvalidateVisual(), DispatcherPriority.Background);
-		//Dispatcher.UIThread.Post(() => Chart!.InvalidateArrange(), DispatcherPriority.Background);
-		//Dispatcher.UIThread.Post(() => Chart!.InvalidateMeasure(), DispatcherPriority.Background);
 	}
 
 	private void Chart_ChartPointPointerDown(IChartView chart, ChartPoint? point)

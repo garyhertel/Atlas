@@ -676,7 +676,7 @@ public class TabControlOxyPlot : TabControlChart<OxyPlotLineSeries>, IDisposable
 		//UpdateDateTimeInterval(double totalSeconds);
 	}
 
-	public override void InvalidateChart(bool reload = false)
+	public override void InvalidateChart()
 	{
 		Dispatcher.UIThread.InvokeAsync(() => PlotView?.Model?.InvalidatePlot(true), DispatcherPriority.Background);
 	}

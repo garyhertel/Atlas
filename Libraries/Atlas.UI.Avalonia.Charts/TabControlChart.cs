@@ -225,7 +225,7 @@ public class TabControlChart<TSeries> : Grid, ITabControlChart
 		ChartView.Annotations.Add(annotation);
 	}
 
-	public virtual void InvalidateChart(bool reload = false) 
+	public virtual void InvalidateChart() 
 	{
 	}
 }

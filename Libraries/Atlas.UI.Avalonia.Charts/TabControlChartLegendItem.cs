@@ -229,12 +229,6 @@ public abstract class TabChartLegendItem<TSeries> : Grid
 			}
 
 			UpdateVisible();
-
-			//Dispatcher.UIThread.Post(() => UpdateVisible(), DispatcherPriority.Background);
-
-			//Legend.UpdateVisibleSeries();
-
-			//Legend.TabControlChart.InvalidateChart(true);
 		}
 	}
 
