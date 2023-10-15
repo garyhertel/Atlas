@@ -154,6 +154,8 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 		}
 		AddSections();
 
+		AddMouseListeners();
+
 		Children.Add(containerGrid);
 	}
 
@@ -177,8 +179,6 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 			};
 			_sections.Add(_zoomSection);
 		}
-
-		AddMouseListeners();
 
 		Chart.Sections = _sections;
 	}
@@ -261,17 +261,16 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 
 		return axis;
 
-		//axis.Name = "Amount";
-		//axis.NamePadding = new Padding(0, 15);
-		//axis.UnitWidth = 1000000000;
-		/*axis.LabelsPaint = new SolidColorPaint
+		/*
+		axis.Name = "Amount";
+		axis.NamePadding = new Padding(0, 15);
+		axis.UnitWidth = 1000000000;
+		axis.LabelsPaint = new SolidColorPaint
 		{
 			Color = SKColors.Blue,
 			FontFamily = "Times New Roman",
 			SKFontStyle = new SKFontStyle(SKFontStyleWeight.ExtraBold, SKFontStyleWidth.Normal, SKFontStyleSlant.Italic)
-		};*/
-
-		/*
+		};
 		axis.Position = axisPosition;
 		axis.IsAxisVisible = true;
 		axis.AxislineColor = GridLineColor;
@@ -284,6 +283,7 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 			axis.Key = key;
 		*/
 	}
+
 	public void UpdateValueAxis() // OxyPlot.Axes.LinearAxis valueAxis, string axisKey = null
 	{
 		if (ValueAxis == null)
@@ -329,11 +329,13 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 			}
 		}
 
-		/*foreach (OxyPlot.Annotations.Annotation annotation in PlotModel.Annotations)
+		foreach (var annotation in Annotations)
 		{
-			if (annotation is OxyPlot.Annotations.LineAnnotation lineAnnotation)
-				maximum = Math.Max(lineAnnotation.Y * 1.1, maximum);
-		}*/
+			if (annotation.Y != null)
+			{
+				maximum = Math.Max(annotation.Y.Value * 1.1, maximum);
+			}
+		}
 
 		ValueAxis.MinStep = hasFraction ? 0 : 1;
 
@@ -429,6 +431,10 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 	public override void AddAnnotation(ChartAnnotation chartAnnotation)
 	{
 		base.AddAnnotation(chartAnnotation);
+
+		_sections.Add(CreateAnnotation(chartAnnotation));
+
+		UpdateValueAxis();
 	}
 
 	public RectangularSection CreateAnnotation(ChartAnnotation chartAnnotation)
@@ -485,7 +491,7 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 		XAxis.Labeler = value => new DateTime((long)value).ToString(dateFormat.TextFormat);// "yyyy-M-d H:mm:ss.FFF");
 		XAxis.UnitWidth = windowDuration.PeriodDuration(20).Ticks; // Hover depends on this
 		//XAxis.MinStep = dateFormat.StepSize.Ticks;
-		XAxis.MinStep = windowDuration.PeriodDuration(10).Ticks;
+		XAxis.MinStep = windowDuration.PeriodDuration(8).Ticks;
 		//XAxis.ForceStepToMin = true;
 		//XAxis.MinimumMajorStep = dateFormat.StepSize.TotalDays;
 

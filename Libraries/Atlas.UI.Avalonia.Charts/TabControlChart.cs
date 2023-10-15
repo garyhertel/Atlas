@@ -165,28 +165,28 @@ public class TabControlChart<TSeries> : Grid, ITabControlChart
 	private void AddTitle()
 	{
 		string? title = ChartView.Name;
-		if (title != null)
+		if (title == null) return;
+		
+		TitleTextBlock = new TextBlock()
 		{
-			TitleTextBlock = new TextBlock()
-			{
-				Text = ChartView.Name,
-				FontSize = 16,
-				Foreground = AtlasTheme.BackgroundText,
-				Margin = new Thickness(10, 5),
-				//FontWeight = FontWeight.Medium,
-				[ColumnSpanProperty] = 2,
-			};
-			if (!ChartView.ShowOrder || ChartView.LegendPosition == ChartLegendPosition.Bottom)
-			{
-				TitleTextBlock.HorizontalAlignment = HorizontalAlignment.Center;
-			}
-			else
-			{
-				TitleTextBlock.Margin = new Thickness(40, 5, 5, 5);
-			}
-			TitleTextBlock.PointerEntered += TitleTextBlock_PointerEntered;
-			TitleTextBlock.PointerExited += TitleTextBlock_PointerExited;
+			Text = ChartView.Name,
+			FontSize = 16,
+			Foreground = AtlasTheme.BackgroundText,
+			Margin = new Thickness(10, 5, 10, 2),
+			//FontWeight = FontWeight.Medium,
+			HorizontalAlignment = HorizontalAlignment.Center,
+			//[ColumnSpanProperty] = 2,
+		};
+		/*if (!ChartView.ShowOrder || ChartView.LegendPosition == ChartLegendPosition.Bottom)
+		{
+			TitleTextBlock.HorizontalAlignment = HorizontalAlignment.Center;
 		}
+		else
+		{
+			TitleTextBlock.Margin = new Thickness(40, 5, 5, 2);
+		}*/
+		TitleTextBlock.PointerEntered += TitleTextBlock_PointerEntered;
+		TitleTextBlock.PointerExited += TitleTextBlock_PointerExited;
 	}
 
 	private void TitleTextBlock_PointerEntered(object? sender, PointerEventArgs e)

@@ -13,8 +13,8 @@ public class MainWindow : BaseWindow
 	{
 		AddTab(new TabAvalonia());
 
-		//LiveChartCreator.Register();
-		OxyPlotChartCreator.Register();
+		LiveChartCreator.Register();
+		//OxyPlotCreator.Register();
 		ScreenCapture.AddControlTo(TabViewer);
 	}
 
