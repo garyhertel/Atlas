@@ -52,12 +52,6 @@ public class MouseCursorMovedEventArgs : EventArgs
 
 public interface ITabControlChart
 {
-	/*public static ITabControlChart Create(TabInstance tabInstance, ChartView chartView, bool fillHeight = false)
-	{
-		return new TabControlOxyPlot(tabInstance, chartView, fillHeight);
-		//return new TabControlLiveChart(tabInstance, chartView, fillHeight);
-	}*/
-
 	public void AddAnnotation(ChartAnnotation chartAnnotation);
 
 	public List<ChartAnnotation> Annotations { get; }
@@ -65,6 +59,10 @@ public interface ITabControlChart
 
 public class TabControlChart<TSeries> : Grid, ITabControlChart
 {
+	public static Color TimeTrackerColor = AtlasTheme.GridBackgroundSelected.Color;
+	public static Color GridLineColor = Color.Parse("#333333");
+	public static Color TextColor = Colors.LightGray;
+
 	public int SeriesLimit { get; set; } = 25;
 	protected const double MarginPercent = 0.1; // This needs a min height so this can be lowered
 	protected const int MinSelectionWidth = 10;

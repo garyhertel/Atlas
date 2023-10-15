@@ -8,6 +8,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Layout;
 using Avalonia.Media;
+using Avalonia.Skia;
 using Avalonia.Threading;
 using LiveChartsCore;
 using LiveChartsCore.Drawing;
@@ -41,7 +42,10 @@ public class LiveChartCreator : IControlCreator
 
 public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 {
-	//private static Color timeTrackerColor = Theme.TitleBackground;
+	public static SKColor TimeTrackerSkColor = TimeTrackerColor.ToSKColor();
+	public static SKColor GridLineSkColor = GridLineColor.ToSKColor();
+	public static SKColor TextSkColor = TextColor.ToSKColor();
+	public static SKColor TooltipBackgroundColor = SKColor.Parse("#102670").WithAlpha(190);
 
 	public CartesianChart Chart;
 
@@ -57,10 +61,6 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 	private List<RectangularSection> _sections = new();
 	private RectangularSection? _trackerSection;
 	private RectangularSection? _zoomSection;
-
-	private static readonly SKColor GridLineColor = SKColor.Parse("#333333");
-	private static readonly SKColor TooltipBackgroundColor = SKColor.Parse("#102670").WithAlpha(190);
-	//private static readonly SKColor TooltipBackgroundColor = SKColor.Parse(AtlasTheme.ChartBackgroundSelected.Color.AsSkColor().WithAlpha((byte)200));
 
 	public List<LiveChartSeries> LiveChartSeries { get; private set; } = new();
 
@@ -192,7 +192,7 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 		_trackerSection = new RectangularSection
 		{
 			Label = "",
-			Stroke = new SolidColorPaint(AtlasTheme.GridBackgroundSelected.Color.AsSkColor()),
+			Stroke = new SolidColorPaint(TimeTrackerSkColor),
 			IsVisible = false,
 		};
 		return _trackerSection;
@@ -251,8 +251,8 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 			//UnitWidth = TimeSpan.FromDays(1).Ticks,
 
 			ShowSeparatorLines = true,
-			SeparatorsPaint = new SolidColorPaint(GridLineColor),
-			LabelsPaint = new SolidColorPaint(SKColors.LightGray),
+			SeparatorsPaint = new SolidColorPaint(GridLineSkColor),
+			LabelsPaint = new SolidColorPaint(TextSkColor),
 			TextSize = 14,
 		};
 	}
@@ -272,8 +272,8 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 
 		axis.Padding = new Padding(10, 2);
 		axis.Labeler = NumberExtensions.FormattedShortDecimal;
-		axis.SeparatorsPaint = new SolidColorPaint(GridLineColor);
-		axis.LabelsPaint = new SolidColorPaint(SKColors.LightGray);
+		axis.SeparatorsPaint = new SolidColorPaint(GridLineSkColor);
+		axis.LabelsPaint = new SolidColorPaint(TextSkColor);
 		axis.TextSize = 14;
 
 		//axis.Name = "Amount";

@@ -18,11 +18,11 @@ using System.Reflection;
 
 namespace Atlas.UI.Avalonia.Charts.OxyPlotCharts;
 
-public class OxyPlotChartCreator : IControlCreator
+public class OxyPlotCreator : IControlCreator
 {
 	public static void Register()
 	{
-		TabView.ControlCreators[typeof(ChartView)] = new OxyPlotChartCreator();
+		TabView.ControlCreators[typeof(ChartView)] = new OxyPlotCreator();
 	}
 
 	public void AddControl(TabInstance tabInstance, TabControlSplitContainer container, object obj)
@@ -37,7 +37,9 @@ public class OxyPlotChartCreator : IControlCreator
 
 public class TabControlOxyPlot : TabControlChart<OxyPlotLineSeries>, IDisposable
 {
-	//private static OxyColor timeTrackerColor = Theme.TitleBackground;
+	public static OxyColor TimeTrackerOxyColor = TimeTrackerColor.ToOxyColor();
+	public static OxyColor GridLineOxyColor = GridLineColor.ToOxyColor();
+	public static OxyColor TextOxyColor = TextColor.ToOxyColor();
 
 	public OxyPlot.Series.Series? HoverSeries;
 
@@ -52,8 +54,6 @@ public class TabControlOxyPlot : TabControlChart<OxyPlotLineSeries>, IDisposable
 	public OxyPlot.Axes.Axis? XAxis => DateTimeAxis ?? LinearAxis;
 
 	private OxyPlot.Annotations.LineAnnotation? _trackerAnnotation;
-
-	private static readonly OxyColor GridLineColor = OxyColor.Parse("#333333");
 
 	private bool _selecting;
 	private ScreenPoint _startScreenPoint;
@@ -284,9 +284,7 @@ public class TabControlOxyPlot : TabControlChart<OxyPlotLineSeries>, IDisposable
 			IsLegendVisible = false,
 			LegendPlacement = LegendPlacement.Outside,
 
-			TitleColor = OxyColors.LightGray,
 			TextColor = OxyColors.Black,
-			LegendTextColor = OxyColors.LightGray,
 			SelectionColor = OxyColors.Blue,
 			PlotAreaBorderThickness = new OxyThickness(0),
 		};
@@ -354,7 +352,7 @@ public class TabControlOxyPlot : TabControlChart<OxyPlotLineSeries>, IDisposable
 			Position = AxisPosition.Bottom,
 			IntervalType = DateTimeIntervalType.Hours,
 			MajorGridlineStyle = LineStyle.Solid,
-			MajorGridlineColor = GridLineColor,
+			MajorGridlineColor = GridLineOxyColor,
 			MinorGridlineStyle = LineStyle.None,
 			MinorTickSize = 0,
 			IntervalLength = 75,
@@ -362,10 +360,10 @@ public class TabControlOxyPlot : TabControlChart<OxyPlotLineSeries>, IDisposable
 			AxislineStyle = LineStyle.None,
 			AxislineThickness = 0,
 			TickStyle = TickStyle.Outside,
-			TicklineColor = GridLineColor,
+			TicklineColor = GridLineOxyColor,
 			AxisTickToLabelDistance = 2,
-			TitleColor = OxyColors.LightGray,
-			TextColor = OxyColors.LightGray,
+			TitleColor = TextOxyColor,
+			TextColor = TextOxyColor,
 		};
 
 		if (timeWindow != null)
@@ -412,12 +410,12 @@ public class TabControlOxyPlot : TabControlChart<OxyPlotLineSeries>, IDisposable
 		{
 			Position = AxisPosition.Bottom,
 			MajorGridlineStyle = LineStyle.Solid,
-			MajorGridlineColor = GridLineColor,
+			MajorGridlineColor = GridLineOxyColor,
 			MinorGridlineStyle = LineStyle.None,
 			MinorTickSize = 0,
-			TitleColor = OxyColors.LightGray,
-			TextColor = OxyColors.LightGray,
-			TicklineColor = GridLineColor,
+			TitleColor = TextOxyColor,
+			TextColor = TextOxyColor,
+			TicklineColor = GridLineOxyColor,
 			AxislineThickness = 0,
 		};
 		PlotModel!.Axes.Add(LinearAxis);
@@ -439,17 +437,17 @@ public class TabControlOxyPlot : TabControlChart<OxyPlotLineSeries>, IDisposable
 
 		ValueAxis.Position = axisPosition;
 		ValueAxis.MajorGridlineStyle = LineStyle.Solid;
-		ValueAxis.MajorGridlineColor = GridLineColor;
+		ValueAxis.MajorGridlineColor = GridLineOxyColor;
 		ValueAxis.MinorGridlineStyle = LineStyle.None;
 		ValueAxis.MinorTickSize = 0;
 		ValueAxis.IsPanEnabled = false;
-		ValueAxis.AxislineColor = GridLineColor;
+		ValueAxis.AxislineColor = GridLineOxyColor;
 		ValueAxis.AxislineStyle = LineStyle.None;
 		ValueAxis.AxislineThickness = 0;
 		ValueAxis.TickStyle = TickStyle.Outside;
-		ValueAxis.TicklineColor = GridLineColor;
-		ValueAxis.TitleColor = OxyColors.LightGray;
-		ValueAxis.TextColor = OxyColors.LightGray;
+		ValueAxis.TicklineColor = GridLineOxyColor;
+		ValueAxis.TitleColor = TextOxyColor;
+		ValueAxis.TextColor = TextOxyColor;
 		ValueAxis.LabelFormatter = NumberExtensions.FormattedShortDecimal;
 
 		if (key != null)
@@ -465,19 +463,19 @@ public class TabControlOxyPlot : TabControlChart<OxyPlotLineSeries>, IDisposable
 			Position = axisPosition,
 			IntervalLength = 20,
 			MajorGridlineStyle = LineStyle.Solid,
-			MajorGridlineColor = GridLineColor,
+			MajorGridlineColor = GridLineOxyColor,
 			MinorGridlineStyle = LineStyle.None,
 			MinorTickSize = 0,
 			MinorStep = 20,
 			MinimumMinorStep = 10,
 			IsPanEnabled = false,
-			AxislineColor = GridLineColor,
+			AxislineColor = GridLineOxyColor,
 			AxislineStyle = LineStyle.Solid,
 			AxislineThickness = 0,
 			TickStyle = TickStyle.Outside,
-			TicklineColor = GridLineColor,
-			TitleColor = OxyColors.LightGray,
-			TextColor = OxyColors.LightGray,
+			TicklineColor = GridLineOxyColor,
+			TitleColor = TextOxyColor,
+			TextColor = TextOxyColor,
 			LabelFormatter = NumberExtensions.FormattedShortDecimal,
 		};
 		if (key != null)
@@ -829,8 +827,7 @@ public class TabControlOxyPlot : TabControlChart<OxyPlotLineSeries>, IDisposable
 		_trackerAnnotation = new OxyPlot.Annotations.LineAnnotation
 		{
 			Type = LineAnnotationType.Vertical,
-			Color = AtlasTheme.GridBackgroundSelected.ToOxyColor(),
-			//Color = timeTrackerColor,
+			Color = TimeTrackerOxyColor,
 		};
 
 		PlotModel!.Annotations.Add(_trackerAnnotation);
