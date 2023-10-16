@@ -57,40 +57,11 @@ public interface ITabControlChart
 	public List<ChartAnnotation> Annotations { get; }
 }
 
-public class TabControlChart<TSeries> : Grid, ITabControlChart
+public abstract class TabControlChart<TSeries> : Grid, ITabControlChart
 {
 	public static Color TimeTrackerColor = AtlasTheme.GridBackgroundSelected.Color;
 	public static Color GridLineColor = Color.Parse("#333333");
 	public static Color TextColor = Colors.LightGray;
-
-	public int SeriesLimit { get; set; } = 25;
-	protected const double MarginPercent = 0.1; // This needs a min height so this can be lowered
-	protected const int MinSelectionWidth = 10;
-
-	public TabInstance TabInstance { get; init; }
-	public ChartView ChartView { get; set; }
-	public bool FillHeight { get; set; }
-
-	public List<ChartSeries<TSeries>> ChartSeries { get; private set; } = new();
-	protected Dictionary<string, ChartSeries<TSeries>> IdxNameToSeries { get; set; } = new();
-	protected Dictionary<IList, ListSeries> ListToTabSeries { get; set; } = new();
-
-	public List<ListSeries> SelectedSeries
-	{
-		get
-		{
-			List<ListSeries> selected = ChartSeries
-				.Where(s => s.IsSelected)
-				.Select(s => s.ListSeries)
-				.ToList();
-
-			if (selected.Count == ChartSeries.Count && selected.Count > 1)
-				selected.Clear(); // If all are selected, none are selected?
-			return selected;
-		}
-	}
-
-	public TextBlock? TitleTextBlock { get; protected set; }
 
 	private static readonly System.Drawing.Color NowColor = System.Drawing.Color.Green;
 	public static Color[] DefaultColors { get; set; } = new Color[]
@@ -108,14 +79,6 @@ public class TabControlChart<TSeries> : Grid, ITabControlChart
 	};
 	public static Color GetColor(int index) => DefaultColors[index % DefaultColors.Length];
 
-	protected PropertyInfo? _xAxisPropertyInfo;
-	public bool UseDateTimeAxis => (_xAxisPropertyInfo?.PropertyType == typeof(DateTime)) ||
-									(ChartView.TimeWindow != null);
-
-	public bool IsTitleSelectable { get; set; }
-
-	public List<ChartAnnotation> Annotations { get; set; } = new();
-
 	protected static readonly WeakEventSource<MouseCursorMovedEventArgs> _mouseCursorChangedEventSource = new();
 
 	public static event EventHandler<MouseCursorMovedEventArgs> OnMouseCursorChanged
@@ -126,11 +89,41 @@ public class TabControlChart<TSeries> : Grid, ITabControlChart
 
 	public event EventHandler<SeriesSelectedEventArgs>? SelectionChanged;
 
-	protected virtual void OnSelectionChanged(SeriesSelectedEventArgs e)
+	protected const double MarginPercent = 0.1; // This needs a min height so this can be lowered
+	protected const int MinSelectionWidth = 10;
+
+	public TabInstance TabInstance { get; init; }
+	public ChartView ChartView { get; set; }
+	public bool FillHeight { get; set; }
+	public int SeriesLimit { get; set; } = 25;
+
+	public List<ChartSeries<TSeries>> ChartSeries { get; private set; } = new();
+	protected Dictionary<string, ChartSeries<TSeries>> IdxNameToChartSeries { get; set; } = new();
+	protected Dictionary<IList, ListSeries> IdxListToListSeries { get; set; } = new();
+
+	public List<ListSeries> SelectedSeries
 	{
-		// Safely raise the event for all subscribers
-		SelectionChanged?.Invoke(this, e);
+		get
+		{
+			List<ListSeries> selected = ChartSeries
+				.Where(s => s.IsSelected)
+				.Select(s => s.ListSeries)
+				.ToList();
+
+			if (selected.Count == ChartSeries.Count && selected.Count > 1)
+				selected.Clear(); // If all are selected, none are selected?
+			return selected;
+		}
 	}
+
+	public TextBlock? TitleTextBlock { get; protected set; }
+	public bool IsTitleSelectable { get; set; }
+
+	protected PropertyInfo? _xAxisPropertyInfo;
+	public bool UseDateTimeAxis => (_xAxisPropertyInfo?.PropertyType == typeof(DateTime)) ||
+									(ChartView.TimeWindow != null);
+
+	public List<ChartAnnotation> Annotations { get; set; } = new();
 
 	public override string? ToString() => ChartView.ToString();
 
@@ -189,19 +182,6 @@ public class TabControlChart<TSeries> : Grid, ITabControlChart
 		TitleTextBlock.PointerExited += TitleTextBlock_PointerExited;
 	}
 
-	private void TitleTextBlock_PointerEntered(object? sender, PointerEventArgs e)
-	{
-		if (IsTitleSelectable)
-		{
-			TitleTextBlock!.Foreground = AtlasTheme.GridBackgroundSelected;
-		}
-	}
-
-	private void TitleTextBlock_PointerExited(object? sender, PointerEventArgs e)
-	{
-		TitleTextBlock!.Foreground = AtlasTheme.BackgroundText;
-	}
-
 	public virtual void AddAnnotation(ChartAnnotation chartAnnotation)
 	{
 		Annotations.Add(chartAnnotation);
@@ -225,7 +205,24 @@ public class TabControlChart<TSeries> : Grid, ITabControlChart
 		ChartView.Annotations.Add(annotation);
 	}
 
-	public virtual void InvalidateChart() 
+	public abstract void InvalidateChart();
+
+	protected virtual void OnSelectionChanged(SeriesSelectedEventArgs e)
 	{
+		// Safely raise the event for all subscribers
+		SelectionChanged?.Invoke(this, e);
+	}
+
+	private void TitleTextBlock_PointerEntered(object? sender, PointerEventArgs e)
+	{
+		if (IsTitleSelectable)
+		{
+			TitleTextBlock!.Foreground = AtlasTheme.GridBackgroundSelected;
+		}
+	}
+
+	private void TitleTextBlock_PointerExited(object? sender, PointerEventArgs e)
+	{
+		TitleTextBlock!.Foreground = AtlasTheme.BackgroundText;
 	}
 }

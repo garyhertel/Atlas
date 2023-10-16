@@ -55,7 +55,7 @@ public abstract class TabControlChartLegend<TSeries> : Grid
 			_textBlockTotal = new TextBlock()
 			{
 				Foreground = AtlasTheme.BackgroundText,
-				Margin = new Thickness(2, 2, 2, 2),
+				Margin = new Thickness(2),
 				HorizontalAlignment = HorizontalAlignment.Right,
 			};
 		}
@@ -194,7 +194,9 @@ public abstract class TabControlChartLegend<TSeries> : Grid
 			}
 
 			if (!_wrapPanel.Children.Contains(legendItem))
+			{
 				_wrapPanel.Children.Add(legendItem);
+			}
 		}
 		UpdatePositions();
 
@@ -249,6 +251,14 @@ public abstract class TabControlChartLegend<TSeries> : Grid
 		OnVisibleChanged?.Invoke(this, EventArgs.Empty);
 	}
 
+	public virtual void UpdateHighlight(bool showFaded)
+	{
+		foreach (TabChartLegendItem<TSeries> item in LegendItems)
+		{
+			item.UpdateHighlight(showFaded);
+		}
+	}
+
 	public void UnhighlightAll(bool update = false)
 	{
 		foreach (TabChartLegendItem<TSeries> item in LegendItems)
@@ -258,14 +268,6 @@ public abstract class TabControlChartLegend<TSeries> : Grid
 
 		if (update)
 			UpdateVisibleSeries();
-	}
-
-	public virtual void UpdateHighlight(bool showFaded)
-	{
-		foreach (TabChartLegendItem<TSeries> item in LegendItems)
-		{
-			item.UpdateHighlight(showFaded);
-		}
 	}
 }
 

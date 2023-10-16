@@ -45,7 +45,7 @@ public class TabLiveChartLegendItem : TabChartLegendItem<ISeries>
 					// Workaround for LiveCharts not always removing invisible series from the UI
 					var chart = (CartesianChart<SkiaSharpDrawingContext>)LiveChartLegend.Chart.CoreChart;
 					lineSeries.RemoveFromUI(chart); // Not sure whether to keep this in, it works without it
-					lineSeries.RemoveOldPaints(chart.View);
+					lineSeries.RemoveOldPaints(chart.View); // Sometimes required
 				}
 			}
 		}

@@ -5,8 +5,8 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Shapes;
 using Avalonia.Input;
+using Avalonia.Layout;
 using Avalonia.Media;
-using Avalonia.Threading;
 using System.Collections;
 
 namespace Atlas.UI.Avalonia.Charts;
@@ -18,10 +18,11 @@ public abstract class TabChartLegendItem<TSeries> : Grid
 
 	public readonly TabControlChartLegend<TSeries> Legend;
 	public readonly ChartSeries<TSeries> ChartSeries;
-	public readonly ChartView ChartView;
-	
-	public TSeries Series;
-	
+
+	public ChartView ChartView => Legend.ChartView;
+	public TSeries Series => ChartSeries.LineSeries;
+
+
 	public TextBlock? TextBlock;
 	public TextBlock? TextBlockTotal;
 
@@ -60,8 +61,6 @@ public abstract class TabChartLegendItem<TSeries> : Grid
 	{
 		Legend = legend;
 		ChartSeries = chartSeries;
-		Series = chartSeries.LineSeries;
-		ChartView = legend.ChartView;
 
 		InitializeControls();
 	}
@@ -132,9 +131,8 @@ public abstract class TabChartLegendItem<TSeries> : Grid
 		Children.Add(_polygon);
 	}
 
-	private static List<Point> GetPolygonPoints(int width, int height)
+	private static List<Point> GetPolygonPoints(int width, int height, int cornerSize = 3)
 	{
-		int cornerSize = 3;
 		return new List<Point>
 		{
 			new(0, height),
@@ -157,8 +155,8 @@ public abstract class TabChartLegendItem<TSeries> : Grid
 		{
 			Foreground = Brushes.LightGray,
 			Margin = new Thickness(2, 2, 6, 2),
-			//VerticalAlignment = global::Avalonia.Layout.VerticalAlignment.Center,
-			HorizontalAlignment = global::Avalonia.Layout.HorizontalAlignment.Stretch,
+			//VerticalAlignment = VerticalAlignment.Center,
+			HorizontalAlignment = HorizontalAlignment.Stretch,
 			[Grid.ColumnProperty] = 1,
 		};
 		UpdateTitleText();
@@ -169,7 +167,7 @@ public abstract class TabChartLegendItem<TSeries> : Grid
 	{
 		string prefix = "";
 		if (Index > 0 && ChartView.Series.Count > 1)
-			prefix = Index.ToString() + ". ";
+			prefix = $"{Index}. ";
 
 		TextBlock!.Text = prefix + ToString();
 	}
@@ -181,20 +179,10 @@ public abstract class TabChartLegendItem<TSeries> : Grid
 			Text = Total.FormattedShortDecimal(),
 			Foreground = Brushes.LightGray,
 			Margin = new Thickness(10, 2, 6, 2),
-			HorizontalAlignment = global::Avalonia.Layout.HorizontalAlignment.Right,
+			HorizontalAlignment = HorizontalAlignment.Right,
 			[Grid.ColumnProperty] = 2,
 		};
 		Children.Add(TextBlockTotal);
-	}
-
-	private void Polygon_PointerPressed(object? sender, PointerPressedEventArgs e)
-	{
-		if (e.GetCurrentPoint(this).Properties.IsLeftButtonPressed)
-		{
-			IsSelected = !IsSelected;
-			OnSelectionChanged?.Invoke(this, EventArgs.Empty);
-			e.Handled = true;
-		}
 	}
 
 	protected bool _highlight;
@@ -245,6 +233,18 @@ public abstract class TabChartLegendItem<TSeries> : Grid
 
 	public abstract void UpdateColor(Color color);
 
+	public abstract void UpdateVisible();
+
+	private void Polygon_PointerPressed(object? sender, PointerPressedEventArgs e)
+	{
+		if (e.GetCurrentPoint(this).Properties.IsLeftButtonPressed)
+		{
+			IsSelected = !IsSelected;
+			OnSelectionChanged?.Invoke(this, EventArgs.Empty);
+			e.Handled = true;
+		}
+	}
+
 	private void TabChartLegendItem_PointerEntered(object? sender, PointerEventArgs e)
 	{
 		Legend.UnhighlightAll(false);
@@ -255,6 +255,4 @@ public abstract class TabChartLegendItem<TSeries> : Grid
 	{
 		Highlight = false;
 	}
-
-	public abstract void UpdateVisible();
 }

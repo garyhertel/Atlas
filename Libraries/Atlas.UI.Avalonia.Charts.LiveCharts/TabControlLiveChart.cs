@@ -222,7 +222,7 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 		_pointClicked = point;
 		if (point == null) return;
 
-		if (IdxNameToSeries.TryGetValue(point!.Context.Series.Name!, out var series))
+		if (IdxNameToChartSeries.TryGetValue(point!.Context.Series.Name!, out var series))
 		{
 			OnSelectionChanged(new SeriesSelectedEventArgs(new List<ListSeries>() { series.ListSeries }));
 			Legend.SelectSeries(series.LineSeries, series.ListSeries);
@@ -422,9 +422,9 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 		var chartSeries = new ChartSeries<ISeries>(listSeries, liveChartSeries.LineSeries, color);
 		LiveChartSeries.Add(liveChartSeries);
 		ChartSeries.Add(chartSeries);
-		ListToTabSeries[listSeries.List] = listSeries;
+		IdxListToListSeries[listSeries.List] = listSeries;
 		if (listSeries.Name != null)
-			IdxNameToSeries[listSeries.Name] = chartSeries;
+			IdxNameToChartSeries[listSeries.Name] = chartSeries;
 		return liveChartSeries.LineSeries;
 	}
 
@@ -473,13 +473,12 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 		{
 			XAxis.MinLimit = null;
 			XAxis.MaxLimit = null;
-			////UpdateDateTimeInterval(timeWindow.Duration.TotalSeconds);
+			//UpdateDateTimeInterval(timeWindow.Duration.TotalSeconds);
 		}
 		else
 		{
 			XAxis.MinLimit = timeWindow.StartTime.Ticks;
 			XAxis.MaxLimit = timeWindow.EndTime.Ticks;
-			////DateTimeAxis.MinLimit = OxyPlot.Axes.DateTimeAxis.ToDouble(endTime.AddSeconds(duration / 25.0)); // labels get clipped without this
 			UpdateDateTimeInterval(timeWindow.Duration);
 		}
 	}
@@ -509,13 +508,13 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 
 		foreach (ISeries series in Chart.Series)
 		{
-			if (series is LineSeries<LiveChartPoint> lineSeries)
+			if (series is LiveChartLineSeries lineSeries)
 			{
 				// if (!lineSeries.IsVisible) continue;
 
-				foreach (LiveChartPoint dataPoint in lineSeries.Values!)
+				foreach (LiveChartPoint chartPoint in lineSeries.Values!)
 				{
-					double? x = dataPoint.X;
+					double? x = chartPoint.X;
 					if (x == null || double.IsNaN(x.Value))
 						continue;
 
@@ -566,7 +565,7 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 				if (hitPoint.Context.Series.Name is string name)
 				{
 					Legend.HighlightSeries(name);
-					if (IdxNameToSeries.TryGetValue(name, out ChartSeries<ISeries>? series))
+					if (IdxNameToChartSeries.TryGetValue(name, out ChartSeries<ISeries>? series))
 					{
 						HoverSeries = series;
 					}
@@ -757,7 +756,6 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 		{
 			ChartView.TimeWindow.OnSelectionChanged -= TimeWindow_OnSelectionChanged;
 		}
-
 	}
 
 	private void UnloadModel()
@@ -775,8 +773,8 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 		//Chart?.Series.Clear();
 
 		LiveChartSeries.Clear();
-		ListToTabSeries.Clear();
-		IdxNameToSeries.Clear();
+		IdxListToListSeries.Clear();
+		IdxNameToChartSeries.Clear();
 	}
 
 	/*

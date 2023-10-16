@@ -28,12 +28,12 @@ public class LiveChartTooltip : IChartTooltip<SkiaSharpDrawingContext>
 	private TextBlock? _textBlock;
 	private CustomFlyout? _flyout;
 
+	public TabControlLiveChart TabControlLiveChart { get; }
+
 	public LiveChartTooltip(TabControlLiveChart tabControlLiveChart)
 	{
 		TabControlLiveChart = tabControlLiveChart;
 	}
-
-	public TabControlLiveChart TabControlLiveChart { get; }
 
 	public void Show(IEnumerable<ChartPoint> foundPoints, Chart<SkiaSharpDrawingContext> chart)
 	{

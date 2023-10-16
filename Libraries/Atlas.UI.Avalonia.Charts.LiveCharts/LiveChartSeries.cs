@@ -1,6 +1,5 @@
 using Atlas.Core;
 using Atlas.Extensions;
-using Atlas.UI.Avalonia.Charts.LiveCharts;
 using LiveChartsCore.SkiaSharpView.Painting;
 using SkiaSharp;
 using System.Collections;
@@ -173,7 +172,7 @@ public class LiveChartSeries //: ChartSeries<ISeries>
 	{
 		UpdateXAxisProperty(listSeries);
 		double x = 0; // Points.Count;
-		var dataPoints = new List<LiveChartPoint>();
+		var chartPoints = new List<LiveChartPoint>();
 		// faster than using ItemSource?
 		foreach (object obj in iList)
 		{
@@ -211,19 +210,19 @@ public class LiveChartSeries //: ChartSeries<ISeries>
 				d = Convert.ToDouble(obj);
 			}
 
-			var dataPoint = new LiveChartPoint(obj, x++, d);
-			dataPoints.Add(dataPoint);
+			var chartPoint = new LiveChartPoint(obj, x++, d);
+			chartPoints.Add(chartPoint);
 		}
 
-		dataPoints = dataPoints
+		chartPoints = chartPoints
 			.OrderBy(d => d.X)
 			.ToList();
 
-		/*if (dataPoints.Count > 0 && listSeries.XBinSize > 0)
+		/*if (chartPoints.Count > 0 && listSeries.XBinSize > 0)
 		{
-			dataPoints = BinDataPoints(dataPoints, listSeries.XBinSize);
+			chartPoints = BinDataPoints(chartPoints, listSeries.XBinSize);
 		}*/
-		return dataPoints;
+		return chartPoints;
 	}
 
 	private void UpdateXAxisProperty(ListSeries listSeries)

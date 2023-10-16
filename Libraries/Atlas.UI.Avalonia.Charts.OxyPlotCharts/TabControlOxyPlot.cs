@@ -708,8 +708,8 @@ public class TabControlOxyPlot : TabControlChart<OxyPlotLineSeries>, IDisposable
 		PlotModel?.Series.Clear();
 
 		ChartSeries.Clear();
-		ListToTabSeries.Clear();
-		IdxNameToSeries.Clear();
+		IdxListToListSeries.Clear();
+		IdxNameToChartSeries.Clear();
 
 		//if (plotModel != null)
 		//	plotModel.Series.Clear();
@@ -723,7 +723,7 @@ public class TabControlOxyPlot : TabControlChart<OxyPlotLineSeries>, IDisposable
 
 	public void MergeGroup(ChartView chartView)
 	{
-		var prevListSeries = IdxNameToSeries;
+		var prevListSeries = IdxNameToChartSeries;
 		ClearSeries();
 
 		ChartView.Series = chartView.Series;
@@ -803,9 +803,9 @@ public class TabControlOxyPlot : TabControlChart<OxyPlotLineSeries>, IDisposable
 		};
 
 		ChartSeries.Add(oxyListSeries);
-		ListToTabSeries[listSeries.List] = listSeries;
+		IdxListToListSeries[listSeries.List] = listSeries;
 		if (listSeries.Name != null)
-			IdxNameToSeries[listSeries.Name] = oxyListSeries;
+			IdxNameToChartSeries[listSeries.Name] = oxyListSeries;
 		return lineSeries;
 	}
 
