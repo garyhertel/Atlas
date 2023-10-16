@@ -1,3 +1,4 @@
+using Atlas.Core.Charts;
 using NUnit.Framework;
 
 namespace Atlas.Core.Test;

@@ -4,7 +4,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Reflection;
 
-namespace Atlas.Core;
+namespace Atlas.Core.Charts;
 
 public enum SeriesType
 {
@@ -37,7 +37,7 @@ public class ListSeries
 	public Color? Color { get; set; }
 	public double Total { get; set; }
 
-	public override string ToString() => Name + "[" + List?.Count + "]";
+	public override string ToString() => $"{Name}[{List?.Count}]";
 
 	public ListSeries(IList list)
 	{

@@ -1,4 +1,4 @@
-using Atlas.Core;
+using Atlas.Core.Charts;
 using Atlas.Extensions;
 using Atlas.UI.Avalonia.Themes;
 using Avalonia;
@@ -21,7 +21,6 @@ public abstract class TabChartLegendItem<TSeries> : Grid
 
 	public ChartView ChartView => Legend.ChartView;
 	public TSeries Series => ChartSeries.LineSeries;
-
 
 	public TextBlock? TextBlock;
 	public TextBlock? TextBlockTotal;
@@ -62,11 +61,6 @@ public abstract class TabChartLegendItem<TSeries> : Grid
 		Legend = legend;
 		ChartSeries = chartSeries;
 
-		InitializeControls();
-	}
-
-	private void InitializeControls()
-	{
 		ColumnDefinitions = new ColumnDefinitions("Auto, *, Auto");
 		RowDefinitions = new RowDefinitions("Auto");
 

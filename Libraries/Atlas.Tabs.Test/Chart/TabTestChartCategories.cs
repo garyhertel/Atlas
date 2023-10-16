@@ -1,4 +1,5 @@
 using Atlas.Core;
+using Atlas.Core.Charts;
 using Atlas.Extensions;
 
 namespace Atlas.Tabs.Test.Chart;
@@ -44,12 +45,12 @@ public class TabTestChartCategories : ITab
 			AddSeries("Cats");
 			AddSeries("Dogs");
 
-			var chartSettings = new ChartView();
-			chartSettings.AddDimensions(_samples,
+			var chartView = new ChartView();
+			chartView.AddDimensions(_samples,
 				nameof(ChartSample.Category),
 				nameof(ChartSample.TimeStamp),
 				nameof(ChartSample.Value));
-			model.AddObject(chartSettings, true);
+			model.AddObject(chartView, true);
 		}
 
 		private void AddSeries(string category)

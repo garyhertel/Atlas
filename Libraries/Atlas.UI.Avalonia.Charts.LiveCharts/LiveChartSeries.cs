@@ -6,6 +6,7 @@ using System.Collections;
 using System.Reflection;
 using Avalonia.Media;
 using LiveChartsCore.Kernel;
+using Atlas.Core.Charts;
 
 namespace Atlas.UI.Avalonia.Charts.LiveCharts;
 
