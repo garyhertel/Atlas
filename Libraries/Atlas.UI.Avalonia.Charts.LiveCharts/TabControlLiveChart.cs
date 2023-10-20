@@ -325,8 +325,7 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 			double difference = maximum - minimum;
 			if (difference > 10)
 			{
-				// todo: needs better rounding for large units
-				ValueAxis.UnitWidth = Math.Round(difference * 0.10);
+				ValueAxis.UnitWidth = (difference * 0.10).RoundToSignificantFigures(1);
 			}
 		}
 
@@ -372,6 +371,21 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 				ValueAxis.MaxLimit = maximum + margin;
 			}
 		}
+	}
+
+	public static decimal RoundToSignificantFigures(decimal num, int significantFigures)
+	{
+		if (num == 0) return 0;
+
+		int d = (int)Math.Ceiling(Math.Log10((double)Math.Abs(num)));
+		int power = significantFigures - d;
+
+		decimal magnitude = (decimal)Math.Pow(10, power);
+
+		decimal shifted = Math.Round(num * magnitude, 0, MidpointRounding.AwayFromZero);
+		decimal ret = shifted / magnitude;
+
+		return ret;
 	}
 
 	public void LoadView(ChartView chartView)

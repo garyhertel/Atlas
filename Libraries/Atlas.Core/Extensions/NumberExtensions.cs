@@ -32,4 +32,24 @@ public static class NumberExtensions
 			return d.Formatted()!;
 		}
 	}
+
+	public static double RoundToSignificantFigures(this double num, int significantFigures)
+	{
+		return (double)RoundToSignificantFigures((decimal)num, significantFigures);
+	}
+
+	public static decimal RoundToSignificantFigures(this decimal num, int significantFigures)
+	{
+		if (num == 0) return 0;
+
+		int d = (int)Math.Ceiling(Math.Log10((double)Math.Abs(num)));
+		int power = significantFigures - d;
+
+		decimal magnitude = (decimal)Math.Pow(10, power);
+
+		decimal shifted = Math.Round(num * magnitude, 0, MidpointRounding.AwayFromZero);
+		decimal ret = shifted / magnitude;
+
+		return ret;
+	}
 }
