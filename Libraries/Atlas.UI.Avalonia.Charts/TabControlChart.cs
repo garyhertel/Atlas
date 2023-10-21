@@ -167,17 +167,18 @@ public abstract class TabControlChart<TSeries> : Grid, ITabControlChart
 			Foreground = AtlasTheme.BackgroundText,
 			Margin = new Thickness(10, 5, 10, 2),
 			//FontWeight = FontWeight.Medium,
-			HorizontalAlignment = HorizontalAlignment.Center,
-			//[ColumnSpanProperty] = 2,
+			TextWrapping = TextWrapping.Wrap,
+			[ColumnSpanProperty] = 2,
 		};
-		/*if (!ChartView.ShowOrder || ChartView.LegendPosition == ChartLegendPosition.Bottom)
+		if (ChartView.LegendPosition == ChartLegendPosition.Bottom)
 		{
 			TitleTextBlock.HorizontalAlignment = HorizontalAlignment.Center;
 		}
 		else
 		{
-			TitleTextBlock.Margin = new Thickness(40, 5, 5, 2);
-		}*/
+			TitleTextBlock.HorizontalAlignment = HorizontalAlignment.Left;
+			TitleTextBlock.Margin = new Thickness(55, 5, 5, 2);
+		}
 		TitleTextBlock.PointerEntered += TitleTextBlock_PointerEntered;
 		TitleTextBlock.PointerExited += TitleTextBlock_PointerExited;
 	}

@@ -7,6 +7,7 @@ using Atlas.UI.Avalonia.Themes;
 using Atlas.UI.Avalonia.View;
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Input;
 using Avalonia.Layout;
 using Avalonia.Media;
 using Avalonia.Skia;
@@ -46,7 +47,7 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 	public static SKColor TimeTrackerSkColor = TimeTrackerColor.ToSKColor();
 	public static SKColor GridLineSkColor = GridLineColor.ToSKColor();
 	public static SKColor TextSkColor = TextColor.ToSKColor();
-	public static SKColor TooltipBackgroundColor = SKColor.Parse("#102670").WithAlpha(190);
+	public static SKColor TooltipBackgroundColor = SKColor.Parse("#102670").WithAlpha(225);
 
 	public CartesianChart Chart;
 
@@ -97,6 +98,7 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 			[Grid.RowProperty] = 1,
 		};
 		Chart.ChartPointPointerDown += Chart_ChartPointPointerDown;
+		Chart.PointerExited += Chart_PointerExited;
 
 		/*PlotView = new PlotView()
 		{
@@ -228,6 +230,19 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 			OnSelectionChanged(new SeriesSelectedEventArgs(new List<ListSeries>() { series.ListSeries }));
 			Legend.SelectSeries(series.LineSeries, series.ListSeries);
 		}
+	}
+
+	private void Chart_PointerExited(object? sender, PointerEventArgs e)
+	{
+		if (HoverSeries != null)
+		{
+			HoverSeries = null;
+			Legend.UnhighlightAll(true);
+		}
+
+		// Hide cursor when out of scope
+		var moveEvent = new MouseCursorMovedEventArgs(0);
+		_mouseCursorChangedEventSource?.Raise(sender, moveEvent);
 	}
 
 	private Axis CreateXAxis()
@@ -504,13 +519,9 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 
 		XAxis.Labeler = value => new DateTime((long)value).ToString(dateFormat.TextFormat);// "yyyy-M-d H:mm:ss.FFF");
 		XAxis.UnitWidth = windowDuration.PeriodDuration(20).Ticks; // Hover depends on this
-		//XAxis.MinStep = dateFormat.StepSize.Ticks;
-		XAxis.MinStep = windowDuration.PeriodDuration(8).Ticks;
+		XAxis.MinStep = dateFormat.StepSize.Ticks;
+		//XAxis.MinStep = windowDuration.PeriodDuration(6).Ticks;
 		//XAxis.ForceStepToMin = true;
-		//XAxis.MinimumMajorStep = dateFormat.StepSize.TotalDays;
-
-		//double widthPerLabel = 6 * DateTimeAxis.StringFormat.Length + 25;
-		//XAxis.IntervalLength = Math.Max(50, widthPerLabel);
 	}
 
 	private void UpdateDateTimeAxisRange()
@@ -563,11 +574,9 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 		Chart.PointerPressed += TabControlLiveChart_PointerPressed;
 		Chart.PointerReleased += TabControlLiveChart_PointerReleased;
 		Chart.PointerMoved += TabControlLiveChart_PointerMoved;
-
-		//Chart.MouseLeave += PlotModel_MouseLeave;
 	}
 
-	private void TabControlLiveChart_PointerMoved(object? sender, global::Avalonia.Input.PointerEventArgs e)
+	private void TabControlLiveChart_PointerMoved(object? sender, PointerEventArgs e)
 	{
 		// store the mouse down point, check it when mouse button is released to determine if the context menu should be shown
 		var point = e.GetPosition(Chart);
@@ -619,7 +628,7 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 			?.point;
 	}
 
-	private void TabControlLiveChart_PointerPressed(object? sender, global::Avalonia.Input.PointerPressedEventArgs e)
+	private void TabControlLiveChart_PointerPressed(object? sender, PointerPressedEventArgs e)
 	{
 		var point = e.GetPosition(Chart);
 		_startScreenPoint = point;
@@ -637,7 +646,7 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 		}
 	}
 
-	private void TabControlLiveChart_PointerReleased(object? sender, global::Avalonia.Input.PointerReleasedEventArgs e)
+	private void TabControlLiveChart_PointerReleased(object? sender, PointerReleasedEventArgs e)
 	{
 		if (_pointClicked != null)
 		{
@@ -765,6 +774,7 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 		Chart.PointerReleased -= TabControlLiveChart_PointerReleased;
 		Chart.PointerMoved -= TabControlLiveChart_PointerMoved;
 		Chart.ChartPointPointerDown -= Chart_ChartPointPointerDown;
+		Chart.PointerExited -= Chart_PointerExited;
 		OnMouseCursorChanged -= TabControlChart_OnMouseCursorChanged;
 
 		if (ChartView.TimeWindow != null)
@@ -821,15 +831,6 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 		if (FillHeight)
 			size = size.WithHeight(Math.Max(size.Height, Math.Min(MaxHeight, availableSize.Height)));
 		return size;
-	}
-
-	private void PlotView_PointerExited(object? sender, PointerEventArgs e)
-	{
-		if (HoverSeries != null)
-		{
-			HoverSeries = null;
-			Legend.UnhighlightAll(true);
-		}
 	}
 
 	private void Legend_OnVisibleChanged(object? sender, EventArgs e)
@@ -898,13 +899,6 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 
 			AddSeries(series, oxyColor);
 		}
-	}
-
-	// Hide cursor when out of scope
-	private void PlotModel_MouseLeave(object? sender, OxyMouseEventArgs e)
-	{
-		var moveEvent = new MouseCursorMovedEventArgs(0);
-		_mouseCursorChangedEventSource?.Raise(sender, moveEvent);
 	}
 
 	private void INotifyCollectionChanged_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)

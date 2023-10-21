@@ -17,7 +17,7 @@ public class DateTimeFormat
 	{
 		new DateTimeFormat(2 * 60, TimeSpan.FromSeconds(1), "H:mm:ss"),
 		new DateTimeFormat(24 * 60 * 60, TimeSpan.FromMinutes(1), "H:mm"),
-		new DateTimeFormat(3 * 24 * 60 * 60, TimeSpan.FromMinutes(1), "M/d H:mm"),
+		new DateTimeFormat(3 * 24 * 60 * 60, TimeSpan.FromHours(6), "M/d H:mm"),
 		new DateTimeFormat(6 * 30 * 24 * 60 * 60, TimeSpan.FromDays(1), "M/d"),
 		new DateTimeFormat(1000.0 * 12 * 30 * 24 * 60 * 60, TimeSpan.FromDays(1), "yyyy-M-d"),
 	};
