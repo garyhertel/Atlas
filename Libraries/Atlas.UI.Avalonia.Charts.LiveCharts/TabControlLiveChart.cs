@@ -412,7 +412,7 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 
 	public void Refresh()
 	{
-		//UpdateLinearAxis();
+		UpdateLinearAxis();
 
 		Legend.RefreshModel();
 
@@ -429,9 +429,8 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 			.ToList();
 
 		UpdateValueAxis();
-		/*AddAxis();
-		UpdateLinearAxis();*/
-		//if (ListGroup.TimeWindow == null)
+		UpdateLinearAxis();
+		//if (ChartView.TimeWindow == null)
 		{
 			UpdateDateTimeAxisRange();
 		}
@@ -520,8 +519,6 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 		XAxis.Labeler = value => new DateTime((long)value).ToString(dateFormat.TextFormat);// "yyyy-M-d H:mm:ss.FFF");
 		XAxis.UnitWidth = windowDuration.PeriodDuration(20).Ticks; // Hover depends on this
 		XAxis.MinStep = dateFormat.StepSize.Ticks;
-		//XAxis.MinStep = windowDuration.PeriodDuration(6).Ticks;
-		//XAxis.ForceStepToMin = true;
 	}
 
 	private void UpdateDateTimeAxisRange()
@@ -529,26 +526,7 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 		if (XAxis == null || !UseDateTimeAxis)
 			return;
 
-		double minimum = double.MaxValue;
-		double maximum = double.MinValue;
-
-		foreach (ISeries series in Chart.Series)
-		{
-			if (series is LiveChartLineSeries lineSeries)
-			{
-				// if (!lineSeries.IsVisible) continue;
-
-				foreach (LiveChartPoint chartPoint in lineSeries.Values!)
-				{
-					double? x = chartPoint.X;
-					if (x == null || double.IsNaN(x.Value))
-						continue;
-
-					minimum = Math.Min(minimum, x.Value);
-					maximum = Math.Max(maximum, x.Value);
-				}
-			}
-		}
+		var (minimum, maximum, hasFraction) = GetXValueRange();
 
 		/*if (minimum != double.MaxValue)
 		{
@@ -567,6 +545,58 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 		UpdateDateTimeAxis(ChartView.TimeWindow);
 
 		//UpdateDateTimeInterval(double duration);
+	}
+
+	private void UpdateLinearAxis()
+	{
+		if (XAxis == null)
+			return;
+
+		var (minimum, maximum, hasFraction) = GetXValueRange();
+
+		if (!hasFraction)
+		{
+			XAxis.MinStep = 1;
+		}
+
+		/*
+		if (minimum == double.MaxValue)
+		{
+			// didn't find any values
+			minimum = 0;
+			maximum = 1;
+		}
+
+		XAxis.MinLimit = minimum;
+		XAxis.MaxLimit = maximum;*/
+	}
+
+	private (double minimum, double maximum, bool hasFraction) GetXValueRange()
+	{
+		double minimum = double.MaxValue;
+		double maximum = double.MinValue;
+		bool hasFraction = false;
+
+		foreach (ISeries series in Chart.Series)
+		{
+			if (series is LiveChartLineSeries lineSeries)
+			{
+				// if (!lineSeries.IsVisible) continue;
+
+				foreach (LiveChartPoint chartPoint in lineSeries.Values!)
+				{
+					double? x = chartPoint.X;
+					if (x == null || double.IsNaN(x.Value))
+						continue;
+
+					minimum = Math.Min(minimum, x.Value);
+					maximum = Math.Max(maximum, x.Value);
+
+					hasFraction |= (x % 1 != 0.0);
+				}
+			}
+		}
+		return (minimum, maximum, hasFraction); 
 	}
 
 	private void AddMouseListeners()
@@ -842,44 +872,6 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 	{
 		IsVisible = false;
 		UnloadModel();
-	}
-
-	private void UpdateLinearAxis()
-	{
-		if (LinearAxis == null)
-			return;
-
-		double minimum = double.MaxValue;
-		double maximum = double.MinValue;
-
-		foreach (OxyPlot.Series.Series series in PlotModel!.Series)
-		{
-			if (series is OxyPlot.Series.LineSeries lineSeries)
-			{
-				if (lineSeries.LineStyle == LineStyle.None)
-					continue;
-
-				foreach (var dataPoint in lineSeries.Points)
-				{
-					double x = dataPoint.X;
-					if (double.IsNaN(x))
-						continue;
-
-					minimum = Math.Min(minimum, x);
-					maximum = Math.Max(maximum, x);
-				}
-			}
-		}
-
-		if (minimum == double.MaxValue)
-		{
-			// didn't find any values
-			minimum = 0;
-			maximum = 1;
-		}
-
-		LinearAxis.Minimum = minimum;
-		LinearAxis.Maximum = maximum;
 	}
 
 	public void MergeGroup(ListGroup listGroup)

@@ -34,6 +34,7 @@ public class ChartView
 	public bool ShowOrder { get; set; } = true;
 	public bool ShowTimeTracker { get; set; }
 	public bool Logarithmic { get; set; }
+	public bool IsStacked { get; set; }
 
 	public double? MinValue { get; set; }
 	public double XBinSize { get; set; }

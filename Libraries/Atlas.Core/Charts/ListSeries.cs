@@ -31,7 +31,6 @@ public class ListSeries
 	public double XBinSize;
 	public string? Description { get; set; }
 
-	public bool IsStacked { get; set; }
 	public TimeSpan? PeriodDuration { get; set; }
 	public SeriesType SeriesType { get; set; } = SeriesType.Sum;
 	public Color? Color { get; set; }

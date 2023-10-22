@@ -344,7 +344,7 @@ public class TabControlOxyPlot : TabControlChart<OxyPlotLineSeries>, IDisposable
 
 		AddMouseListeners();
 
-		if (ChartView.Series.Count > 0 && ChartView.Series[0].IsStacked)
+		if (ChartView.Series.Count > 0 && ChartView.IsStacked)
 			AddCategoryAxis();
 		else
 			AddValueAxis();
@@ -500,8 +500,55 @@ public class TabControlOxyPlot : TabControlChart<OxyPlotLineSeries>, IDisposable
 		if (LinearAxis == null)
 			return;
 
+		var (minimum, maximum, hasFraction) = GetXValueRange();
+
+		if (minimum == double.MaxValue)
+		{
+			// didn't find any values
+			minimum = 0;
+			maximum = 1;
+		}
+
+		if (!hasFraction)
+		{
+			LinearAxis.MinimumMajorStep = 1;
+		}
+
+		LinearAxis.Minimum = minimum;
+		LinearAxis.Maximum = maximum;
+	}
+
+	private void UpdateDateTimeAxisRange()
+	{
+		if (DateTimeAxis == null)
+			return;
+
+		var (minimum, maximum, hasFraction) = GetXValueRange();
+
+		if (minimum != double.MaxValue)
+		{
+			DateTimeAxis.Minimum = minimum;
+			DateTimeAxis.Maximum = maximum;
+		}
+
+		if (ChartView.TimeWindow == null)
+		{
+			DateTime startTime = OxyPlot.Axes.DateTimeAxis.ToDateTime(DateTimeAxis.Minimum);
+			DateTime endTime = OxyPlot.Axes.DateTimeAxis.ToDateTime(DateTimeAxis.Maximum);
+
+			ChartView.TimeWindow = new TimeWindow(startTime, endTime).Trim();
+
+			UpdateDateTimeAxis(ChartView.TimeWindow);
+		}
+
+		//UpdateDateTimeInterval(double totalSeconds);
+	}
+
+	private (double minimum, double maximum, bool hasFraction) GetXValueRange()
+	{
 		double minimum = double.MaxValue;
 		double maximum = double.MinValue;
+		bool hasFraction = false;
 
 		foreach (OxyPlot.Series.Series series in PlotModel!.Series)
 		{
@@ -510,7 +557,7 @@ public class TabControlOxyPlot : TabControlChart<OxyPlotLineSeries>, IDisposable
 				if (lineSeries.LineStyle == LineStyle.None)
 					continue;
 
-				foreach (DataPoint dataPoint in lineSeries.Points)
+				foreach (var dataPoint in lineSeries.Points)
 				{
 					double x = dataPoint.X;
 					if (double.IsNaN(x))
@@ -521,16 +568,7 @@ public class TabControlOxyPlot : TabControlChart<OxyPlotLineSeries>, IDisposable
 				}
 			}
 		}
-
-		if (minimum == double.MaxValue)
-		{
-			// didn't find any values
-			minimum = 0;
-			maximum = 1;
-		}
-
-		LinearAxis.Minimum = minimum;
-		LinearAxis.Maximum = maximum;
+		return (minimum, maximum, hasFraction);
 	}
 
 	public void UpdateValueAxis() // OxyPlot.Axes.LinearAxis valueAxis, string axisKey = null
@@ -629,52 +667,6 @@ public class TabControlOxyPlot : TabControlChart<OxyPlotLineSeries>, IDisposable
 				ValueAxis.Minimum = minimum - margin;
 			ValueAxis.Maximum = maximum + margin;
 		}
-	}
-
-	private void UpdateDateTimeAxisRange()
-	{
-		if (DateTimeAxis == null)
-			return;
-
-		double minimum = double.MaxValue;
-		double maximum = double.MinValue;
-
-		foreach (OxyPlot.Series.Series series in PlotModel!.Series)
-		{
-			if (series is OxyPlot.Series.LineSeries lineSeries)
-			{
-				if (lineSeries.LineStyle == LineStyle.None)
-					continue;
-
-				foreach (var dataPoint in lineSeries.Points)
-				{
-					double x = dataPoint.X;
-					if (double.IsNaN(x))
-						continue;
-
-					minimum = Math.Min(minimum, x);
-					maximum = Math.Max(maximum, x);
-				}
-			}
-		}
-
-		if (minimum != double.MaxValue)
-		{
-			DateTimeAxis.Minimum = minimum;
-			DateTimeAxis.Maximum = maximum;
-		}
-
-		if (ChartView.TimeWindow == null)
-		{
-			DateTime startTime = OxyPlot.Axes.DateTimeAxis.ToDateTime(DateTimeAxis.Minimum);
-			DateTime endTime = OxyPlot.Axes.DateTimeAxis.ToDateTime(DateTimeAxis.Maximum);
-
-			ChartView.TimeWindow = new TimeWindow(startTime, endTime).Trim();
-
-			UpdateDateTimeAxis(ChartView.TimeWindow);
-		}
-
-		//UpdateDateTimeInterval(double totalSeconds);
 	}
 
 	public override void InvalidateChart()

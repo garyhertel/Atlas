@@ -3,7 +3,7 @@ using Atlas.Core.Charts;
 
 namespace Atlas.Tabs.Test.Chart;
 
-public class TabTestChartList : ITab
+public class TabTestChartLists : ITab
 {
 	public TabInstance Create() => new Instance();
 
