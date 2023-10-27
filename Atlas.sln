@@ -54,7 +54,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Atlas.UI.Avalonia.ScreenCap
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Atlas.UI.Avalonia.Charts", "Libraries\Atlas.UI.Avalonia.Charts\Atlas.UI.Avalonia.Charts.csproj", "{A5F9B6E9-EA6A-4757-A66A-776DA30EC70F}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Atlas.UI.Avalonia.Charts.OxyPlotCharts", "Libraries\Atlas.UI.Avalonia.Charts.OxyPlotCharts\Atlas.UI.Avalonia.Charts.OxyPlotCharts.csproj", "{F2844459-E73C-43B0-962F-C08FC0B32BB8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Atlas.UI.Avalonia.Charts.OxyPlots", "Libraries\Atlas.UI.Avalonia.Charts.OxyPlots\Atlas.UI.Avalonia.Charts.OxyPlots.csproj", "{F2844459-E73C-43B0-962F-C08FC0B32BB8}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Atlas.UI.Avalonia.Charts.LiveCharts", "Libraries\Atlas.UI.Avalonia.Charts.LiveCharts\Atlas.UI.Avalonia.Charts.LiveCharts.csproj", "{EEB5042F-0D91-41C0-B52D-E2674CA01709}"
 EndProject

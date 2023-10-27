@@ -8,173 +8,16 @@ using LiveChartsCore.VisualElements;
 using LiveChartsCore;
 using SkiaSharp;
 using LiveChartsCore.SkiaSharpView.VisualElements;
-using Avalonia.Controls;
-using Avalonia.Media;
-using System.Diagnostics;
-using Avalonia.Threading;
-using System.Reflection;
 using LiveChartsCore.SkiaSharpView.Painting.ImageFilters;
 using Atlas.Extensions;
 
 namespace Atlas.UI.Avalonia.Charts.LiveCharts;
 
+// Based on LiveCharts Tooltip
 public class LiveChartTooltip : IChartTooltip<SkiaSharpDrawingContext>
 {
-	private StackPanel<RoundedRectangleGeometry, SkiaSharpDrawingContext>? _stackPanel;
-	private static readonly int s_zIndex = 10050;
-	private readonly SolidColorPaint _backgroundPaint = new(new SKColor(28, 49, 58)) { ZIndex = s_zIndex };
-	private readonly SolidColorPaint _fontPaint = new(new SKColor(230, 230, 230)) { ZIndex = s_zIndex + 1 };
-
-	private TextBlock? _textBlock;
-	private CustomFlyout? _flyout;
-
-	public TabControlLiveChart TabControlLiveChart { get; }
-
-	public LiveChartTooltip(TabControlLiveChart tabControlLiveChart)
-	{
-		TabControlLiveChart = tabControlLiveChart;
-	}
-
-	public void Show(IEnumerable<ChartPoint> foundPoints, Chart<SkiaSharpDrawingContext> chart)
-	{
-		if (_stackPanel is null)
-		{
-			_stackPanel = new StackPanel<RoundedRectangleGeometry, SkiaSharpDrawingContext>
-			{
-				Padding = new Padding(25),
-				Orientation = ContainerOrientation.Vertical,
-				HorizontalAlignment = Align.Start,
-				VerticalAlignment = Align.Middle,
-				BackgroundPaint = _backgroundPaint
-			};
-
-			_stackPanel
-				.Animate(
-					new Animation(EasingFunctions.EaseOut, TimeSpan.FromMilliseconds(150)),
-					nameof(_stackPanel.X),
-					nameof(_stackPanel.Y));
-		}
-
-		// clear the previous elements.
-		foreach (var child in _stackPanel.Children.ToArray())
-		{
-			_ = _stackPanel.Children.Remove(child);
-			chart.RemoveVisual(child);
-		}
-
-		foreach (var point in foundPoints)
-		{
-			var sketch = ((IChartSeries<SkiaSharpDrawingContext>)point.Context.Series).GetMiniaturesSketch();
-			var relativePanel = sketch.AsDrawnControl();
-
-			var label = new LabelVisual
-			{
-				Text = point.SecondaryValue.ToString("C2"),
-				Paint = _fontPaint,
-				TextSize = 15,
-				Padding = new Padding(8, 0, 0, 0),
-				VerticalAlignment = Align.Start,
-				HorizontalAlignment = Align.Start
-			};
-
-			var sp = new StackPanel<RoundedRectangleGeometry, SkiaSharpDrawingContext>
-			{
-				Padding = new Padding(0, 4),
-				VerticalAlignment = Align.Middle,
-				HorizontalAlignment = Align.Middle,
-				Children =
-				{
-					relativePanel,
-					label
-				}
-			};
-
-			_stackPanel?.Children.Add(sp);
-		}
-
-		var size = _stackPanel.Measure(chart);
-
-		var location = foundPoints.GetTooltipLocation(size, chart);
-
-		_stackPanel.X = location.X;
-		_stackPanel.Y = location.Y;
-
-		chart.AddVisual(_stackPanel);
-		//Dispatcher.UIThread.Post(ShowFlyout);
-		//ShowFlyout();
-	}
-
-	private void ShowFlyout()
-	{
-		if (_flyout == null)
-		{
-			_flyout = new CustomFlyout()
-			{
-				OverlayInputPassThroughElement = TabControlLiveChart,
-				//Placement = PlacementMode.Pointer,
-				ShowMode = FlyoutShowMode.Transient,
-				
-				//Placement = PlacementMode.BottomEdgeAlignedLeft,
-			};
-			_textBlock = new TextBlock()
-			{
-				Text = "Test",
-				Foreground = Brushes.White,
-			};
-			_flyout.Content = _textBlock;
-		}
-		if (_flyout.IsOpen)
-		{
-			Debug.WriteLine("Flyout hide");
-			//_flyout.Hide();
-			_flyout.UpdatePosition();
-		}
-		else
-		{
-			Debug.WriteLine("Not open");
-			Debug.WriteLine("Flyout show");
-			_flyout.ShowAt(TabControlLiveChart, true);
-		}
-	}
-
-	public void Hide(Chart<SkiaSharpDrawingContext> chart)
-	{
-		if (chart is null || _stackPanel is null) return;
-		chart.RemoveVisual(_stackPanel);
-
-		if (_flyout != null && _flyout.IsOpen)
-		{
-			_flyout.Hide();
-		}
-	}
-}
-
-
-public class CustomFlyout : Flyout
-{
-	private MethodInfo _positionChangedMethod;
-
-	public CustomFlyout()
-	{
-		_positionChangedMethod = Popup.GetType().GetMethod("HandlePositionChange",
-			BindingFlags.NonPublic | BindingFlags.Instance)!;
-
-		//Popup.IsLightDismissEnabled = false;
-		//Popup.OverlayDismissEventPassThrough = false;
-		//Popup.Focusable = false;
-		//Popup.IsHitTestVisible = false;
-	}
-
-	public void UpdatePosition()
-	{
-		_positionChangedMethod.Invoke(Popup, new object[] {  });
-	}
-}
-
-public class LiveChartTooltip2 : IChartTooltip<SkiaSharpDrawingContext>
-{
 	public double TextSize { get; set; } = 15;
-	public double MaxTooltipsAndLegendsLabelsWidth { get; set; } = 300;
+	public double LabelMaxWidth { get; set; } = 300;
 	 
 	private static readonly int s_zIndex = 10100;
 
@@ -182,7 +25,7 @@ public class LiveChartTooltip2 : IChartTooltip<SkiaSharpDrawingContext>
 	private IPaint<SkiaSharpDrawingContext>? _backgroundPaint;
 	public TabControlLiveChart LiveChart;
 
-	public LiveChartTooltip2(TabControlLiveChart liveChart)
+	public LiveChartTooltip(TabControlLiveChart liveChart)
 	{
 		LiveChart = liveChart;
 		FontPaint = new SolidColorPaint(new SKColor(28, 49, 58));
@@ -250,7 +93,7 @@ public class LiveChartTooltip2 : IChartTooltip<SkiaSharpDrawingContext>
 			VerticalAlignment = Align.Middle
 		};
 
-		var lw = (float)MaxTooltipsAndLegendsLabelsWidth;
+		var lw = (float)LabelMaxWidth;
 
 		if (LiveChart.CursorPosition == null || !foundPoints.Any()) return;
 		var cursorPosition = LiveChart.CursorPosition.Value;
@@ -274,45 +117,46 @@ public class LiveChartTooltip2 : IChartTooltip<SkiaSharpDrawingContext>
 						Text = title,
 						Paint = FontPaint,
 						TextSize = TextSize,
-						Padding = new Padding(0, 0, 0, 0),
-						MaxWidth = lw,
+						Padding = new Padding(0),
+						MaxWidth = (float)LabelMaxWidth,
 						VerticalAlignment = Align.Start,
 						HorizontalAlignment = Align.Start,
 						ClippingMode = LiveChartsCore.Measure.ClipMode.XY
 					});
 
 				_panel.Children.Add(
-					new StackPanel<LiveChartsCore.SkiaSharpView.Drawing.Geometries.RectangleGeometry, SkiaSharpDrawingContext> { Padding = new(0, 8) });
+					new StackPanel<RectangleGeometry, SkiaSharpDrawingContext> { Padding = new(0, 8) });
 			}
 
 			var lines = lineSeries.LiveChartSeries.GetTooltipLines(closestPoint);
 
-			for (int j = 0; j < lines.Length; j++)
+			for (int i = 0; i < lines.Length; i++)
 			{
-				string line = lines[j];
+				string line = lines[i];
 				if (!line.IsNullOrEmpty())
 				{
 					tableLayout.AddChild(
 						new LabelVisual
 						{
-							Text = lines[j],
+							Text = lines[i],
 							Paint = FontPaint,
 							TextSize = TextSize,
-							Padding = new Padding(0, 0, 0, 0),
-							MaxWidth = lw,
+							Padding = new Padding(0),
+							MaxWidth = (float)LabelMaxWidth,
 							VerticalAlignment = Align.Start,
 							HorizontalAlignment = Align.Start,
 							ClippingMode = LiveChartsCore.Measure.ClipMode.None
-						}, j, 1, horizontalAlign: Align.Start);
+						}, i, 1, horizontalAlign: Align.Start);
 				}
 				else
 				{
 					tableLayout.AddChild(
-						new StackPanel<LiveChartsCore.SkiaSharpView.Drawing.Geometries.RectangleGeometry, SkiaSharpDrawingContext> { Padding = new(0, 8) }, j, 1);
+						new StackPanel<RectangleGeometry, SkiaSharpDrawingContext> { Padding = new(0, 8) }, i, 1);
 				}
 			}
 
-
+			// todo: After Tooltip clipping issue fixed:
+			// Switch to showing all series, or all with a data point present for that X value
 			/*var series = (IChartSeries<SkiaSharpDrawingContext>)point.Context.Series;
 
 			tableLayout.AddChild(series.GetMiniaturesSketch().AsDrawnControl(s_zIndex), i, 0);
@@ -364,7 +208,7 @@ public class LiveChartTooltip2 : IChartTooltip<SkiaSharpDrawingContext>
 			default: break;
 		}
 
-		// the size changed... we need to do the math again
+		// Update for new padding
 		size = _panel.Measure(chart);
 		var location = foundPoints.GetTooltipLocation(size, chart);
 

@@ -2,7 +2,7 @@ using Atlas.Start.Avalonia.Tabs;
 using Atlas.Tabs;
 using Atlas.UI.Avalonia;
 using Atlas.UI.Avalonia.Charts.LiveCharts;
-using Atlas.UI.Avalonia.Charts.OxyPlotCharts;
+using Atlas.UI.Avalonia.Charts.OxyPlots;
 using Atlas.UI.Avalonia.ScreenCapture;
 
 namespace Atlas.Start.Avalonia;

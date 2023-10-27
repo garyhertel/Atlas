@@ -68,10 +68,10 @@ public abstract class TabControlChart<TSeries> : Grid, ITabControlChart
 	{
 		Colors.LawnGreen,
 		Colors.Fuchsia,
-		Colors.Cyan,
-		Colors.Gold,
 		Colors.DodgerBlue,
+		Colors.Gold,
 		Colors.Red,
+		Colors.Cyan,
 		Colors.BlueViolet,
 		Colors.Orange,
 		Colors.Salmon,

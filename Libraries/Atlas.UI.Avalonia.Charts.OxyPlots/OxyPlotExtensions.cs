@@ -1,7 +1,7 @@
 using OxyPlot;
 using System.Drawing;
 
-namespace Atlas.UI.Avalonia.Charts.OxyPlotCharts;
+namespace Atlas.UI.Avalonia.Charts.OxyPlots;
 
 public static class OxyPlotExtensions
 {

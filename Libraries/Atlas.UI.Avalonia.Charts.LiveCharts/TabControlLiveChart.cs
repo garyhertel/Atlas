@@ -90,7 +90,7 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 			LegendPosition = LegendPosition.Hidden,
 			TooltipBackgroundPaint = new SolidColorPaint(TooltipBackgroundColor),
 			TooltipTextPaint = new SolidColorPaint(AtlasTheme.TitleForeground.Color.AsSkColor()),
-			Tooltip = new LiveChartTooltip2(this),
+			Tooltip = new LiveChartTooltip(this),
 			TooltipFindingStrategy = TooltipFindingStrategy.CompareAllTakeClosest,
 			MinWidth = 150,
 			MinHeight = 120,
