@@ -42,7 +42,7 @@ public class TabDashboard : ITab
 
 					for (int i = 0; i < _random.Next(1, 10); i++)
 					{
-						var series = TabTestChartTimeRangeValue.Instance.CreateSeries(dateTime, SampleCount);
+						var series = ChartSamples.CreateTimeSeries(dateTime, SampleCount);
 
 						chartView.AddSeries($"Series {i}", series, seriesType: SeriesType.Average);
 

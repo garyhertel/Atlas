@@ -11,8 +11,6 @@ public class TabTestChartTimeRangeValue : ITab
 
 	public class Instance : TabInstance
 	{
-		private static readonly Random _random = new();
-
 		public override void Load(Call call, TabModel model)
 		{
 			DateTime startTime = DateTime.Now.Trim(TimeSpan.TicksPerHour);
@@ -27,7 +25,7 @@ public class TabTestChartTimeRangeValue : ITab
 			{
 				ShowTimeTracker = true,
 			};
-			chartViewToys.AddSeries("Toys", CreateIdenticalSeries(startTime), seriesType: SeriesType.Average);
+			chartViewToys.AddSeries("Toys", ChartSamples.CreateIdenticalTimeSeries(startTime), seriesType: SeriesType.Average);
 			model.AddObject(chartViewToys);
 		}
 
@@ -39,8 +37,8 @@ public class TabTestChartTimeRangeValue : ITab
 				//Logarithmic = true,
 			};
 
-			chartView.AddSeries("Cats", CreateSeries(startTime), seriesType: SeriesType.Average);
-			chartView.AddSeries("Dogs", CreateSeries(startTime), seriesType: SeriesType.Average);
+			chartView.AddSeries("Cats", ChartSamples.CreateTimeSeries(startTime), seriesType: SeriesType.Average);
+			chartView.AddSeries("Dogs", ChartSamples.CreateTimeSeries(startTime), seriesType: SeriesType.Average);
 
 			chartView.Annotations.Add(new ChartAnnotation()
 			{
@@ -50,42 +48,6 @@ public class TabTestChartTimeRangeValue : ITab
 			});
 			model.AddObject(chartView);
 			return startTime;
-		}
-
-		public static List<TimeRangeValue> CreateSeries(DateTime startTime, int sampleCount = 24)
-		{
-			var list = new List<TimeRangeValue>();
-			for (int i = 0; i < sampleCount; i++)
-			{
-				var value = new TimeRangeValue()
-				{
-					StartTime = startTime,
-					EndTime = startTime.AddHours(1),
-					Value = _random.Next() % int.MaxValue,
-				};
-				list.Add(value);
-				startTime = startTime.AddHours(1);
-			}
-
-			return list;
-		}
-
-		public static List<TimeRangeValue> CreateIdenticalSeries(DateTime startTime)
-		{
-			var list = new List<TimeRangeValue>();
-			for (int i = 0; i < 24; i++)
-			{
-				var value = new TimeRangeValue()
-				{
-					StartTime = startTime,
-					EndTime = startTime.AddHours(1),
-					Value = 1000,
-				};
-				list.Add(value);
-				startTime = startTime.AddHours(1);
-			}
-
-			return list;
 		}
 	}
 }

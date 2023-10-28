@@ -254,7 +254,9 @@ public class TabControlDataGrid : Grid, IDisposable, ITabSelector, ITabItemSelec
 		if (DataGrid == null || HorizontalAlignment != HorizontalAlignment.Stretch)
 			return;
 
-		var textColumns = DataGrid.Columns.Where(c => c is DataGridTextColumn || c is DataGridCheckBoxColumn);
+		var textColumns = DataGrid.Columns
+			.Where(c => c.IsVisible)
+			.Where(c => c is DataGridTextColumn || c is DataGridCheckBoxColumn);
 
 		// The star column widths will change as other column widths are changed
 		var originalWidths = new Dictionary<DataGridColumn, DataGridLength>();
@@ -266,25 +268,22 @@ public class TabControlDataGrid : Grid, IDisposable, ITabSelector, ITabItemSelec
 
 		foreach (DataGridColumn column in textColumns)
 		{
-			if (!column.IsVisible)
-				continue;
-
-			continue;
-
 			DataGridLength originalWidth = originalWidths[column];
+			double originalDesiredWidth = double.IsNaN(originalWidth.DesiredValue) ? 0 : originalWidth.DesiredValue;
 
 			column.MaxWidth = 2000;
 
 			if (column.MinWidth == 0)
-				column.MinWidth = Math.Min(MaxMinColumnWidth, originalWidth.DesiredValue);
+				column.MinWidth = Math.Min(MaxMinColumnWidth, originalDesiredWidth);
 			else
-				column.MinWidth = Math.Max(column.MinWidth, Math.Min(100, originalWidth.DesiredValue));
+				column.MinWidth = Math.Max(column.MinWidth, Math.Min(100, originalDesiredWidth));
 
-			double desiredWidth = Math.Max(column.MinWidth, originalWidth.DesiredValue);
+			double desiredWidth = Math.Max(column.MinWidth, originalDesiredWidth);
 			if (column is DataGridPropertyTextColumn textColumn)
 			{
 				desiredWidth = Math.Max(desiredWidth, textColumn.MinDesiredWidth);
 				desiredWidth = Math.Min(desiredWidth, textColumn.MaxDesiredWidth);
+				column.MinWidth = Math.Min(column.MinWidth, textColumn.MaxDesiredWidth);
 
 				if (textColumn.AutoSize)
 				{
@@ -292,6 +291,10 @@ public class TabControlDataGrid : Grid, IDisposable, ITabSelector, ITabItemSelec
 					//column.Width = new DataGridLength(desiredWidth, DataGridLengthUnitType.Auto);
 					column.Width = new DataGridLength(1, DataGridLengthUnitType.Auto, desiredWidth, double.NaN);
 					continue;
+				}
+				else
+				{
+					column.Width = new DataGridLength(column.ActualWidth, DataGridLengthUnitType.Star, desiredWidth, double.NaN);
 				}
 			}
 
@@ -305,10 +308,13 @@ public class TabControlDataGrid : Grid, IDisposable, ITabSelector, ITabItemSelec
 		//dataGrid.MinColumnWidth = 40; // doesn't do anything
 		// If 1 or 2 columns, make the last column stretch
 		if (DataGrid.Columns.Count == 1)
+		{
 			DataGrid.Columns[0].Width = new DataGridLength(DataGrid.Columns[0].ActualWidth, DataGridLengthUnitType.Star);
-
-		if (DataGrid.Columns.Count == 2)
+		}
+		else if (DataGrid.Columns.Count == 2)
+		{
 			DataGrid.Columns[1].Width = new DataGridLength(DataGrid.Columns[1].ActualWidth, DataGridLengthUnitType.Star);
+		}
 	}
 
 	private bool _selectionModified = false;

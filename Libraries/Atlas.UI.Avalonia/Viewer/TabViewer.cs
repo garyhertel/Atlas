@@ -105,6 +105,7 @@ public class TabViewer : Grid
 			VerticalAlignment = VerticalAlignment.Stretch,
 			HorizontalScrollBarVisibility = ScrollBarVisibility.Auto,
 			VerticalScrollBarVisibility = ScrollBarVisibility.Disabled,
+			BringIntoViewOnFocusChange = false, // Doesn't work well with Tab GridSplitters
 			Padding = new Thickness(0, 0, 0, 16),
 			MaxWidth = 5000,
 			MaxHeight = 4000,
