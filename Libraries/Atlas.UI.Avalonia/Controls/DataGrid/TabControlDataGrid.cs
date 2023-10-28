@@ -434,7 +434,7 @@ public class TabControlDataGrid : Grid, IDisposable, ITabSelector, ITabItemSelec
 	private void DataGrid_CellPointerPressed(object? sender, DataGridCellPointerPressedEventArgs e)
 	{
 		var pointer = e.PointerPressedEventArgs.GetCurrentPoint(this);
-		if (pointer.Properties.IsLeftButtonPressed && e.Row != null && DataGrid.SelectedItems != null && DataGrid.SelectedItems.Count == 1)
+		if (pointer.Properties.IsLeftButtonPressed && e.Row != null && DataGrid.SelectedItems != null && DataGrid.SelectedItems.Count == 1 && e.Cell.Content != null)
 		{
 			Type type = e.Cell.Content!.GetType();
 			if (typeof(CheckBox).IsAssignableFrom(type) ||

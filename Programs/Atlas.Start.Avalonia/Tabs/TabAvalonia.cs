@@ -17,6 +17,7 @@ public class TabAvalonia : ITab
 			{
 				new("Test", new TabTest()),
 				new("Custom Control", new TabCustomControl()),
+				new("Dashboard", new TabDashboard()),
 				new("Links", new TabBookmarks(Project)),
 				//new("Demo", new TabDemo()),
 			};

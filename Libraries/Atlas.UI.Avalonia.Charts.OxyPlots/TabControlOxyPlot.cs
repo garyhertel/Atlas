@@ -65,11 +65,6 @@ public class TabControlOxyPlot : TabControlChart<OxyPlotLineSeries>, IDisposable
 	public TabControlOxyPlot(TabInstance tabInstance, ChartView chartView, bool fillHeight = false) :
 		base(tabInstance, chartView, fillHeight)
 	{
-		if (TabInstance.TabViewSettings.ChartDataSettings.Count == 0)
-		{
-			TabInstance.TabViewSettings.ChartDataSettings.Add(new TabDataSettings());
-		}
-
 		PlotView = new PlotView()
 		{
 			HorizontalAlignment = global::Avalonia.Layout.HorizontalAlignment.Stretch,
@@ -164,17 +159,6 @@ public class TabControlOxyPlot : TabControlChart<OxyPlotLineSeries>, IDisposable
 	private void TitleTextBlock_PointerExited(object? sender, PointerEventArgs e)
 	{
 		TitleTextBlock!.Foreground = AtlasTheme.BackgroundText;
-	}
-
-	// Anchor the chart to the top and stretch to max height, available size gets set to max :(
-	protected override Size MeasureOverride(Size availableSize)
-	{
-		Size size = base.MeasureOverride(availableSize);
-		if (FillHeight)
-		{
-			size = size.WithHeight(Math.Max(size.Height, Math.Min(MaxHeight, availableSize.Height)));
-		}
-		return size;
 	}
 
 	private void UpdateVisible()

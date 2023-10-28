@@ -216,6 +216,15 @@ public abstract class TabControlChart<TSeries> : Grid, ITabControlChart
 		SelectionChanged?.Invoke(this, e);
 	}
 
+	// Anchor the chart to the top and stretch to max height, available size gets set to max :(
+	protected override Size MeasureOverride(Size availableSize)
+	{
+		Size size = base.MeasureOverride(availableSize);
+		if (FillHeight)
+			size = size.WithHeight(Math.Max(size.Height, Math.Min(MaxHeight, availableSize.Height)));
+		return size;
+	}
+
 	private void TitleTextBlock_PointerEntered(object? sender, PointerEventArgs e)
 	{
 		if (IsTitleSelectable)

@@ -11,7 +11,7 @@ public class TabTestChartTimeRangeValue : ITab
 
 	public class Instance : TabInstance
 	{
-		private readonly Random _random = new();
+		private static readonly Random _random = new();
 
 		public override void Load(Call call, TabModel model)
 		{
@@ -52,10 +52,10 @@ public class TabTestChartTimeRangeValue : ITab
 			return startTime;
 		}
 
-		private List<TimeRangeValue> CreateSeries(DateTime startTime)
+		public static List<TimeRangeValue> CreateSeries(DateTime startTime, int sampleCount = 24)
 		{
 			var list = new List<TimeRangeValue>();
-			for (int i = 0; i < 24; i++)
+			for (int i = 0; i < sampleCount; i++)
 			{
 				var value = new TimeRangeValue()
 				{
@@ -70,7 +70,7 @@ public class TabTestChartTimeRangeValue : ITab
 			return list;
 		}
 
-		private List<TimeRangeValue> CreateIdenticalSeries(DateTime startTime)
+		public static List<TimeRangeValue> CreateIdenticalSeries(DateTime startTime)
 		{
 			var list = new List<TimeRangeValue>();
 			for (int i = 0; i < 24; i++)
