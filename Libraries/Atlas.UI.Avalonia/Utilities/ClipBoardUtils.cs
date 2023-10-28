@@ -3,7 +3,7 @@ using Avalonia.Controls;
 
 namespace Atlas.UI.Avalonia;
 
-public static class ClipBoardUtils
+public static class ClipboardUtils
 {
 	public static void SetText(Visual? visual, string text)
 	{

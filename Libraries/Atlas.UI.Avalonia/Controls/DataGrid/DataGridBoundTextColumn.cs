@@ -113,7 +113,7 @@ public class DataGridBoundTextColumn : DataGridTextColumn
 		var menuItemCopy = new TabMenuItem("_Copy - Cell Contents");
 		menuItemCopy.Click += delegate
 		{
-			ClipBoardUtils.SetText(DataGrid, textBlock.Text);
+			ClipboardUtils.SetText(DataGrid, textBlock.Text);
 		};
 		list.Add(menuItemCopy);
 
@@ -124,7 +124,7 @@ public class DataGridBoundTextColumn : DataGridTextColumn
 		{
 			string? text = DataGrid.ToStringTable();
 			if (text != null)
-				ClipBoardUtils.SetText(DataGrid, text);
+				ClipboardUtils.SetText(DataGrid, text);
 		};
 		list.Add(menuItemCopyDataGrid);
 
@@ -133,7 +133,7 @@ public class DataGridBoundTextColumn : DataGridTextColumn
 		{
 			string? text = DataGrid.ToCsv();
 			if (text != null)
-				ClipBoardUtils.SetText(DataGrid, text);
+				ClipboardUtils.SetText(DataGrid, text);
 		};
 		list.Add(menuItemCopyDataGridCsv);
 

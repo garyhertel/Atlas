@@ -438,11 +438,19 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 		IsVisible = true;
 	}
 
+	private Color? GetSeriesColor(ListSeries listSeries)
+	{
+		if (listSeries.Name != null && IdxNameToChartSeries.TryGetValue(listSeries.Name, out ChartSeries<ISeries>? prevSeries))
+			return prevSeries.Color;
+		return null;
+	}
+
 	public ISeries AddListSeries(ListSeries listSeries, Color? defaultColor = null)
 	{
 		Color color = 
 			defaultColor ?? 
-			listSeries.Color?.AsAvaloniaColor() ?? 
+			listSeries.Color?.AsAvaloniaColor() ??
+			GetSeriesColor(listSeries) ??
 			GetColor(ChartSeries.Count);
 
 		var liveChartSeries = new LiveChartSeries(this, listSeries, color, UseDateTimeAxis);
@@ -832,6 +840,35 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 		IdxNameToChartSeries.Clear();
 	}
 
+	public override void MergeView(ChartView chartView)
+	{
+		var prevListSeries = IdxNameToChartSeries;
+		IdxNameToChartSeries = new();
+		ClearSeries();
+
+		ChartView.Series = chartView.Series;
+		ChartView.TimeWindow = chartView.TimeWindow ?? ChartView.TimeWindow;
+		ChartView.SortByTotal();
+
+		foreach (var series in ChartView.Series)
+		{
+			Color? color = null;
+			if (series.Name != null && prevListSeries.TryGetValue(series.Name, out ChartSeries<ISeries>? prevSeries))
+				color = prevSeries.Color;
+
+			AddListSeries(series, color);
+		}
+	}
+
+	// Anchor the chart to the top and stretch to max height, available size gets set to max :(
+	protected override Size MeasureOverride(Size availableSize)
+	{
+		Size size = base.MeasureOverride(availableSize);
+		if (FillHeight)
+			size = size.WithHeight(Math.Max(size.Height, Math.Min(MaxHeight, availableSize.Height)));
+		return size;
+	}
+
 	/*
 	private void UpdateVisible()
 	{
@@ -854,15 +891,6 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 		base.Render(context);
 	}
 
-	// Anchor the chart to the top and stretch to max height, available size gets set to max :(
-	protected override Size MeasureOverride(Size availableSize)
-	{
-		Size size = base.MeasureOverride(availableSize);
-		if (FillHeight)
-			size = size.WithHeight(Math.Max(size.Height, Math.Min(MaxHeight, availableSize.Height)));
-		return size;
-	}
-
 	private void Legend_OnVisibleChanged(object? sender, EventArgs e)
 	{
 		UpdateValueAxis();
@@ -872,25 +900,6 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 	{
 		IsVisible = false;
 		UnloadModel();
-	}
-
-	public void MergeGroup(ListGroup listGroup)
-	{
-		var prevListSeries = IdxNameToSeries;
-		ClearSeries();
-
-		ListGroup.Series = listGroup.Series;
-		ListGroup.TimeWindow = listGroup.TimeWindow ?? ListGroup.TimeWindow;
-		ListGroup.SortByTotal();
-
-		foreach (var series in ListGroup.Series)
-		{
-			Color? oxyColor = null;
-			if (series.Name != null && prevListSeries.TryGetValue(series.Name, out OxyPlotChartSeries? prevSeries))
-				oxyColor = ((TabChartLineSeries)prevSeries.OxySeries).Color;
-
-			AddSeries(series, oxyColor);
-		}
 	}
 
 	private void INotifyCollectionChanged_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)

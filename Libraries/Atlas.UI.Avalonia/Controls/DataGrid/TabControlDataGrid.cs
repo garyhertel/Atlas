@@ -182,7 +182,6 @@ public class TabControlDataGrid : Grid, IDisposable, ITabSelector, ITabItemSelec
 
 			BorderBrush = Brushes.Black,
 			RowBackground = AtlasTheme.GridBackground,
-			//AlternatingRowBackground = AtlasTheme.GridBackground,
 			HorizontalAlignment = HorizontalAlignment.Stretch,
 			VerticalAlignment = VerticalAlignment.Stretch,
 			HorizontalScrollBarVisibility = ScrollBarVisibility.Auto,

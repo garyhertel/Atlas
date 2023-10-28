@@ -129,7 +129,7 @@ public class TabControlTitle : UserControl, IDisposable
 		if (uri == null)
 			return;
 
-		await ClipBoardUtils.SetTextAsync(this, uri);
+		await ClipboardUtils.SetTextAsync(this, uri);
 	}
 
 	public void Dispose()

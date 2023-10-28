@@ -134,10 +134,10 @@ public abstract class TabControlChart<TSeries> : Grid, ITabControlChart
 		FillHeight = fillHeight;
 
 		HorizontalAlignment = HorizontalAlignment.Stretch;
-		//if (FillHeight)
-		//			VerticalAlignment = VerticalAlignment.Top;
-		//	else
-		VerticalAlignment = VerticalAlignment.Stretch;
+		if (FillHeight)
+			VerticalAlignment = VerticalAlignment.Top;
+		else
+			VerticalAlignment = VerticalAlignment.Stretch;
 
 		ColumnDefinitions = new ColumnDefinitions("*");
 		RowDefinitions = new RowDefinitions("*");
@@ -207,6 +207,8 @@ public abstract class TabControlChart<TSeries> : Grid, ITabControlChart
 	}
 
 	public abstract void InvalidateChart();
+
+	public abstract void MergeView(ChartView chartView);
 
 	protected virtual void OnSelectionChanged(SeriesSelectedEventArgs e)
 	{

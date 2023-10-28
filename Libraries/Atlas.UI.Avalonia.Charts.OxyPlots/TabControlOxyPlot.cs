@@ -65,18 +65,6 @@ public class TabControlOxyPlot : TabControlChart<OxyPlotLineSeries>, IDisposable
 	public TabControlOxyPlot(TabInstance tabInstance, ChartView chartView, bool fillHeight = false) :
 		base(tabInstance, chartView, fillHeight)
 	{
-		HorizontalAlignment = global::Avalonia.Layout.HorizontalAlignment.Stretch; // OxyPlot import collision
-		if (FillHeight)
-			VerticalAlignment = global::Avalonia.Layout.VerticalAlignment.Top;
-		else
-			VerticalAlignment = global::Avalonia.Layout.VerticalAlignment.Stretch;
-
-		ColumnDefinitions = new ColumnDefinitions("*");
-		RowDefinitions = new RowDefinitions("*");
-
-		MaxWidth = 1500;
-		MaxHeight = 645; // 25 Items
-
 		if (TabInstance.TabViewSettings.ChartDataSettings.Count == 0)
 		{
 			TabInstance.TabViewSettings.ChartDataSettings.Add(new TabDataSettings());
@@ -714,9 +702,10 @@ public class TabControlOxyPlot : TabControlChart<OxyPlotLineSeries>, IDisposable
 		}*/
 	}
 
-	public void MergeGroup(ChartView chartView)
+	public override void MergeView(ChartView chartView)
 	{
 		var prevListSeries = IdxNameToChartSeries;
+		IdxNameToChartSeries = new();
 		ClearSeries();
 
 		ChartView.Series = chartView.Series;

@@ -80,7 +80,7 @@ public class DataGridContextMenu : ContextMenu, IDisposable
 	{
 		string? text = DataGrid.ToStringTable();
 		if (text != null)
-			await ClipBoardUtils.SetTextAsync(DataGrid, text);
+			await ClipboardUtils.SetTextAsync(DataGrid, text);
 	}
 
 	private async void MenuItemCopyCellContents_Click(object? sender, RoutedEventArgs e)
@@ -116,7 +116,7 @@ public class DataGridContextMenu : ContextMenu, IDisposable
 				value = propertyValue.ToString() ?? "";
 			}
 
-			await ClipBoardUtils.SetTextAsync(DataGrid, value);
+			await ClipboardUtils.SetTextAsync(DataGrid, value);
 		}
 	}
 
@@ -126,7 +126,7 @@ public class DataGridContextMenu : ContextMenu, IDisposable
 		{
 			string? text = DataGrid.ColumnToStringTable(column);
 			if (text != null)
-				await ClipBoardUtils.SetTextAsync(DataGrid, text);
+				await ClipboardUtils.SetTextAsync(DataGrid, text);
 		}
 	}
 
@@ -134,28 +134,28 @@ public class DataGridContextMenu : ContextMenu, IDisposable
 	{
 		string? text = DataGrid.RowToString(Cell!.DataContext);
 		if (text != null)
-			await ClipBoardUtils.SetTextAsync(DataGrid, text);
+			await ClipboardUtils.SetTextAsync(DataGrid, text);
 	}
 
 	private async void MenuItemCopySelected_Click(object? sender, RoutedEventArgs e)
 	{
 		string? text = DataGrid.SelectedToString();
 		if (text != null)
-			await ClipBoardUtils.SetTextAsync(DataGrid, text);
+			await ClipboardUtils.SetTextAsync(DataGrid, text);
 	}
 
 	private async void MenuItemCopySelectedCsv_Click(object? sender, RoutedEventArgs e)
 	{
 		string? text = DataGrid.SelectedToCsv();
 		if (text != null)
-			await ClipBoardUtils.SetTextAsync(DataGrid, text);
+			await ClipboardUtils.SetTextAsync(DataGrid, text);
 	}
 
 	private async void MenuItemCopyDataGridCsv_Click(object? sender, RoutedEventArgs e)
 	{
 		string? text = DataGrid.ToCsv();
 		if (text != null)
-			await ClipBoardUtils.SetTextAsync(DataGrid, text);
+			await ClipboardUtils.SetTextAsync(DataGrid, text);
 	}
 
 	public void Dispose()
