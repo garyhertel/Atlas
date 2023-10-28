@@ -419,7 +419,7 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 		//PlotView!.InvalidatePlot(true);
 	}
 
-	public void ReloadView()
+	public override void ReloadView()
 	{
 		ChartView.SortByTotal();
 

@@ -208,6 +208,8 @@ public abstract class TabControlChart<TSeries> : Grid, ITabControlChart
 
 	public abstract void InvalidateChart();
 
+	public abstract void ReloadView();
+
 	public abstract void MergeView(ChartView chartView);
 
 	protected virtual void OnSelectionChanged(SeriesSelectedEventArgs e)

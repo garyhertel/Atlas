@@ -20,6 +20,8 @@ public class BaseWindow : Window
 	private const int DefaultWindowWidth = 1280;
 	private const int DefaultWindowHeight = 800;
 
+	public static BaseWindow? Instance;
+
 	public Project Project;
 
 	public TabViewer TabViewer;
@@ -41,6 +43,8 @@ public class BaseWindow : Window
 	[MemberNotNull(nameof(Project), nameof(TabViewer))]
 	private void Initialize(Project project)
 	{
+		Instance = this;
+
 		AtlasInit.Initialize();
 
 		TabFile.RegisterType<TabFileImage>(".png", ".jpg", ".jpeg", ".gif", ".bmp");

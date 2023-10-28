@@ -91,7 +91,7 @@ public class TabControlOxyPlot : TabControlChart<OxyPlotLineSeries>, IDisposable
 			(view, controller, args) =>
 				controller.AddHoverManipulator(view, new MouseHoverManipulator(this), args)));
 
-		LoadPlotModel();
+		ReloadView();
 
 		var containerGrid = new Grid()
 		{
@@ -242,11 +242,11 @@ public class TabControlOxyPlot : TabControlChart<OxyPlotLineSeries>, IDisposable
 	public void LoadView(ChartView chartView)
 	{
 		ChartView = chartView;
-		LoadPlotModel();
+		ReloadView();
 		Refresh();
 	}
 
-	public void LoadPlotModel()
+	public override void ReloadView()
 	{
 		RecreatePlotModel();
 

@@ -254,19 +254,19 @@ public class TabControlDataGrid : Grid, IDisposable, ITabSelector, ITabItemSelec
 		if (DataGrid == null || HorizontalAlignment != HorizontalAlignment.Stretch)
 			return;
 
-		var textColumns = DataGrid.Columns
+		var autoSizeColumns = DataGrid.Columns
 			.Where(c => c.IsVisible)
 			.Where(c => c is DataGridTextColumn || c is DataGridCheckBoxColumn);
 
 		// The star column widths will change as other column widths are changed
 		var originalWidths = new Dictionary<DataGridColumn, DataGridLength>();
-		foreach (DataGridColumn column in textColumns)
+		foreach (DataGridColumn column in autoSizeColumns)
 		{
 			originalWidths[column] = column.Width;
 			column.Width = new DataGridLength(column.ActualWidth, DataGridLengthUnitType.Auto); // remove Star sizing so columns don't interfere with each other
 		}
 
-		foreach (DataGridColumn column in textColumns)
+		foreach (DataGridColumn column in autoSizeColumns)
 		{
 			DataGridLength originalWidth = originalWidths[column];
 			double originalDesiredWidth = double.IsNaN(originalWidth.DesiredValue) ? 0 : originalWidth.DesiredValue;
@@ -292,7 +292,7 @@ public class TabControlDataGrid : Grid, IDisposable, ITabSelector, ITabItemSelec
 					column.Width = new DataGridLength(1, DataGridLengthUnitType.Auto, desiredWidth, double.NaN);
 					continue;
 				}
-				else
+				else if (desiredWidth >= textColumn.MaxDesiredWidth)
 				{
 					column.Width = new DataGridLength(column.ActualWidth, DataGridLengthUnitType.Star, desiredWidth, double.NaN);
 				}

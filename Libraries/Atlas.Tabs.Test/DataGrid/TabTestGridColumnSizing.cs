@@ -31,16 +31,22 @@ public class TabTestGridColumnSizing : ITab
 
 	public class ManyTypesItem
 	{
-		public int Integer { get; set; } = 0;
+		public int Integer { get; set; }
 		public long Long { get; set; } = 1234567890123456789;
 		public bool Bool { get; set; }
+
 		public DateTime DateTime { get; set; }
+
 		[Formatted]
 		public TimeSpan TimeSpan { get; set; }
+
 		[MaxWidth(200)]
 		public string SmallString { get; set; } = "Text";
+
 		[MaxWidth(200)]
 		public string ShowPrefix { get; set; } = "abcdefghijklmnopqrztuvwxyzabcdefghijklmnopqrztuvwxyzabcdefghijklmnopqrztuvwxyzabcdefghij";
+
+		[MaxWidth(1000), WordWrap]
 		public string LongString { get; set; } = "abcdefghijklmnopqrztuvwxyzabcdefghijklmnopqrztuvwxyzabcdefghijklmnopqrztuvwxyzabcdefghij";
 
 		public override string ToString() => Integer.ToString();
