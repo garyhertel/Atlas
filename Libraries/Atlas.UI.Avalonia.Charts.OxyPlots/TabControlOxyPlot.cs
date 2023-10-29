@@ -379,7 +379,9 @@ public class TabControlOxyPlot : TabControlChart<OxyPlotLineSeries>, IDisposable
 	{
 		var dateFormat = DateTimeFormat.GetDateTimeFormat(windowDuration)!;
 		DateTimeAxis!.StringFormat = dateFormat.TextFormat;
-		DateTimeAxis.MinimumMajorStep = dateFormat.StepSize.TotalDays;
+
+		TimeSpan duration = windowDuration.PeriodDuration(10);
+		DateTimeAxis.MinimumMajorStep = duration.TotalDays;
 
 		double widthPerLabel = 6 * DateTimeAxis.StringFormat.Length + 25;
 		DateTimeAxis.IntervalLength = Math.Max(50, widthPerLabel);
