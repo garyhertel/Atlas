@@ -5,7 +5,7 @@ using Atlas.Tabs.Test.Chart;
 using Atlas.UI.Avalonia.Charts.LiveCharts;
 using Avalonia.Controls;
 
-namespace Atlas.Start.Avalonia.Tabs;
+namespace Atlas.Start.Avalonia.Charts;
 
 public class TabDashboard : ITab
 {
