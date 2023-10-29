@@ -106,6 +106,10 @@ public class TabControlOxyPlot : TabControlChart<OxyPlotLineSeries>, IDisposable
 		{
 			containerGrid.Children.Add(TitleTextBlock);
 		}
+		else
+		{
+			containerGrid.RowDefinitions[0].Height = new GridLength(0);
+		}
 
 		containerGrid.Children.Add(PlotView);
 
@@ -367,13 +371,13 @@ public class TabControlOxyPlot : TabControlChart<OxyPlotLineSeries>, IDisposable
 			DateTimeAxis!.Minimum = OxyPlot.Axes.DateTimeAxis.ToDouble(timeWindow.StartTime);
 			DateTimeAxis.Maximum = OxyPlot.Axes.DateTimeAxis.ToDouble(timeWindow.EndTime);
 			//DateTimeAxis.Maximum = OxyPlot.Axes.DateTimeAxis.ToDouble(endTime.AddSeconds(duration / 25.0)); // labels get clipped without this
-			UpdateDateTimeInterval(timeWindow.Duration.TotalSeconds);
+			UpdateDateTimeInterval(timeWindow.Duration);
 		}
 	}
 
-	private void UpdateDateTimeInterval(double totalSeconds)
+	private void UpdateDateTimeInterval(TimeSpan windowDuration)
 	{
-		var dateFormat = DateTimeFormat.GetDateTimeFormat(totalSeconds)!;
+		var dateFormat = DateTimeFormat.GetDateTimeFormat(windowDuration)!;
 		DateTimeAxis!.StringFormat = dateFormat.TextFormat;
 		DateTimeAxis.MinimumMajorStep = dateFormat.StepSize.TotalDays;
 

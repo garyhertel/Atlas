@@ -122,6 +122,10 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 		{
 			containerGrid.Children.Add(TitleTextBlock);
 		}
+		else
+		{
+			containerGrid.RowDefinitions[0].Height = new GridLength(0);
+		}
 
 		containerGrid.Children.Add(Chart);
 
@@ -524,9 +528,11 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 	{
 		var dateFormat = DateTimeFormat.GetDateTimeFormat(windowDuration)!;
 
-		XAxis.Labeler = value => new DateTime((long)value).ToString(dateFormat.TextFormat);// "yyyy-M-d H:mm:ss.FFF");
-		XAxis.UnitWidth = windowDuration.PeriodDuration(20).Ticks; // Hover depends on this
-		XAxis.MinStep = dateFormat.StepSize.Ticks;
+		TimeSpan duration = windowDuration.PeriodDuration(8);
+
+		XAxis.Labeler = value => new DateTime((long)value).ToString(dateFormat.TextFormat);
+		XAxis.UnitWidth = duration.Ticks; // Hover depends on this
+		XAxis.MinStep = duration.Ticks;
 	}
 
 	private void UpdateDateTimeAxisRange()
@@ -557,7 +563,7 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 
 	private void UpdateLinearAxis()
 	{
-		if (XAxis == null)
+		if (XAxis == null || UseDateTimeAxis)
 			return;
 
 		var (minimum, maximum, hasFraction) = GetXValueRange();
