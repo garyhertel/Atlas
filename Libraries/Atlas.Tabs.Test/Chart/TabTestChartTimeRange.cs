@@ -13,23 +13,23 @@ public class TabTestChartTimeRangeValue : ITab
 	{
 		public override void Load(Call call, TabModel model)
 		{
-			DateTime startTime = DateTime.Now.Trim(TimeSpan.TicksPerHour);
+			DateTime endTime = DateTime.UtcNow.Trim(TimeSpan.TicksPerHour).AddHours(8);
 
-			AddAnimals(model, startTime);
-			AddToys(model, startTime);
+			AddAnimals(model, endTime);
+			AddToys(model, endTime);
 		}
 
-		private void AddToys(TabModel model, DateTime startTime)
+		private void AddToys(TabModel model, DateTime endTime)
 		{
 			var chartViewToys = new ChartView("Toys")
 			{
 				ShowTimeTracker = true,
 			};
-			chartViewToys.AddSeries("Toys", ChartSamples.CreateIdenticalTimeSeries(startTime), seriesType: SeriesType.Average);
+			chartViewToys.AddSeries("Toys", ChartSamples.CreateIdenticalTimeSeries(endTime), seriesType: SeriesType.Average);
 			model.AddObject(chartViewToys);
 		}
 
-		private DateTime AddAnimals(TabModel model, DateTime startTime)
+		private DateTime AddAnimals(TabModel model, DateTime endTime)
 		{
 			var chartView = new ChartView("Animals")
 			{
@@ -37,8 +37,8 @@ public class TabTestChartTimeRangeValue : ITab
 				//Logarithmic = true,
 			};
 
-			chartView.AddSeries("Cats", ChartSamples.CreateTimeSeries(startTime), seriesType: SeriesType.Average);
-			chartView.AddSeries("Dogs", ChartSamples.CreateTimeSeries(startTime), seriesType: SeriesType.Average);
+			chartView.AddSeries("Cats", ChartSamples.CreateTimeSeries(endTime), seriesType: SeriesType.Average);
+			chartView.AddSeries("Dogs", ChartSamples.CreateTimeSeries(endTime), seriesType: SeriesType.Average);
 
 			chartView.Annotations.Add(new ChartAnnotation()
 			{
@@ -47,7 +47,7 @@ public class TabTestChartTimeRangeValue : ITab
 				Color = Color.Red,
 			});
 			model.AddObject(chartView);
-			return startTime;
+			return endTime;
 		}
 	}
 }

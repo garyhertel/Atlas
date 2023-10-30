@@ -1,5 +1,6 @@
 using Atlas.Core;
 using Atlas.Start.Avalonia.Tabs;
+using Atlas.Tabs.Test.Chart;
 
 namespace Atlas.Start.Avalonia.Charts;
 
@@ -8,4 +9,5 @@ public class TabCustomCharts
 {
 	public static TabDashboard Dashboard => new();
 	public static TabChartSizes Sizes => new();
+	public static TabTestChart Test => new();
 }
