@@ -7,6 +7,7 @@ using Atlas.UI.Avalonia.Themes;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
+using Avalonia.Reactive;
 using Avalonia.Threading;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
@@ -84,7 +85,7 @@ public class BaseWindow : Window
 
 		PositionChanged += BaseWindow_PositionChanged;
 
-		//this.GetObservable(ClientSizeProperty).Subscribe(Resize);
+		this.GetObservable(ClientSizeProperty).Subscribe(new AnonymousObserver<Size>(Resize));
 	}
 
 	public virtual void AddTab(ITab tab)

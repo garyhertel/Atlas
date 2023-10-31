@@ -64,16 +64,8 @@ public class LiveChartSeries //: ChartSeries<ISeries>
 			LineSeries.GeometryFill = new SolidColorPaint(skColor);
 		}
 
-		// Title must be unique among all series
-		/*Title = listSeries.Name;
-		if (Title?.Length == 0)
-			Title = "<NA>";
-
-		TextColor = OxyColors.Black;
-		CanTrackerInterpolatePoints = false;
-		MinimumSegmentLength = 2;
+		/*
 		MarkerSize = 3;
-		LoadTrackFormat();
 
 		// can't add gaps with ItemSource so convert to LiveChartPoint ourselves
 
@@ -131,6 +123,23 @@ public class LiveChartSeries //: ChartSeries<ISeries>
 			}
 			else
 			{
+				if (ListSeries.XPropertyInfo?.PropertyType == typeof(DateTime))
+				{
+					var startTime = new DateTime((long)liveChartPoint.X!);
+					if (ListSeries.PeriodDuration is TimeSpan timeSpan)
+					{
+						string timeText = DateTimeUtils.FormatTimeRange(startTime, startTime.Add(timeSpan), false);
+						lines.Add($"Time: {timeText}");
+					}
+					else
+					{
+						lines.Add($"Time: {startTime.Formatted()}");
+					}
+				}
+				else
+				{
+					lines.Add($"X: {liveChartPoint.X}");
+				}
 				lines.Add($"{valueLabel}: {liveChartPoint.Y!.Formatted()}");
 			}
 
@@ -150,23 +159,6 @@ public class LiveChartSeries //: ChartSeries<ISeries>
 			lines.Add(ListSeries.Description);
 		}
 		return lines.ToArray();
-	}
-
-	/*
-		{0} the title of the series
-		{1} the title of the x-axis
-		{2} the x-value
-		{3} the title of the y-axis
-		{4} the y-value
-	*/
-	private void LoadTrackFormat()
-	{
-		string xTrackerFormat = ListSeries.XPropertyName ?? "Index: {2:#,0.###}";
-		if (UseDateTimeAxis || ListSeries.XPropertyInfo?.PropertyType == typeof(DateTime))
-		{
-			xTrackerFormat = "Time: {2:yyyy-M-d H:mm:ss.FFF}";
-		}
-		//TrackerFormatString = "{0}\n" + xTrackerFormat + "\nValue: {4:#,0.###}";
 	}
 
 	private List<LiveChartPoint> GetDataPoints(ListSeries listSeries, IList iList)

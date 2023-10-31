@@ -87,14 +87,14 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 			VerticalAlignment = VerticalAlignment.Stretch,
 			XAxes = new List<Axis> { XAxis },
 			YAxes = new List<Axis> { ValueAxis },
-			LegendPosition = LegendPosition.Hidden,
 			TooltipBackgroundPaint = new SolidColorPaint(TooltipBackgroundColor),
 			TooltipTextPaint = new SolidColorPaint(AtlasTheme.TitleForeground.Color.AsSkColor()),
-			Tooltip = new LiveChartTooltip(this),
 			TooltipFindingStrategy = TooltipFindingStrategy.CompareAllTakeClosest,
+			Tooltip = new LiveChartTooltip(this),
+			LegendPosition = LegendPosition.Hidden,
+			AnimationsSpeed = TimeSpan.Zero,
 			MinWidth = 150,
 			MinHeight = 120,
-			AnimationsSpeed = TimeSpan.Zero,
 			[Grid.RowProperty] = 1,
 		};
 		Chart.ChartPointPointerDown += Chart_ChartPointPointerDown;
@@ -390,21 +390,6 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 				ValueAxis.MaxLimit = maximum + margin;
 			}
 		}
-	}
-
-	public static decimal RoundToSignificantFigures(decimal num, int significantFigures)
-	{
-		if (num == 0) return 0;
-
-		int d = (int)Math.Ceiling(Math.Log10((double)Math.Abs(num)));
-		int power = significantFigures - d;
-
-		decimal magnitude = (decimal)Math.Pow(10, power);
-
-		decimal shifted = Math.Round(num * magnitude, 0, MidpointRounding.AwayFromZero);
-		decimal ret = shifted / magnitude;
-
-		return ret;
 	}
 
 	public void LoadView(ChartView chartView)
@@ -860,7 +845,9 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 		{
 			Color? color = null;
 			if (series.Name != null && prevListSeries.TryGetValue(series.Name, out ChartSeries<ISeries>? prevSeries))
+			{
 				color = prevSeries.Color;
+			}
 
 			AddListSeries(series, color);
 		}

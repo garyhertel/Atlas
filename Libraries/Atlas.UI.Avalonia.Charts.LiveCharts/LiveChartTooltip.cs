@@ -117,15 +117,12 @@ public class LiveChartTooltip : IChartTooltip<SkiaSharpDrawingContext>
 						Text = title,
 						Paint = FontPaint,
 						TextSize = TextSize,
-						Padding = new Padding(0),
+						Padding = new Padding(0, 0, 0, 4),
 						MaxWidth = (float)LabelMaxWidth,
 						VerticalAlignment = Align.Start,
 						HorizontalAlignment = Align.Start,
 						ClippingMode = LiveChartsCore.Measure.ClipMode.XY
 					});
-
-				_panel.Children.Add(
-					new StackPanel<RectangleGeometry, SkiaSharpDrawingContext> { Padding = new(0, 8) });
 			}
 
 			var lines = lineSeries.LiveChartSeries.GetTooltipLines(closestPoint);
@@ -141,7 +138,7 @@ public class LiveChartTooltip : IChartTooltip<SkiaSharpDrawingContext>
 							Text = lines[i],
 							Paint = FontPaint,
 							TextSize = TextSize,
-							Padding = new Padding(0),
+							Padding = new Padding(0, 3, 0, 0),
 							MaxWidth = (float)LabelMaxWidth,
 							VerticalAlignment = Align.Start,
 							HorizontalAlignment = Align.Start,
