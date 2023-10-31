@@ -160,7 +160,7 @@ public class DataGridContextMenu : ContextMenu, IDisposable
 		if (Column is DataGridBoundColumn column)
 		{
 			string text = DataGrid.SelectedColumnToString(column);
-			await ClipBoardUtils.SetTextAsync(text);
+			await ClipboardUtils.SetTextAsync(DataGrid, text);
 		}
 	}
 
