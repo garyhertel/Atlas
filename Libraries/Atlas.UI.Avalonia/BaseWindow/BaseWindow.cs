@@ -16,7 +16,8 @@ namespace Atlas.UI.Avalonia;
 
 public class BaseWindow : Window
 {
-	private const int MinWindowSize = 700;
+	private const int MinWindowWidth = 700;
+	private const int MinWindowHeight = 500;
 
 	private const int DefaultWindowWidth = 1280;
 	private const int DefaultWindowHeight = 800;
@@ -48,7 +49,7 @@ public class BaseWindow : Window
 
 		AtlasInit.Initialize();
 
-		TabFile.RegisterType<TabFileImage>(".png", ".jpg", ".jpeg", ".gif", ".bmp");
+		TabFile.RegisterType<TabFileImage>(TabFileImage.DefaultExtensions);
 
 		LoadProject(project);
 
@@ -76,8 +77,8 @@ public class BaseWindow : Window
 
 		Background = AtlasTheme.TabBackground;
 
-		MinWidth = MinWindowSize;
-		MinHeight = MinWindowSize;
+		MinWidth = MinWindowWidth;
+		MinHeight = MinWindowHeight;
 
 		Icon = new WindowIcon(Icons.Logo.Stream);
 
@@ -156,8 +157,8 @@ public class BaseWindow : Window
 		set
 		{
 			// These are causing the window to be shifted down
-			Width = Math.Max(MinWindowSize, value.Width);
-			Height = Math.Max(MinWindowSize, value.Height);
+			Width = Math.Min(MaxWidth, Math.Max(MinWindowWidth, value.Width));
+			Height = Math.Min(MaxHeight, Math.Max(MinWindowHeight, value.Height));
 
 			double minLeft = -10; // Left position for windows starts at -10
 			double left = Math.Min(Math.Max(minLeft, value.Left), MaxWidth - Width + minLeft); // values can be negative
