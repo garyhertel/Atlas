@@ -417,14 +417,19 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 			.Select(s => AddListSeries(s))
 			.ToList();
 
+		UpdateAxis();
+
+		IsVisible = true;
+	}
+
+	private void UpdateAxis()
+	{
 		UpdateValueAxis();
 		UpdateLinearAxis();
 		//if (ChartView.TimeWindow == null)
 		{
 			UpdateDateTimeAxisRange();
 		}
-
-		IsVisible = true;
 	}
 
 	private Color? GetSeriesColor(ListSeries listSeries)
@@ -817,8 +822,6 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 		//PlotView!.Model = null;
 		//XAxis = null;
 
-		Legend?.Unload();
-
 		ClearSeries();
 	}
 
@@ -826,6 +829,9 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 	{
 		//Chart?.Series.Clear();
 
+		Legend?.Unload();
+
+		ChartSeries.Clear();
 		LiveChartSeries.Clear();
 		IdxListToListSeries.Clear();
 		IdxNameToChartSeries.Clear();
@@ -841,6 +847,7 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 		ChartView.TimeWindow = chartView.TimeWindow ?? ChartView.TimeWindow;
 		ChartView.SortByTotal();
 
+		List<ISeries> listSeries = new();
 		foreach (var series in ChartView.Series)
 		{
 			Color? color = null;
@@ -849,8 +856,10 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 				color = prevSeries.Color;
 			}
 
-			AddListSeries(series, color);
+			listSeries.Add(AddListSeries(series, color));
 		}
+		Chart.Series = listSeries;
+		UpdateAxis();
 	}
 
 	/*
