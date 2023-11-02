@@ -221,6 +221,7 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 
 	public override void InvalidateChart()
 	{
+		UpdateAxis();
 		Dispatcher.UIThread.Post(() => Chart!.InvalidateVisual(), DispatcherPriority.Background);
 	}
 

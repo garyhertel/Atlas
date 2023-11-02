@@ -111,7 +111,7 @@ public class LiveChartTooltip : IChartTooltip<SkiaSharpDrawingContext>
 			string? title = lineSeries.LiveChartSeries.GetTooltipTitle();
 			if (title != null)
 			{
-				_panel.Children.Add(
+				tableLayout.AddChild(
 					new LabelVisual
 					{
 						Text = title,
@@ -122,7 +122,7 @@ public class LiveChartTooltip : IChartTooltip<SkiaSharpDrawingContext>
 						VerticalAlignment = Align.Start,
 						HorizontalAlignment = Align.Start,
 						ClippingMode = LiveChartsCore.Measure.ClipMode.XY
-					});
+					}, 0, 0, horizontalAlign: Align.Start);
 			}
 
 			var lines = lineSeries.LiveChartSeries.GetTooltipLines(closestPoint);
@@ -143,12 +143,12 @@ public class LiveChartTooltip : IChartTooltip<SkiaSharpDrawingContext>
 							VerticalAlignment = Align.Start,
 							HorizontalAlignment = Align.Start,
 							ClippingMode = LiveChartsCore.Measure.ClipMode.None
-						}, i, 1, horizontalAlign: Align.Start);
+						}, i + 1, 0, horizontalAlign: Align.Start);
 				}
 				else
 				{
 					tableLayout.AddChild(
-						new StackPanel<RectangleGeometry, SkiaSharpDrawingContext> { Padding = new(0, 8) }, i, 1);
+						new StackPanel<RectangleGeometry, SkiaSharpDrawingContext> { Padding = new(0, 8) }, i, 0);
 				}
 			}
 

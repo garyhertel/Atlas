@@ -22,7 +22,7 @@ public static class AvaloniaUtils
 		};
 		menuItemCopy.Click += delegate
 		{
-			ClipboardUtils.SetText(textBlock, textBlock.Text);
+			ClipboardUtils.SetText(textBlock, textBlock.Text ?? "");
 		};
 		list.Add(menuItemCopy);
 

@@ -156,7 +156,7 @@ public class LiveChartSeries //: ChartSeries<ISeries>
 		if (ListSeries.Description != null)
 		{
 			lines.Add("");
-			lines.Add(ListSeries.Description);
+			lines.AddRange(ListSeries.Description.Split('\n'));
 		}
 		return lines.ToArray();
 	}
