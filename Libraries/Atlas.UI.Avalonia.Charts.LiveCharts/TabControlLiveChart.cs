@@ -547,7 +547,7 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 			ChartView.TimeWindow = new TimeWindow(startTime, endTime).Trim();
 		}
 
-		UpdateDateTimeAxis(ChartView.TimeWindow);
+		UpdateDateTimeAxis(ChartView.TimeWindow?.Selection ?? ChartView.TimeWindow);
 
 		//UpdateDateTimeInterval(double duration);
 	}
@@ -849,7 +849,7 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 		ChartView.SortByTotal();
 
 		List<ISeries> listSeries = new();
-		foreach (var series in ChartView.Series)
+		foreach (var series in ChartView.Series.Take(SeriesLimit))
 		{
 			Color? color = null;
 			if (series.Name != null && prevListSeries.TryGetValue(series.Name, out ChartSeries<ISeries>? prevSeries))

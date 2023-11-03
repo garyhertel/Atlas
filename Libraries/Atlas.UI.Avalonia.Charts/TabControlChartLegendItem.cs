@@ -194,7 +194,6 @@ public abstract class TabChartLegendItem<TSeries> : Grid
 				UpdatePolygonPoints(15, 15);
 				SetFilled(true);
 				_highlight = true;
-				Legend.UpdateHighlight(true);
 				TextBlock!.Foreground = AtlasTheme.GridBackgroundSelected;
 				if (TextBlockTotal != null)
 					TextBlockTotal.Foreground = AtlasTheme.GridBackgroundSelected;
@@ -202,7 +201,6 @@ public abstract class TabChartLegendItem<TSeries> : Grid
 			else
 			{
 				UpdatePolygonPoints(13, 13);
-				Legend.UpdateHighlight(false);
 				_highlight = false;
 				SetFilled(IsSelected);
 				TextBlock!.Foreground = Brushes.LightGray;
@@ -211,6 +209,8 @@ public abstract class TabChartLegendItem<TSeries> : Grid
 			}
 
 			UpdateVisible();
+
+			Legend.UpdateHighlight(_highlight);
 		}
 	}
 

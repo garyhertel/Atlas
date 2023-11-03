@@ -271,6 +271,6 @@ public class OxyPlotLineSeries : OxyPlot.Series.LineSeries
 			}
 		}
 
-		Dispatcher.UIThread.InvokeAsync(() => Chart.Refresh(), DispatcherPriority.Background);
+		Dispatcher.UIThread.InvokeAsync(Chart.Refresh, DispatcherPriority.Background);
 	}
 }

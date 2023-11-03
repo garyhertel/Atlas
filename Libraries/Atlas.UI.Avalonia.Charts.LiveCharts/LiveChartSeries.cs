@@ -295,6 +295,6 @@ public class LiveChartSeries //: ChartSeries<ISeries>
 			}
 		}
 
-		Dispatcher.UIThread.InvokeAsync(() => Chart.Refresh(), DispatcherPriority.Background);
+		Dispatcher.UIThread.InvokeAsync(Chart.Refresh, DispatcherPriority.Background);
 	}*/
 }
