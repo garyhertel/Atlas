@@ -1,5 +1,4 @@
 using Atlas.Core;
-using Atlas.Core.Charts;
 
 namespace Atlas.Tabs.Test.Chart;
 

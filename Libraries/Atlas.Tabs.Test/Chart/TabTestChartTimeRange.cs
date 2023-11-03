@@ -1,6 +1,4 @@
 using Atlas.Core;
-using Atlas.Core.Charts;
-using Atlas.Core.Collections;
 using Atlas.Extensions;
 using System.Drawing;
 

@@ -1,10 +1,9 @@
-using Atlas.Core.Collections;
 using Atlas.Extensions;
 using System.Collections;
 using System.Drawing;
 using System.Reflection;
 
-namespace Atlas.Core.Charts;
+namespace Atlas.Core;
 
 public class ChartAnnotation
 {

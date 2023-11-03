@@ -1,5 +1,4 @@
 using Atlas.Core;
-using Atlas.Core.Collections;
 using Atlas.Extensions;
 using Avalonia.Media;
 using Avalonia.Threading;
