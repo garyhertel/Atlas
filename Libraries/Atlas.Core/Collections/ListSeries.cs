@@ -4,7 +4,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Reflection;
 
-namespace Atlas.Core.Charts;
+namespace Atlas.Core.Collections;
 
 public enum SeriesType
 {

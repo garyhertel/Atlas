@@ -1,4 +1,5 @@
 using Atlas.Core.Charts;
+using Atlas.Core.Collections;
 using Atlas.UI.Avalonia.Themes;
 using Avalonia;
 using Avalonia.Controls;
