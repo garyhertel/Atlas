@@ -13,12 +13,15 @@ public class LiveChartPoint : ObservablePoint
 {
 	public object? Object { get; set; }
 
-	public LiveChartPoint(object? obj, double? x, double? y) : base(x, y)
+	public LiveChartPoint(object? obj, double? x, double? y, double? yCoordinate) : base(x, y)
 	{
 		Object = obj;
+		if (x != null && yCoordinate != null)
+		{
+			Coordinate = y is null ? Coordinate.Empty : new(x.Value, yCoordinate.Value);
+		}
 	}
 }
-
 public class LiveChartLineSeries : LineSeries<LiveChartPoint>, ISeries
 {
 	public const int MaxFindDistance = 30;

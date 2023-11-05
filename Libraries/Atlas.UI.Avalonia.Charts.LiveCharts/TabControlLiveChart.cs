@@ -267,14 +267,15 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 		{
 			// Doesn't work yet
 			axis = new LogaritmicAxis(10);
+			axis.Labeler = (v) => Math.Pow(10, v).FormattedShortDecimal();
 		}
 		else
 		{
 			axis = new Axis();
+			axis.Labeler = NumberExtensions.FormattedShortDecimal;
 		}
 
 		axis.Padding = new Padding(10, 2);
-		axis.Labeler = NumberExtensions.FormattedShortDecimal;
 		axis.SeparatorsPaint = new SolidColorPaint(GridLineSkColor);
 		axis.LabelsPaint = new SolidColorPaint(TextSkColor);
 		axis.TextSize = 14;
@@ -362,8 +363,8 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 
 		if (ChartView.Logarithmic)
 		{
-			ValueAxis.MinLimit = minimum * 0.85;
-			ValueAxis.MaxLimit = maximum * 1.15;
+			ValueAxis.MinLimit = Math.Log(minimum, 10) * 0.85;
+			ValueAxis.MaxLimit = Math.Log(maximum, 10) * 1.15;
 		}
 		else
 		{

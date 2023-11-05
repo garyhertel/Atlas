@@ -171,25 +171,20 @@ public class OxyPlotLineSeries : OxyPlot.Series.LineSeries
 				}
 
 				object? value = listSeries.YPropertyInfo.GetValue(obj);
-				double d = double.NaN;
+				double y = double.NaN;
 				if (value != null)
 				{
-					d = Convert.ToDouble(value);
+					y = Convert.ToDouble(value);
 				}
 
-				var dataPoint = new DataPoint(x++, d);
-				if (datapointLookup != null && !double.IsNaN(d) && !datapointLookup.ContainsKey(dataPoint))
+				var dataPoint = new DataPoint(x++, y);
+				if (datapointLookup != null && !double.IsNaN(y) && !datapointLookup.ContainsKey(dataPoint))
 				{
 					datapointLookup.Add(dataPoint, obj);
 				}
 				dataPoints.Add(dataPoint);
 			}
 			dataPoints = dataPoints.OrderBy(d => d.X).ToList();
-
-			if (dataPoints.Count > 0 && listSeries.XBinSize > 0)
-			{
-				dataPoints = BinDataPoints(dataPoints, listSeries.XBinSize);
-			}
 		}
 		else
 		{
@@ -199,6 +194,12 @@ public class OxyPlotLineSeries : OxyPlot.Series.LineSeries
 				dataPoints.Add(new DataPoint(x++, value));
 			}
 		}
+
+		if (dataPoints.Count > 0 && listSeries.XBinSize > 0)
+		{
+			dataPoints = BinDataPoints(dataPoints, listSeries.XBinSize);
+		}
+
 		return dataPoints;
 	}
 

@@ -163,43 +163,49 @@ public class LiveChartSeries //: ChartSeries<ISeries>
 		// Faster than using ItemSource?
 		foreach (object obj in iList)
 		{
-			double? d = null;
-			if (listSeries.YPropertyInfo != null)
+			if (ListSeries.XPropertyInfo is PropertyInfo xPropertyInfo)
 			{
-				if (ListSeries.XPropertyInfo is PropertyInfo xPropertyInfo)
+				object? xObj = xPropertyInfo.GetValue(obj);
+				if (xObj is DateTime dateTime)
 				{
-					object? xObj = xPropertyInfo.GetValue(obj);
-					if (xObj is DateTime dateTime)
-					{
-						x = dateTime.Ticks;
-					}
-					else if (xObj == null)
-					{
-						continue;
-					}
-					else
-					{
-						x = Convert.ToDouble(xObj);
-					}
+					x = dateTime.Ticks;
 				}
+				else if (xObj == null)
+				{
+					continue;
+				}
+				else
+				{
+					x = Convert.ToDouble(xObj);
+				}
+			}
 
-				object? value = listSeries.YPropertyInfo.GetValue(obj);
-				d = null;
+			double? y = null;
+			if (ListSeries.YPropertyInfo is PropertyInfo yPropertyInfo)
+			{
+				object? value = yPropertyInfo.GetValue(obj);
 				if (value != null)
 				{
-					d = Convert.ToDouble(value);
-					if (double.IsNaN(d.Value))
-					{
-						d = null;
-					}
+					y = Convert.ToDouble(value);
 				}
 			}
 			else
 			{
-				d = Convert.ToDouble(obj);
+				y = Convert.ToDouble(obj);
 			}
 
-			var chartPoint = new LiveChartPoint(obj, x++, d);
+			if (y != null && double.IsNaN(y.Value))
+			{
+				y = null;
+			}
+
+			double? yCoordinate = null;
+			if (y != null && Chart.ChartView.Logarithmic)
+			{
+				yCoordinate = Math.Log(y.Value, 10);
+			}
+
+			var chartPoint = new LiveChartPoint(obj, x++, y, yCoordinate);
 			chartPoints.Add(chartPoint);
 		}
 
@@ -245,7 +251,7 @@ public class LiveChartSeries //: ChartSeries<ISeries>
 			{
 				prevNan = true;
 			}
-			binDataPoints.Add(new LiveChartPoint(null, firstBinX + i * xBinSize, value));
+			binDataPoints.Add(new LiveChartPoint(null, firstBinX + i * xBinSize, value, null));
 		}
 
 		return binDataPoints;
