@@ -7,7 +7,7 @@ public class TabTestChart
 {
 	public static TabTestChartLists Lists => new();
 	public static TabTestChartProperties Properties => new();
-	public static TabTestChartCategories Categories => new();
+	public static TabTestChartDimensions Dimensions => new();
 	public static TabTestChartTimeRangeValue TimeRange => new();
 	public static TabTestChartNoData NoData => new();
 }

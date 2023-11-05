@@ -25,16 +25,19 @@ public class ListSeries
 	public PropertyInfo? XPropertyInfo; // optional
 	public PropertyInfo? YPropertyInfo; // optional
 
-	public string? XPropertyName;
-	public string? YPropertyName;
-	public string? YPropertyLabel;
+	public string? XLabel;
+	public string? YLabel;
 	public double XBinSize;
 	public string? Description { get; set; }
 
 	public TimeSpan? PeriodDuration { get; set; }
 	public SeriesType SeriesType { get; set; } = SeriesType.Sum;
-	public Color? Color { get; set; }
 	public double Total { get; set; }
+
+	// Visual
+	public Color? Color { get; set; }
+	public double? MarkerSize { get; set; } // LiveCharts includes diameter, OxyPlot treats as radius?
+	public double StrokeThickness { get; set; } = 2;
 
 	public override string ToString() => $"{Name}[{List?.Count}]";
 
@@ -65,8 +68,6 @@ public class ListSeries
 	{
 		Name = name;
 		List = list;
-		XPropertyName = xPropertyName;
-		YPropertyName = yPropertyName;
 		SeriesType = seriesType;
 
 		Type elementType = list.GetType().GetElementTypeForAll()!;
@@ -225,19 +226,5 @@ public class ListSeries
 			endTime = endTime.Max(timeRangeValue.EndTime);
 		}
 		return new TimeWindow(startTime, endTime);
-	}
-
-	private PropertyInfo? GetXAxisProperty()
-	{
-		if (XPropertyInfo != null) return XPropertyInfo;
-
-		Type elementType = List.GetType().GetElementTypeForAll()!;
-		foreach (PropertyInfo propertyInfo in elementType.GetProperties())
-		{
-			if (propertyInfo.GetCustomAttribute<XAxisAttribute>() != null)
-				return propertyInfo;
-		}
-
-		return null;
 	}
 }

@@ -1,11 +1,13 @@
 using Atlas.Core;
 using Atlas.Extensions;
+using Avalonia.Media;
+using Avalonia.Threading;
+using LiveChartsCore.Kernel;
 using LiveChartsCore.SkiaSharpView.Painting;
 using SkiaSharp;
 using System.Collections;
+using System.Collections.Specialized;
 using System.Reflection;
-using Avalonia.Media;
-using LiveChartsCore.Kernel;
 
 namespace Atlas.UI.Avalonia.Charts.LiveCharts;
 
@@ -23,11 +25,13 @@ public class LiveChartSeries //: ChartSeries<ISeries>
 {
 	private const int MaxPointsToShowMarkers = 8;
 	private const int MaxTitleLength = 200;
+	private const double DefaultGeometrySize = 5;
 
 	public readonly TabControlLiveChart Chart;
 	public readonly ListSeries ListSeries;
 	public readonly bool UseDateTimeAxis;
 	public LiveChartLineSeries LineSeries;
+	public List<LiveChartPoint> DataPoints = new();
 
 	public PropertyInfo? XAxisPropertyInfo;
 
@@ -41,32 +45,28 @@ public class LiveChartSeries //: ChartSeries<ISeries>
 
 		SKColor skColor = color.AsSkColor();
 
-		var dataPoints = GetDataPoints(listSeries, listSeries.List);
+		// can't add gaps with ItemSource so convert to LiveChartPoint ourselves
+		DataPoints = GetDataPoints(listSeries, listSeries.List);
 
 		LineSeries = new LiveChartLineSeries(this)
 		{
 			Name = listSeries.Name,
-			Values = dataPoints,
+			Values = DataPoints,
 			Fill = null,
 			LineSmoothness = 0, // 1 = Curved
-			GeometrySize = 5,
+			GeometrySize = listSeries.MarkerSize ?? DefaultGeometrySize,
 			EnableNullSplitting = true,
 
-			Stroke = new SolidColorPaint(skColor) { StrokeThickness = 2 },
+			Stroke = new SolidColorPaint(skColor, (float)listSeries.StrokeThickness),
 			GeometryStroke = null,
 			GeometryFill = null,
 		};
 
-		if (listSeries.List.Count > 0 && listSeries.List.Count <= MaxPointsToShowMarkers || HasSinglePoint(dataPoints))
+		if (listSeries.List.Count > 0 && listSeries.List.Count <= MaxPointsToShowMarkers || HasSinglePoint(DataPoints))
 		{
-			//lineSeries.GeometryStroke = new SolidColorPaint(skColor) { StrokeThickness = 2f };
+			//lineSeries.GeometryStroke = new SolidColorPaint(skColor, 2f);
 			LineSeries.GeometryFill = new SolidColorPaint(skColor);
 		}
-
-		/*
-		MarkerSize = 3;
-
-		// can't add gaps with ItemSource so convert to LiveChartPoint ourselves
 
 		if (listSeries.List is INotifyCollectionChanged iNotifyCollectionChanged)
 		{
@@ -76,7 +76,7 @@ public class LiveChartSeries //: ChartSeries<ISeries>
 				// can we remove this later when disposing?
 				SeriesChanged(listSeries, e);
 			});
-		}*/
+		}
 	}
 
 	private bool HasSinglePoint(List<LiveChartPoint> dataPoints)
@@ -85,9 +85,7 @@ public class LiveChartSeries //: ChartSeries<ISeries>
 		bool prevNan2 = false;
 		foreach (LiveChartPoint dataPoint in dataPoints)
 		{
-			if (dataPoint.Y == null) return true;
-
-			bool nan = double.IsNaN(dataPoint.Y.Value);
+			bool nan = dataPoint.Y == null || double.IsNaN(dataPoint.Y.Value);
 			if (prevNan2 && !prevNan1 && nan)
 				return true;
 
@@ -113,7 +111,7 @@ public class LiveChartSeries //: ChartSeries<ISeries>
 
 		if (point.Context.DataSource is LiveChartPoint liveChartPoint)
 		{
-			string valueLabel = ListSeries.YPropertyLabel ?? "Value";
+			string valueLabel = ListSeries.YLabel ?? "Value";
 			if (liveChartPoint.Object is TimeRangeValue timeRangeValue)
 			{
 				lines.Add($"Time: {timeRangeValue.TimeText}");
@@ -162,8 +160,7 @@ public class LiveChartSeries //: ChartSeries<ISeries>
 
 	private List<LiveChartPoint> GetDataPoints(ListSeries listSeries, IList iList)
 	{
-		UpdateXAxisProperty(listSeries);
-		double x = 0; // Points.Count;
+		double x = DataPoints.Count;
 		var chartPoints = new List<LiveChartPoint>();
 		// faster than using ItemSource?
 		foreach (object obj in iList)
@@ -217,36 +214,19 @@ public class LiveChartSeries //: ChartSeries<ISeries>
 		return chartPoints;
 	}
 
-	private void UpdateXAxisProperty(ListSeries listSeries)
+	private static List<LiveChartPoint> BinDataPoints(List<LiveChartPoint> dataPoints, double xBinSize)
 	{
-		if (listSeries.YPropertyInfo != null)
-		{
-			if (listSeries.XPropertyInfo != null)
-				XAxisPropertyInfo = listSeries.XPropertyInfo;
+		if (dataPoints.Count == 0) return dataPoints;
 
-			if (XAxisPropertyInfo == null)
-			{
-				Type elementType = listSeries.List.GetType().GetElementTypeForAll()!;
-				foreach (PropertyInfo propertyInfo in elementType.GetProperties())
-				{
-					if (propertyInfo.GetCustomAttribute<XAxisAttribute>() != null)
-						XAxisPropertyInfo = propertyInfo;
-				}
-			}
-		}
-	}
-
-	/*private static List<LiveChartPoint> BinDataPoints(List<LiveChartPoint> dataPoints, double xBinSize)
-	{
-		double firstX = dataPoints.First().X;
+		double firstX = dataPoints.First().X!.Value;
 		double firstBinX = ((int)(firstX / xBinSize)) * xBinSize; // use start of interval
-		double lastBinX = dataPoints.Last().X;
+		double lastBinX = dataPoints.Last()!.X!.Value;
 		int numBins = (int)Math.Ceiling((lastBinX - firstBinX) / xBinSize) + 1;
 		double[] bins = new double[numBins];
 		foreach (LiveChartPoint dataPoint in dataPoints)
 		{
-			int bin = (int)((dataPoint.X - firstBinX) / xBinSize);
-			bins[bin] += dataPoint.Y;
+			int bin = (int)((dataPoint.X!.Value - firstBinX) / xBinSize);
+			bins[bin] += dataPoint.Y!.Value;
 		}
 
 		bool prevNan = false;
@@ -266,34 +246,31 @@ public class LiveChartSeries //: ChartSeries<ISeries>
 			{
 				prevNan = true;
 			}
-			binDataPoints.Add(new LiveChartPoint(firstBinX + i * xBinSize, value));
+			binDataPoints.Add(new LiveChartPoint(null, firstBinX + i * xBinSize, value));
 		}
 
 		return binDataPoints;
 	}
-	
+
 	private void SeriesChanged(ListSeries listSeries, NotifyCollectionChangedEventArgs e)
 	{
-		lock (Chart.PlotModel!.SyncRoot)
+		lock (Chart.Chart.SyncContext)
 		{
 			if (e.Action == NotifyCollectionChangedAction.Add)
 			{
 				var dataPoints = GetDataPoints(listSeries, e.NewItems!);
-				Points.AddRange(dataPoints);
+				DataPoints.AddRange(dataPoints);
 			}
 			else if (e.Action == NotifyCollectionChangedAction.Remove)
 			{
 				var dataPoints = GetDataPoints(listSeries, e.OldItems!);
 				foreach (LiveChartPoint datapoint in dataPoints)
 				{
-					if (Points.FirstOrDefault().X == datapoint.X)
-					{
-						Points.RemoveAt(0);
-					}
+					DataPoints.RemoveAll(point => point.X == datapoint.X);
 				}
 			}
 		}
 
 		Dispatcher.UIThread.InvokeAsync(Chart.Refresh, DispatcherPriority.Background);
-	}*/
+	}
 }

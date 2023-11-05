@@ -304,7 +304,7 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 		*/
 	}
 
-	public void UpdateValueAxis() // OxyPlot.Axes.LinearAxis valueAxis, string axisKey = null
+	public void UpdateValueAxis() // Axis valueAxis, string axisKey = null
 	{
 		if (ValueAxis == null)
 			return;
@@ -342,9 +342,9 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 		else
 		{
 			double difference = maximum - minimum;
-			if (difference > 10)
+			if (difference > 10 || hasFraction)
 			{
-				ValueAxis.UnitWidth = (difference * 0.10).RoundToSignificantFigures(1);
+				ValueAxis.UnitWidth = (difference * 0.2).RoundToSignificantFigures(1);
 			}
 		}
 
@@ -369,26 +369,22 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 		}
 		else
 		{
+			var margin = (maximum - minimum) * MarginPercent;
 			if (minimum == maximum)
+				margin = Math.Abs(minimum);
+
+			if (margin == 0)
+				margin = 1;
+
+			if (minValue != null)
 			{
-				ValueAxis.MinLimit = null;
-				ValueAxis.MaxLimit = null;
+				ValueAxis.MinLimit = Math.Max(minimum - margin, minValue.Value - Math.Abs(margin) * 0.05);
 			}
 			else
 			{
-				var margin = (maximum - minimum) * MarginPercent;
-				if (minimum == maximum)
-					margin = Math.Abs(minimum);
-
-				if (margin == 0)
-					margin = 1;
-
-				if (minValue != null)
-					ValueAxis.MinLimit = Math.Max(minimum - margin, minValue.Value - Math.Abs(margin) * 0.05);
-				else
-					ValueAxis.MinLimit = minimum - margin;
-				ValueAxis.MaxLimit = maximum + margin;
+				ValueAxis.MinLimit = minimum - margin;
 			}
+			ValueAxis.MaxLimit = maximum + margin;
 		}
 	}
 
@@ -396,16 +392,16 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 	{
 		ChartView = chartView;
 		ReloadView();
-		Refresh();
+		Legend.RefreshModel();
 	}
 
 	public void Refresh()
 	{
-		UpdateLinearAxis();
+		UpdateAxis();
 
 		Legend.RefreshModel();
 
-		//PlotView!.InvalidatePlot(true);
+		//InvalidateChart();
 	}
 
 	public override void ReloadView()
@@ -480,7 +476,7 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 			{
 				SKTypeface = SKTypeface.FromFamilyName("Inter", SKFontStyle.Bold),
 			},
-			Stroke = new SolidColorPaint(color.WithAlpha(200)),
+			Stroke = new SolidColorPaint(color.WithAlpha(200), (float)chartAnnotation.StrokeThickness),
 		};
 
 		if (chartAnnotation.X != null)
@@ -518,7 +514,7 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 	{
 		var dateFormat = DateTimeFormat.GetDateTimeFormat(windowDuration)!;
 
-		TimeSpan duration = windowDuration.PeriodDuration(8);
+		TimeSpan duration = windowDuration.PeriodDuration(7);
 
 		XAxis.Labeler = value => new DateTime((long)value).ToString(dateFormat.TextFormat);
 		XAxis.UnitWidth = duration.Ticks; // Hover depends on this
@@ -817,6 +813,12 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 		}
 	}
 
+	public override void Unload()
+	{
+		IsVisible = false;
+		UnloadModel();
+	}
+
 	private void UnloadModel()
 	{
 		//PlotView!.Model = null;
@@ -862,6 +864,12 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 		UpdateAxis();
 	}
 
+	public void Dispose()
+	{
+		ClearListeners();
+		UnloadModel();
+	}
+
 	/*
 	private void UpdateVisible()
 	{
@@ -889,15 +897,9 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 		UpdateValueAxis();
 	}
 
-	public void Unload()
-	{
-		IsVisible = false;
-		UnloadModel();
-	}
-
 	private void INotifyCollectionChanged_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
 	{
-		lock (PlotModel.SyncRoot)
+		lock (Chart.SyncContext)
 		{
 			//Update();
 			int index = ListToTabIndex[(IList)sender];
@@ -907,10 +909,4 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 
 		InvalidateChart();
 	}*/
-
-	public void Dispose()
-	{
-		ClearListeners();
-		UnloadModel();
-	}
 }

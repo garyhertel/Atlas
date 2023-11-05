@@ -102,7 +102,7 @@ public class DataGridContextMenu : ContextMenu, IDisposable
 		if (Column == null)
 			return;
 
-		object content = Cell!.Content;
+		object? content = Cell?.Content;
 		if (content is Border border)
 			content = border.Child;
 

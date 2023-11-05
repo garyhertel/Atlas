@@ -3,36 +3,34 @@ using Atlas.Extensions;
 
 namespace Atlas.Tabs.Test.Chart;
 
-public class TabTestChartCategories : ITab
+public class TabTestChartDimensions : ITab
 {
 	public TabInstance Create() => new Instance();
+
+	public class ChartSample
+	{
+		public string? Animal { get; set; }
+
+		[XAxis]
+		public DateTime TimeStamp { get; set; }
+
+		public int? Value { get; set; }
+
+		public TestItem TestItem { get; set; } = new();
+
+		public int InstanceAmount => TestItem.Amount;
+	}
+
+	public class TestItem
+	{
+		public int Amount { get; set; }
+	}
 
 	public class Instance : TabInstance
 	{
 		private readonly ItemCollection<ChartSample> _samples = new();
 		private readonly Random _random = new();
 		private readonly DateTime _baseDateTime = DateTime.Now.Trim(TimeSpan.FromMinutes(1));
-
-		public class TestItem
-		{
-			public int Amount { get; set; }
-		}
-
-		public class ChartSample
-		{
-			public string? Name { get; set; }
-
-			[XAxis]
-			public DateTime TimeStamp { get; set; }
-
-			public string? Category { get; set; }
-
-			public int? Value { get; set; }
-
-			public TestItem TestItem { get; set; } = new();
-
-			public int InstanceAmount => TestItem.Amount;
-		}
 
 		public override void Load(Call call, TabModel model)
 		{
@@ -46,23 +44,23 @@ public class TabTestChartCategories : ITab
 
 			var chartView = new ChartView();
 			chartView.AddDimensions(_samples,
-				nameof(ChartSample.Category),
 				nameof(ChartSample.TimeStamp),
-				nameof(ChartSample.Value));
+				nameof(ChartSample.Value),
+				nameof(ChartSample.Animal));
 			model.AddObject(chartView, true);
 		}
 
-		private void AddSeries(string category)
+		private void AddSeries(string dimension)
 		{
 			for (int i = 0; i < 10; i++)
 			{
 				if (i == 4 || i == 6)
 				{
-					AddNullSample(category, i);
+					AddNullSample(dimension, i);
 				}
 				else
 				{
-					AddSample(category, i);
+					AddSample(dimension, i);
 				}
 			}
 		}
@@ -84,13 +82,12 @@ public class TabTestChartCategories : ITab
 			}
 		}
 
-		private void AddSample(string category, int i)
+		private void AddSample(string animal, int i)
 		{
 			ChartSample sample = new()
 			{
-				Name = "Name " + i.ToString(),
+				Animal = animal,
 				TimeStamp = _baseDateTime.AddMinutes(i),
-				Category = category,
 				Value = _random.Next(50, 100),
 				TestItem = new TestItem()
 				{
@@ -100,13 +97,12 @@ public class TabTestChartCategories : ITab
 			_samples.Add(sample);
 		}
 
-		private void AddNullSample(string category, int i)
+		private void AddNullSample(string animal, int i)
 		{
 			ChartSample sample = new()
 			{
-				Name = "Name " + i.ToString(),
+				Animal = animal,
 				TimeStamp = _baseDateTime.AddMinutes(i),
-				Category = category,
 				TestItem = new TestItem()
 				{
 					Amount = _random.Next(0, 100),

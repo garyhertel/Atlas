@@ -45,6 +45,12 @@ public class ChartView
 
 	public List<ChartAnnotation> Annotations { get; set; } = new();
 
+	public IList? SourceList { get; set; }
+	private Dictionary<string, IList> _dimensions = new();
+	private List<PropertyInfo> _dimensionPropertyInfos = new();
+	private string? _xPropertyName;
+	private string? _yPropertyName;
+
 	public override string? ToString() => Name;
 
 	public ChartView(string? name = null, TimeWindow? timeWindow = null)
@@ -66,33 +72,43 @@ public class ChartView
 		return series;
 	}
 
-	public void AddDimensions(IList iList, string categoryPropertyName, string xPropertyName, string yPropertyName)
+	public void AddDimensions(IList iList, string xPropertyName, string yPropertyName, params string[] dimensionPropertyNames)
 	{
-		Type listType = iList.GetType();
-		Type elementType = iList.GetType().GetElementTypeForAll()!;
-		PropertyInfo categoryPropertyInfo = elementType.GetProperty(categoryPropertyName)!;
+		SourceList = iList;
+		_xPropertyName = xPropertyName;
+		_yPropertyName = yPropertyName;
 
-		var dimensions = new Dictionary<string, IList>();
+		Type elementType = iList.GetType().GetElementTypeForAll()!;
+
+		_dimensionPropertyInfos = dimensionPropertyNames
+			.Select(name => elementType.GetProperty(name)!)
+			.ToList();
+
+		_dimensions = new();
 		foreach (var obj in iList)
 		{
-			var categoryObject = categoryPropertyInfo.GetValue(obj)!;
-
-			string category = categoryObject.ToString()!;
-
-			if (!dimensions.TryGetValue(category, out IList? categoryList))
-			{
-				categoryList = (IList)Activator.CreateInstance(listType)!;
-				dimensions.Add(category, categoryList);
-
-				var listSeries = new ListSeries(category, categoryList, xPropertyName, yPropertyName)
-				{
-					XBinSize = XBinSize,
-				};
-				Series.Add(listSeries);
-			}
-			categoryList.Add(obj);
+			AddDimensionValue(obj);
 		}
 		SortByTotal();
+	}
+
+	public void AddDimensionValue(object? obj)
+	{
+		var values = _dimensionPropertyInfos.Select(propertyInfo => propertyInfo.GetValue(obj)!);
+		string name = string.Join(" - ", values);
+
+		if (!_dimensions!.TryGetValue(name, out IList? dimensionList))
+		{
+			dimensionList = (IList)Activator.CreateInstance(SourceList!.GetType())!;
+			_dimensions.Add(name, dimensionList);
+
+			var listSeries = new ListSeries(name, dimensionList, _xPropertyName, _yPropertyName)
+			{
+				XBinSize = XBinSize,
+			};
+			Series.Add(listSeries);
+		}
+		dimensionList.Add(obj);
 	}
 
 	public void SortByTotal()

@@ -1,19 +1,19 @@
 using LiveChartsCore;
 using LiveChartsCore.Defaults;
-using LiveChartsCore.SkiaSharpView;
-using LiveChartsCore.Kernel.Sketches;
-using LiveChartsCore.Kernel;
 using LiveChartsCore.Drawing;
+using LiveChartsCore.Kernel;
+using LiveChartsCore.Kernel.Sketches;
 using LiveChartsCore.Measure;
+using LiveChartsCore.SkiaSharpView;
 using LiveChartsCore.SkiaSharpView.Drawing;
 
 namespace Atlas.UI.Avalonia.Charts.LiveCharts;
 
 public class LiveChartPoint : ObservablePoint
 {
-	public object Object { get; set; }
+	public object? Object { get; set; }
 
-	public LiveChartPoint(object obj, double? x, double? y) : base(x, y)
+	public LiveChartPoint(object? obj, double? x, double? y) : base(x, y)
 	{
 		Object = obj;
 	}

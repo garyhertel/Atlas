@@ -212,6 +212,8 @@ public abstract class TabControlChart<TSeries> : Grid, ITabControlChart
 
 	public abstract void MergeView(ChartView chartView);
 
+	public abstract void Unload();
+
 	protected virtual void OnSelectionChanged(SeriesSelectedEventArgs e)
 	{
 		// Safely raise the event for all subscribers

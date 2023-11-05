@@ -1,15 +1,15 @@
-using LiveChartsCore.Drawing;
-using LiveChartsCore.Kernel.Sketches;
-using LiveChartsCore.Kernel;
-using LiveChartsCore.SkiaSharpView.Drawing.Geometries;
-using LiveChartsCore.SkiaSharpView.Drawing;
-using LiveChartsCore.SkiaSharpView.Painting;
-using LiveChartsCore.VisualElements;
-using LiveChartsCore;
-using SkiaSharp;
-using LiveChartsCore.SkiaSharpView.VisualElements;
-using LiveChartsCore.SkiaSharpView.Painting.ImageFilters;
 using Atlas.Extensions;
+using LiveChartsCore;
+using LiveChartsCore.Drawing;
+using LiveChartsCore.Kernel;
+using LiveChartsCore.Kernel.Sketches;
+using LiveChartsCore.SkiaSharpView.Drawing;
+using LiveChartsCore.SkiaSharpView.Drawing.Geometries;
+using LiveChartsCore.SkiaSharpView.Painting;
+using LiveChartsCore.SkiaSharpView.Painting.ImageFilters;
+using LiveChartsCore.SkiaSharpView.VisualElements;
+using LiveChartsCore.VisualElements;
+using SkiaSharp;
 
 namespace Atlas.UI.Avalonia.Charts.LiveCharts;
 

@@ -297,7 +297,7 @@ public class TabControlOxyPlot : TabControlChart<OxyPlotLineSeries>, IDisposable
 		PlotView.Model.InvalidatePlot(true);
 	}
 
-	public void Unload()
+	public override void Unload()
 	{
 		IsVisible = false;
 		UnloadModel();

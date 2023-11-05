@@ -102,7 +102,7 @@ public class OxyPlotLineSeries : OxyPlot.Series.LineSeries
 				if (title != null && title.Length > MaxTitleLength)
 					title = title[..MaxTitleLength] + "...";
 
-				string valueLabel = ListSeries.YPropertyLabel ?? "Value";
+				string valueLabel = ListSeries.YLabel ?? "Value";
 				result.Text = title + "\n\nTime: " + timeRangeValue.TimeText + "\nDuration: " + timeRangeValue.Duration.FormattedDecimal() + "\n" + valueLabel + ": " + timeRangeValue.Value.Formatted();
 			}
 
@@ -130,7 +130,8 @@ public class OxyPlotLineSeries : OxyPlot.Series.LineSeries
 	*/
 	private void LoadTrackFormat()
 	{
-		string xTrackerFormat = ListSeries.XPropertyName ?? "Index: {2:#,0.###}";
+		string label = ListSeries.XLabel ?? ListSeries.XPropertyInfo?.Name ?? "Index";
+		string xTrackerFormat = $"{label}: {2:#,0.###}";
 		if (UseDateTimeAxis || ListSeries.XPropertyInfo?.PropertyType == typeof(DateTime))
 		{
 			xTrackerFormat = "Time: {2:yyyy-M-d H:mm:ss.FFF}";
@@ -140,7 +141,6 @@ public class OxyPlotLineSeries : OxyPlot.Series.LineSeries
 
 	private List<DataPoint> GetDataPoints(ListSeries listSeries, IList iList, Dictionary<DataPoint, object>? datapointLookup = null)
 	{
-		UpdateXAxisProperty(listSeries);
 		double x = Points.Count;
 		var dataPoints = new List<DataPoint>();
 		if (listSeries.YPropertyInfo != null)
@@ -193,25 +193,6 @@ public class OxyPlotLineSeries : OxyPlot.Series.LineSeries
 		return dataPoints;
 	}
 
-	private void UpdateXAxisProperty(ListSeries listSeries)
-	{
-		if (listSeries.YPropertyInfo != null)
-		{
-			if (listSeries.XPropertyInfo != null)
-				XAxisPropertyInfo = listSeries.XPropertyInfo;
-
-			if (XAxisPropertyInfo == null)
-			{
-				Type elementType = listSeries.List.GetType().GetElementTypeForAll()!;
-				foreach (PropertyInfo propertyInfo in elementType.GetProperties())
-				{
-					if (propertyInfo.GetCustomAttribute<XAxisAttribute>() != null)
-						XAxisPropertyInfo = propertyInfo;
-				}
-			}
-		}
-	}
-
 	private static List<DataPoint> BinDataPoints(List<DataPoint> dataPoints, double xBinSize)
 	{
 		double firstX = dataPoints.First().X;
@@ -262,10 +243,7 @@ public class OxyPlotLineSeries : OxyPlot.Series.LineSeries
 				var dataPoints = GetDataPoints(listSeries, e.OldItems!);
 				foreach (DataPoint datapoint in dataPoints)
 				{
-					if (Points.FirstOrDefault().X == datapoint.X)
-					{
-						Points.RemoveAt(0);
-					}
+					Points.RemoveAll(point => point.X == datapoint.X);
 				}
 			}
 		}
