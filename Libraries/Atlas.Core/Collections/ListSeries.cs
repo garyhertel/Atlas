@@ -19,6 +19,7 @@ public enum SeriesType
 public class ListSeries
 {
 	public string? Name { get; set; }
+	public string? Description { get; set; }
 	public Dictionary<string, string> Tags { get; set; } = new(); // todo: next schema change, replace with TagCollection
 	public IList List; // List to start with, any elements added will also trigger an event to add new points
 
@@ -28,7 +29,6 @@ public class ListSeries
 	public string? XLabel;
 	public string? YLabel;
 	public double XBinSize;
-	public string? Description { get; set; }
 
 	public TimeSpan? PeriodDuration { get; set; }
 	public SeriesType SeriesType { get; set; } = SeriesType.Sum;

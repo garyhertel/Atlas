@@ -119,8 +119,8 @@ public abstract class TabControlChart<TSeries> : Grid, ITabControlChart
 	public TextBlock? TitleTextBlock { get; protected set; }
 	public bool IsTitleSelectable { get; set; }
 
-	protected PropertyInfo? _xAxisPropertyInfo;
-	public bool UseDateTimeAxis => (_xAxisPropertyInfo?.PropertyType == typeof(DateTime)) ||
+	protected PropertyInfo? XAxisPropertyInfo;
+	public bool UseDateTimeAxis => (XAxisPropertyInfo?.PropertyType == typeof(DateTime)) ||
 									(ChartView.TimeWindow != null);
 
 	public List<ChartAnnotation> Annotations { get; set; } = new();
@@ -150,7 +150,7 @@ public abstract class TabControlChart<TSeries> : Grid, ITabControlChart
 			TabInstance.TabViewSettings.ChartDataSettings.Add(new TabDataSettings());
 		}
 
-		_xAxisPropertyInfo = chartView.Series.FirstOrDefault()?.XPropertyInfo;
+		XAxisPropertyInfo = chartView.Series.FirstOrDefault()?.XPropertyInfo;
 
 		AddTitle();
 	}

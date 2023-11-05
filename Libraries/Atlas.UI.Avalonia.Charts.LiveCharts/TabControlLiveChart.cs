@@ -444,7 +444,7 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 			GetColor(ChartSeries.Count);
 
 		var liveChartSeries = new LiveChartSeries(this, listSeries, color, UseDateTimeAxis);
-		_xAxisPropertyInfo = liveChartSeries.XAxisPropertyInfo;
+		XAxisPropertyInfo = listSeries.XPropertyInfo;
 
 		var chartSeries = new ChartSeries<ISeries>(listSeries, liveChartSeries.LineSeries, color);
 		LiveChartSeries.Add(liveChartSeries);

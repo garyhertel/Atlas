@@ -25,10 +25,10 @@ public class OxyPlotLineSeries : OxyPlot.Series.LineSeries
 	public readonly ListSeries ListSeries;
 	public readonly bool UseDateTimeAxis;
 
-	public PropertyInfo? XAxisPropertyInfo;
-
 	// DataPoint is a struct which can't be inherited
 	private readonly Dictionary<DataPoint, object> _datapointLookup = new();
+
+	public PropertyInfo? XPropertyInfo => ListSeries.XPropertyInfo;
 
 	public override string? ToString() => ListSeries?.Name;
 
@@ -41,7 +41,9 @@ public class OxyPlotLineSeries : OxyPlot.Series.LineSeries
 		// Title must be unique among all series
 		Title = listSeries.Name;
 		if (Title?.Length == 0)
+		{
 			Title = "<NA>";
+		}
 
 		LineStyle = LineStyle.Solid;
 		StrokeThickness = 2;
@@ -52,7 +54,7 @@ public class OxyPlotLineSeries : OxyPlot.Series.LineSeries
 		MarkerType = listSeries.List.Count <= MaxPointsToShowMarkers ? MarkerType.Circle : MarkerType.None;
 		LoadTrackFormat();
 
-		// can't add gaps with ItemSource so convert to DataPoint ourselves
+		// Can't add gaps with ItemSource so convert to DataPoint ourselves
 		var dataPoints = GetDataPoints(listSeries, listSeries.List, _datapointLookup);
 		Points.AddRange(dataPoints);
 
@@ -66,9 +68,11 @@ public class OxyPlotLineSeries : OxyPlot.Series.LineSeries
 			});
 		}
 
-		// use circle markers if there's a single point all alone, otherwise it won't show
+		// Use circle markers if there's a single point all alone, otherwise it won't show
 		if (HasSinglePoint())
+		{
 			MarkerType = MarkerType.Circle;
+		}
 	}
 
 	private bool HasSinglePoint()
@@ -78,8 +82,7 @@ public class OxyPlotLineSeries : OxyPlot.Series.LineSeries
 		foreach (DataPoint dataPoint in Points)
 		{
 			bool nan = double.IsNaN(dataPoint.Y);
-			if (prevNan2 && !prevNan1 && nan)
-				return true;
+			if (prevNan2 && !prevNan1 && nan) return true;
 
 			prevNan2 = prevNan1;
 			prevNan1 = nan;
@@ -100,7 +103,9 @@ public class OxyPlotLineSeries : OxyPlot.Series.LineSeries
 			{
 				string? title = ListSeries.Name;
 				if (title != null && title.Length > MaxTitleLength)
+				{
 					title = title[..MaxTitleLength] + "...";
+				}
 
 				string valueLabel = ListSeries.YLabel ?? "Value";
 				result.Text = title + "\n\nTime: " + timeRangeValue.TimeText + "\nDuration: " + timeRangeValue.Duration.FormattedDecimal() + "\n" + valueLabel + ": " + timeRangeValue.Value.Formatted();
@@ -130,9 +135,9 @@ public class OxyPlotLineSeries : OxyPlot.Series.LineSeries
 	*/
 	private void LoadTrackFormat()
 	{
-		string label = ListSeries.XLabel ?? ListSeries.XPropertyInfo?.Name ?? "Index";
+		string label = ListSeries.XLabel ?? XPropertyInfo?.Name ?? "Index";
 		string xTrackerFormat = $"{label}: {2:#,0.###}";
-		if (UseDateTimeAxis || ListSeries.XPropertyInfo?.PropertyType == typeof(DateTime))
+		if (UseDateTimeAxis || XPropertyInfo?.PropertyType == typeof(DateTime))
 		{
 			xTrackerFormat = "Time: {2:yyyy-M-d H:mm:ss.FFF}";
 		}
@@ -145,12 +150,12 @@ public class OxyPlotLineSeries : OxyPlot.Series.LineSeries
 		var dataPoints = new List<DataPoint>();
 		if (listSeries.YPropertyInfo != null)
 		{
-			// faster than using ItemSource?
+			// Faster than using ItemSource?
 			foreach (object obj in iList)
 			{
-				if (XAxisPropertyInfo != null)
+				if (XPropertyInfo != null)
 				{
-					object? xObj = XAxisPropertyInfo.GetValue(obj);
+					object? xObj = XPropertyInfo.GetValue(obj);
 					if (xObj is DateTime dateTime)
 					{
 						x = OxyPlot.Axes.DateTimeAxis.ToDouble(dateTime);
@@ -168,11 +173,15 @@ public class OxyPlotLineSeries : OxyPlot.Series.LineSeries
 				object? value = listSeries.YPropertyInfo.GetValue(obj);
 				double d = double.NaN;
 				if (value != null)
+				{
 					d = Convert.ToDouble(value);
+				}
 
 				var dataPoint = new DataPoint(x++, d);
 				if (datapointLookup != null && !double.IsNaN(d) && !datapointLookup.ContainsKey(dataPoint))
+				{
 					datapointLookup.Add(dataPoint, obj);
+				}
 				dataPoints.Add(dataPoint);
 			}
 			dataPoints = dataPoints.OrderBy(d => d.X).ToList();
@@ -213,8 +222,7 @@ public class OxyPlotLineSeries : OxyPlot.Series.LineSeries
 			double value = bins[i];
 			if (value == 0)
 			{
-				if (prevNan)
-					continue;
+				if (prevNan) continue;
 
 				prevNan = true;
 				value = double.NaN;

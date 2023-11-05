@@ -33,8 +33,6 @@ public class LiveChartSeries //: ChartSeries<ISeries>
 	public LiveChartLineSeries LineSeries;
 	public List<LiveChartPoint> DataPoints = new();
 
-	public PropertyInfo? XAxisPropertyInfo;
-
 	public override string? ToString() => ListSeries?.ToString();
 
 	public LiveChartSeries(TabControlLiveChart chart, ListSeries listSeries, Color color, bool useDateTimeAxis)
@@ -45,14 +43,13 @@ public class LiveChartSeries //: ChartSeries<ISeries>
 
 		SKColor skColor = color.AsSkColor();
 
-		// can't add gaps with ItemSource so convert to LiveChartPoint ourselves
+		// Can't add gaps with ItemSource so convert to LiveChartPoint ourselves
 		DataPoints = GetDataPoints(listSeries, listSeries.List);
 
 		LineSeries = new LiveChartLineSeries(this)
 		{
 			Name = listSeries.Name,
 			Values = DataPoints,
-			Fill = null,
 			LineSmoothness = 0, // 1 = Curved
 			GeometrySize = listSeries.MarkerSize ?? DefaultGeometrySize,
 			EnableNullSplitting = true,
@@ -60,6 +57,7 @@ public class LiveChartSeries //: ChartSeries<ISeries>
 			Stroke = new SolidColorPaint(skColor, (float)listSeries.StrokeThickness),
 			GeometryStroke = null,
 			GeometryFill = null,
+			Fill = null,
 		};
 
 		if (listSeries.List.Count > 0 && listSeries.List.Count <= MaxPointsToShowMarkers || HasSinglePoint(DataPoints))
@@ -73,7 +71,7 @@ public class LiveChartSeries //: ChartSeries<ISeries>
 			//iNotifyCollectionChanged.CollectionChanged += INotifyCollectionChanged_CollectionChanged;
 			iNotifyCollectionChanged.CollectionChanged += new NotifyCollectionChangedEventHandler(delegate (object? sender, NotifyCollectionChangedEventArgs e)
 			{
-				// can we remove this later when disposing?
+				// Can we remove this later when disposing?
 				SeriesChanged(listSeries, e);
 			});
 		}
@@ -162,15 +160,15 @@ public class LiveChartSeries //: ChartSeries<ISeries>
 	{
 		double x = DataPoints.Count;
 		var chartPoints = new List<LiveChartPoint>();
-		// faster than using ItemSource?
+		// Faster than using ItemSource?
 		foreach (object obj in iList)
 		{
 			double? d = null;
 			if (listSeries.YPropertyInfo != null)
 			{
-				if (XAxisPropertyInfo != null)
+				if (ListSeries.XPropertyInfo is PropertyInfo xPropertyInfo)
 				{
-					object? xObj = XAxisPropertyInfo.GetValue(obj);
+					object? xObj = xPropertyInfo.GetValue(obj);
 					if (xObj is DateTime dateTime)
 					{
 						x = dateTime.Ticks;
@@ -191,7 +189,9 @@ public class LiveChartSeries //: ChartSeries<ISeries>
 				{
 					d = Convert.ToDouble(value);
 					if (double.IsNaN(d.Value))
+					{
 						d = null;
+					}
 				}
 			}
 			else
@@ -207,10 +207,10 @@ public class LiveChartSeries //: ChartSeries<ISeries>
 			.OrderBy(d => d.X)
 			.ToList();
 
-		/*if (chartPoints.Count > 0 && listSeries.XBinSize > 0)
+		if (chartPoints.Count > 0 && listSeries.XBinSize > 0)
 		{
 			chartPoints = BinDataPoints(chartPoints, listSeries.XBinSize);
-		}*/
+		}
 		return chartPoints;
 	}
 
@@ -236,8 +236,7 @@ public class LiveChartSeries //: ChartSeries<ISeries>
 			double value = bins[i];
 			if (value == 0)
 			{
-				if (prevNan)
-					continue;
+				if (prevNan) continue;
 
 				prevNan = true;
 				value = double.NaN;
