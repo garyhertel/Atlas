@@ -221,7 +221,7 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 	public override void InvalidateChart()
 	{
 		UpdateAxis();
-		Dispatcher.UIThread.Post(() => Chart!.InvalidateVisual(), DispatcherPriority.Background);
+		Dispatcher.UIThread.Post(Chart!.InvalidateVisual, DispatcherPriority.Background);
 	}
 
 	private void Chart_ChartPointPointerDown(IChartView chart, ChartPoint? point)
@@ -821,7 +821,7 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 
 	private void UnloadModel()
 	{
-		//PlotView!.Model = null;
+		//Chart = null;
 		//XAxis = null;
 
 		ClearSeries();

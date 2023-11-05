@@ -18,7 +18,7 @@ public class TabTestChartDimensions : ITab
 
 		public TestItem TestItem { get; set; } = new();
 
-		public int InstanceAmount => TestItem.Amount;
+		public int Amount => TestItem.Amount;
 	}
 
 	public class TestItem
@@ -28,6 +28,8 @@ public class TabTestChartDimensions : ITab
 
 	public class Instance : TabInstance
 	{
+		private const int MaxValue = 100;
+
 		private readonly ItemCollection<ChartSample> _samples = new();
 		private readonly Random _random = new();
 		private readonly DateTime _baseDateTime = DateTime.Now.Trim(TimeSpan.FromMinutes(1));
@@ -88,10 +90,10 @@ public class TabTestChartDimensions : ITab
 			{
 				Animal = animal,
 				TimeStamp = _baseDateTime.AddMinutes(i),
-				Value = _random.Next(50, 100),
+				Value = _random.Next(50, MaxValue),
 				TestItem = new TestItem()
 				{
-					Amount = _random.Next(0, 100),
+					Amount = _random.Next(0, MaxValue),
 				},
 			};
 			_samples.Add(sample);
@@ -105,7 +107,7 @@ public class TabTestChartDimensions : ITab
 				TimeStamp = _baseDateTime.AddMinutes(i),
 				TestItem = new TestItem()
 				{
-					Amount = _random.Next(0, 100),
+					Amount = _random.Next(0, MaxValue),
 				},
 			};
 			_samples.Add(sample);

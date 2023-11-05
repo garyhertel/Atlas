@@ -38,7 +38,7 @@ public abstract class TabChartLegendItem<TSeries> : Grid
 		}
 	}
 	public int Count { get; set; }
-	public double Total { get; set; }
+	public double? Total { get; set; }
 
 	private bool _isSelected = true;
 	public bool IsSelected
@@ -93,7 +93,7 @@ public abstract class TabChartLegendItem<TSeries> : Grid
 			Count = ChartSeries.ListSeries.List.Count;
 			if (TextBlockTotal != null)
 			{
-				TextBlockTotal.Text = Total.FormattedShortDecimal();
+				TextBlockTotal.Text = Total?.FormattedShortDecimal();
 			}
 			return;
 		}
@@ -170,7 +170,7 @@ public abstract class TabChartLegendItem<TSeries> : Grid
 	{
 		TextBlockTotal = new TextBlock
 		{
-			Text = Total.FormattedShortDecimal(),
+			Text = Total?.FormattedShortDecimal(),
 			Foreground = Brushes.LightGray,
 			Margin = new Thickness(10, 2, 6, 2),
 			HorizontalAlignment = HorizontalAlignment.Right,

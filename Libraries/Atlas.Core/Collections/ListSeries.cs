@@ -21,6 +21,7 @@ public class ListSeries
 	public string? Name { get; set; }
 	public string? Description { get; set; }
 	public Dictionary<string, string> Tags { get; set; } = new(); // todo: next schema change, replace with TagCollection
+
 	public IList List; // List to start with, any elements added will also trigger an event to add new points
 
 	public PropertyInfo? XPropertyInfo; // optional
@@ -28,11 +29,12 @@ public class ListSeries
 
 	public string? XLabel;
 	public string? YLabel;
+
 	public double XBinSize;
 
 	public TimeSpan? PeriodDuration { get; set; }
 	public SeriesType SeriesType { get; set; } = SeriesType.Sum;
-	public double Total { get; set; }
+	public double? Total { get; set; }
 
 	// Visual
 	public Color? Color { get; set; }
@@ -112,16 +114,18 @@ public class ListSeries
 		return value;
 	}
 
-	public double CalculateTotal(TimeWindow? timeWindow = null)
+	public double? CalculateTotal(TimeWindow? timeWindow = null)
 	{
 		timeWindow = timeWindow?.Selection ?? timeWindow;
 		Total = GetTotal(timeWindow);
-		if (Total > 50)
-			Total = Math.Floor(Total);
+		if (Total.HasValue && Total > 50)
+		{
+			Total = Math.Floor(Total!.Value);
+		}
 		return Total;
 	}
 
-	public double GetTotal(TimeWindow? timeWindow)
+	public double? GetTotal(TimeWindow? timeWindow)
 	{
 		var timeRangeValues = TimeRangeValues;
 		if (timeWindow == null || PeriodDuration == null || timeRangeValues == null)
@@ -137,7 +141,7 @@ public class ListSeries
 		};
 	}
 
-	public double GetTotal()
+	public double? GetTotal()
 	{
 		return SeriesType switch
 		{
@@ -145,7 +149,8 @@ public class ListSeries
 			SeriesType.Average => Values().Average(),
 			SeriesType.Minimum => Values().Min(),
 			SeriesType.Maximum => Values().Max(),
-			_ => Values().Sum(),
+			SeriesType.Sum => Values().Sum(),
+			_ => null,
 		};
 	}
 

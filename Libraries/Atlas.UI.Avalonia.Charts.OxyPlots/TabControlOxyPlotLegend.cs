@@ -25,11 +25,15 @@ public class TabControlOxyPlotLegend : TabControlChartLegend<OxyPlotLineSeries>
 		legendItem.PointerPressed += (s, e) =>
 		{
 			if (e.GetCurrentPoint(this).Properties.IsLeftButtonPressed)
+			{
 				SelectLegendItem(legendItem);
+			}
 		};
 		LegendItems.Add(legendItem);
 		if (series.Title != null)
+		{
 			_idxLegendItems.Add(series.Title, legendItem);
+		}
 		return legendItem;
 	}
 

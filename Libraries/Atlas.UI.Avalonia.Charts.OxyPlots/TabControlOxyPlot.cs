@@ -166,8 +166,7 @@ public class TabControlOxyPlot : TabControlChart<OxyPlotLineSeries>, IDisposable
 
 	private void UpdateVisible()
 	{
-		if (PlotView == null)
-			return;
+		if (PlotView == null) return;
 
 		bool visible = AvaloniaUtils.IsControlVisible(this);
 		if (visible != PlotView.IsVisible)
@@ -433,7 +432,9 @@ public class TabControlOxyPlot : TabControlChart<OxyPlotLineSeries>, IDisposable
 		ValueAxis.LabelFormatter = NumberExtensions.FormattedShortDecimal;
 
 		if (key != null)
+		{
 			ValueAxis.Key = key;
+		}
 		PlotModel!.Axes.Add(ValueAxis);
 		return ValueAxis;
 	}
@@ -461,7 +462,9 @@ public class TabControlOxyPlot : TabControlChart<OxyPlotLineSeries>, IDisposable
 			LabelFormatter = NumberExtensions.FormattedShortDecimal,
 		};
 		if (key != null)
+		{
 			CategoryAxis.Key = key;
+		}
 
 		foreach (ListSeries listSeries in ChartView.Series)
 		{
@@ -592,7 +595,9 @@ public class TabControlOxyPlot : TabControlChart<OxyPlotLineSeries>, IDisposable
 				foreach (var item in scatterSeries.ItemsSource)
 				{
 					if (propertyInfo == null)
+					{
 						propertyInfo = item.GetType().GetProperty(scatterSeries.DataFieldY);
+					}
 
 					var value = propertyInfo!.GetValue(item);
 					double d = Convert.ToDouble(value);
@@ -744,8 +749,7 @@ public class TabControlOxyPlot : TabControlChart<OxyPlotLineSeries>, IDisposable
 
 	public OxyPlot.Series.LineSeries? AddListSeries(ListSeries listSeries, Color? defaultColor = null)
 	{
-		if (ChartSeries.Count >= SeriesLimit)
-			return null;
+		if (ChartSeries.Count >= SeriesLimit) return null;
 
 		Color color =
 			defaultColor ??
@@ -831,7 +835,9 @@ public class TabControlOxyPlot : TabControlChart<OxyPlotLineSeries>, IDisposable
 		try
 		{
 			if (!PlotModel!.Annotations.Contains(_zoomAnnotation))
+			{
 				PlotModel.Annotations.Add(_zoomAnnotation);
+			}
 		}
 		catch (Exception)
 		{
@@ -899,7 +905,9 @@ public class TabControlOxyPlot : TabControlChart<OxyPlotLineSeries>, IDisposable
 		double right = Math.Max(_startDataPoint.Value.X, _endDataPoint!.Value.X);
 
 		if (double.IsNaN(DateTimeAxis!.Minimum))
+		{
 			UpdateDateTimeAxisRange();
+		}
 
 		DateTimeAxis.Minimum = Math.Max(left, DateTimeAxis.Minimum);
 		DateTimeAxis.Maximum = Math.Min(right, DateTimeAxis.Maximum);
@@ -910,9 +918,13 @@ public class TabControlOxyPlot : TabControlChart<OxyPlotLineSeries>, IDisposable
 
 		UpdateDateTimeAxis(timeWindow);
 		if (ChartView.TimeWindow != null)
+		{
 			ChartView.TimeWindow.Select(timeWindow);
+		}
 		else
+		{
 			UpdateTimeWindow(timeWindow);
+		}
 	}
 
 	private void ZoomOut()
@@ -948,7 +960,9 @@ public class TabControlOxyPlot : TabControlChart<OxyPlotLineSeries>, IDisposable
 	private void StopSelecting()
 	{
 		if (_zoomAnnotation != null)
+		{
 			PlotModel!.Annotations.Remove(_zoomAnnotation);
+		}
 		_selecting = false;
 	}
 

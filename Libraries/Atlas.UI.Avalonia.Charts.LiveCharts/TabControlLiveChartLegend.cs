@@ -15,7 +15,6 @@ public class TabControlLiveChartLegend : TabControlChartLegend<ISeries>
 
 	public override TabChartLegendItem<ISeries> AddSeries(ChartSeries<ISeries> chartSeries)
 	{
-		ISeries lineSeries = chartSeries.LineSeries;
 
 		var legendItem = new TabLiveChartLegendItem(this, chartSeries);
 		legendItem.OnSelectionChanged += LegendItem_SelectionChanged;
@@ -28,9 +27,10 @@ public class TabControlLiveChartLegend : TabControlChartLegend<ISeries>
 			}
 		};
 		LegendItems.Add(legendItem);
-		if (lineSeries.Name != null)
+
+		if (chartSeries.LineSeries.Name is string name)
 		{
-			_idxLegendItems.Add(lineSeries.Name, legendItem);
+			_idxLegendItems.Add(name, legendItem);
 		}
 		return legendItem;
 	}

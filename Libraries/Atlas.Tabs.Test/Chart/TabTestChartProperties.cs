@@ -27,7 +27,7 @@ public class TabTestChartProperties : ITab
 
 			public TestItem TestItem { get; set; } = new();
 
-			public int InstanceAmount => TestItem.Amount;
+			public int Amount => TestItem.Amount;
 		}
 
 		public override void Load(Call call, TabModel model)
