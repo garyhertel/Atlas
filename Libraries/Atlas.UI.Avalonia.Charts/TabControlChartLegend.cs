@@ -267,7 +267,9 @@ public abstract class TabControlChartLegend<TSeries> : Grid
 		}
 
 		if (update)
+		{
 			UpdateVisibleSeries();
+		}
 	}
 }
 

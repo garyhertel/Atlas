@@ -108,6 +108,7 @@ public class LiveChartTooltip : IChartTooltip<SkiaSharpDrawingContext>
 		// Use pointer moved value in chart to find closest?
 		if (closestPoint.Context.Series is LiveChartLineSeries lineSeries)
 		{
+			int row = 0;
 			string? title = lineSeries.LiveChartSeries.GetTooltipTitle();
 			if (title != null)
 			{
@@ -122,20 +123,19 @@ public class LiveChartTooltip : IChartTooltip<SkiaSharpDrawingContext>
 						VerticalAlignment = Align.Start,
 						HorizontalAlignment = Align.Start,
 						ClippingMode = LiveChartsCore.Measure.ClipMode.XY
-					}, 0, 0, horizontalAlign: Align.Start);
+					}, row++, 0, horizontalAlign: Align.Start);
 			}
 
 			var lines = lineSeries.LiveChartSeries.GetTooltipLines(closestPoint);
 
-			for (int i = 0; i < lines.Length; i++)
+			foreach (string line in lines)
 			{
-				string line = lines[i];
 				if (!line.IsNullOrEmpty())
 				{
 					tableLayout.AddChild(
 						new LabelVisual
 						{
-							Text = lines[i],
+							Text = line,
 							Paint = FontPaint,
 							TextSize = TextSize,
 							Padding = new Padding(0, 3, 0, 0),
@@ -143,12 +143,12 @@ public class LiveChartTooltip : IChartTooltip<SkiaSharpDrawingContext>
 							VerticalAlignment = Align.Start,
 							HorizontalAlignment = Align.Start,
 							ClippingMode = LiveChartsCore.Measure.ClipMode.None
-						}, i + 1, 0, horizontalAlign: Align.Start);
+						}, row++, 0, horizontalAlign: Align.Start);
 				}
 				else
 				{
 					tableLayout.AddChild(
-						new StackPanel<RectangleGeometry, SkiaSharpDrawingContext> { Padding = new(0, 8) }, i, 0);
+						new StackPanel<RectangleGeometry, SkiaSharpDrawingContext> { Padding = new(0, 8) }, row++, 0);
 				}
 			}
 
@@ -218,6 +218,7 @@ public class LiveChartTooltip : IChartTooltip<SkiaSharpDrawingContext>
 	public void Hide(Chart<SkiaSharpDrawingContext> chart)
 	{
 		if (chart is null || _panel is null) return;
+
 		chart.RemoveVisual(_panel);
 	}
 }

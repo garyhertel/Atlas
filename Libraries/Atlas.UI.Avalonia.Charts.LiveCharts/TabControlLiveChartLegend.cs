@@ -15,7 +15,6 @@ public class TabControlLiveChartLegend : TabControlChartLegend<ISeries>
 
 	public override TabChartLegendItem<ISeries> AddSeries(ChartSeries<ISeries> chartSeries)
 	{
-
 		var legendItem = new TabLiveChartLegendItem(this, chartSeries);
 		legendItem.OnSelectionChanged += LegendItem_SelectionChanged;
 		legendItem.OnVisibleChanged += LegendItem_VisibleChanged;

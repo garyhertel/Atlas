@@ -87,19 +87,12 @@ public abstract class TabChartLegendItem<TSeries> : Grid
 
 	public void UpdateTotal()
 	{
-		if (ChartSeries.ListSeries != null)
+		Total = ChartSeries.ListSeries.Total;
+		Count = ChartSeries.ListSeries.List.Count;
+		if (TextBlockTotal != null)
 		{
-			Total = ChartSeries.ListSeries.Total;
-			Count = ChartSeries.ListSeries.List.Count;
-			if (TextBlockTotal != null)
-			{
-				TextBlockTotal.Text = Total?.FormattedShortDecimal();
-			}
-			return;
+			TextBlockTotal.Text = Total?.FormattedShortDecimal();
 		}
-
-		Total = 0;
-		Count = 0;
 	}
 
 	private void AddCheckBox()

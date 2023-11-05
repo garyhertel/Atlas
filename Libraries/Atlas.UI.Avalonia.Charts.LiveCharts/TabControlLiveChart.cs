@@ -284,7 +284,6 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 		/*
 		axis.Name = "Amount";
 		axis.NamePadding = new Padding(0, 15);
-		axis.UnitWidth = 1000000000;
 		axis.LabelsPaint = new SolidColorPaint
 		{
 			Color = SKColors.Blue,
@@ -292,7 +291,6 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 			SKFontStyle = new SKFontStyle(SKFontStyleWeight.ExtraBold, SKFontStyleWidth.Normal, SKFontStyleSlant.Italic)
 		};
 		axis.Position = axisPosition;
-		axis.IsAxisVisible = true;
 		axis.AxislineColor = GridLineColor;
 		axis.AxislineStyle = LineStyle.Solid;
 		axis.AxislineThickness = 2;

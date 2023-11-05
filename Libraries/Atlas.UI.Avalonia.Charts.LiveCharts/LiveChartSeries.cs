@@ -62,7 +62,7 @@ public class LiveChartSeries //: ChartSeries<ISeries>
 
 		if (listSeries.List.Count > 0 && listSeries.List.Count <= MaxPointsToShowMarkers || HasSinglePoint(DataPoints))
 		{
-			//lineSeries.GeometryStroke = new SolidColorPaint(skColor, 2f);
+			//LineSeries.GeometryStroke = new SolidColorPaint(skColor, 2f);
 			LineSeries.GeometryFill = new SolidColorPaint(skColor);
 		}
 
