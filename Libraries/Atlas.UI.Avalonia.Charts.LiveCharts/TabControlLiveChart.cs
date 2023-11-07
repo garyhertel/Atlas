@@ -74,7 +74,7 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 	private LvcPointD? _startDataPoint;
 	private LvcPointD? _endDataPoint;
 
-	public int MaxFindDistance = 30;
+	public int MaxFindDistance = 25;
 
 	public TabControlLiveChart(TabInstance tabInstance, ChartView chartView, bool fillHeight = false) : 
 		base(tabInstance, chartView, fillHeight)
@@ -768,6 +768,7 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 		{
 			UpdateTimeWindow(null);
 		}
+		UpdateValueAxis();
 	}
 
 	private void UpdateTimeWindow(TimeWindow? timeWindow)
