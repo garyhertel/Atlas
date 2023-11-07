@@ -30,6 +30,7 @@ public class LiveChartSeries //: ChartSeries<ISeries>
 	public readonly TabControlLiveChart Chart;
 	public readonly ListSeries ListSeries;
 	public readonly bool UseDateTimeAxis;
+
 	public LiveChartLineSeries LineSeries;
 	public List<LiveChartPoint> DataPoints = new();
 
@@ -200,9 +201,9 @@ public class LiveChartSeries //: ChartSeries<ISeries>
 			}
 
 			double? yCoordinate = null;
-			if (y != null && Chart.ChartView.Logarithmic)
+			if (y != null && Chart.ChartView.LogBase is double logBase)
 			{
-				yCoordinate = Math.Log(y.Value, 10);
+				yCoordinate = Math.Log(y.Value, logBase);
 			}
 
 			var chartPoint = new LiveChartPoint(obj, x++, y, yCoordinate);

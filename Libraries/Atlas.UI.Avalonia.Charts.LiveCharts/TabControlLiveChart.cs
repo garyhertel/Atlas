@@ -74,6 +74,8 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 	private LvcPointD? _startDataPoint;
 	private LvcPointD? _endDataPoint;
 
+	public int MaxFindDistance = 30;
+
 	public TabControlLiveChart(TabInstance tabInstance, ChartView chartView, bool fillHeight = false) : 
 		base(tabInstance, chartView, fillHeight)
 	{
@@ -98,6 +100,9 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 		};
 		Chart.ChartPointPointerDown += Chart_ChartPointPointerDown;
 		Chart.PointerExited += Chart_PointerExited;
+		Chart.PointerPressed += TabControlLiveChart_PointerPressed;
+		Chart.PointerReleased += TabControlLiveChart_PointerReleased;
+		Chart.PointerMoved += TabControlLiveChart_PointerMoved;
 
 		/*PlotView = new PlotView()
 		{
@@ -160,8 +165,6 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 		}
 		AddSections();
 
-		AddMouseListeners();
-
 		Children.Add(containerGrid);
 	}
 
@@ -220,7 +223,6 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 
 	public override void InvalidateChart()
 	{
-		UpdateAxis();
 		Dispatcher.UIThread.Post(Chart!.InvalidateVisual, DispatcherPriority.Background);
 	}
 
@@ -263,11 +265,10 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 	public Axis CreateValueAxis() // AxisPosition axisPosition = AxisPosition.Left, string? key = null)
 	{
 		Axis axis;
-		if (ChartView.Logarithmic)
+		if (ChartView.LogBase is double logBase)
 		{
-			// Doesn't work yet
-			axis = new LogaritmicAxis(10);
-			axis.Labeler = (v) => Math.Pow(10, v).FormattedShortDecimal();
+			axis = new LogaritmicAxis(logBase);
+			axis.Labeler = (v) => Math.Pow(logBase, v).FormattedShortDecimal();
 		}
 		else
 		{
@@ -305,8 +306,7 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 
 	public void UpdateValueAxis() // Axis valueAxis, string axisKey = null
 	{
-		if (ValueAxis == null)
-			return;
+		if (ValueAxis == null) return;
 
 		double minimum = double.MaxValue;
 		double maximum = double.MinValue;
@@ -361,10 +361,15 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 		if (minValue != null)
 			minimum = minValue.Value;
 
-		if (ChartView.Logarithmic)
+		if (ChartView.LogBase is double logBase)
 		{
-			ValueAxis.MinLimit = Math.Log(minimum, 10) * 0.85;
-			ValueAxis.MaxLimit = Math.Log(maximum, 10) * 1.15;
+			ValueAxis.MinLimit = Math.Log(minimum, logBase) * 0.85;
+			ValueAxis.MaxLimit = Math.Log(maximum, logBase) * 1.15;
+
+			if (maximum - minimum > 10)
+			{
+				ValueAxis.MinStep = 1;
+			}
 		}
 		else
 		{
@@ -417,14 +422,11 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 		IsVisible = true;
 	}
 
-	private void UpdateAxis()
+	public void UpdateAxis()
 	{
 		UpdateValueAxis();
 		UpdateLinearAxis();
-		//if (ChartView.TimeWindow == null)
-		{
-			UpdateDateTimeAxisRange();
-		}
+		UpdateDateTimeAxis();
 	}
 
 	private Color? GetSeriesColor(ListSeries listSeries)
@@ -493,7 +495,7 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 		return section;
 	}
 
-	private void UpdateDateTimeAxis(TimeWindow? timeWindow)
+	private void UpdateDateTimeAxisWindow(TimeWindow? timeWindow)
 	{
 		if (timeWindow == null)
 		{
@@ -520,7 +522,7 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 		XAxis.MinStep = duration.Ticks;
 	}
 
-	private void UpdateDateTimeAxisRange()
+	private void UpdateDateTimeAxis()
 	{
 		if (XAxis == null || !UseDateTimeAxis)
 			return;
@@ -541,7 +543,7 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 			ChartView.TimeWindow = new TimeWindow(startTime, endTime).Trim();
 		}
 
-		UpdateDateTimeAxis(ChartView.TimeWindow?.Selection ?? ChartView.TimeWindow);
+		UpdateDateTimeAxisWindow(ChartView.TimeWindow?.Selection ?? ChartView.TimeWindow);
 
 		//UpdateDateTimeInterval(double duration);
 	}
@@ -598,13 +600,6 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 		return (minimum, maximum, hasFraction); 
 	}
 
-	private void AddMouseListeners()
-	{
-		Chart.PointerPressed += TabControlLiveChart_PointerPressed;
-		Chart.PointerReleased += TabControlLiveChart_PointerReleased;
-		Chart.PointerMoved += TabControlLiveChart_PointerMoved;
-	}
-
 	private void TabControlLiveChart_PointerMoved(object? sender, PointerEventArgs e)
 	{
 		// store the mouse down point, check it when mouse button is released to determine if the context menu should be shown
@@ -612,7 +607,7 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 		CursorPosition = point;
 		try
 		{
-			ChartPoint? hitPoint = FindClosestPoint(new LvcPoint(point.X, point.Y), LiveChartLineSeries.MaxFindDistance);
+			ChartPoint? hitPoint = FindClosestPoint(new LvcPoint(point.X, point.Y), MaxFindDistance);
 			if (hitPoint != null)
 			{
 				if (hitPoint.Context.Series.Name is string name)
@@ -717,6 +712,7 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 		_zoomSection.Xi = Math.Min(_startDataPoint!.Value.X, endDataPoint.X);
 		_zoomSection.Xj = Math.Max(_startDataPoint.Value.X, endDataPoint.X);
 
+		UpdateAxis();
 		InvalidateChart();
 	}
 
@@ -739,7 +735,7 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 
 		if (XAxis.MinLimit == null || double.IsNaN(XAxis.MinLimit.Value))
 		{
-			UpdateDateTimeAxisRange();
+			UpdateDateTimeAxis();
 		}
 
 		XAxis.MinLimit = Math.Max(left, XAxis.MinLimit!.Value);
@@ -749,7 +745,7 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 		DateTime endTime = new DateTime((long)XAxis.MaxLimit.Value);
 		var timeWindow = new TimeWindow(startTime, endTime).Trim();
 
-		UpdateDateTimeAxis(timeWindow);
+		UpdateDateTimeAxisWindow(timeWindow);
 		if (ChartView.TimeWindow != null)
 		{
 			ChartView.TimeWindow.Select(timeWindow);
@@ -758,13 +754,14 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 		{
 			UpdateTimeWindow(timeWindow);
 		}
+		UpdateValueAxis();
 	}
 
 	private void ZoomOut()
 	{
 		if (ChartView.TimeWindow != null)
 		{
-			UpdateDateTimeAxis(ChartView.TimeWindow);
+			UpdateDateTimeAxisWindow(ChartView.TimeWindow);
 			ChartView.TimeWindow.Select(null);
 		}
 		else
@@ -775,7 +772,7 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 
 	private void UpdateTimeWindow(TimeWindow? timeWindow)
 	{
-		UpdateDateTimeAxis(timeWindow);
+		UpdateDateTimeAxisWindow(timeWindow);
 		//UpdateValueAxis();
 
 		ChartView.SortByTotal();
@@ -784,32 +781,36 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 		//InvalidateChart();
 	}
 
+	public override void MergeView(ChartView chartView)
+	{
+		var prevListSeries = IdxNameToChartSeries;
+		IdxNameToChartSeries = new();
+		ClearSeries();
+
+		ChartView.Series = chartView.Series;
+		ChartView.TimeWindow = chartView.TimeWindow ?? ChartView.TimeWindow;
+		ChartView.SortByTotal();
+
+		List<ISeries> listSeries = new();
+		foreach (var series in ChartView.Series.Take(SeriesLimit))
+		{
+			Color? color = null;
+			if (series.Name != null && prevListSeries.TryGetValue(series.Name, out ChartSeries<ISeries>? prevSeries))
+			{
+				color = prevSeries.Color;
+			}
+
+			listSeries.Add(AddListSeries(series, color));
+		}
+		Chart.Series = listSeries;
+		UpdateAxis();
+	}
+
 	private void Legend_OnSelectionChanged(object? sender, EventArgs e)
 	{
 		StopSelecting();
 		UpdateValueAxis();
 		OnSelectionChanged(new SeriesSelectedEventArgs(SelectedSeries));
-	}
-
-	private void ClearListeners()
-	{
-		if (Legend != null)
-		{
-			Legend.OnSelectionChanged -= Legend_OnSelectionChanged;
-			//Legend.OnVisibleChanged -= Legend_OnVisibleChanged;
-		}
-
-		Chart.PointerPressed -= TabControlLiveChart_PointerPressed;
-		Chart.PointerReleased -= TabControlLiveChart_PointerReleased;
-		Chart.PointerMoved -= TabControlLiveChart_PointerMoved;
-		Chart.ChartPointPointerDown -= Chart_ChartPointPointerDown;
-		Chart.PointerExited -= Chart_PointerExited;
-		OnMouseCursorChanged -= TabControlChart_OnMouseCursorChanged;
-
-		if (ChartView.TimeWindow != null)
-		{
-			ChartView.TimeWindow.OnSelectionChanged -= TimeWindow_OnSelectionChanged;
-		}
 	}
 
 	public override void Unload()
@@ -838,29 +839,25 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 		IdxNameToChartSeries.Clear();
 	}
 
-	public override void MergeView(ChartView chartView)
+	private void ClearListeners()
 	{
-		var prevListSeries = IdxNameToChartSeries;
-		IdxNameToChartSeries = new();
-		ClearSeries();
-
-		ChartView.Series = chartView.Series;
-		ChartView.TimeWindow = chartView.TimeWindow ?? ChartView.TimeWindow;
-		ChartView.SortByTotal();
-
-		List<ISeries> listSeries = new();
-		foreach (var series in ChartView.Series.Take(SeriesLimit))
+		if (Legend != null)
 		{
-			Color? color = null;
-			if (series.Name != null && prevListSeries.TryGetValue(series.Name, out ChartSeries<ISeries>? prevSeries))
-			{
-				color = prevSeries.Color;
-			}
-
-			listSeries.Add(AddListSeries(series, color));
+			Legend.OnSelectionChanged -= Legend_OnSelectionChanged;
+			//Legend.OnVisibleChanged -= Legend_OnVisibleChanged;
 		}
-		Chart.Series = listSeries;
-		UpdateAxis();
+
+		Chart.PointerPressed -= TabControlLiveChart_PointerPressed;
+		Chart.PointerReleased -= TabControlLiveChart_PointerReleased;
+		Chart.PointerMoved -= TabControlLiveChart_PointerMoved;
+		Chart.ChartPointPointerDown -= Chart_ChartPointPointerDown;
+		Chart.PointerExited -= Chart_PointerExited;
+		OnMouseCursorChanged -= TabControlChart_OnMouseCursorChanged;
+
+		if (ChartView.TimeWindow != null)
+		{
+			ChartView.TimeWindow.OnSelectionChanged -= TimeWindow_OnSelectionChanged;
+		}
 	}
 
 	public void Dispose()

@@ -404,9 +404,12 @@ public class TabControlOxyPlot : TabControlChart<OxyPlotLineSeries>, IDisposable
 
 	public OxyPlot.Axes.Axis AddValueAxis(AxisPosition axisPosition = AxisPosition.Left, string? key = null)
 	{
-		if (ChartView.Logarithmic)
+		if (ChartView.LogBase is double logBase)
 		{
-			ValueAxis = new OxyPlot.Axes.LogarithmicAxis();
+			ValueAxis = new OxyPlot.Axes.LogarithmicAxis()
+			{
+				Base = logBase,
+			};
 		}
 		else
 		{
@@ -629,7 +632,7 @@ public class TabControlOxyPlot : TabControlChart<OxyPlotLineSeries>, IDisposable
 		if (minValue != null)
 			minimum = minValue.Value;
 
-		if (ChartView.Logarithmic)
+		if (ChartView.LogBase != null)
 		{
 			ValueAxis.Minimum = minimum * 0.85;
 			ValueAxis.Maximum = maximum * 1.15;
@@ -686,13 +689,10 @@ public class TabControlOxyPlot : TabControlChart<OxyPlotLineSeries>, IDisposable
 		IdxListToListSeries.Clear();
 		IdxNameToChartSeries.Clear();
 
-		//if (plotModel != null)
-		//	plotModel.Series.Clear();
 		/*foreach (ListSeries listSeries in ChartSeries)
 		{
-			INotifyCollectionChanged iNotifyCollectionChanged = listSeries.iList as INotifyCollectionChanged;
-			//if (iNotifyCollectionChanged != null)
-			//	iNotifyCollectionChanged.CollectionChanged -= INotifyCollectionChanged_CollectionChanged;
+			if (listSeries.iList is INotifyCollectionChanged iNotifyCollectionChanged)
+				iNotifyCollectionChanged.CollectionChanged -= INotifyCollectionChanged_CollectionChanged;
 		}*/
 	}
 
@@ -710,7 +710,9 @@ public class TabControlOxyPlot : TabControlChart<OxyPlotLineSeries>, IDisposable
 		{
 			Color? color = null;
 			if (series.Name != null && prevListSeries.TryGetValue(series.Name, out ChartSeries<OxyPlotLineSeries>? prevSeries))
+			{
 				color = prevSeries.Color;
+			}
 
 			AddSeries(series, color);
 		}

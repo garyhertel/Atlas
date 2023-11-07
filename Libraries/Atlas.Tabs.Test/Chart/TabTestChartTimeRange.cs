@@ -33,7 +33,7 @@ public class TabTestChartTimeRangeValue : ITab
 			var chartView = new ChartView("Animals")
 			{
 				ShowTimeTracker = true,
-				Logarithmic = true,
+				LogBase = 10,
 			};
 
 			chartView.AddSeries("Cats", ChartSamples.CreateTimeSeries(endTime), seriesType: SeriesType.Average);

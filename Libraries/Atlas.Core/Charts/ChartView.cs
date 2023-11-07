@@ -12,6 +12,7 @@ public class ChartAnnotation
 	public Color? Color { get; set; }
 
 	public bool Horizontal { get; set; } = true;
+
 	public double? X { get; set; }
 	public double? Y { get; set; }
 
@@ -28,14 +29,15 @@ public enum ChartLegendPosition
 public class ChartView
 {
 	public string? Name { get; set; }
+
 	public ChartLegendPosition LegendPosition { get; set; } = ChartLegendPosition.Right;
 	public string? LegendTitle { get; set; }
 
 	public bool ShowOrder { get; set; } = true;
 	public bool ShowTimeTracker { get; set; }
-	public bool Logarithmic { get; set; }
 	public bool IsStacked { get; set; }
 
+	public double? LogBase { get; set; }
 	public double? MinValue { get; set; }
 	public double XBinSize { get; set; }
 

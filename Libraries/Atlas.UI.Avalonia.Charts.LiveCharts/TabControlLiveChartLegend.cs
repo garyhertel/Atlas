@@ -38,6 +38,7 @@ public class TabControlLiveChartLegend : TabControlChartLegend<ISeries>
 	{
 		base.UpdateHighlight(showFaded);
 
+		LiveChart.UpdateAxis();
 		LiveChart.InvalidateChart();
 	}
 }
