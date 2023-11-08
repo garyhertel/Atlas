@@ -28,6 +28,25 @@ public class ChartSeries<TSeries>
 		LineSeries = lineSeries;
 		Color = color;
 	}
+
+	public SeriesInfo GetInfo()
+	{
+		return new SeriesInfo()
+		{
+			Name = ListSeries.Name,
+			Color = Color,
+			IsSelected = IsSelected,
+		};
+	}
+}
+
+public class SeriesInfo
+{
+	public string? Name;
+
+	public Color Color;
+
+	public bool IsSelected { get; set; } = true; // Visible = Selected
 }
 
 public class SeriesSelectedEventArgs : EventArgs
@@ -100,6 +119,7 @@ public abstract class TabControlChart<TSeries> : Grid, ITabControlChart
 	public List<ChartSeries<TSeries>> ChartSeries { get; private set; } = new();
 	protected Dictionary<string, ChartSeries<TSeries>> IdxNameToChartSeries { get; set; } = new();
 	protected Dictionary<IList, ListSeries> IdxListToListSeries { get; set; } = new();
+	protected Dictionary<string, SeriesInfo> IdxSeriesInfo = new();
 
 	public List<ListSeries> SelectedSeries
 	{
@@ -210,9 +230,24 @@ public abstract class TabControlChart<TSeries> : Grid, ITabControlChart
 
 	public abstract void ReloadView();
 
-	public abstract void MergeView(ChartView chartView);
+	public abstract void UpdateView(ChartView chartView);
 
 	public abstract void Unload();
+
+	public SeriesInfo? GetSeriesInfo(ListSeries listSeries)
+	{
+		if (listSeries.Name != null && IdxSeriesInfo.TryGetValue(listSeries.Name, out SeriesInfo? seriesInfo))
+			return seriesInfo;
+		return null;
+	}
+
+	protected void UpdateSeriesInfo(ChartSeries<TSeries> chartSeries)
+	{
+		if (chartSeries.ListSeries.Name is string name)
+		{
+			IdxSeriesInfo[name] = chartSeries.GetInfo();
+		}
+	}
 
 	protected virtual void OnSelectionChanged(SeriesSelectedEventArgs e)
 	{

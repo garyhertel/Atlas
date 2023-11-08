@@ -419,6 +419,8 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 
 		UpdateAxis();
 
+		Legend?.RefreshModel();
+
 		IsVisible = true;
 	}
 
@@ -429,19 +431,11 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 		UpdateDateTimeAxis();
 	}
 
-	private Color? GetSeriesColor(ListSeries listSeries)
-	{
-		if (listSeries.Name != null && IdxNameToChartSeries.TryGetValue(listSeries.Name, out ChartSeries<ISeries>? prevSeries))
-			return prevSeries.Color;
-		return null;
-	}
-
-	public ISeries AddListSeries(ListSeries listSeries, Color? defaultColor = null)
+	public ISeries AddListSeries(ListSeries listSeries)
 	{
 		Color color = 
-			defaultColor ?? 
 			listSeries.Color?.AsAvaloniaColor() ??
-			GetSeriesColor(listSeries) ??
+			GetSeriesInfo(listSeries)?.Color ??
 			GetColor(ChartSeries.Count);
 
 		var liveChartSeries = new LiveChartSeries(this, listSeries, color, UseDateTimeAxis);
@@ -452,7 +446,10 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 		ChartSeries.Add(chartSeries);
 		IdxListToListSeries[listSeries.List] = listSeries;
 		if (listSeries.Name != null)
+		{
 			IdxNameToChartSeries[listSeries.Name] = chartSeries;
+		}
+		UpdateSeriesInfo(chartSeries);
 		return liveChartSeries.LineSeries;
 	}
 
@@ -582,7 +579,7 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 		{
 			if (series is LiveChartLineSeries lineSeries)
 			{
-				// if (!lineSeries.IsVisible) continue;
+				if (!lineSeries.IsVisible) continue;
 
 				foreach (LiveChartPoint chartPoint in lineSeries.Values!)
 				{
@@ -782,29 +779,15 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 		//InvalidateChart();
 	}
 
-	public override void MergeView(ChartView chartView)
+	// Reuses previous colors and TimeWindow
+	public override void UpdateView(ChartView chartView)
 	{
-		var prevListSeries = IdxNameToChartSeries;
-		IdxNameToChartSeries = new();
 		ClearSeries();
 
 		ChartView.Series = chartView.Series;
 		ChartView.TimeWindow = chartView.TimeWindow ?? ChartView.TimeWindow;
-		ChartView.SortByTotal();
 
-		List<ISeries> listSeries = new();
-		foreach (var series in ChartView.Series.Take(SeriesLimit))
-		{
-			Color? color = null;
-			if (series.Name != null && prevListSeries.TryGetValue(series.Name, out ChartSeries<ISeries>? prevSeries))
-			{
-				color = prevSeries.Color;
-			}
-
-			listSeries.Add(AddListSeries(series, color));
-		}
-		Chart.Series = listSeries;
-		UpdateAxis();
+		ReloadView();
 	}
 
 	private void Legend_OnSelectionChanged(object? sender, EventArgs e)

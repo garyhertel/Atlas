@@ -62,8 +62,8 @@ public class LiveChartLineSeries : LineSeries<LiveChartPoint>, ISeries
 
 		var cartesianSeries = (ICartesianSeries<SkiaSharpDrawingContext>)target.Context.Series;
 
-		var primaryAxis = cartesianChart.Core.YAxes[cartesianSeries.ScalesXAt];
-		var secondaryAxis = cartesianChart.Core.XAxes[cartesianSeries.ScalesYAt];
+		var primaryAxis = cartesianChart.Core.YAxes[cartesianSeries.ScalesYAt];
+		var secondaryAxis = cartesianChart.Core.XAxes[cartesianSeries.ScalesXAt];
 
 		var drawLocation = cartesianChart.Core.DrawMarginLocation;
 		var drawMarginSize = cartesianChart.Core.DrawMarginSize;

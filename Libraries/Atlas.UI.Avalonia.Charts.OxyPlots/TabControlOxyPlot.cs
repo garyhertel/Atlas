@@ -696,7 +696,7 @@ public class TabControlOxyPlot : TabControlChart<OxyPlotLineSeries>, IDisposable
 		}*/
 	}
 
-	public override void MergeView(ChartView chartView)
+	public override void UpdateView(ChartView chartView)
 	{
 		var prevListSeries = IdxNameToChartSeries;
 		IdxNameToChartSeries = new();
