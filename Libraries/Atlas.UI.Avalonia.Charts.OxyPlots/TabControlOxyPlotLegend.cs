@@ -10,9 +10,9 @@ public class TabControlOxyPlotLegend : TabControlChartLegend<OxyPlotLineSeries>
 
 	public override string? ToString() => ChartView.ToString();
 
-	public TabControlOxyPlotLegend(TabControlOxyPlot tabControlChart) : base(tabControlChart)
+	public TabControlOxyPlotLegend(TabControlOxyPlot oxyChart) : base(oxyChart)
 	{
-		OxyChart = tabControlChart;
+		OxyChart = oxyChart;
 	}
 
 	public override TabChartLegendItem<OxyPlotLineSeries> AddSeries(ChartSeries<OxyPlotLineSeries> chartSeries)

@@ -25,7 +25,7 @@ public class OxyPlotLineSeries : OxyPlot.Series.LineSeries
 	public readonly ListSeries ListSeries;
 	public readonly bool UseDateTimeAxis;
 
-	// DataPoint is a struct which can't be inherited
+	// DataPoint is a struct which can't be inherited so we need a lookup
 	private readonly Dictionary<DataPoint, object> _datapointLookup = new();
 
 	public PropertyInfo? XPropertyInfo => ListSeries.XPropertyInfo;
@@ -52,6 +52,7 @@ public class OxyPlotLineSeries : OxyPlot.Series.LineSeries
 		MinimumSegmentLength = 2;
 		MarkerSize = 3;
 		MarkerType = listSeries.List.Count <= MaxPointsToShowMarkers ? MarkerType.Circle : MarkerType.None;
+
 		LoadTrackFormat();
 
 		// Can't add gaps with ItemSource so convert to DataPoint ourselves

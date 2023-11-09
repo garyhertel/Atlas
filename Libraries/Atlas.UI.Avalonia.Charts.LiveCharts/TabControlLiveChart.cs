@@ -168,87 +168,47 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 		Children.Add(containerGrid);
 	}
 
-	private void AddSections()
+	public void LoadView(ChartView chartView)
 	{
-		_sections = ChartView.Annotations
-			.Select(a => CreateAnnotation(a))
+		ChartView = chartView;
+		ReloadView();
+		Legend.RefreshModel();
+	}
+
+	// Reuses previous colors and TimeWindow
+	public override void UpdateView(ChartView chartView)
+	{
+		ClearSeries();
+
+		ChartView.Series = chartView.Series;
+		ChartView.TimeWindow = chartView.TimeWindow ?? ChartView.TimeWindow;
+
+		ReloadView();
+	}
+
+	public override void ReloadView()
+	{
+		ChartView.SortByTotal();
+
+		Chart.Series = ChartView.Series
+			.Take(SeriesLimit)
+			.Select(s => AddListSeries(s))
 			.ToList();
 
-		if (UseDateTimeAxis && ChartView.ShowTimeTracker)
-		{
-			_sections.Add(CreateTrackerLine());
+		UpdateAxis();
 
-			var skColor = AtlasTheme.ChartBackgroundSelected.Color.AsSkColor();
-			_zoomSection = new RectangularSection
-			{
-				Label = "",
-				Stroke = new SolidColorPaint(skColor.WithAlpha(180)),
-				Fill = new SolidColorPaint(skColor.WithAlpha((byte)AtlasTheme.ChartBackgroundSelectedAlpha)),
-				IsVisible = false,
-			};
-			_sections.Add(_zoomSection);
-		}
+		Legend?.RefreshModel();
 
-		Chart.Sections = _sections;
+		IsVisible = true;
 	}
 
-	private void TimeWindow_OnSelectionChanged(object? sender, TimeWindowEventArgs e)
+	public void Refresh()
 	{
-		UpdateTimeWindow(e.TimeWindow);
-	}
+		UpdateAxis();
 
-	private RectangularSection CreateTrackerLine()
-	{
-		_trackerSection = new RectangularSection
-		{
-			Label = "",
-			Stroke = new SolidColorPaint(TimeTrackerSkColor),
-			IsVisible = false,
-		};
-		return _trackerSection;
-	}
+		Legend.RefreshModel();
 
-	// Update mouse tracker
-	private void TabControlChart_OnMouseCursorChanged(object? sender, MouseCursorMovedEventArgs e)
-	{
-		if (_trackerSection == null)
-			return;
-
-		_trackerSection.Xi = e.X;
-		_trackerSection.Xj = e.X;
-		_trackerSection.IsVisible = true;
-
-		InvalidateChart();
-	}
-
-	public override void InvalidateChart()
-	{
-		Dispatcher.UIThread.Post(Chart!.InvalidateVisual, DispatcherPriority.Background);
-	}
-
-	private void Chart_ChartPointPointerDown(IChartView chart, ChartPoint? point)
-	{
-		_pointClicked = point;
-		if (point == null) return;
-
-		if (IdxNameToChartSeries.TryGetValue(point!.Context.Series.Name!, out var series))
-		{
-			OnSelectionChanged(new SeriesSelectedEventArgs(new List<ListSeries>() { series.ListSeries }));
-			Legend.SelectSeries(series.LineSeries, series.ListSeries);
-		}
-	}
-
-	private void Chart_PointerExited(object? sender, PointerEventArgs e)
-	{
-		if (HoverSeries != null)
-		{
-			HoverSeries = null;
-			Legend.UnhighlightAll(true);
-		}
-
-		// Hide cursor when out of scope
-		var moveEvent = new MouseCursorMovedEventArgs(0);
-		_mouseCursorChangedEventSource?.Raise(sender, moveEvent);
+		//InvalidateChart();
 	}
 
 	private Axis CreateXAxis()
@@ -304,33 +264,119 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 		*/
 	}
 
+	public ISeries AddListSeries(ListSeries listSeries)
+	{
+		Color color = 
+			listSeries.Color?.AsAvaloniaColor() ??
+			GetSeriesInfo(listSeries)?.Color ??
+			GetColor(IdxSeriesInfo.Count);
+
+		var liveChartSeries = new LiveChartSeries(this, listSeries, color, UseDateTimeAxis);
+		XAxisPropertyInfo = listSeries.XPropertyInfo;
+
+		var chartSeries = new ChartSeries<ISeries>(listSeries, liveChartSeries.LineSeries, color);
+		LiveChartSeries.Add(liveChartSeries);
+		ChartSeries.Add(chartSeries);
+		IdxListToListSeries[listSeries.List] = listSeries;
+		if (listSeries.Name != null)
+		{
+			IdxNameToChartSeries[listSeries.Name] = chartSeries;
+		}
+		UpdateSeriesInfo(chartSeries);
+		return liveChartSeries.LineSeries;
+	}
+
+	private void AddSections()
+	{
+		_sections = ChartView.Annotations
+			.Select(a => CreateAnnotation(a))
+			.ToList();
+
+		if (UseDateTimeAxis && ChartView.ShowTimeTracker)
+		{
+			_sections.Add(CreateTrackerLine());
+
+			var skColor = AtlasTheme.ChartBackgroundSelected.Color.AsSkColor();
+			_zoomSection = new RectangularSection
+			{
+				Label = "",
+				Stroke = new SolidColorPaint(skColor.WithAlpha(180)),
+				Fill = new SolidColorPaint(skColor.WithAlpha((byte)AtlasTheme.ChartBackgroundSelectedAlpha)),
+				IsVisible = false,
+			};
+			_sections.Add(_zoomSection);
+		}
+
+		Chart.Sections = _sections;
+	}
+
+	private RectangularSection CreateTrackerLine()
+	{
+		_trackerSection = new RectangularSection
+		{
+			Label = "",
+			Stroke = new SolidColorPaint(TimeTrackerSkColor),
+			IsVisible = false,
+		};
+		return _trackerSection;
+	}
+
+	public override void AddAnnotation(ChartAnnotation chartAnnotation)
+	{
+		base.AddAnnotation(chartAnnotation);
+
+		_sections.Add(CreateAnnotation(chartAnnotation));
+
+		UpdateValueAxis();
+	}
+
+	public RectangularSection CreateAnnotation(ChartAnnotation chartAnnotation)
+	{
+		var c = chartAnnotation.Color!.Value;
+		var color = new SKColor(c.R, c.G, c.B, c.A);
+		var section = new RectangularSection
+		{
+			Label = chartAnnotation.Text ?? "",
+			LabelSize = 14,
+			LabelPaint = new SolidColorPaint(color.WithAlpha(220))
+			{
+				SKTypeface = SKTypeface.FromFamilyName("Inter", SKFontStyle.Bold),
+			},
+			Stroke = new SolidColorPaint(color.WithAlpha(200), (float)chartAnnotation.StrokeThickness),
+		};
+
+		if (chartAnnotation.X != null)
+		{
+			section.Xj = chartAnnotation.X;
+			section.Xi = chartAnnotation.X;
+		}
+
+		if (chartAnnotation.Y != null)
+		{
+			section.Yj = chartAnnotation.Y;
+			section.Yi = chartAnnotation.Y;
+		}
+
+		return section;
+	}
+
+	public override void InvalidateChart()
+	{
+		Dispatcher.UIThread.Post(Chart!.InvalidateVisual, DispatcherPriority.Background);
+	}
+
+	public void UpdateAxis()
+	{
+		UpdateValueAxis();
+		UpdateLinearAxis();
+		UpdateDateTimeAxis();
+	}
+
 	public void UpdateValueAxis() // Axis valueAxis, string axisKey = null
 	{
 		if (ValueAxis == null) return;
 
-		double minimum = double.MaxValue;
-		double maximum = double.MinValue;
-		bool hasFraction = false;
-
-		foreach (LiveChartSeries series in LiveChartSeries)
-		{
-			if (!series.LineSeries.IsVisible) continue;
-
-			foreach (var dataPoint in series.LineSeries.Values!)
-			{
-				double? y = dataPoint.Y;
-				if (y == null || double.IsNaN(y.Value))
-					continue;
-
-				if (XAxis != null && (dataPoint.X < XAxis.MinLimit || dataPoint.X > XAxis.MaxLimit))
-					continue;
-
-				hasFraction |= (y % 1 != 0.0);
-
-				minimum = Math.Min(minimum, y.Value);
-				maximum = Math.Max(maximum, y.Value);
-			}
-		}
+		var (minimum, maximum, hasFraction) = GetYValueRange();
 
 		if (minimum == double.MaxValue)
 		{
@@ -392,131 +438,28 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 		}
 	}
 
-	public void LoadView(ChartView chartView)
+	private void UpdateLinearAxis()
 	{
-		ChartView = chartView;
-		ReloadView();
-		Legend.RefreshModel();
-	}
+		if (XAxis == null || UseDateTimeAxis)
+			return;
 
-	public void Refresh()
-	{
-		UpdateAxis();
+		var (minimum, maximum, hasFraction) = GetXValueRange();
 
-		Legend.RefreshModel();
-
-		//InvalidateChart();
-	}
-
-	public override void ReloadView()
-	{
-		ChartView.SortByTotal();
-
-		Chart.Series = ChartView.Series
-			.Take(SeriesLimit)
-			.Select(s => AddListSeries(s))
-			.ToList();
-
-		UpdateAxis();
-
-		Legend?.RefreshModel();
-
-		IsVisible = true;
-	}
-
-	public void UpdateAxis()
-	{
-		UpdateValueAxis();
-		UpdateLinearAxis();
-		UpdateDateTimeAxis();
-	}
-
-	public ISeries AddListSeries(ListSeries listSeries)
-	{
-		Color color = 
-			listSeries.Color?.AsAvaloniaColor() ??
-			GetSeriesInfo(listSeries)?.Color ??
-			GetColor(ChartSeries.Count);
-
-		var liveChartSeries = new LiveChartSeries(this, listSeries, color, UseDateTimeAxis);
-		XAxisPropertyInfo = listSeries.XPropertyInfo;
-
-		var chartSeries = new ChartSeries<ISeries>(listSeries, liveChartSeries.LineSeries, color);
-		LiveChartSeries.Add(liveChartSeries);
-		ChartSeries.Add(chartSeries);
-		IdxListToListSeries[listSeries.List] = listSeries;
-		if (listSeries.Name != null)
+		if (!hasFraction)
 		{
-			IdxNameToChartSeries[listSeries.Name] = chartSeries;
-		}
-		UpdateSeriesInfo(chartSeries);
-		return liveChartSeries.LineSeries;
-	}
-
-	public override void AddAnnotation(ChartAnnotation chartAnnotation)
-	{
-		base.AddAnnotation(chartAnnotation);
-
-		_sections.Add(CreateAnnotation(chartAnnotation));
-
-		UpdateValueAxis();
-	}
-
-	public RectangularSection CreateAnnotation(ChartAnnotation chartAnnotation)
-	{
-		var c = chartAnnotation.Color!.Value;
-		var color = new SKColor(c.R, c.G, c.B, c.A);
-		var section = new RectangularSection
-		{
-			Label = chartAnnotation.Text ?? "",
-			LabelSize = 14,
-			LabelPaint = new SolidColorPaint(color.WithAlpha(220))
-			{
-				SKTypeface = SKTypeface.FromFamilyName("Inter", SKFontStyle.Bold),
-			},
-			Stroke = new SolidColorPaint(color.WithAlpha(200), (float)chartAnnotation.StrokeThickness),
-		};
-
-		if (chartAnnotation.X != null)
-		{
-			section.Xj = chartAnnotation.X;
-			section.Xi = chartAnnotation.X;
+			XAxis.MinStep = 1;
 		}
 
-		if (chartAnnotation.Y != null)
+		/*
+		if (minimum == double.MaxValue)
 		{
-			section.Yj = chartAnnotation.Y;
-			section.Yi = chartAnnotation.Y;
+			// didn't find any values
+			minimum = 0;
+			maximum = 1;
 		}
 
-		return section;
-	}
-
-	private void UpdateDateTimeAxisWindow(TimeWindow? timeWindow)
-	{
-		if (timeWindow == null)
-		{
-			XAxis.MinLimit = null;
-			XAxis.MaxLimit = null;
-			//UpdateDateTimeInterval(timeWindow.Duration.TotalSeconds);
-		}
-		else
-		{
-			XAxis.MinLimit = timeWindow.StartTime.Ticks;
-			XAxis.MaxLimit = timeWindow.EndTime.Ticks;
-			UpdateDateTimeInterval(timeWindow.Duration);
-		}
-	}
-
-	private void UpdateDateTimeInterval(TimeSpan windowDuration)
-	{
-		var dateFormat = DateTimeFormat.GetDateTimeFormat(windowDuration)!;
-
-		TimeSpan duration = windowDuration.PeriodDuration(7);
-
-		XAxis.Labeler = value => new DateTime((long)value).ToString(dateFormat.TextFormat);
-		XAxis.UnitWidth = duration.Ticks; // Hover depends on this
-		XAxis.MinStep = duration.Ticks;
+		XAxis.MinLimit = minimum;
+		XAxis.MaxLimit = maximum;*/
 	}
 
 	private void UpdateDateTimeAxis()
@@ -545,28 +488,41 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 		//UpdateDateTimeInterval(double duration);
 	}
 
-	private void UpdateLinearAxis()
+	private void UpdateDateTimeAxisWindow(TimeWindow? timeWindow)
 	{
-		if (XAxis == null || UseDateTimeAxis)
-			return;
-
-		var (minimum, maximum, hasFraction) = GetXValueRange();
-
-		if (!hasFraction)
+		if (timeWindow == null)
 		{
-			XAxis.MinStep = 1;
+			XAxis.MinLimit = null;
+			XAxis.MaxLimit = null;
+			//UpdateDateTimeInterval(timeWindow.Duration.TotalSeconds);
 		}
-
-		/*
-		if (minimum == double.MaxValue)
+		else
 		{
-			// didn't find any values
-			minimum = 0;
-			maximum = 1;
+			XAxis.MinLimit = timeWindow.StartTime.Ticks;
+			XAxis.MaxLimit = timeWindow.EndTime.Ticks;
+			UpdateDateTimeInterval(timeWindow.Duration);
 		}
+	}
 
-		XAxis.MinLimit = minimum;
-		XAxis.MaxLimit = maximum;*/
+	private void UpdateDateTimeInterval(TimeSpan windowDuration)
+	{
+		var dateFormat = DateTimeFormat.GetWindowFormat(windowDuration)!;
+		TimeSpan stepDuration = windowDuration.PeriodDuration(8).Max(dateFormat.Minimum);
+
+		XAxis.Labeler = value => new DateTime((long)value).ToString(dateFormat.TextFormat);
+		XAxis.UnitWidth = stepDuration.Ticks; // Hover depends on this
+		XAxis.MinStep = stepDuration.Ticks;
+	}
+
+	private void UpdateTimeWindow(TimeWindow? timeWindow)
+	{
+		UpdateDateTimeAxisWindow(timeWindow);
+		//UpdateValueAxis();
+
+		ChartView.SortByTotal();
+		Legend.RefreshModel();
+
+		//InvalidateChart();
 	}
 
 	private (double minimum, double maximum, bool hasFraction) GetXValueRange()
@@ -595,6 +551,135 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 			}
 		}
 		return (minimum, maximum, hasFraction); 
+	}
+
+	private (double minimum, double maximum, bool hasFraction) GetYValueRange()
+	{
+		double minimum = double.MaxValue;
+		double maximum = double.MinValue;
+		bool hasFraction = false;
+
+		foreach (LiveChartSeries series in LiveChartSeries)
+		{
+			if (!series.LineSeries.IsVisible) continue;
+
+			foreach (var dataPoint in series.LineSeries.Values!)
+			{
+				double? y = dataPoint.Y;
+				if (y == null || double.IsNaN(y.Value))
+					continue;
+
+				if (XAxis != null && (dataPoint.X < XAxis.MinLimit || dataPoint.X > XAxis.MaxLimit))
+					continue;
+
+				hasFraction |= (y % 1 != 0.0);
+
+				minimum = Math.Min(minimum, y.Value);
+				maximum = Math.Max(maximum, y.Value);
+			}
+		}
+		return (minimum, maximum, hasFraction);
+	}
+
+	private ChartPoint? FindClosestPoint(LvcPoint pointerPosition, double maxDistance)
+	{
+		return LiveChartSeries
+			.Where(series => series.LineSeries.IsVisible)
+			.SelectMany(s => s.LineSeries.Fetch(Chart.CoreChart))
+			.Select(x => new { distance = LiveChartLineSeries.GetDistanceTo(x, pointerPosition), point = x })
+			.Where(x => x.distance < maxDistance)
+			.MinBy(x => x.distance)
+			?.point;
+	}
+
+	private void UpdateZoomSection(LvcPointD endDataPoint)
+	{
+		if (_zoomSection == null || _startDataPoint == null) return;
+
+		_zoomSection.Xi = Math.Min(_startDataPoint!.Value.X, endDataPoint.X);
+		_zoomSection.Xj = Math.Max(_startDataPoint.Value.X, endDataPoint.X);
+
+		UpdateAxis();
+		InvalidateChart();
+	}
+
+	private void ZoomIn()
+	{
+		if (!UseDateTimeAxis) return;
+
+		double left = Math.Min(_startDataPoint!.Value.X, _endDataPoint!.Value.X);
+		double right = Math.Max(_startDataPoint.Value.X, _endDataPoint!.Value.X);
+
+		if (XAxis.MinLimit == null || double.IsNaN(XAxis.MinLimit.Value))
+		{
+			UpdateDateTimeAxis();
+		}
+
+		XAxis.MinLimit = Math.Max(left, XAxis.MinLimit!.Value);
+		XAxis.MaxLimit = Math.Min(right, XAxis.MaxLimit!.Value);
+
+		DateTime startTime = new DateTime((long)XAxis.MinLimit!.Value);
+		DateTime endTime = new DateTime((long)XAxis.MaxLimit.Value);
+		var timeWindow = new TimeWindow(startTime, endTime).Trim();
+
+		UpdateDateTimeAxisWindow(timeWindow);
+		if (ChartView.TimeWindow != null)
+		{
+			ChartView.TimeWindow.Select(timeWindow);
+		}
+		else
+		{
+			UpdateTimeWindow(timeWindow);
+		}
+		UpdateValueAxis();
+	}
+
+	private void ZoomOut()
+	{
+		if (ChartView.TimeWindow != null)
+		{
+			UpdateDateTimeAxisWindow(ChartView.TimeWindow);
+			ChartView.TimeWindow.Select(null);
+		}
+		else
+		{
+			UpdateTimeWindow(null);
+		}
+		UpdateValueAxis();
+	}
+
+	private void StopSelecting()
+	{
+		if (_zoomSection != null)
+		{
+			_zoomSection!.IsVisible = false;
+		}
+		_startDataPoint = null;
+		_selecting = false;
+	}
+
+	private void TimeWindow_OnSelectionChanged(object? sender, TimeWindowEventArgs e)
+	{
+		UpdateTimeWindow(e.TimeWindow);
+	}
+
+	private void Legend_OnSelectionChanged(object? sender, EventArgs e)
+	{
+		StopSelecting();
+		UpdateValueAxis();
+		OnSelectionChanged(new SeriesSelectedEventArgs(SelectedSeries));
+	}
+
+	// Update mouse tracker
+	private void TabControlChart_OnMouseCursorChanged(object? sender, MouseCursorMovedEventArgs e)
+	{
+		if (_trackerSection == null) return;
+
+		_trackerSection.Xi = e.X;
+		_trackerSection.Xj = e.X;
+		_trackerSection.IsVisible = true;
+
+		InvalidateChart();
 	}
 
 	private void TabControlLiveChart_PointerMoved(object? sender, PointerEventArgs e)
@@ -638,15 +723,16 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 		}
 	}
 
-	private ChartPoint? FindClosestPoint(LvcPoint pointerPosition, double maxDistance)
+	private void Chart_ChartPointPointerDown(IChartView chart, ChartPoint? point)
 	{
-		return LiveChartSeries
-			.Where(series => series.LineSeries.IsVisible)
-			.SelectMany(s => s.LineSeries.Fetch(Chart.CoreChart))
-			.Select(x => new { distance = LiveChartLineSeries.GetDistanceTo(x, pointerPosition), point = x })
-			.Where(x => x.distance < maxDistance)
-			.MinBy(x => x.distance)
-			?.point;
+		_pointClicked = point;
+		if (point == null) return;
+
+		if (IdxNameToChartSeries.TryGetValue(point!.Context.Series.Name!, out var series))
+		{
+			OnSelectionChanged(new SeriesSelectedEventArgs(new List<ListSeries>() { series.ListSeries }));
+			Legend.SelectSeries(series.LineSeries, series.ListSeries);
+		}
 	}
 
 	private void TabControlLiveChart_PointerPressed(object? sender, PointerPressedEventArgs e)
@@ -702,99 +788,17 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 		}
 	}
 
-	private void UpdateZoomSection(LvcPointD endDataPoint)
+	private void Chart_PointerExited(object? sender, PointerEventArgs e)
 	{
-		if (_zoomSection == null || _startDataPoint == null) return;
-
-		_zoomSection.Xi = Math.Min(_startDataPoint!.Value.X, endDataPoint.X);
-		_zoomSection.Xj = Math.Max(_startDataPoint.Value.X, endDataPoint.X);
-
-		UpdateAxis();
-		InvalidateChart();
-	}
-
-	private void StopSelecting()
-	{
-		if (_zoomSection != null)
+		if (HoverSeries != null)
 		{
-			_zoomSection!.IsVisible = false;
-		}
-		_startDataPoint = null;
-		_selecting = false;
-	}
-
-	private void ZoomIn()
-	{
-		if (!UseDateTimeAxis) return;
-
-		double left = Math.Min(_startDataPoint!.Value.X, _endDataPoint!.Value.X);
-		double right = Math.Max(_startDataPoint.Value.X, _endDataPoint!.Value.X);
-
-		if (XAxis.MinLimit == null || double.IsNaN(XAxis.MinLimit.Value))
-		{
-			UpdateDateTimeAxis();
+			HoverSeries = null;
+			Legend.UnhighlightAll(true);
 		}
 
-		XAxis.MinLimit = Math.Max(left, XAxis.MinLimit!.Value);
-		XAxis.MaxLimit = Math.Min(right, XAxis.MaxLimit!.Value);
-
-		DateTime startTime = new DateTime((long)XAxis.MinLimit!.Value);
-		DateTime endTime = new DateTime((long)XAxis.MaxLimit.Value);
-		var timeWindow = new TimeWindow(startTime, endTime).Trim();
-
-		UpdateDateTimeAxisWindow(timeWindow);
-		if (ChartView.TimeWindow != null)
-		{
-			ChartView.TimeWindow.Select(timeWindow);
-		}
-		else
-		{
-			UpdateTimeWindow(timeWindow);
-		}
-		UpdateValueAxis();
-	}
-
-	private void ZoomOut()
-	{
-		if (ChartView.TimeWindow != null)
-		{
-			UpdateDateTimeAxisWindow(ChartView.TimeWindow);
-			ChartView.TimeWindow.Select(null);
-		}
-		else
-		{
-			UpdateTimeWindow(null);
-		}
-		UpdateValueAxis();
-	}
-
-	private void UpdateTimeWindow(TimeWindow? timeWindow)
-	{
-		UpdateDateTimeAxisWindow(timeWindow);
-		//UpdateValueAxis();
-
-		ChartView.SortByTotal();
-		Legend.RefreshModel();
-
-		//InvalidateChart();
-	}
-
-	// Reuses previous colors and TimeWindow
-	public override void UpdateView(ChartView chartView)
-	{
-		ClearSeries();
-
-		ChartView.Series = chartView.Series;
-		ChartView.TimeWindow = chartView.TimeWindow ?? ChartView.TimeWindow;
-
-		ReloadView();
-	}
-
-	private void Legend_OnSelectionChanged(object? sender, EventArgs e)
-	{
-		StopSelecting();
-		UpdateValueAxis();
-		OnSelectionChanged(new SeriesSelectedEventArgs(SelectedSeries));
+		// Hide cursor when out of scope
+		var moveEvent = new MouseCursorMovedEventArgs(0);
+		_mouseCursorChangedEventSource?.Raise(sender, moveEvent);
 	}
 
 	public override void Unload()

@@ -8,9 +8,9 @@ public class TabControlLiveChartLegend : TabControlChartLegend<ISeries>
 	public TabControlLiveChart LiveChart;
 	public CartesianChart Chart => LiveChart.Chart;
 
-	public TabControlLiveChartLegend(TabControlLiveChart tabControlChart) : base(tabControlChart)
+	public TabControlLiveChartLegend(TabControlLiveChart liveChart) : base(liveChart)
 	{
-		LiveChart = tabControlChart;
+		LiveChart = liveChart;
 	}
 
 	public override TabChartLegendItem<ISeries> AddSeries(ChartSeries<ISeries> chartSeries)
