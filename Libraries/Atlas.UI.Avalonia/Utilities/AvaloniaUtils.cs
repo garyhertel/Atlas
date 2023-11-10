@@ -89,7 +89,7 @@ public static class AvaloniaUtils
 	{
 		Point controlTopLeftPoint = new(0, 0);
 		Point controlBottomRight = new(control.Bounds.Width, control.Bounds.Height);
-		StyledElement? parentElement = control?.Parent;
+		StyledElement? parentElement = control.Parent;
 		while (parentElement != null)
 		{
 			// sometimes controls don't update their bounds correctly, so only use the Window for now

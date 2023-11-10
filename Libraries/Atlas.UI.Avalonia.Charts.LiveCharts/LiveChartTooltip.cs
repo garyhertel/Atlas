@@ -58,6 +58,7 @@ public class LiveChartTooltip : IChartTooltip<SkiaSharpDrawingContext>
 		if (chart.View.TooltipBackgroundPaint is not null) BackgroundPaint = chart.View.TooltipBackgroundPaint;
 		if (chart.View.TooltipTextPaint is not null) FontPaint = chart.View.TooltipTextPaint;
 
+		bool addAnimation = false;
 		if (_panel is null)
 		{
 			_panel = new StackPanel<PopUpGeometry, SkiaSharpDrawingContext>
@@ -71,11 +72,7 @@ public class LiveChartTooltip : IChartTooltip<SkiaSharpDrawingContext>
 			_panel.BackgroundGeometry.Wedge = wedge;
 			_panel.BackgroundGeometry.WedgeThickness = 3;
 
-			_panel
-				.Animate(
-					new Animation(EasingFunctions.EaseOut, TimeSpan.FromMilliseconds(150)),
-					nameof(RoundedRectangleGeometry.X),
-					nameof(RoundedRectangleGeometry.Y));
+			addAnimation = true;
 		}
 
 		if (BackgroundPaint is not null) BackgroundPaint.ZIndex = s_zIndex;
@@ -213,6 +210,16 @@ public class LiveChartTooltip : IChartTooltip<SkiaSharpDrawingContext>
 		_panel.Y = location.Y;
 
 		chart.AddVisual(_panel);
+
+		// Wait to add the animation so the ToolTip doesn't start animating from the top left
+		if (addAnimation)
+		{
+			_panel
+				.Animate(
+					new Animation(EasingFunctions.EaseOut, TimeSpan.FromMilliseconds(150)),
+					nameof(RoundedRectangleGeometry.X),
+					nameof(RoundedRectangleGeometry.Y));
+		}
 	}
 
 	public void Hide(Chart<SkiaSharpDrawingContext> chart)
