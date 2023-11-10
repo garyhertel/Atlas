@@ -4,6 +4,7 @@ using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Layout;
 using Avalonia.Media;
+using Avalonia.VisualTree;
 using System.Diagnostics;
 
 namespace Atlas.UI.Avalonia.Controls;
@@ -254,8 +255,7 @@ public class TabControlSplitContainer : Grid
 
 			Children.Remove(oldChild.Value);
 
-			if (oldChild.Value is IDisposable disposable)
-				disposable.Dispose();
+			DisposeControl(oldChild.Value);
 		}
 	}
 
@@ -314,13 +314,34 @@ public class TabControlSplitContainer : Grid
 		{
 			foreach (Control control in Children)
 			{
-				if (control is IDisposable disposable)
-					disposable.Dispose(); // does Children.Clear() already handle this?
+				// does Children.Clear() already handle this?
+				DisposeControl(control);
 			}
 		}
 		RowDefinitions.Clear();
 		Children.Clear();
 		GridControls.Clear();
 		_gridItems.Clear();
+	}
+
+	private void DisposeControl(Control control)
+	{
+		if (control is IDisposable disposable)
+		{
+			disposable.Dispose();
+			return;
+		}
+
+		foreach (var child in control.GetVisualChildren())
+		{
+			if (child is IDisposable childDisposable)
+			{
+				childDisposable.Dispose();
+			}
+			else if (child is Control childControl)
+			{
+				DisposeControl(childControl);
+			}
+		}
 	}
 }

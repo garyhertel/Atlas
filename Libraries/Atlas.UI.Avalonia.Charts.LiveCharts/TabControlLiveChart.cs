@@ -850,6 +850,7 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 
 	public void Dispose()
 	{
+		Children.Clear();
 		ClearListeners();
 		UnloadModel();
 	}
