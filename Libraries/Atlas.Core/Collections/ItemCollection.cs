@@ -50,7 +50,7 @@ public class ItemCollection<T> : ObservableCollection<T>, IItemCollection, IComp
 	{
 		foreach (T item in collection)
 			Items.Add(item);
-		OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
+		OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, collection.ToList()));
 	}
 
 	public int Compare(object? x, object? y)

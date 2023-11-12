@@ -272,7 +272,7 @@ public class TabControlParams : Grid, IValidationControl
 
 	// Focus first input control
 	// Add [Focus] attribute if more control needed?
-	public new void Focus()
+	public void Focus()
 	{
 		foreach (Control control in Children)
 		{

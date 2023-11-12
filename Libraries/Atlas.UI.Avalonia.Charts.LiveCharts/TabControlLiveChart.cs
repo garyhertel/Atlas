@@ -367,75 +367,9 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 
 	public void UpdateAxis()
 	{
-		UpdateValueAxis();
 		UpdateLinearAxis();
 		UpdateDateTimeAxis();
-	}
-
-	public void UpdateValueAxis() // Axis valueAxis, string axisKey = null
-	{
-		if (ValueAxis == null) return;
-
-		var (minimum, maximum, hasFraction) = GetYValueRange();
-
-		if (minimum == double.MaxValue)
-		{
-			// didn't find any values
-			minimum = 0;
-			maximum = 1;
-		}
-		else
-		{
-			double difference = maximum - minimum;
-			if (difference > 10 || hasFraction)
-			{
-				ValueAxis.UnitWidth = (difference * 0.2).RoundToSignificantFigures(1);
-			}
-		}
-
-		foreach (var annotation in Annotations)
-		{
-			if (annotation.Y != null)
-			{
-				maximum = Math.Max(annotation.Y.Value * 1.1, maximum);
-			}
-		}
-
-		ValueAxis.MinStep = hasFraction ? 0 : 1;
-
-		double? minValue = ChartView.MinValue;
-		if (minValue != null)
-			minimum = minValue.Value;
-
-		if (ChartView.LogBase is double logBase)
-		{
-			ValueAxis.MinLimit = Math.Log(minimum, logBase) * 0.85;
-			ValueAxis.MaxLimit = Math.Log(maximum, logBase) * 1.15;
-
-			if (maximum - minimum > 10)
-			{
-				ValueAxis.MinStep = 1;
-			}
-		}
-		else
-		{
-			var margin = (maximum - minimum) * MarginPercent;
-			if (minimum == maximum)
-				margin = Math.Abs(minimum);
-
-			if (margin == 0)
-				margin = 1;
-
-			if (minValue != null)
-			{
-				ValueAxis.MinLimit = Math.Max(minimum - margin, minValue.Value - Math.Abs(margin) * 0.05);
-			}
-			else
-			{
-				ValueAxis.MinLimit = minimum - margin;
-			}
-			ValueAxis.MaxLimit = maximum + margin;
-		}
+		UpdateValueAxis();
 	}
 
 	private void UpdateLinearAxis()
@@ -523,6 +457,72 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 		Legend.RefreshModel();
 
 		//InvalidateChart();
+	}
+
+	public void UpdateValueAxis() // Axis valueAxis, string axisKey = null
+	{
+		if (ValueAxis == null) return;
+
+		var (minimum, maximum, hasFraction) = GetYValueRange();
+
+		if (minimum == double.MaxValue)
+		{
+			// didn't find any values
+			minimum = 0;
+			maximum = 1;
+		}
+		else
+		{
+			double difference = maximum - minimum;
+			if (difference > 10 || hasFraction)
+			{
+				ValueAxis.UnitWidth = (difference * 0.2).RoundToSignificantFigures(1);
+			}
+		}
+
+		foreach (var annotation in Annotations)
+		{
+			if (annotation.Y != null)
+			{
+				maximum = Math.Max(annotation.Y.Value * 1.1, maximum);
+			}
+		}
+
+		ValueAxis.MinStep = hasFraction ? 0 : 1;
+
+		double? minValue = ChartView.MinValue;
+		if (minValue != null)
+			minimum = minValue.Value;
+
+		if (ChartView.LogBase is double logBase)
+		{
+			ValueAxis.MinLimit = Math.Log(minimum, logBase) * 0.85;
+			ValueAxis.MaxLimit = Math.Log(maximum, logBase) * 1.15;
+
+			if (maximum - minimum > 10)
+			{
+				ValueAxis.MinStep = 1;
+			}
+		}
+		else
+		{
+			var margin = (maximum - minimum) * MarginPercent;
+			if (minimum == maximum)
+				margin = Math.Abs(minimum);
+
+			if (margin == 0)
+				margin = 1;
+
+			if (minValue != null)
+			{
+				ValueAxis.MinLimit = Math.Max(minimum - margin, minValue.Value - Math.Abs(margin) * 0.05);
+			}
+			else
+			{
+				ValueAxis.MinLimit = minimum - margin;
+			}
+			ValueAxis.MaxLimit = maximum + margin;
+		}
 	}
 
 	private (double minimum, double maximum, bool hasFraction) GetXValueRange()

@@ -60,8 +60,6 @@ public class TabControlDataGrid : Grid, IDisposable, ITabSelector, ITabItemSelec
 	private DispatcherTimer? _dispatcherTimer;  // delays auto selection to throttle updates
 	private object? _autoSelectItem = null;
 
-	public AutoSelectType AutoSelect { get; set; } = AutoSelectType.FirstSavedOrNew;
-
 	private Filter? _filter;
 
 	public IList? Items
@@ -85,7 +83,7 @@ public class TabControlDataGrid : Grid, IDisposable, ITabSelector, ITabItemSelec
 
 				DataGrid.ItemsSource = CollectionView; // DataGrid autoselects on assignment :(
 
-				if (AutoSelect == AutoSelectType.None)
+				if (TabModel.AutoSelectSaved == AutoSelectType.None && !TabModel.AutoSelectDefault)
 					ClearSelection();
 				else
 					LoadSettings();
@@ -101,7 +99,6 @@ public class TabControlDataGrid : Grid, IDisposable, ITabSelector, ITabItemSelec
 	{
 		TabInstance = tabInstance;
 		TabModel = model ?? TabInstance.Model;
-		AutoSelect = TabModel.AutoSelect;
 		List = iList;
 		AutoGenerateColumns = autoGenerateColumns;
 		TabDataSettings = tabDataSettings ?? new TabDataSettings();
@@ -328,9 +325,7 @@ public class TabControlDataGrid : Grid, IDisposable, ITabSelector, ITabItemSelec
 			e.Action == NotifyCollectionChangedAction.Replace)
 		{
 			// Group up any new items after the 1st one
-			if ((AutoSelectNew ||
-				TabModel.AutoSelect == AutoSelectType.AnyNewOrSaved ||
-				TabModel.AutoSelect == AutoSelectType.FirstSavedOrNew)
+			if ((AutoSelectNew || TabModel.AutoSelectNew)
 				&& (SearchControl!.Text == null || SearchControl.Text.Length == 0))
 			{
 				_selectItemEnabled = true;
@@ -751,13 +746,13 @@ public class TabControlDataGrid : Grid, IDisposable, ITabSelector, ITabItemSelec
 		if (TabDataSettings.SelectionType == SelectionType.None)
 			return false;
 
-		if (TabModel.AutoSelect == AutoSelectType.First)
+		if (TabModel.AutoSelectSaved == AutoSelectType.None)
 			return false;
 
-		if (TabModel.AutoSelect == AutoSelectType.None)
-			return true;
+		//if (TabModel.AutoSelect == AutoSelectType.None)
+		//	return true;
 
-		if (List!.Count == 0)
+		if (List == null || List.Count == 0)
 			return false;
 
 		// Select new log items automatically
@@ -768,7 +763,7 @@ public class TabControlDataGrid : Grid, IDisposable, ITabSelector, ITabItemSelec
 		}
 
 		if (TabDataSettings.SelectedRows.Count == 0)
-			return (TabModel.AutoSelect != AutoSelectType.AnyNewOrSaved); // clear too?
+			return TabModel.AutoSelectSaved == AutoSelectType.Any; // clear too?
 
 		List<object> matchingItems = GetMatchingRowObjects();
 		if (matchingItems.Count > 0)
@@ -819,8 +814,9 @@ public class TabControlDataGrid : Grid, IDisposable, ITabSelector, ITabItemSelec
 
 			if (value is TabView tabView)
 			{
-				if (tabView.Model.AutoSelect == AutoSelectType.None)
-					continue;
+				if (tabView.Model.AutoSelectSaved == AutoSelectType.None && !tabView.Model.AutoSelectDefault) continue;
+				//if (tabView.Model.AutoSelect == AutoSelectType.None)
+				//	continue;
 			}
 
 			if (firstValidObject == null)
@@ -845,7 +841,7 @@ public class TabControlDataGrid : Grid, IDisposable, ITabSelector, ITabItemSelec
 
 	private void SelectDefaultItems()
 	{
-		if (AutoSelect == AutoSelectType.None)
+		if (!TabModel.AutoSelectDefault)
 			return;
 
 		object? firstValidObject = GetDefaultSelectedItem() ?? GetAutoSelectValue();
