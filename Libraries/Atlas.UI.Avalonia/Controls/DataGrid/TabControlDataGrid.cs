@@ -680,6 +680,8 @@ public class TabControlDataGrid : Grid, IDisposable, ITabSelector, ITabItemSelec
 
 	public void LoadSettings()
 	{
+		if (List == null) return;
+
 		if (TabInstance.Project.UserSettings.AutoLoad)
 		{
 			// SortSavedColumn(); // Not supported yet

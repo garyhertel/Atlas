@@ -64,6 +64,6 @@ public class TextBlockElement : TextBlock
 			WithWidth(Math.Min(maxDesiredWidth, measured.Width)).
 			WithHeight(Math.Min(maxDesiredHeight, measured.Height));
 
-		return measured;
+		return DesiredSize;
 	}
 }
