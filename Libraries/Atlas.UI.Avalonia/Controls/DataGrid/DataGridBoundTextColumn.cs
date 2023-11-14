@@ -113,7 +113,7 @@ public class DataGridBoundTextColumn : DataGridTextColumn
 		var menuItemCopy = new TabMenuItem("_Copy - Cell Contents");
 		menuItemCopy.Click += delegate
 		{
-			ClipboardUtils.SetText(DataGrid, textBlock.Text);
+			ClipboardUtils.SetText(DataGrid, textBlock.Text ?? "");
 		};
 		list.Add(menuItemCopy);
 

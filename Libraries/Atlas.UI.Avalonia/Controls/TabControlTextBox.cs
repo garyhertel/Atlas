@@ -174,7 +174,7 @@ public class TabControlTextBox : TextBox
 	}
 
 	// Move formatting to a FormattedText method/property?
-	public new string Text
+	public new string? Text
 	{
 		get => base.Text;
 		set

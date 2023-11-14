@@ -50,7 +50,9 @@ public class ItemCollection<T> : ObservableCollection<T>, IItemCollection, IComp
 	{
 		foreach (T item in collection)
 			Items.Add(item);
-		OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, collection.ToList()));
+
+		// DataGrid takes too long to load these using Add
+		OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
 	}
 
 	public int Compare(object? x, object? y)

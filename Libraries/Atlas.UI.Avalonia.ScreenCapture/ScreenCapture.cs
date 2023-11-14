@@ -8,6 +8,7 @@ using Avalonia.Input;
 using Avalonia.Layout;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
+using Avalonia.Platform.Storage;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 
@@ -154,30 +155,23 @@ public class ScreenCapture : Grid
 	private async Task SaveAsync(Call call)
 	{
 		RenderTargetBitmap? bitmap = GetSelectedBitmap();
-		if (bitmap == null)
-			return;
-
-		SaveFileDialog fileDialog = new()
-		{
-			Directory = Paths.PicturesPath,
-			InitialFileName = TabViewer.Project.Name + '.' + FileUtils.TimestampString + ".png",
-			DefaultExtension = "png",
-			Filters = new List<FileDialogFilter>()
-			{
-				new FileDialogFilter()
-				{
-					Name = "Portable Network Graphic file (PNG)",
-					Extensions = new List<string>() { "png" }
-				}
-			},
-		};
+		if (bitmap == null)	return;
 
 		Window? window = GetWindow(this);
 		if (window == null) return;
 
-		string? filePath = await fileDialog.ShowAsync(window);
-		if (filePath != null)
-			bitmap.Save(filePath);
+		var folder = await window.StorageProvider.TryGetFolderFromPathAsync(Paths.PicturesPath);
+
+		var result = await window.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions()
+		{
+			SuggestedStartLocation = folder,
+			SuggestedFileName = $"{TabViewer.Project.Name}.{FileUtils.TimestampString}.png",
+			FileTypeChoices = new[] { FilePickerFileTypes.ImagePng },
+		});
+		if (result != null && result.TryGetLocalPath() is string path)
+		{
+			bitmap.Save(path);
+		}
 	}
 
 	private Window? GetWindow(StyledElement styledElement)

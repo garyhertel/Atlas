@@ -715,7 +715,16 @@ public class TabView : Grid, IDisposable
 	{
 		// These need to be set regardless of if the children show
 		if (TabDatas.Count > 0)
+		{
 			Instance.SelectedItems = TabDatas[0].SelectedItems;
+		}
+		else
+		{
+			if (CustomTabControls.FirstOrDefault() is ITabSelector tabSelector)
+			{
+				Instance.SelectedItems = tabSelector.SelectedItems;
+			}
+		}
 
 		if (ShowChildren == false)
 		{
@@ -757,7 +766,6 @@ public class TabView : Grid, IDisposable
 		}
 		_tabChildControls!.SetControls(newChildControls, orderedChildControls);
 		UpdateSelectedTabInstances();
-
 	}
 
 	private List<Control> CreateAllChildControls(bool recreate, out Dictionary<object, Control> newChildControls)

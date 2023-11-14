@@ -37,7 +37,7 @@ public class TabControlDataGrid : Grid, IDisposable, ITabSelector, ITabItemSelec
 	public IList? List;
 	private Type _elementType;
 
-	public bool AutoSelectNew = true;
+	//public bool AutoSelectNew = true;
 
 	public bool AutoGenerateColumns = true;
 
@@ -53,7 +53,7 @@ public class TabControlDataGrid : Grid, IDisposable, ITabSelector, ITabItemSelec
 	private List<PropertyInfo> _columnProperties = new(); // makes filtering faster, could change other Dictionaries strings to PropertyInfo
 
 	private int _disableSaving = 0; // enables saving if > 0
-	private int _isAutoSelecting = 0; // enables auto selecting if > 0
+	//private int _isAutoSelecting = 0; // enables auto selecting if > 0
 	private bool _ignoreSelectionChanged = false;
 
 	private readonly Stopwatch _notifyItemChangedStopwatch = new();
@@ -325,8 +325,7 @@ public class TabControlDataGrid : Grid, IDisposable, ITabSelector, ITabItemSelec
 			e.Action == NotifyCollectionChangedAction.Replace)
 		{
 			// Group up any new items after the 1st one
-			if ((AutoSelectNew || TabModel.AutoSelectNew)
-				&& (SearchControl!.Text == null || SearchControl.Text.Length == 0))
+			if (TabModel.AutoSelectNew && SearchControl!.Text.IsNullOrEmpty())
 			{
 				_selectItemEnabled = true;
 				object? item = e.NewItems![0];
@@ -373,9 +372,9 @@ public class TabControlDataGrid : Grid, IDisposable, ITabSelector, ITabItemSelec
 			return;
 
 		_disableSaving++;
-		_isAutoSelecting++;
+		//_isAutoSelecting++;
 		SelectedItem = selectedItem;
-		_isAutoSelecting--;
+		//_isAutoSelecting--;
 		_disableSaving--;
 	}
 
@@ -409,8 +408,8 @@ public class TabControlDataGrid : Grid, IDisposable, ITabSelector, ITabItemSelec
 
 		if (_disableSaving == 0)
 		{
-			if (_isAutoSelecting == 0)
-				AutoSelectNew = (DataGrid.SelectedItems.Count == 0);
+			//if (_isAutoSelecting == 0)
+			//	AutoSelectNew = (DataGrid.SelectedItems.Count == 0);
 			TabInstance.SaveTabSettings(); // selection has probably changed
 		}
 		if (bookmark != null)
@@ -691,8 +690,9 @@ public class TabControlDataGrid : Grid, IDisposable, ITabSelector, ITabItemSelec
 				SelectDefaultItems();
 
 			//UpdateSelection(); // datagrid not fully loaded yet
+
+			OnSelectionChanged?.Invoke(this, new TabSelectionChangedEventArgs());
 		}
-		OnSelectionChanged?.Invoke(this, new TabSelectionChangedEventArgs());
 	}
 
 	private void LoadSearch()

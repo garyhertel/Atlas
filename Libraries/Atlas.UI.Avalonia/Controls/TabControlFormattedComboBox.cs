@@ -46,9 +46,9 @@ public class TabControlFormattedComboBox : ComboBox
 	{
 		if (obj == null) return null;
 
-		foreach (FormattedItem item in base.Items)
+		foreach (FormattedItem? item in base.Items)
 		{
-			if (item.Object!.ToString() == obj.ToString())
+			if (item?.Object!.ToString() == obj.ToString())
 				return item;
 		}
 		return null;

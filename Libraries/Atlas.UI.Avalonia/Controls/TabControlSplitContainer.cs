@@ -182,7 +182,7 @@ public class TabControlSplitContainer : Grid
 			else
 				rowDefinition.Height = GridLength.Auto;
 
-			SetRow(gridItem.Control, index);
+			SetRow(gridItem.Control!, index);
 			index++;
 		}
 	}
