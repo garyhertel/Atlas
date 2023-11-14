@@ -55,7 +55,7 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 	/*public Axis? LinearAxis;
 	public DateTimeAxis? DateTimeAxis;*/
 	public Axis XAxis { get; set; }
-	public Axis ValueAxis { get; set; } // left/right?
+	public Axis YAxis { get; set; } // left/right?
 
 	public List<LiveChartSeries> LiveChartSeries { get; private set; } = new();
 
@@ -80,14 +80,14 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 		base(tabInstance, chartView, fillHeight)
 	{
 		XAxis = CreateXAxis();
-		ValueAxis = CreateValueAxis();
+		YAxis = CreateYAxis();
 
 		Chart = new CartesianChart()
 		{
 			HorizontalAlignment = HorizontalAlignment.Stretch,
 			VerticalAlignment = VerticalAlignment.Stretch,
 			XAxes = new List<Axis> { XAxis },
-			YAxes = new List<Axis> { ValueAxis },
+			YAxes = new List<Axis> { YAxis },
 			TooltipBackgroundPaint = new SolidColorPaint(TooltipBackgroundColor),
 			TooltipTextPaint = new SolidColorPaint(AtlasTheme.TitleForeground.Color.AsSkColor()),
 			TooltipFindingStrategy = TooltipFindingStrategy.CompareAllTakeClosest,
@@ -222,7 +222,7 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 		};
 	}
 
-	public Axis CreateValueAxis() // AxisPosition axisPosition = AxisPosition.Left, string? key = null)
+	public Axis CreateYAxis() // AxisPosition axisPosition = AxisPosition.Left, string? key = null)
 	{
 		Axis axis;
 		if (ChartView.LogBase is double logBase)
@@ -327,7 +327,7 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 
 		_sections.Add(CreateAnnotation(chartAnnotation));
 
-		UpdateValueAxis();
+		UpdateYAxis();
 	}
 
 	public RectangularSection CreateAnnotation(ChartAnnotation chartAnnotation)
@@ -369,7 +369,7 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 	{
 		UpdateLinearAxis();
 		UpdateDateTimeAxis();
-		UpdateValueAxis();
+		UpdateYAxis();
 	}
 
 	private void UpdateLinearAxis()
@@ -451,7 +451,7 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 	private void UpdateTimeWindow(TimeWindow? timeWindow)
 	{
 		UpdateDateTimeAxisWindow(timeWindow);
-		//UpdateValueAxis();
+		//UpdateYAxis();
 
 		ChartView.SortByTotal();
 		Legend.RefreshModel();
@@ -459,9 +459,9 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 		//InvalidateChart();
 	}
 
-	public void UpdateValueAxis() // Axis valueAxis, string axisKey = null
+	public void UpdateYAxis() // Axis yAxis, string axisKey = null
 	{
-		if (ValueAxis == null) return;
+		if (YAxis == null) return;
 
 		var (minimum, maximum, hasFraction) = GetYValueRange();
 
@@ -476,7 +476,7 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 			double difference = maximum - minimum;
 			if (difference > 10 || hasFraction)
 			{
-				ValueAxis.UnitWidth = (difference * 0.2).RoundToSignificantFigures(1);
+				YAxis.UnitWidth = (difference * 0.2).RoundToSignificantFigures(1);
 			}
 		}
 
@@ -488,7 +488,7 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 			}
 		}
 
-		ValueAxis.MinStep = hasFraction ? 0 : 1;
+		YAxis.MinStep = hasFraction ? 0 : 1;
 
 		double? minValue = ChartView.MinValue;
 		if (minValue != null)
@@ -496,12 +496,12 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 
 		if (ChartView.LogBase is double logBase)
 		{
-			ValueAxis.MinLimit = Math.Log(minimum, logBase) * 0.85;
-			ValueAxis.MaxLimit = Math.Log(maximum, logBase) * 1.15;
+			YAxis.MinLimit = Math.Log(minimum, logBase) * 0.85;
+			YAxis.MaxLimit = Math.Log(maximum, logBase) * 1.15;
 
 			if (maximum - minimum > 10)
 			{
-				ValueAxis.MinStep = 1;
+				YAxis.MinStep = 1;
 			}
 		}
 		else
@@ -515,13 +515,13 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 
 			if (minValue != null)
 			{
-				ValueAxis.MinLimit = Math.Max(minimum - margin, minValue.Value - Math.Abs(margin) * 0.05);
+				YAxis.MinLimit = Math.Max(minimum - margin, minValue.Value - Math.Abs(margin) * 0.05);
 			}
 			else
 			{
-				ValueAxis.MinLimit = minimum - margin;
+				YAxis.MinLimit = minimum - margin;
 			}
-			ValueAxis.MaxLimit = maximum + margin;
+			YAxis.MaxLimit = maximum + margin;
 		}
 	}
 
@@ -631,7 +631,7 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 		{
 			UpdateTimeWindow(timeWindow);
 		}
-		UpdateValueAxis();
+		UpdateYAxis();
 	}
 
 	private void ZoomOut()
@@ -645,7 +645,7 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 		{
 			UpdateTimeWindow(null);
 		}
-		UpdateValueAxis();
+		UpdateYAxis();
 	}
 
 	private void StopSelecting()
@@ -666,7 +666,7 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 	private void Legend_OnSelectionChanged(object? sender, EventArgs e)
 	{
 		StopSelecting();
-		UpdateValueAxis();
+		UpdateYAxis();
 		OnSelectionChanged(new SeriesSelectedEventArgs(SelectedSeries));
 	}
 
@@ -879,7 +879,7 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 
 	private void Legend_OnVisibleChanged(object? sender, EventArgs e)
 	{
-		UpdateValueAxis();
+		UpdateYAxis();
 	}
 
 	private void INotifyCollectionChanged_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
