@@ -174,6 +174,8 @@ public static class DataGridExtensions
 	{
 		columns = new List<ColumnInfo>();
 		contentRows = new List<List<string>>();
+		if (dataGrid == null || items == null) return;
+
 		var visibleColumns = new Dictionary<int, DataGridColumn>();
 
 		foreach (DataGridColumn dataColumn in dataGrid.Columns)
