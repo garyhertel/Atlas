@@ -37,8 +37,6 @@ public class TabControlDataGrid : Grid, IDisposable, ITabSelector, ITabItemSelec
 	public IList? List;
 	private Type _elementType;
 
-	//public bool AutoSelectNew = true;
-
 	public bool AutoGenerateColumns = true;
 
 	public DataGrid DataGrid;
@@ -53,7 +51,6 @@ public class TabControlDataGrid : Grid, IDisposable, ITabSelector, ITabItemSelec
 	private List<PropertyInfo> _columnProperties = new(); // makes filtering faster, could change other Dictionaries strings to PropertyInfo
 
 	private int _disableSaving = 0; // enables saving if > 0
-	//private int _isAutoSelecting = 0; // enables auto selecting if > 0
 	private bool _ignoreSelectionChanged = false;
 
 	private readonly Stopwatch _notifyItemChangedStopwatch = new();
@@ -372,9 +369,7 @@ public class TabControlDataGrid : Grid, IDisposable, ITabSelector, ITabItemSelec
 			return;
 
 		_disableSaving++;
-		//_isAutoSelecting++;
 		SelectedItem = selectedItem;
-		//_isAutoSelecting--;
 		_disableSaving--;
 	}
 
@@ -408,8 +403,6 @@ public class TabControlDataGrid : Grid, IDisposable, ITabSelector, ITabItemSelec
 
 		if (_disableSaving == 0)
 		{
-			//if (_isAutoSelecting == 0)
-			//	AutoSelectNew = (DataGrid.SelectedItems.Count == 0);
 			TabInstance.SaveTabSettings(); // selection has probably changed
 		}
 		if (bookmark != null)
