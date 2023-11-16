@@ -95,7 +95,7 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 			LegendPosition = LegendPosition.Hidden,
 			AnimationsSpeed = TimeSpan.Zero,
 			MinWidth = 150,
-			MinHeight = 120,
+			MinHeight = 140,
 			[Grid.RowProperty] = 1,
 		};
 		Chart.ChartPointPointerDown += Chart_ChartPointPointerDown;

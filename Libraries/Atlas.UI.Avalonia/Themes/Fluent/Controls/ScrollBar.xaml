@@ -43,9 +43,9 @@
     <Style Selector="ScrollBar[IsExpanded=true] /template/ Thumb">
       <Setter Property="Background" Value="{DynamicResource ThemeScrollBarThumbBrush}"/>
     </Style>
-    <!--Style Selector="ScrollBar[IsExpanded=true] /template/ RepeatButton /template/ ContentPresenter">
-      <Setter Property="Foreground" Value="#FFFF0000"/>
-    </Style-->
+    <Style Selector="ScrollBar[IsExpanded=true] /template/ PathIcon">
+      <Setter Property="Foreground" Value="{DynamicResource ScrollBarButtonArrowForeground}"/>
+    </Style>
   
     <Style Selector="Thumb">
         <Setter Property="Background" Value="{DynamicResource ThemeScrollBarThumbBrush}"/>
