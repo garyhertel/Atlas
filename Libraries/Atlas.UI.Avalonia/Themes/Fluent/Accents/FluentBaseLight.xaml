@@ -237,6 +237,12 @@
         <sys:Double x:Key="SplitterSize">5</sys:Double>
         
         <CornerRadius x:Key="ControlCornerRadius">3</CornerRadius>
+      
+      <!-- AvaloniaEdit.TextEditor -->
+
+      <!-- SelectionForeground can't be set to white yet so use a light selection color -->
+      <SolidColorBrush x:Key="TextAreaSelectionBrush" Color="#b8d6ff" />
+      
 
     </Style.Resources>
 </Style>
