@@ -835,6 +835,14 @@ public class TabControlOxyPlot : TabControlChart<OxyPlotLineSeries>, IDisposable
 		PlotView.Model.InvalidatePlot(true);
 	}
 
+	/*
+	// Hide slow components when not in use? Render() is sealed in Avalonia 11 so this no longer works
+	public override void Render(DrawingContext context)
+	{
+		Dispatcher.UIThread.Post(UpdateVisible, DispatcherPriority.Background);
+		base.Render(context);
+	}
+
 	private void UpdateVisible()
 	{
 		if (PlotView == null) return;
@@ -848,12 +856,6 @@ public class TabControlOxyPlot : TabControlChart<OxyPlotLineSeries>, IDisposable
 			PlotView.InvalidateArrange();
 			Legend.InvalidateArrange();
 		}
-	}
-
-	/*public override void Render(DrawingContext context)
-	{
-		Dispatcher.UIThread.Post(UpdateVisible, DispatcherPriority.Background);
-		base.Render(context);
 	}*/
 
 	private void StopSelecting()
@@ -867,15 +869,12 @@ public class TabControlOxyPlot : TabControlChart<OxyPlotLineSeries>, IDisposable
 
 	private void UpdateMouseSelection(DataPoint endDataPoint)
 	{
-		if (_zoomAnnotation == null)
+		_zoomAnnotation ??= new OxyPlot.Annotations.RectangleAnnotation()
 		{
-			_zoomAnnotation = new OxyPlot.Annotations.RectangleAnnotation()
-			{
-				Fill = OxyColor.FromAColor((byte)AtlasTheme.ChartBackgroundSelectedAlpha, AtlasTheme.ChartBackgroundSelected.ToOxyColor()),
-				Stroke = OxyColor.FromAColor((byte)180, AtlasTheme.ChartBackgroundSelected.ToOxyColor()),
-				StrokeThickness = 1,
-			};
-		}
+			Fill = OxyColor.FromAColor((byte)AtlasTheme.ChartBackgroundSelectedAlpha, AtlasTheme.ChartBackgroundSelected.ToOxyColor()),
+			Stroke = OxyColor.FromAColor((byte)180, AtlasTheme.ChartBackgroundSelected.ToOxyColor()),
+			StrokeThickness = 1,
+		};
 
 		try
 		{

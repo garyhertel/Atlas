@@ -211,7 +211,7 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 		//InvalidateChart();
 	}
 
-	private Axis CreateXAxis()
+	private static Axis CreateXAxis()
 	{
 		return new Axis
 		{
@@ -330,7 +330,7 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 		UpdateYAxis();
 	}
 
-	public RectangularSection CreateAnnotation(ChartAnnotation chartAnnotation)
+	public static RectangularSection CreateAnnotation(ChartAnnotation chartAnnotation)
 	{
 		var c = chartAnnotation.Color!.Value;
 		var color = new SKColor(c.R, c.G, c.B, c.A);
@@ -411,8 +411,8 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 
 		if (ChartView.TimeWindow == null && minimum != double.MaxValue)
 		{
-			DateTime startTime = new DateTime((long)minimum);
-			DateTime endTime = new DateTime((long)maximum);
+			var startTime = new DateTime((long)minimum);
+			var endTime = new DateTime((long)maximum);
 
 			ChartView.TimeWindow = new TimeWindow(startTime, endTime).Trim();
 		}
@@ -618,8 +618,8 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 		XAxis.MinLimit = Math.Max(left, XAxis.MinLimit!.Value);
 		XAxis.MaxLimit = Math.Min(right, XAxis.MaxLimit!.Value);
 
-		DateTime startTime = new DateTime((long)XAxis.MinLimit!.Value);
-		DateTime endTime = new DateTime((long)XAxis.MaxLimit.Value);
+		var startTime = new DateTime((long)XAxis.MinLimit!.Value);
+		var endTime = new DateTime((long)XAxis.MaxLimit.Value);
 		var timeWindow = new TimeWindow(startTime, endTime).Trim();
 
 		UpdateDateTimeAxisWindow(timeWindow);
@@ -856,6 +856,13 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 	}
 
 	/*
+	// Hide slow components when not in use? Render() is sealed in Avalonia 11 so this no longer works
+	public override void Render(DrawingContext context)
+	{
+		Dispatcher.UIThread.Post(UpdateVisible, DispatcherPriority.Background);
+		base.Render(context);
+	}
+
 	private void UpdateVisible()
 	{
 		if (PlotView == null)
@@ -869,12 +876,6 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 			//InvalidateChart();
 			Legend.InvalidateArrange();
 		}
-	}
-
-	public override void Render(DrawingContext context)
-	{
-		Dispatcher.UIThread.Post(UpdateVisible, DispatcherPriority.Background);
-		base.Render(context);
 	}
 
 	private void Legend_OnVisibleChanged(object? sender, EventArgs e)

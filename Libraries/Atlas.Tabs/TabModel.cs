@@ -101,8 +101,7 @@ public class TabModel
 
 	public TabObject AddObject(object obj, bool fill = false)
 	{
-		if (obj == null)
-			obj = "(null)";
+		obj ??= "(null)";
 
 		if (obj is ChartView)
 			MinDesiredWidth = 800;

@@ -18,13 +18,13 @@
         </Setter>
     </Style>
 
-  <Style Selector="ScrollBar /template/ RepeatButton.line">
-    <Setter Property="Transitions">
-      <Transitions>
-        <DoubleTransition Property="Opacity" Duration="0:0:0.01" />
-      </Transitions>
-    </Setter>
-  </Style>
+    <Style Selector="ScrollBar /template/ RepeatButton.line">
+      <Setter Property="Transitions">
+        <Transitions>
+          <DoubleTransition Property="Opacity" Duration="0:0:0.01" />
+        </Transitions>
+      </Setter>
+    </Style>
 
     <Style Selector="ScrollBar">
         <!-- Slightly above zero to allow moving mouse across without triggering -->

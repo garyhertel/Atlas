@@ -48,8 +48,10 @@ public class ChartView
 	public List<ChartAnnotation> Annotations { get; set; } = new();
 
 	public IList? SourceList { get; set; }
+
 	private Dictionary<string, IList> _dimensions = new();
 	private List<PropertyInfo> _dimensionPropertyInfos = new();
+
 	private string? _xPropertyName;
 	private string? _yPropertyName;
 

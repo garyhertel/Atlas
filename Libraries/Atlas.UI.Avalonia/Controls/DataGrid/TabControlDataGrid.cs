@@ -744,9 +744,6 @@ public class TabControlDataGrid : Grid, IDisposable, ITabSelector, ITabItemSelec
 		if (TabModel.AutoSelectSaved == AutoSelectType.None)
 			return false;
 
-		//if (TabModel.AutoSelect == AutoSelectType.None)
-		//	return true;
-
 		if (List == null || List.Count == 0)
 			return false;
 
@@ -814,8 +811,7 @@ public class TabControlDataGrid : Grid, IDisposable, ITabSelector, ITabItemSelec
 				//	continue;
 			}
 
-			if (firstValidObject == null)
-				firstValidObject = obj;
+			firstValidObject ??= obj;
 
 			Type type = value.GetType();
 			if (TabUtils.ObjectHasLinks(value, true) && type.IsEnum == false)
@@ -1200,7 +1196,7 @@ public class TabControlDataGrid : Grid, IDisposable, ITabSelector, ITabItemSelec
 		Dispatcher.UIThread.Post(UpdateVisible, DispatcherPriority.ContextIdle);
 
 		base.Render(context);
-	}*/
+	}
 
 	// Hide control when offscreen
 	private void UpdateVisible()
@@ -1214,7 +1210,7 @@ public class TabControlDataGrid : Grid, IDisposable, ITabSelector, ITabItemSelec
 			DataGrid.IsVisible = visible;
 			DataGrid.InvalidateArrange();
 		}
-	}
+	}*/
 }
 
 /* From Atlas.UI.Wpf
