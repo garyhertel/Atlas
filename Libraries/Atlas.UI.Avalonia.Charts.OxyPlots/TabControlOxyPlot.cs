@@ -211,7 +211,7 @@ public class TabControlOxyPlot : TabControlChart<OxyPlotLineSeries>, IDisposable
 		PlotModel = new PlotModel()
 		{
 			IsLegendVisible = false,
-			LegendPlacement = LegendPlacement.Outside,
+			//LegendPlacement = LegendPlacement.Outside,
 
 			TextColor = OxyColors.Black,
 			SelectionColor = OxyColors.Blue,
