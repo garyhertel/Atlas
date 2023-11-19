@@ -23,7 +23,7 @@ public class TabViewContextMenu : ContextMenu, IDisposable
 	public TabView? TabView;
 	public TabInstance? TabInstance;
 
-	private CheckBox _checkboxAutoLoad;
+	private CheckBox? _checkboxAutoLoad;
 
 	protected override Type StyleKeyOverride => typeof(ContextMenu);
 
@@ -35,7 +35,6 @@ public class TabViewContextMenu : ContextMenu, IDisposable
 		Initialize();
 	}
 
-	[MemberNotNull(nameof(_checkboxAutoLoad))]
 	private void Initialize()
 	{
 		var list = new AvaloniaList<object>();
@@ -78,7 +77,7 @@ public class TabViewContextMenu : ContextMenu, IDisposable
 	private void MenuItemAutoLoad_Click(object? sender, RoutedEventArgs e)
 	{
 		TabInstance!.Project.UserSettings.AutoLoad = !TabInstance.Project.UserSettings.AutoLoad;
-		_checkboxAutoLoad.IsChecked = TabInstance.Project.UserSettings.AutoLoad;
+		_checkboxAutoLoad!.IsChecked = TabInstance.Project.UserSettings.AutoLoad;
 		TabInstance.Project.SaveSettings();
 	}
 

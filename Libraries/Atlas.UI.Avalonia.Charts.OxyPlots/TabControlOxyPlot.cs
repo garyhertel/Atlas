@@ -8,6 +8,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
+using Avalonia.Layout;
 using Avalonia.Media;
 using Avalonia.Threading;
 using OxyPlot;
@@ -76,8 +77,8 @@ public class TabControlOxyPlot : TabControlChart<OxyPlotLineSeries>, IDisposable
 	public static OxyColor GridLineOxyColor = GridLineColor.ToOxyColor();
 	public static OxyColor TextOxyColor = TextColor.ToOxyColor();
 
+	public PlotView PlotView;
 	public PlotModel? PlotModel;
-	public PlotView? PlotView;
 	public TabControlOxyPlotLegend Legend;
 	public OxyPlot.Axes.Axis? ValueAxis; // left/right?
 	public OxyPlot.Axes.CategoryAxis? CategoryAxis;
@@ -117,6 +118,7 @@ public class TabControlOxyPlot : TabControlChart<OxyPlotLineSeries>, IDisposable
 		// Show Hover text on mouse over instead of requiring holding the mouse down (why isn't this the default?)
 		PlotView.ActualController.UnbindMouseDown(OxyMouseButton.Left); // remove default
 		PlotView.ActualController.BindMouseEnter(PlotCommands.HoverSnapTrack); // show when hovering
+		PlotView.EffectiveViewportChanged += Chart_EffectiveViewPortChanged;
 		PointerExited += PlotView_PointerExited; // doesn't work on PlotView
 
 		PlotView.AddHandler(KeyDownEvent, PlotView_KeyDown, RoutingStrategies.Tunnel);
@@ -232,7 +234,7 @@ public class TabControlOxyPlot : TabControlChart<OxyPlotLineSeries>, IDisposable
 			UpdateDateTimeAxisRange();
 		}
 
-		PlotView!.Model = PlotModel;
+		PlotView.Model = PlotModel;
 	}
 
 	public void Refresh()
@@ -242,7 +244,7 @@ public class TabControlOxyPlot : TabControlChart<OxyPlotLineSeries>, IDisposable
 
 		Legend.RefreshModel();
 
-		PlotView!.InvalidatePlot(true);
+		PlotView.InvalidatePlot(true);
 		PlotView.Model.InvalidatePlot(true);
 	}
 
@@ -742,7 +744,7 @@ public class TabControlOxyPlot : TabControlChart<OxyPlotLineSeries>, IDisposable
 
 	private void UnloadModel()
 	{
-		PlotView!.Model = null;
+		PlotView.Model = null;
 		LinearAxis = null;
 		DateTimeAxis = null;
 
@@ -773,6 +775,8 @@ public class TabControlOxyPlot : TabControlChart<OxyPlotLineSeries>, IDisposable
 			Legend.OnSelectionChanged -= Legend_OnSelectionChanged;
 			Legend.OnVisibleChanged -= Legend_OnVisibleChanged;
 		}
+
+		PlotView.EffectiveViewportChanged -= Chart_EffectiveViewPortChanged;
 
 		OnMouseCursorChanged -= TabControlOxyPlot_OnMouseCursorChanged;
 	}
@@ -835,12 +839,10 @@ public class TabControlOxyPlot : TabControlChart<OxyPlotLineSeries>, IDisposable
 		PlotView.Model.InvalidatePlot(true);
 	}
 
-	/*
-	// Hide slow components when not in use? Render() is sealed in Avalonia 11 so this no longer works
-	public override void Render(DrawingContext context)
+	// Hide slow controls when not viewable
+	private void Chart_EffectiveViewPortChanged(object? sender, EffectiveViewportChangedEventArgs e)
 	{
-		Dispatcher.UIThread.Post(UpdateVisible, DispatcherPriority.Background);
-		base.Render(context);
+		UpdateVisible();
 	}
 
 	private void UpdateVisible()
@@ -856,7 +858,7 @@ public class TabControlOxyPlot : TabControlChart<OxyPlotLineSeries>, IDisposable
 			PlotView.InvalidateArrange();
 			Legend.InvalidateArrange();
 		}
-	}*/
+	}
 
 	private void StopSelecting()
 	{

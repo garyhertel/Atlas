@@ -148,6 +148,13 @@ public class TabControlDataGrid : Grid, IDisposable, ITabSelector, ITabItemSelec
 		AddDataGrid();
 
 		LoadSettings();
+
+		this.EffectiveViewportChanged += TabControlDataGrid_EffectiveViewportChanged;
+	}
+
+	private void TabControlDataGrid_EffectiveViewportChanged(object? sender, EffectiveViewportChangedEventArgs e)
+	{
+		Debug.WriteLine("TabControlDataGrid_EffectiveViewportChanged");
 	}
 
 	private void AddSearch()
@@ -203,6 +210,8 @@ public class TabControlDataGrid : Grid, IDisposable, ITabSelector, ITabItemSelec
 
 		DataGrid.CellPointerPressed += DataGrid_CellPointerPressed; // Add one click deselection
 		DataGrid.ColumnReordered += DataGrid_ColumnReordered;
+
+		DataGrid.EffectiveViewportChanged += DataGrid_EffectiveViewportChanged;
 
 		DataGrid.AddHandler(KeyDownEvent, DataGrid_KeyDown, RoutingStrategies.Tunnel);
 
@@ -1136,6 +1145,7 @@ public class TabControlDataGrid : Grid, IDisposable, ITabSelector, ITabItemSelec
 			DataGrid.SelectionChanged -= DataGrid_SelectionChanged;
 			DataGrid.CellPointerPressed -= DataGrid_CellPointerPressed;
 			DataGrid.ColumnReordered -= DataGrid_ColumnReordered;
+			DataGrid.EffectiveViewportChanged -= DataGrid_EffectiveViewportChanged;
 
 			DataGrid.ItemsSource = null;
 
@@ -1190,27 +1200,30 @@ public class TabControlDataGrid : Grid, IDisposable, ITabSelector, ITabItemSelec
 		}
 	}
 
-	// This sometimes runs into rare issues where this doesn't display when it should
-	/*public override void Render(DrawingContext context)
+	private void DataGrid_EffectiveViewportChanged(object? sender, EffectiveViewportChangedEventArgs e)
 	{
-		Dispatcher.UIThread.Post(UpdateVisible, DispatcherPriority.ContextIdle);
+		UpdateVisible();
 
-		base.Render(context);
+		//Dispatcher.UIThread.Post(UpdateVisible, DispatcherPriority.ContextIdle);
 	}
 
 	// Hide control when offscreen
 	private void UpdateVisible()
 	{
-		if (DataGrid == null)
-			return;
+		if (DataGrid == null) return;
 
 		bool visible = AvaloniaUtils.IsControlVisible(this);
 		if (visible != DataGrid.IsVisible)
 		{
+			if (!visible && DataGrid.IsFocused)
+			{
+				// Key events will be lost if DataGrid is invisible and still has focus
+				Focus();
+			}
 			DataGrid.IsVisible = visible;
-			DataGrid.InvalidateArrange();
+			//DataGrid.InvalidateArrange();
 		}
-	}*/
+	}
 }
 
 /* From Atlas.UI.Wpf

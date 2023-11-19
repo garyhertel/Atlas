@@ -98,11 +98,13 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 			MinHeight = 140,
 			[Grid.RowProperty] = 1,
 		};
+
 		Chart.ChartPointPointerDown += Chart_ChartPointPointerDown;
 		Chart.PointerExited += Chart_PointerExited;
 		Chart.PointerPressed += TabControlLiveChart_PointerPressed;
 		Chart.PointerReleased += TabControlLiveChart_PointerReleased;
 		Chart.PointerMoved += TabControlLiveChart_PointerMoved;
+		Chart.EffectiveViewportChanged += Chart_EffectiveViewportChanged;
 
 		/*PlotView = new PlotView()
 		{
@@ -841,6 +843,7 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 		Chart.ChartPointPointerDown -= Chart_ChartPointPointerDown;
 		Chart.PointerExited -= Chart_PointerExited;
 		OnMouseCursorChanged -= TabControlChart_OnMouseCursorChanged;
+		Chart.EffectiveViewportChanged -= Chart_EffectiveViewportChanged;
 
 		if (ChartView.TimeWindow != null)
 		{
@@ -855,30 +858,27 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 		UnloadModel();
 	}
 
-	/*
-	// Hide slow components when not in use? Render() is sealed in Avalonia 11 so this no longer works
-	public override void Render(DrawingContext context)
+	private void Chart_EffectiveViewportChanged(object? sender, EffectiveViewportChangedEventArgs e)
 	{
-		Dispatcher.UIThread.Post(UpdateVisible, DispatcherPriority.Background);
-		base.Render(context);
+		UpdateVisible();
 	}
 
+	// Hide slow controls when not viewable
 	private void UpdateVisible()
 	{
-		if (PlotView == null)
-			return;
+		if (Chart == null) return;
 
 		bool visible = AvaloniaUtils.IsControlVisible(this);
-		if (visible != PlotView.IsVisible)
+		if (visible != Chart.IsVisible)
 		{
-			PlotView.IsVisible = visible;
+			Chart.IsVisible = visible;
 			Legend.IsVisible = visible;
 			//InvalidateChart();
 			Legend.InvalidateArrange();
 		}
 	}
 
-	private void Legend_OnVisibleChanged(object? sender, EventArgs e)
+	/*private void Legend_OnVisibleChanged(object? sender, EventArgs e)
 	{
 		UpdateYAxis();
 	}

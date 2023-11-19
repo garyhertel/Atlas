@@ -6,7 +6,7 @@ namespace Atlas.UI.Avalonia.Charts.OxyPlots;
 public class TabControlOxyPlotLegend : TabControlChartLegend<OxyPlotLineSeries>
 {
 	public TabControlOxyPlot OxyChart;
-	public PlotView? PlotView => OxyChart.PlotView;
+	public PlotView PlotView => OxyChart.PlotView;
 
 	public override string? ToString() => ChartView.ToString();
 
@@ -39,7 +39,7 @@ public class TabControlOxyPlotLegend : TabControlChartLegend<OxyPlotLineSeries>
 
 	public override void UpdateVisibleSeries()
 	{
-		if (PlotView!.Model == null)
+		if (PlotView.Model == null)
 			return;
 
 		base.UpdateVisibleSeries();
