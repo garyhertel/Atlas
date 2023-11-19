@@ -171,11 +171,6 @@ public class TabControlOxyPlot : TabControlChart<OxyPlotLineSeries>, IDisposable
 			ChartView.TimeWindow.OnSelectionChanged += ListGroup_OnTimesChanged;
 		}
 
-		foreach (ChartAnnotation chartAnnotation in ChartView.Annotations)
-		{
-			AddAnnotation(chartAnnotation);
-		}
-
 		Children.Add(containerGrid);
 	}
 
@@ -226,6 +221,12 @@ public class TabControlOxyPlot : TabControlChart<OxyPlotLineSeries>, IDisposable
 		}
 		 
 		AddAxis();
+
+		foreach (ChartAnnotation chartAnnotation in ChartView.Annotations)
+		{
+			AddAnnotation(chartAnnotation);
+		}
+
 		UpdateValueAxis();
 		UpdateLinearAxis();
 		if (ChartView.TimeWindow == null)
@@ -520,7 +521,7 @@ public class TabControlOxyPlot : TabControlChart<OxyPlotLineSeries>, IDisposable
 			LineStyle = LineStyle.Dot,
 		};
 		PlotModel!.Annotations.Add(annotationThreshold);
-		UpdateValueAxis();
+		//UpdateValueAxis();
 	}
 
 	private void UpdateLinearAxis()
