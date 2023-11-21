@@ -73,9 +73,9 @@ public class MouseHoverManipulator : TrackerManipulator
 
 public class TabControlOxyPlot : TabControlChart<OxyPlotLineSeries>, IDisposable
 {
-	public static OxyColor TimeTrackerOxyColor = TimeTrackerColor.ToOxyColor();
-	public static OxyColor GridLineOxyColor = GridLineColor.ToOxyColor();
-	public static OxyColor TextOxyColor = TextColor.ToOxyColor();
+	public static OxyColor TimeTrackerOxyColor { get; set; } = TimeTrackerColor.ToOxyColor();
+	public static OxyColor GridLineOxyColor { get; set; } = GridLineColor.ToOxyColor();
+	public static OxyColor TextOxyColor { get; set; } = TextColor.ToOxyColor();
 
 	public PlotView PlotView;
 	public PlotModel? PlotModel;

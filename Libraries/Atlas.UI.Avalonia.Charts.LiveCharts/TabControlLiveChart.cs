@@ -43,10 +43,10 @@ public class LiveChartCreator : IControlCreator
 
 public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 {
-	public static SKColor TimeTrackerSkColor = TimeTrackerColor.ToSKColor();
-	public static SKColor GridLineSkColor = GridLineColor.ToSKColor();
-	public static SKColor TextSkColor = TextColor.ToSKColor();
-	public static SKColor TooltipBackgroundColor = SKColor.Parse("#102670").WithAlpha(225);
+	public static SKColor TimeTrackerSkColor { get; set; } = TimeTrackerColor.ToSKColor();
+	public static SKColor GridLineSkColor { get; set; } = GridLineColor.ToSKColor();
+	public static SKColor TextSkColor { get; set; } = TextColor.ToSKColor();
+	public static SKColor TooltipBackgroundColor { get; set; } = SKColor.Parse("#102670").WithAlpha(225);
 
 	public CartesianChart Chart;
 
@@ -229,13 +229,17 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 		Axis axis;
 		if (ChartView.LogBase is double logBase)
 		{
-			axis = new LogaritmicAxis(logBase);
-			axis.Labeler = (v) => Math.Pow(logBase, v).FormattedShortDecimal();
+			axis = new LogaritmicAxis(logBase)
+			{
+				Labeler = (v) => Math.Pow(logBase, v).FormattedShortDecimal(),
+			};
 		}
 		else
 		{
-			axis = new Axis();
-			axis.Labeler = NumberExtensions.FormattedShortDecimal;
+			axis = new Axis()
+			{
+				Labeler = NumberExtensions.FormattedShortDecimal,
+			};
 		}
 
 		axis.Padding = new Padding(10, 2);
