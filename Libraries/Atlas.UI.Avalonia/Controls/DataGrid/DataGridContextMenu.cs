@@ -3,13 +3,12 @@ using Atlas.UI.Avalonia.View;
 using Avalonia.Collections;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
-using Avalonia.Styling;
 
 namespace Atlas.UI.Avalonia;
 
-public class DataGridContextMenu : ContextMenu, IStyleable, IDisposable
+public class DataGridContextMenu : ContextMenu, IDisposable
 {
-	Type IStyleable.StyleKey => typeof(ContextMenu);
+	protected override Type StyleKeyOverride => typeof(ContextMenu);
 
 	private const int MaxCellValueLength = 10000;
 
@@ -56,6 +55,10 @@ public class DataGridContextMenu : ContextMenu, IStyleable, IDisposable
 		menuItemCopySelectedCsv.Click += MenuItemCopySelectedCsv_Click;
 		list.Add(menuItemCopySelectedCsv);
 
+		var menuItemCopySelectedColumn = new TabMenuItem("Copy - Selected - Column");
+		menuItemCopySelectedColumn.Click += MenuItemCopySelectedColumn_Click;
+		list.Add(menuItemCopySelectedColumn);
+
 		list.Add(new Separator());
 
 		var menuItemCopyDataGrid = new TabMenuItem("Copy - _DataGrid");
@@ -66,7 +69,7 @@ public class DataGridContextMenu : ContextMenu, IStyleable, IDisposable
 		menuItemCopyDataGridCsv.Click += MenuItemCopyDataGridCsv_Click;
 		list.Add(menuItemCopyDataGridCsv);
 
-		Items = list;
+		ItemsSource = list;
 
 		DataGrid.CellPointerPressed += DataGrid_CellPointerPressed;
 	}
@@ -81,7 +84,7 @@ public class DataGridContextMenu : ContextMenu, IStyleable, IDisposable
 	{
 		string? text = DataGrid.ToStringTable();
 		if (text != null)
-			await ClipBoardUtils.SetTextAsync(text);
+			await ClipboardUtils.SetTextAsync(DataGrid, text);
 	}
 
 	private async void MenuItemCopyCellContents_Click(object? sender, RoutedEventArgs e)
@@ -99,7 +102,7 @@ public class DataGridContextMenu : ContextMenu, IStyleable, IDisposable
 		if (Column == null)
 			return;
 
-		object content = Cell!.Content;
+		object? content = Cell?.Content;
 		if (content is Border border)
 			content = border.Child;
 
@@ -117,17 +120,17 @@ public class DataGridContextMenu : ContextMenu, IStyleable, IDisposable
 				value = propertyValue.ToString() ?? "";
 			}
 
-			await ClipBoardUtils.SetTextAsync(value);
+			await ClipboardUtils.SetTextAsync(DataGrid, value);
 		}
 	}
 
 	private async void MenuItemCopyColumn_Click(object? sender, RoutedEventArgs e)
 	{
-		if (Column is DataGridPropertyTextColumn column)
+		if (Column is DataGridBoundColumn column)
 		{
 			string? text = DataGrid.ColumnToStringTable(column);
 			if (text != null)
-				await ClipBoardUtils.SetTextAsync(text);
+				await ClipboardUtils.SetTextAsync(DataGrid, text);
 		}
 	}
 
@@ -135,28 +138,37 @@ public class DataGridContextMenu : ContextMenu, IStyleable, IDisposable
 	{
 		string? text = DataGrid.RowToString(Cell!.DataContext);
 		if (text != null)
-			await ClipBoardUtils.SetTextAsync(text);
+			await ClipboardUtils.SetTextAsync(DataGrid, text);
 	}
 
 	private async void MenuItemCopySelected_Click(object? sender, RoutedEventArgs e)
 	{
 		string? text = DataGrid.SelectedToString();
 		if (text != null)
-			await ClipBoardUtils.SetTextAsync(text);
+			await ClipboardUtils.SetTextAsync(DataGrid, text);
 	}
 
 	private async void MenuItemCopySelectedCsv_Click(object? sender, RoutedEventArgs e)
 	{
 		string? text = DataGrid.SelectedToCsv();
 		if (text != null)
-			await ClipBoardUtils.SetTextAsync(text);
+			await ClipboardUtils.SetTextAsync(DataGrid, text);
+	}
+
+	private async void MenuItemCopySelectedColumn_Click(object? sender, RoutedEventArgs e)
+	{
+		if (Column is DataGridBoundColumn column)
+		{
+			string text = DataGrid.SelectedColumnToString(column);
+			await ClipboardUtils.SetTextAsync(DataGrid, text);
+		}
 	}
 
 	private async void MenuItemCopyDataGridCsv_Click(object? sender, RoutedEventArgs e)
 	{
 		string? text = DataGrid.ToCsv();
 		if (text != null)
-			await ClipBoardUtils.SetTextAsync(text);
+			await ClipboardUtils.SetTextAsync(DataGrid, text);
 	}
 
 	public void Dispose()
@@ -164,6 +176,6 @@ public class DataGridContextMenu : ContextMenu, IStyleable, IDisposable
 		DataGrid.CellPointerPressed -= DataGrid_CellPointerPressed;
 		Column = null;
 		Cell = null;
-		Items = null;
+		ItemsSource = null;
 	}
 }

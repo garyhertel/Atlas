@@ -7,7 +7,6 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Layout;
 using Avalonia.Media;
-using Avalonia.Styling;
 using System.Reflection;
 using System.Windows.Input;
 
@@ -195,7 +194,7 @@ public class TabControlToolbar : Grid, IDisposable
 
 	public void Dispose()
 	{
-		foreach (IControl control in Children)
+		foreach (Control control in Children)
 		{
 			if (control is IDisposable disposable)
 				disposable.Dispose();
@@ -203,9 +202,9 @@ public class TabControlToolbar : Grid, IDisposable
 	}
 }
 
-public class ToolbarTextBlock : TextBlock, IStyleable
+public class ToolbarTextBlock : TextBlock
 {
-	Type IStyleable.StyleKey => typeof(TextBlock);
+	protected override Type StyleKeyOverride => typeof(TextBlock);
 
 	public ToolbarTextBlock(string text = "")
 	{
@@ -217,9 +216,9 @@ public class ToolbarTextBlock : TextBlock, IStyleable
 	}
 }
 
-public class ToolbarRadioButton : RadioButton, IStyleable
+public class ToolbarRadioButton : RadioButton
 {
-	Type IStyleable.StyleKey => typeof(RadioButton);
+	protected override Type StyleKeyOverride => typeof(RadioButton);
 
 	public ToolbarRadioButton(string text = "")
 	{

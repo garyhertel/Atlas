@@ -7,6 +7,7 @@ using Atlas.UI.Avalonia.Themes;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
+using Avalonia.Reactive;
 using Avalonia.Threading;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
@@ -15,10 +16,13 @@ namespace Atlas.UI.Avalonia;
 
 public class BaseWindow : Window
 {
-	private const int MinWindowSize = 700;
+	private const int MinWindowWidth = 700;
+	private const int MinWindowHeight = 500;
 
 	private const int DefaultWindowWidth = 1280;
 	private const int DefaultWindowHeight = 800;
+
+	public static BaseWindow? Instance;
 
 	public Project Project;
 
@@ -41,9 +45,11 @@ public class BaseWindow : Window
 	[MemberNotNull(nameof(Project), nameof(TabViewer))]
 	private void Initialize(Project project)
 	{
+		Instance = this;
+
 		AtlasInit.Initialize();
 
-		TabFile.RegisterType<TabFileImage>(".png", ".jpg", ".jpeg", ".gif", ".bmp");
+		TabFile.RegisterType<TabFileImage>(TabFileImage.DefaultExtensions);
 
 		LoadProject(project);
 
@@ -71,8 +77,8 @@ public class BaseWindow : Window
 
 		Background = AtlasTheme.TabBackground;
 
-		MinWidth = MinWindowSize;
-		MinHeight = MinWindowSize;
+		MinWidth = MinWindowWidth;
+		MinHeight = MinWindowHeight;
 
 		Icon = new WindowIcon(Icons.Logo.Stream);
 
@@ -80,7 +86,7 @@ public class BaseWindow : Window
 
 		PositionChanged += BaseWindow_PositionChanged;
 
-		this.GetObservable(ClientSizeProperty).Subscribe(Resize);
+		this.GetObservable(ClientSizeProperty).Subscribe(new AnonymousObserver<Size>(Resize));
 	}
 
 	public virtual void AddTab(ITab tab)
@@ -151,8 +157,8 @@ public class BaseWindow : Window
 		set
 		{
 			// These are causing the window to be shifted down
-			Width = Math.Max(MinWindowSize, value.Width);
-			Height = Math.Max(MinWindowSize, value.Height);
+			Width = Math.Min(MaxWidth, Math.Max(MinWindowWidth, value.Width));
+			Height = Math.Min(MaxHeight, Math.Max(MinWindowHeight, value.Height));
 
 			double minLeft = -10; // Left position for windows starts at -10
 			double left = Math.Min(Math.Max(minLeft, value.Left), MaxWidth - Width + minLeft); // values can be negative
@@ -203,11 +209,12 @@ public class BaseWindow : Window
 		//SaveWindowSettings();
 	}
 
-	protected override void HandleWindowStateChanged(WindowState state)
+	// Broken with Avalonia 11 update, unclear if this is still needed or not
+	/*protected override void HandleWindowStateChanged(WindowState state)
 	{
 		base.HandleWindowStateChanged(state);
 		SaveWindowSettings();
-	}
+	}*/
 
 	// this fires too often, could attach a dispatch timer, or add an override method
 	private void BaseWindow_PositionChanged(object? sender, PixelPointEventArgs e)
