@@ -10,7 +10,7 @@ using Avalonia.Styling;
 
 namespace Atlas.UI.Avalonia.Controls;
 
-public class ImageButton : Button, IStyleable, ILayoutable
+public class ImageButton : Button, IStyleable
 {
 	Type IStyleable.StyleKey => typeof(Button);
 
