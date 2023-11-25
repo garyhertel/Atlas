@@ -58,6 +58,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Atlas.UI.Avalonia.Charts.Ox
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Atlas.UI.Avalonia.Charts.LiveCharts", "Libraries\Atlas.UI.Avalonia.Charts.LiveCharts\Atlas.UI.Avalonia.Charts.LiveCharts.csproj", "{EEB5042F-0D91-41C0-B52D-E2674CA01709}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Atlas.Browser", "Programs\Atlas.Browser\Atlas.Browser.csproj", "{450A9804-D107-4082-9594-E9D8A7BF4C58}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Atlas.UI.Avalonia.Examples", "Libraries\Atlas.UI.Avalonia.Examples\Atlas.UI.Avalonia.Examples.csproj", "{F7DA272F-17B8-42D7-9AD9-45BBF7C57B3F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -179,6 +183,18 @@ Global
 		{EEB5042F-0D91-41C0-B52D-E2674CA01709}.DebugX86|Any CPU.Build.0 = Debug|Any CPU
 		{EEB5042F-0D91-41C0-B52D-E2674CA01709}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EEB5042F-0D91-41C0-B52D-E2674CA01709}.Release|Any CPU.Build.0 = Release|Any CPU
+		{450A9804-D107-4082-9594-E9D8A7BF4C58}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{450A9804-D107-4082-9594-E9D8A7BF4C58}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{450A9804-D107-4082-9594-E9D8A7BF4C58}.DebugX86|Any CPU.ActiveCfg = Debug|Any CPU
+		{450A9804-D107-4082-9594-E9D8A7BF4C58}.DebugX86|Any CPU.Build.0 = Debug|Any CPU
+		{450A9804-D107-4082-9594-E9D8A7BF4C58}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{450A9804-D107-4082-9594-E9D8A7BF4C58}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F7DA272F-17B8-42D7-9AD9-45BBF7C57B3F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F7DA272F-17B8-42D7-9AD9-45BBF7C57B3F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F7DA272F-17B8-42D7-9AD9-45BBF7C57B3F}.DebugX86|Any CPU.ActiveCfg = Debug|Any CPU
+		{F7DA272F-17B8-42D7-9AD9-45BBF7C57B3F}.DebugX86|Any CPU.Build.0 = Debug|Any CPU
+		{F7DA272F-17B8-42D7-9AD9-45BBF7C57B3F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F7DA272F-17B8-42D7-9AD9-45BBF7C57B3F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -205,6 +221,8 @@ Global
 		{A5F9B6E9-EA6A-4757-A66A-776DA30EC70F} = {E7D9713F-A249-443C-B300-52A335BD8891}
 		{F2844459-E73C-43B0-962F-C08FC0B32BB8} = {E7D9713F-A249-443C-B300-52A335BD8891}
 		{EEB5042F-0D91-41C0-B52D-E2674CA01709} = {E7D9713F-A249-443C-B300-52A335BD8891}
+		{450A9804-D107-4082-9594-E9D8A7BF4C58} = {E4AFA68B-CE75-4BFE-9329-85FECDB49D3D}
+		{F7DA272F-17B8-42D7-9AD9-45BBF7C57B3F} = {E7D9713F-A249-443C-B300-52A335BD8891}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {5B8EE36E-D3EA-401F-A48B-6B0D45E04DCC}

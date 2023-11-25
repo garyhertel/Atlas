@@ -3,7 +3,7 @@ using Atlas.Tabs;
 using Atlas.UI.Avalonia.Controls;
 using Avalonia.Controls;
 
-namespace Atlas.Start.Avalonia.Tabs;
+namespace Atlas.UI.Avalonia.Examples;
 
 public class TabControlSearchToolbar : TabControlToolbar
 {

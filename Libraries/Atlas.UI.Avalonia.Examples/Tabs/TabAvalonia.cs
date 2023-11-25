@@ -1,10 +1,9 @@
 using Atlas.Core;
-using Atlas.Start.Avalonia.Charts;
 using Atlas.Tabs;
 using Atlas.Tabs.Test;
 using Atlas.UI.Avalonia.Controls;
 
-namespace Atlas.Start.Avalonia.Tabs;
+namespace Atlas.UI.Avalonia.Examples;
 
 public class TabAvalonia : ITab
 {
@@ -18,7 +17,7 @@ public class TabAvalonia : ITab
 			{
 				new("Test", new TabTest()),
 				new("Custom Control", new TabCustomControl()),
-				new("Charts", new TabCustomCharts()),
+				//new("Charts", new TabCustomCharts()),
 				new("Links", new TabBookmarks(Project)),
 				//new("Demo", new TabDemo()),
 			};

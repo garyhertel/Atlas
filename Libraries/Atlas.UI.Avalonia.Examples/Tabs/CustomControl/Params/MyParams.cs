@@ -1,6 +1,6 @@
 using Atlas.Core;
 
-namespace Atlas.Start.Avalonia.Tabs;
+namespace Atlas.UI.Avalonia.Examples;
 
 [Params]
 public class MyParams //: INotifyPropertyChanged

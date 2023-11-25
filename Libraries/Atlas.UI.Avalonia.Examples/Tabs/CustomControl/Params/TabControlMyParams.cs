@@ -3,7 +3,7 @@ using Atlas.UI.Avalonia.Controls;
 using Avalonia.Controls;
 using Avalonia.Layout;
 
-namespace Atlas.Start.Avalonia.Tabs;
+namespace Atlas.UI.Avalonia.Examples;
 
 public class TabControlMyParams : Grid
 {

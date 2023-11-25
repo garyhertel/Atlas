@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net7.0</TargetFramework>
     <EnableDefaultCompileItems>False</EnableDefaultCompileItems>
     <Configurations>Debug;Release;DebugX86</Configurations>
     <Version>$(AtlasVersion)</Version>
@@ -33,14 +33,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Remove="App.xaml" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <AvaloniaResource Include="App.xaml" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Avalonia" Version="$(AvaloniaVersion)" />
     <PackageReference Include="Avalonia.Controls.DataGrid" Version="$(AvaloniaVersion)" />
     <PackageReference Include="Avalonia.Desktop" Version="$(AvaloniaVersion)" />
@@ -54,6 +46,7 @@
     <ProjectReference Include="..\..\Libraries\Atlas.UI.Avalonia.Charts.LiveCharts\Atlas.UI.Avalonia.Charts.LiveCharts.csproj" />
     <ProjectReference Include="..\..\Libraries\Atlas.UI.Avalonia.Charts.OxyPlots\Atlas.UI.Avalonia.Charts.OxyPlots.csproj" />
     <ProjectReference Include="..\..\Libraries\Atlas.UI.Avalonia.Charts\Atlas.UI.Avalonia.Charts.csproj" />
+    <ProjectReference Include="..\..\Libraries\Atlas.UI.Avalonia.Examples\Atlas.UI.Avalonia.Examples.csproj" />
     <ProjectReference Include="..\..\Libraries\Atlas.UI.Avalonia.ScreenCapture\Atlas.UI.Avalonia.ScreenCapture.csproj" />
     <ProjectReference Include="..\..\Libraries\Atlas.UI.Avalonia\Atlas.UI.Avalonia.csproj" />
     <ProjectReference Include="..\..\Libraries\Atlas.Resources\Atlas.Resources.csproj" />

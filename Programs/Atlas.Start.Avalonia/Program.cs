@@ -1,4 +1,5 @@
 using Atlas.Core;
+using Atlas.UI.Avalonia.Examples;
 using Avalonia;
 using Avalonia.Data.Core.Plugins;
 using OxyPlot.Avalonia;

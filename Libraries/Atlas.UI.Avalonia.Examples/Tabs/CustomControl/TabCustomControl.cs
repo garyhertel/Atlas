@@ -2,7 +2,7 @@ using Atlas.Core;
 using Atlas.Tabs;
 using Avalonia.Interactivity;
 
-namespace Atlas.Start.Avalonia.Tabs;
+namespace Atlas.UI.Avalonia.Examples;
 
 public class TabCustomControl : ITab
 {
