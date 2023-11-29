@@ -14,12 +14,6 @@ public class MainView : BaseView
 	{
 		AddTab(new TabAvalonia());
 
-		/*Content = new TextBlock()
-		{
-			Text = "Hello World!",
-			Foreground = Brushes.Blue,
-		};*/
-
 		//LiveChartCreator.Register();
 		//OxyPlotCreator.Register();
 		//ScreenCapture.AddControlTo(TabViewer);
