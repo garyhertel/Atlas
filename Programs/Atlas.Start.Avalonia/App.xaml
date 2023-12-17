@@ -9,5 +9,6 @@
     <StyleInclude Source="avares://Atlas.UI.Avalonia/Themes/Fluent/Accents/FluentBaseLight.xaml"/>
     <StyleInclude Source="avares://OxyPlot.Avalonia/Themes/Default.axaml"/>
     <StyleInclude Source="avares://Atlas.UI.Avalonia/Themes/Fluent/FluentTheme.xaml"/>
+    <StyleInclude Source="avares://Avalonia.Controls.TreeDataGrid/Themes/Fluent.axaml"/>
   </Application.Styles>
 </Application>

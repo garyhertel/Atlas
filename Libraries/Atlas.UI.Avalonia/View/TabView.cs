@@ -10,6 +10,7 @@ using Avalonia.Layout;
 using Avalonia.Media;
 using Avalonia.Threading;
 using System.Collections;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
 
@@ -488,9 +489,17 @@ public class TabView : Grid, IDisposable
 		int index = 0;
 		foreach (IList iList in Model.ItemList)
 		{
-			var tabData = new TabControlDataGrid(Instance, iList, true, TabViewSettings.GetData(index));
+			//var tabData = new TabControlDataGrid(Instance, iList, true, TabViewSettings.GetData(index));
+
+
+			Type listType = iList.GetType();
+			Type elementType = listType.GetElementTypeForAll()!;
+			Type genericType = typeof(TabControlTreeDataGrid<>).MakeGenericType(elementType);
+			ITabDataControl tabData = (ITabDataControl)Activator.CreateInstance(genericType, Instance, iList, true, TabViewSettings.GetData(index), null)!;
+
+			//var tabData = new TabControlTreeDataGrid(Instance, iList, true, TabViewSettings.GetData(index));
 			tabData.OnSelectionChanged += ParentListSelectionChanged;
-			_tabParentControls!.AddControl(tabData, true, SeparatorType.Splitter);
+			_tabParentControls!.AddControl((Control)tabData, true, SeparatorType.Splitter);
 			TabDatas.Add(tabData);
 			index++;
 		}
