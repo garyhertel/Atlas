@@ -22,14 +22,14 @@ public class ToolbarButton : Button, IDisposable
 	public string? Label { get; set; }
 	public string? Tooltip { get; set; }
 
-	public ResourceView ImageResource { get; set; }
+	public IResourceView ImageResource { get; set; }
 
 	public TaskDelegate.CallAction? CallAction;
 	public TaskDelegateAsync.CallActionAsync? CallActionAsync;
 
 	public bool ShowTask;
 	public bool DisableWhileRunning = true;
-	public bool IsActive; // Only allow one task at once (modifying IsEnabled doesn't updating elsewhere)
+	public bool IsActive; // Only allow one task at once (modifying IsEnabled doesn't update elsewhere)
 
 	public KeyGesture? KeyGesture;
 
@@ -80,7 +80,7 @@ public class ToolbarButton : Button, IDisposable
 		}
 	}
 
-	public ToolbarButton(TabControlToolbar toolbar, string? label, string tooltip, ResourceView imageResource, ICommand? command = null)
+	public ToolbarButton(TabControlToolbar toolbar, string? label, string tooltip, IResourceView imageResource, ICommand? command = null)
 	{
 		Toolbar = toolbar;
 		Label = label;

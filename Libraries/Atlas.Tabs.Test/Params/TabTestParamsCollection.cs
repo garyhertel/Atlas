@@ -26,11 +26,6 @@ public class TabTestParamsCollection : ITab
 		{
 			LoadSavedItems(call, model);
 
-			/*model.Actions = new List<TaskCreator>()
-			{
-				new TaskDelegate("Add", Add),
-			};*/
-
 			_paramTestItem = LoadData<ParamTestItem>(DataKey);
 			model.AddObject(_paramTestItem!);
 
@@ -56,6 +51,8 @@ public class TabTestParamsCollection : ITab
 
 		private void Save(Call call)
 		{
+			Validate();
+
 			ParamTestItem clone = _paramTestItem.DeepClone(call)!;
 			_dataRepoParams!.Save(call, clone.ToString(), clone);
 			//SaveData(dataKey, paramTestItem);

@@ -58,7 +58,7 @@ public class SerializeClassConstructor : TestSerializeBase
 		_serializer!.Save(Call, input);
 		var output = _serializer.Load<NoConstructorBaseClass>(Call);
 
-		Assert.AreEqual(output.B, input.B);
+		Assert.AreEqual(input.B, output.B);
 	}
 
 	[Test, Description("Serialize No Default Constructor Base Class Reference")]
@@ -72,7 +72,7 @@ public class SerializeClassConstructor : TestSerializeBase
 		_serializer!.Save(Call, input);
 		var output = _serializer.Load<DerivedClassWithConstructorReference>(Call);
 
-		Assert.AreEqual(output.BaseClass!.B, input.BaseClass.B);
+		Assert.AreEqual(input.BaseClass.B, output.BaseClass!.B);
 	}
 
 	public record CustomConstructorFieldClass
@@ -103,7 +103,7 @@ public class SerializeClassConstructor : TestSerializeBase
 		_serializer!.Save(Call, input);
 		var output = _serializer.Load<CustomConstructorFieldClass>(Call);
 
-		Assert.AreEqual(output.A, input.A);
+		Assert.AreEqual(input.A, output.A);
 	}
 
 	[Test, Description("Serialize Custom Constructor Property Class")]
@@ -114,7 +114,7 @@ public class SerializeClassConstructor : TestSerializeBase
 		_serializer!.Save(Call, input);
 		var output = _serializer.Load<CustomConstructorPropertyClass>(Call);
 
-		Assert.AreEqual(output.A, input.A);
+		Assert.AreEqual(input.A, output.A);
 	}
 
 	[Test, Description("Serialize Custom Constructor List Field Class")]
@@ -126,6 +126,48 @@ public class SerializeClassConstructor : TestSerializeBase
 		_serializer!.Save(Call, input);
 		var output = _serializer.Load<List<CustomConstructorFieldClass>>(Call);
 
-		Assert.AreEqual(output, input);
+		Assert.AreEqual(input, output);
+	}
+
+	public record CustomConstructorReadOnlyPropertyClass
+	{
+		public int A { get; } = 1;
+
+		public CustomConstructorReadOnlyPropertyClass(int a)
+		{
+			A = a;
+		}
+	}
+
+	[Test, Description("Serialize Custom Constructor Read Only Property Class")]
+	public void SerializeCustomConstructorReadOnlyPropertyClass()
+	{
+		var input = new CustomConstructorReadOnlyPropertyClass(5);
+
+		_serializer!.Save(Call, input);
+		var output = _serializer.Load<CustomConstructorReadOnlyPropertyClass>(Call);
+
+		Assert.AreEqual(input.A, output.A);
+	}
+
+	public record CustomConstructorReadOnlyStringPropertyClass
+	{
+		public string A { get; } = "abc";
+
+		public CustomConstructorReadOnlyStringPropertyClass(string a)
+		{
+			A = a;
+		}
+	}
+
+	[Test, Description("Serialize Custom Constructor Read Only Property Class")]
+	public void SerializeCustomConstructorReadOnlyStringPropertyClass()
+	{
+		var input = new CustomConstructorReadOnlyStringPropertyClass("123");
+
+		_serializer!.Save(Call, input);
+		var output = _serializer.Load<CustomConstructorReadOnlyStringPropertyClass>(Call);
+
+		Assert.AreEqual(input.A, output.A);
 	}
 }

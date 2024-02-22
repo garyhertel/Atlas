@@ -1,16 +1,15 @@
 using Atlas.Core;
 using Atlas.Extensions;
 using Atlas.Tabs;
+using Atlas.UI.Avalonia.Themes;
+using Atlas.UI.Avalonia.View;
 using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Media;
 using Avalonia.Layout;
+using Avalonia.Media;
 using System.Collections;
-using System.Reflection;
-using Atlas.UI.Avalonia.Themes;
-using Avalonia.Data;
 using System.ComponentModel.DataAnnotations;
-using Atlas.UI.Avalonia.View;
+using System.Reflection;
 
 namespace Atlas.UI.Avalonia.Controls;
 
@@ -22,6 +21,8 @@ public class TabControlParams : Grid, IValidationControl
 	public object? Object;
 
 	private Dictionary<ListProperty, Control> _propertyControls = new();
+
+	public override string? ToString() => Object?.ToString();
 
 	public TabControlParams(object? obj, bool autoGenerateRows = true, string columnDefinitions = "Auto,*")
 	{

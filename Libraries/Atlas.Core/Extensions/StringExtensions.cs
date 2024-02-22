@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -176,9 +177,7 @@ public static class StringExtensions
 	// If length becomes an issue, can switch from base16 (hex) to base32 to save 12 characters
 	public static string HashSha256(this string rawData)
 	{
-		using SHA256 sha256Hash = SHA256.Create();
-
-		byte[] bytes = sha256Hash.ComputeHash(Encoding.UTF8.GetBytes(rawData)); // 32 bytes
+		byte[] bytes = SHA256.HashData(Encoding.UTF8.GetBytes(rawData)); // 32 bytes
 
 		var builder = new StringBuilder();
 		foreach (byte b in bytes)
@@ -188,7 +187,7 @@ public static class StringExtensions
 		return builder.ToString();
 	}
 
-	public static bool IsNullOrEmpty(this string? text)
+	public static bool IsNullOrEmpty([NotNullWhen(false)] this string? text)
 	{
 		return string.IsNullOrEmpty(text);
 	}

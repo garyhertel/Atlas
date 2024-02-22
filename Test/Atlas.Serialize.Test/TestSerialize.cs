@@ -38,7 +38,18 @@ public class SerializeTypes : TestSerializeBase
 		_serializer.Save(Call, input);
 		int? output = _serializer.Load<int?>(Call);
 
-		Assert.AreEqual(output, input);
+		Assert.AreEqual(input, output);
+	}
+
+	[Test, Description("Serialize byte")]
+	public void SerializeByte()
+	{
+		byte input = 1;
+
+		_serializer.Save(Call, input);
+		byte output = _serializer.Load<byte>(Call);
+
+		Assert.AreEqual(input, output);
 	}
 
 	[Test, Description("Serialize Enum")]
@@ -52,7 +63,7 @@ public class SerializeTypes : TestSerializeBase
 		_serializer.Save(Call, input);
 		EnumTest output = _serializer.Load<EnumTest>(Call);
 
-		Assert.AreEqual(output.TestEnum, input.TestEnum);
+		Assert.AreEqual(input.TestEnum, output.TestEnum);
 	}
 
 	[Test, Description("Serialize Nullable Enum")]
@@ -63,7 +74,7 @@ public class SerializeTypes : TestSerializeBase
 		_serializer.Save(Call, input);
 		MyEnum? output = _serializer.Load<MyEnum?>(Call);
 
-		Assert.AreEqual(output, input);
+		Assert.AreEqual(input, output);
 	}
 
 	[Test, Description("Serialize Type")]

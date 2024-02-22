@@ -347,18 +347,12 @@ public abstract class TypeRepo : IDisposable
 		return typeRef;
 	}
 
-
-	public void SkipObjectRef()
+	public object? SkipObjectRef()
 	{
 		ObjectType objectType = (ObjectType)Reader!.ReadByte();
-		if (objectType == ObjectType.Null)
-			return;
+		if (objectType == ObjectType.Null) return null;
 
-		if (TypeSchema.IsPrimitive)
-		{
-			LoadObject();
-			return;
-		}
+		if (TypeSchema.IsPrimitive) return LoadObject();
 
 		if (TypeSchema.HasSubType)
 		{
@@ -380,6 +374,7 @@ public abstract class TypeRepo : IDisposable
 		{
 			Reader.ReadInt32(); // objectIndex
 		}
+		return null;
 	}
 
 	public object? LoadObjectRef()

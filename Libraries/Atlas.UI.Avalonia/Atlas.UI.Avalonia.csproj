@@ -99,7 +99,7 @@
     <PackageReference Include="Avalonia" Version="$(AvaloniaVersion)" />
     <PackageReference Include="Avalonia.AvaloniaEdit" Version="$(AvaloniaEditVersion)" />
     <PackageReference Include="Avalonia.Controls.DataGrid" Version="$(AvaloniaVersion)" />
-    <PackageReference Include="Avalonia.Svg.Skia" Version="11.0.0.4" />
+    <PackageReference Include="Avalonia.Svg.Skia" Version="11.0.0.13" />
   </ItemGroup>
 
   <ItemGroup>
@@ -111,12 +111,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Update="Theme\Controls\FluentTheme.xaml.cs">
-      <DependentUpon>FluentTheme.xaml</DependentUpon>
-    </Compile>
-    <Compile Update="Themes\Default\DefaultTheme.xaml.cs">
-      <DependentUpon>%(Filename)</DependentUpon>
-    </Compile>
     <Compile Update="Tabs\TabAvalonEdit.xaml.cs">
       <SubType>Code</SubType>
       <DependentUpon>TabAvalonEdit.xaml</DependentUpon>

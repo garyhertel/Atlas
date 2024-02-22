@@ -56,6 +56,7 @@ public class TabControlDataGrid : Grid, IDisposable, ITabSelector, ITabItemSelec
 	private readonly Stopwatch _notifyItemChangedStopwatch = new();
 	private DispatcherTimer? _dispatcherTimer;  // delays auto selection to throttle updates
 	private object? _autoSelectItem = null;
+	private NotifyCollectionChangedAction? _autoSelectAction;
 
 	private Filter? _filter;
 
@@ -335,13 +336,14 @@ public class TabControlDataGrid : Grid, IDisposable, ITabSelector, ITabItemSelec
 					// change to dispatch here?
 					_autoSelectItem = null;
 					_selectionModified = true;
-					Dispatcher.UIThread.Post(() => SetSelectedItem(item), DispatcherPriority.Background);
+					Dispatcher.UIThread.Post(() => SetSelectedItem(item, e.Action), DispatcherPriority.Background);
 					_notifyItemChangedStopwatch.Reset();
 					_notifyItemChangedStopwatch.Start();
 				}
 				else
 				{
 					_autoSelectItem = item;
+					_autoSelectAction = e.Action;
 				}
 			}
 			Dispatcher.UIThread.Post(AutoSizeColumns, DispatcherPriority.Background);
@@ -356,23 +358,30 @@ public class TabControlDataGrid : Grid, IDisposable, ITabSelector, ITabItemSelec
 	private void DispatcherTimer_Tick(object? sender, EventArgs e)
 	{
 		object? selectItem = _autoSelectItem;
-		if (selectItem != null)
-		{
-			Dispatcher.UIThread.Post(() => SetSelectedItem(selectItem), DispatcherPriority.Background);
-			_autoSelectItem = null;
-		}
+		NotifyCollectionChangedAction? autoSelectAction = _autoSelectAction;
+		if (selectItem == null) return;
+		
+		Dispatcher.UIThread.Post(() => SetSelectedItem(selectItem, autoSelectAction), DispatcherPriority.Background);
+		_autoSelectItem = null;
+		_autoSelectAction = null;
 	}
 
 	private bool _selectItemEnabled;
 
-	private void SetSelectedItem(object? selectedItem)
+	private void SetSelectedItem(object? selectedItem, NotifyCollectionChangedAction? action)
 	{
-		if (!_selectItemEnabled)
-			return;
+		if (!_selectItemEnabled) return;
 
-		_disableSaving++;
-		SelectedItem = selectedItem;
-		_disableSaving--;
+		if (action != NotifyCollectionChangedAction.Replace)
+		{
+			_disableSaving++;
+			SelectedItem = selectedItem;
+			_disableSaving--;
+		}
+		else
+		{
+			SelectedItem = selectedItem;
+		}
 	}
 
 	private void DataGrid_ColumnReordered(object? sender, DataGridColumnEventArgs e)
@@ -770,12 +779,23 @@ public class TabControlDataGrid : Grid, IDisposable, ITabSelector, ITabItemSelec
 
 	private object? GetDefaultSelectedItem()
 	{
-		if (TabModel.DefaultSelectedItem == null)
+		string defaultItemText;
+		if (List is IItemCollection itemCollection && itemCollection.DefaultSelectedItem is object defaultItem)
+		{
+			defaultItemText = defaultItem.ToUniqueString()!;
+		}
+		else if (TabModel.DefaultSelectedItem is object defaultModelItem)
+		{
+			defaultItemText = defaultModelItem.ToUniqueString()!;
+		}
+		else
+		{
 			return null;
+		}
 
 		foreach (object obj in CollectionView!)
 		{
-			if (obj.ToUniqueString() == TabModel.DefaultSelectedItem.ToUniqueString())
+			if (obj.ToUniqueString() == defaultItemText)
 				return obj;
 		}
 		return null;

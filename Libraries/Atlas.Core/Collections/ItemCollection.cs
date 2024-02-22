@@ -4,30 +4,22 @@ using System.Collections.Specialized;
 
 namespace Atlas.Core;
 
-public class ItemQueueCollection<T> : ItemCollection<T>
-{
-	public new void Add(T item)
-	{
-		base.Add(item);
-		if (Count > 100)
-			RemoveAt(0);
-	}
-}
-
 public interface IItemCollection
 {
 	string? ColumnName { get; set; }
-	bool Skippable { get; set; }
 	string? CustomSettingsPath { get; set; }
+	public object? DefaultSelectedItem { get; set; }
+	bool Skippable { get; set; }
 }
 
 // See ItemCollectionUI for a UI thread safe version
 public class ItemCollection<T> : ObservableCollection<T>, IItemCollection, IComparer //, IRaiseItemChangedEvents //
 {
-	public string? ColumnName { get; set; }
 	public string? Label { get; set; }
-	public bool Skippable { get; set; } = true;
+	public string? ColumnName { get; set; }
 	public string? CustomSettingsPath { get; set; }
+	public object? DefaultSelectedItem { get; set; }
+	public bool Skippable { get; set; } = true;
 
 	public IComparer Comparer { get; set; } = new CustomComparer();
 
@@ -79,16 +71,25 @@ public class ItemCollection<T> : ObservableCollection<T>, IItemCollection, IComp
 	}*/
 }
 
-public class ItemCollection<T, T2> : ObservableCollection<T>, IList, ICollection, IEnumerable //, IRaiseItemChangedEvents //
+public class ItemCollection<T, T2> : ObservableCollection<T>, IList, ICollection, IEnumerable
 {
-	public ItemCollection()
-	{
-	}
+	public ItemCollection() { }
 
 	// Don't implement List<T>, it isn't sortable
 	public ItemCollection(IEnumerable<T> iEnumerable) :
 		base(iEnumerable)
 	{
+	}
+}
 
+public class ItemQueueCollection<T> : ItemCollection<T>
+{
+	public int MaxCount { get; set; } = 100;
+
+	public new void Add(T item)
+	{
+		base.Add(item);
+		if (Count > MaxCount)
+			RemoveAt(0);
 	}
 }
