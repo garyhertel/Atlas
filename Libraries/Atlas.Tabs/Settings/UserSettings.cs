@@ -19,6 +19,8 @@ public class UserSettings
 	[Range(1, 20)]
 	public int VerticalTabLimit { get; set; } = 10;
 
+	//public TimeSpan TemporaryDataExpiration { get; set; } = TimeSpan.FromDays(90);
+
 	//public int MaxLogItems { get; set; } = 100000;
 
 	public static List<string> Themes { get; set; } = new();

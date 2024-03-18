@@ -8,16 +8,21 @@ namespace Atlas.Serialize;
 // Collection of DataRepo items with a key/value lookup
 public class DataItemCollection<T> : ItemCollection<DataItem<T>>
 {
+	public DataRepo DataRepo;
 	public SortedDictionary<string, DataItem<T>> Lookup { get; set; } = new();
 
 	public IEnumerable<T> Values => this.Select(o => o.Value);
 	public IEnumerable<T> SortedValues => Lookup.Values.Select(o => o.Value);
 
-	public DataItemCollection()	{ }
+	public DataItemCollection(DataRepo dataRepo) : base()
+	{
+		DataRepo = dataRepo;
+	}
 
 	// Don't implement List<T>, it isn't sortable
-	public DataItemCollection(IEnumerable<DataItem<T>> iEnumerable) : base(iEnumerable)
+	public DataItemCollection(DataRepo dataRepo, IEnumerable<DataItem<T>> iEnumerable) : base(iEnumerable)
 	{
+		DataRepo = dataRepo;
 		Lookup = CreateLookup();
 	}
 
@@ -108,7 +113,7 @@ public interface IDataItem
 public class DataItem<T> : IDataItem
 {
 	public string Key { get; set; }
-	public T Value { get; set; }
+	public T? Value { get; set; }
 	public object Object => Value!;
 	public string? Path { get; set; }
 
@@ -119,7 +124,9 @@ public class DataItem<T> : IDataItem
 
 	public override string ToString() => Key;
 
-	public DataItem(string key, T value, string? path = null)
+	public DataItem() { }
+
+	public DataItem(string key, T? value, string? path = null)
 	{
 		Key = key;
 		Value = value;

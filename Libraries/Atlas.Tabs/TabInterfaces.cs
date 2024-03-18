@@ -38,7 +38,7 @@ public interface ITabCreatorAsync
 	Task<ITab?> CreateAsync(Call call);
 }
 
-public interface ITabDataControl : IDisposable
+public interface ITabDataControl : IBookmarkControl
 {
 	public IList? Items { get; set; }
 
@@ -46,9 +46,13 @@ public interface ITabDataControl : IDisposable
 	public object? SelectedItem { get; set; }
 	public HashSet<SelectedRow> SelectedRows { get; }
 
+	public event EventHandler<TabSelectionChangedEventArgs>? OnSelectionChanged;
+}
+
+
+public interface IBookmarkControl : IDisposable
+{
 	public TabDataSettings TabDataSettings { get; set; }
 
 	public void LoadSettings();
-
-	public event EventHandler<TabSelectionChangedEventArgs>? OnSelectionChanged;
 }

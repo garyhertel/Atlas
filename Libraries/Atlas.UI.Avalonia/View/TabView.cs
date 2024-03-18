@@ -582,7 +582,7 @@ public class TabView : Grid, IDisposable
 		ClearControls(true);
 
 		// This will get cleared when the view reloads
-		var progressBar = new ProgressBar
+		ProgressBar progressBar = new()
 		{
 			IsIndeterminate = true,
 			MinWidth = 100,
@@ -1073,18 +1073,33 @@ public class TabView : Grid, IDisposable
 		int index = 0;
 		foreach (ITabDataControl tabData in TabDatas)
 		{
-			tabData.TabDataSettings = TabViewSettings.GetData(index++);
-			tabData.LoadSettings();
+			index = LoadBookmarkControl(tabBookmark, index, tabData);
+		}
 
-			//if (tabInstance.tabBookmark != null)
-			foreach (TabInstance childTabInstance in Instance.ChildTabInstances.Values)
+		foreach (ITabSelector tabData in CustomTabControls)
+		{
+			if (tabData is IBookmarkControl bookmarkControl)
 			{
-				if (tabBookmark.ChildBookmarks.TryGetValue(childTabInstance.Label, out TabBookmark? childBookmarkNode))
-				{
-					childTabInstance.SelectBookmark(childBookmarkNode);
-				}
+				index = LoadBookmarkControl(tabBookmark, index, bookmarkControl);
 			}
 		}
+	}
+
+	private int LoadBookmarkControl(TabBookmark tabBookmark, int index, IBookmarkControl bookmarkControl)
+	{
+		bookmarkControl.TabDataSettings = TabViewSettings.GetData(index++);
+		bookmarkControl.LoadSettings();
+
+		//if (tabInstance.tabBookmark != null)
+		foreach (TabInstance childTabInstance in Instance.ChildTabInstances.Values)
+		{
+			if (tabBookmark.ChildBookmarks.TryGetValue(childTabInstance.Label, out TabBookmark? childBookmarkNode))
+			{
+				childTabInstance.SelectBookmark(childBookmarkNode);
+			}
+		}
+
+		return index;
 	}
 
 	#region IDisposable Support

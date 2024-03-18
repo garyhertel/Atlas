@@ -4,9 +4,20 @@ using System.Reflection;
 
 namespace Atlas.Extensions;
 
+public enum FormatType
+{
+	Short, // No milliseconds
+	Long,  // Milliseconds
+}
+
 public static class ObjectExtensions
 {
 	public static string? Formatted(this object? obj, int maxLength = 500)
+	{
+		return Formatted(obj, FormatType.Short, maxLength);
+	}
+
+	public static string? Formatted(this object? obj, FormatType formatType, int maxLength = 500)
 	{
 		if (obj == null)
 			return null;
@@ -30,7 +41,12 @@ public static class ObjectExtensions
 		if (type.IsPrimitive == false)
 		{
 			if (obj is DateTime dateTime)
-				return dateTime.ToString("yyyy-M-d H:mm:ss.FFFFFF");
+			{
+				if (formatType == FormatType.Short)
+					return dateTime.ToString("yyyy-M-d H:mm:ss");
+				else
+					return dateTime.ToString("yyyy-M-d H:mm:ss.FFFFFF");
+			}
 
 			if (obj is TimeSpan timeSpan)
 			{

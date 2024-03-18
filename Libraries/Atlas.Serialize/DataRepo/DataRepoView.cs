@@ -8,14 +8,16 @@ public class DataRepoView<T> : DataRepoInstance<T>
 {
 	//public DataRepo<T> DataRepo; // Add template version?
 
-	public DataItemCollection<T> Items { get; set; } = new();
+	public DataItemCollection<T> Items { get; set; }
 
 	public DataRepoView(DataRepo dataRepo, string groupId) : base(dataRepo, groupId)
 	{
+		Items = new(dataRepo);
 	}
 
 	public DataRepoView(DataRepoInstance<T> dataRepoInstance) : base(dataRepoInstance.DataRepo, dataRepoInstance.GroupId)
 	{
+		Items = new(dataRepoInstance.DataRepo);
 	}
 
 	public void LoadAll(Call call)
@@ -32,7 +34,7 @@ public class DataRepoView<T> : DataRepoInstance<T>
 		{
 			DataItemCollection<T> items = base.LoadAll(call);
 			var ordered = ascending ? items.OrderBy(orderByMemberName) : items.OrderByDescending(orderByMemberName);
-			Items = new DataItemCollection<T>(ordered);
+			Items = new DataItemCollection<T>(DataRepo, ordered);
 		}
 	}
 
@@ -41,7 +43,7 @@ public class DataRepoView<T> : DataRepoInstance<T>
 		lock (DataRepo)
 		{
 			var ordered = Items.OrderBy(memberName);
-			Items = new DataItemCollection<T>(ordered);
+			Items = new DataItemCollection<T>(DataRepo, ordered);
 		}
 	}
 
@@ -50,7 +52,7 @@ public class DataRepoView<T> : DataRepoInstance<T>
 		lock (DataRepo)
 		{
 			var ordered = Items.OrderByDescending(memberName);
-			Items = new DataItemCollection<T>(ordered);
+			Items = new DataItemCollection<T>(DataRepo, ordered);
 		}
 	}
 
