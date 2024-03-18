@@ -3,16 +3,14 @@ using Atlas.UI.Avalonia.Themes;
 using Atlas.UI.Avalonia.Utilities;
 using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Layout;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
-using Avalonia.Styling;
 
 namespace Atlas.UI.Avalonia.Controls;
 
-public class ImageButton : Button, IStyleable
+public class ImageButton : Button
 {
-	Type IStyleable.StyleKey => typeof(Button);
+	protected override Type StyleKeyOverride => typeof(Button);
 
 	public string? Tooltip { get; set; }
 
@@ -43,7 +41,7 @@ public class ImageButton : Button, IStyleable
 		};
 		Image image = CreateImage(sourceImage);
 
-		Resources.Add("ButtonBackgroundPointerOver", AtlasTheme.ToolbarButtonBackgroundHover);
+		Resources.Add("ButtonBackgroundPointerOver", AtlasTheme.ToolbarButtonBackgroundPointerOver);
 		//button.Resources.Add("ButtonBackgroundPressed", Theme.ToolbarButtonBackgroundHover);
 		//button.Resources.Add("ButtonPlaceholderForegroundFocused", Foreground);
 		//button.Resources.Add("ButtonPlaceholderForegroundPointerOver", Foreground);
@@ -52,7 +50,7 @@ public class ImageButton : Button, IStyleable
 
 		Content = grid;
 		//Command = command;
-		Background = AtlasTheme.ToolbarButtonBackground;
+		Background = AtlasTheme.ToolbarBackground;
 		BorderBrush = Background;
 		BorderThickness = new Thickness(0);
 		Margin = new Thickness(1);
@@ -88,7 +86,7 @@ public class ImageButton : Button, IStyleable
 		}
 		catch (Exception)
 		{
-			sourceImage = SvgUtils.GetSvgImage(bitmapStream);
+			sourceImage = SvgUtils.GetSvgColorImage(bitmapStream);
 		}
 
 		return sourceImage;
