@@ -45,11 +45,11 @@ public class TabFile : ITab
 		public ToolButton ButtonDelete { get; set; } = new("Delete", Icons.Svg.Delete);
 	}
 
-	public class Instance(TabFile Tab) : TabInstance
+	public class Instance(TabFile tab) : TabInstance
 	{
 		public override void Load(Call call, TabModel model)
 		{
-			string path = Tab.Path;
+			string path = tab.Path;
 			if (!File.Exists(path))
 			{
 				model.AddObject("File doesn't exist");
@@ -57,7 +57,7 @@ public class TabFile : ITab
 			}
 
 			Toolbar toolbar = new();
-			if (Tab.SelectFileDelegate != null)
+			if (tab.SelectFileDelegate != null)
 			{
 				toolbar.ButtonSelect = new("Select", Icons.Svg.Enter);
 				toolbar.ButtonSelect.Action = SelectClicked;
@@ -97,18 +97,18 @@ public class TabFile : ITab
 
 		private void SelectClicked(Call call)
 		{
-			Tab.SelectFileDelegate!(call, Tab.Path);
+			tab.SelectFileDelegate!(call, tab.Path);
 		}
 
 		private void OpenFolder(Call call)
 		{
-			ProcessUtils.OpenFolder(Tab.Path);
+			ProcessUtils.OpenFolder(tab.Path);
 		}
 
 		private void Delete(Call call)
 		{
-			if (File.Exists(Tab.Path))
-				File.Delete(Tab.Path);
+			if (File.Exists(tab.Path))
+				File.Delete(tab.Path);
 
 			Refresh();
 		}

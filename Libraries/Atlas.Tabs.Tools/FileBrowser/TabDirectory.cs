@@ -27,14 +27,14 @@ public class TabDirectory : ITab
 		//public ToolButton ButtonDelete { get; set; } = new("Delete", Icons.Streams.Delete);
 	}
 
-	public class Instance(TabDirectory Tab) : TabInstance
+	public class Instance(TabDirectory tab) : TabInstance
 	{
 		public override void Load(Call call, TabModel model)
 		{
 			model.ShowTasks = true;
-			model.CustomSettingsPath = Tab.Path;
+			model.CustomSettingsPath = tab.Path;
 
-			if (!Directory.Exists(Tab.Path))
+			if (!Directory.Exists(tab.Path))
 			{
 				model.AddObject("Directory doesn't exist");
 				return;
@@ -61,8 +61,8 @@ public class TabDirectory : ITab
 		{
 			try
 			{
-				return Directory.EnumerateFiles(Tab.Path)
-					.Select(path => new FileView(path, Tab.SelectFileDelegate))
+				return Directory.EnumerateFiles(tab.Path)
+					.Select(path => new FileView(path, tab.SelectFileDelegate))
 					.ToList();
 			}
 			catch (Exception ex)
@@ -77,8 +77,8 @@ public class TabDirectory : ITab
 		{
 			try
 			{
-				return Directory.EnumerateDirectories(Tab.Path)
-					.Select(path => new DirectoryView(path, Tab.SelectFileDelegate))
+				return Directory.EnumerateDirectories(tab.Path)
+					.Select(path => new DirectoryView(path, tab.SelectFileDelegate))
 					.ToList();
 			}
 			catch (Exception ex)
@@ -91,7 +91,7 @@ public class TabDirectory : ITab
 
 		private void OpenFolder(Call call)
 		{
-			string path = Tab.Path;
+			string path = tab.Path;
 
 			// Select file if possible
 			List<SelectedRow> selectedRows = GetSelectedRows();
@@ -113,7 +113,7 @@ public class TabDirectory : ITab
 			List<SelectedRow> selectedRows = GetSelectedRows();
 			foreach (SelectedRow selectedRow in selectedRows)
 			{
-				string path = Paths.Combine(Tab.Path, selectedRow.Label);
+				string path = Paths.Combine(tab.Path, selectedRow.Label);
 
 				if (Directory.Exists(path))
 					Directory.Delete(path, true);
