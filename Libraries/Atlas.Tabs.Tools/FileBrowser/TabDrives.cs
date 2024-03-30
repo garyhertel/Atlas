@@ -1,33 +1,26 @@
 using Atlas.Core;
+using Atlas.Serialize;
 
 namespace Atlas.Tabs.Tools;
 
-public class TabDrives : ITab
+public class TabDrives(
+	DataRepoView<NodeView>? dataRepoNodes, 
+	TabFile.SelectFile? selectFileDelegate = null
+	) : ITab
 {
-	public TabFile.SelectFile? SelectFileDelegate;
-
-	public TabDrives(TabFile.SelectFile? selectFileDelegate = null)
-	{
-		SelectFileDelegate = selectFileDelegate;
-	}
+	public DataRepoView<NodeView>? DataRepoNodes = dataRepoNodes;
+	public TabFile.SelectFile? SelectFileDelegate = selectFileDelegate;
 
 	public TabInstance Create() => new Instance(this);
 
-	public class Instance : TabInstance
+	public class Instance(TabDrives tab) : TabInstance
 	{
-		public TabDrives Tab;
-
-		public Instance(TabDrives tab)
-		{
-			Tab = tab;
-		}
-
 		public override void Load(Call call, TabModel model)
 		{
 			DriveInfo[] drives = DriveInfo.GetDrives();
 
 			model.Items = drives
-				.Select(d => new TabDirectory(d.Name, Tab.SelectFileDelegate))
+				.Select(d => new TabDirectory(d.Name, tab.DataRepoNodes, tab.SelectFileDelegate))
 				.ToList();
 		}
 	}
