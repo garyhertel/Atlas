@@ -32,7 +32,7 @@ public class TabTestParamsDataTabs : ITab
 				new TaskDelegate("Add", Add),
 			};*/
 
-			_paramTestItem = LoadData<ParamTestItem>(DataKey);
+			_paramTestItem ??= LoadData<ParamTestItem>(DataKey);
 			model.AddObject(_paramTestItem!);
 
 			var toolbar = new Toolbar();
@@ -52,6 +52,7 @@ public class TabTestParamsDataTabs : ITab
 
 		private void New(Call call)
 		{
+			_paramTestItem = new();
 			Reload();
 		}
 

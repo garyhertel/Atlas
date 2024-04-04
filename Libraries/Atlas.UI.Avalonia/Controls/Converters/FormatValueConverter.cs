@@ -1,3 +1,4 @@
+using Atlas.Core.Time;
 using Atlas.Extensions;
 using Avalonia.Data.Converters;
 using System.Globalization;
@@ -73,10 +74,16 @@ public class FormatValueConverter : IValueConverter
 	public static string? ObjectToString(object value, int maxLength, bool formatted)
 	{
 		if (value is DateTime dateTime)
-			return dateTime.ToUniversalTime().ToString(StringFormat);
+		{
+			dateTime = TimeZoneView.Current.Convert(dateTime);
+			return dateTime.ToString(StringFormat);
+		}
 
 		if (value is DateTimeOffset dateTimeOffset)
-			return dateTimeOffset.UtcDateTime.ToString(StringFormat);
+		{
+			dateTime = TimeZoneView.Current.Convert(dateTimeOffset.UtcDateTime);
+			return dateTime.ToString(StringFormat);
+		}
 
 		if (value is TimeSpan timeSpan)
 		{

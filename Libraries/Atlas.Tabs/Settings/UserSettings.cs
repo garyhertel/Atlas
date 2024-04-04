@@ -1,4 +1,5 @@
 using Atlas.Core;
+using Atlas.Core.Time;
 using System.ComponentModel.DataAnnotations;
 
 namespace Atlas.Tabs;
@@ -20,6 +21,11 @@ public class UserSettings
 	public int VerticalTabLimit { get; set; } = 10;
 
 	//public int MaxLogItems { get; set; } = 100000;
+
+	public static List<TimeZoneView> TimeZones { get; set; } = TimeZoneView.All;
+
+	[BindList(nameof(TimeZones))]
+	public TimeZoneView TimeZone { get; set; } = TimeZoneView.Local;
 
 	public static List<string> Themes { get; set; } = new();
 

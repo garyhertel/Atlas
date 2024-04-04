@@ -1,4 +1,5 @@
 using Atlas.Core;
+using Atlas.Core.Time;
 using System.Collections;
 using System.Reflection;
 
@@ -18,9 +19,9 @@ public static class ObjectExtensions
 			if (obj is double d)
 				return d.ToString("#,0.###");
 
-			MethodInfo toStringMethod = type.GetMethod("ToString", new Type[] { typeof(string) })!;
+			MethodInfo toStringMethod = type.GetMethod("ToString", [typeof(string)])!;
 			string format = type.IsDecimal() ? "G" : "N0";
-			object? result = toStringMethod.Invoke(obj, new object[] { format });
+			object? result = toStringMethod.Invoke(obj, [format]);
 			if (result == null)
 				return null;
 
@@ -30,7 +31,10 @@ public static class ObjectExtensions
 		if (type.IsPrimitive == false)
 		{
 			if (obj is DateTime dateTime)
+			{
+				dateTime = TimeZoneView.Current.Convert(dateTime);
 				return dateTime.ToString("yyyy-M-d H:mm:ss.FFFFFF");
+			}
 
 			if (obj is TimeSpan timeSpan)
 			{
@@ -144,7 +148,10 @@ public static class ObjectExtensions
 		if (type.IsPrimitive == false)
 		{
 			if (obj is DateTime dateTime)
+			{
+				dateTime = TimeZoneView.Current.Convert(dateTime);
 				return dateTime.ToString("yyyy-MM-dd H:mm:ss.FFFFFF");
+			}
 
 			// use any ToString() that overrides the base
 			MethodInfo toStringMethod = type.GetMethod("ToString", Type.EmptyTypes)!;
@@ -156,9 +163,9 @@ public static class ObjectExtensions
 
 		if (type.IsNumeric())
 		{
-			MethodInfo toStringMethod = type.GetMethod("ToString", new Type[] { typeof(string) })!;
+			MethodInfo toStringMethod = type.GetMethod("ToString", [typeof(string)])!;
 			string format = type.IsDecimal() ? "N" : "N0";
-			object? result = toStringMethod.Invoke(obj, new object[] { format });
+			object? result = toStringMethod.Invoke(obj, [format]);
 			if (result == null)
 				return null;
 

@@ -40,15 +40,40 @@ public class TimeZoneView : IComparable
 		return Abbreviation + " - " + Name + ": " + TimeZoneInfo?.BaseUtcOffset.FormattedDecimal();
 	}
 
-	public DateTime ConvertTimeToUtc(DateTime dateTime)
+	public DateTime Convert(DateTime dateTime)
 	{
-		if (this == Utc)
-			return dateTime;
+		if (this == Utc) return ConvertTimeToUtc(dateTime);
+
+		if (dateTime.Kind == DateTimeKind.Utc)
+		{
+			return TimeZoneInfo.ConvertTimeFromUtc(dateTime, TimeZoneInfo!);
+		}
 
 		if (this == Local)
 			dateTime = DateTime.SpecifyKind(dateTime, DateTimeKind.Local);
 		else
 			dateTime = DateTime.SpecifyKind(dateTime, DateTimeKind.Unspecified);
+
+		return dateTime;
+	}
+
+	public DateTime ConvertTimeToUtc(DateTime dateTime)
+	{
+		if (this == Utc)
+		{
+			if (dateTime.Kind == DateTimeKind.Utc)
+			{
+				return dateTime;
+			}
+		}
+		else if (this == Local)
+		{
+			dateTime = DateTime.SpecifyKind(dateTime, DateTimeKind.Local);
+		}
+		else
+		{
+			dateTime = DateTime.SpecifyKind(dateTime, DateTimeKind.Unspecified);
+		}
 
 		return TimeZoneInfo.ConvertTimeToUtc(dateTime, TimeZoneInfo!);
 	}
@@ -60,6 +85,8 @@ public class TimeZoneView : IComparable
 
 	public static readonly TimeZoneView Utc = new("Utc", "Utc", TimeZoneInfo.Utc);
 	public static readonly TimeZoneView Local = new("Local", "Local", TimeZoneInfo.Local);
+
+	public static TimeZoneView Current = Local;
 
 	// https://en.wikipedia.org/wiki/List_of_time_zone_abbreviations
 	public static List<TimeZoneView> All { get; set; } =
