@@ -1,4 +1,5 @@
 using Atlas.Core;
+using Atlas.Core.Time;
 using Atlas.Resources;
 using Atlas.Serialize;
 using Atlas.Tabs;
@@ -63,6 +64,7 @@ public class TabAvaloniaSettings : ITab
 			DataApp.Save(UserSettings!);
 			Project.UserSettings = UserSettings.DeepClone()!;
 
+			TimeZoneView.Current = Project.UserSettings.TimeZone;
 			ThemeManager.Current?.LoadCurrentTheme();
 		}
 	}

@@ -1,5 +1,4 @@
 using Atlas.Core;
-using Atlas.Core.Time;
 using System.Collections;
 using System.Reflection;
 
@@ -32,8 +31,7 @@ public static class ObjectExtensions
 		{
 			if (obj is DateTime dateTime)
 			{
-				dateTime = TimeZoneView.Current.Convert(dateTime);
-				return dateTime.ToString("yyyy-M-d H:mm:ss.FFFFFF");
+				return dateTime.FormatLong();
 			}
 
 			if (obj is TimeSpan timeSpan)
@@ -149,8 +147,7 @@ public static class ObjectExtensions
 		{
 			if (obj is DateTime dateTime)
 			{
-				dateTime = TimeZoneView.Current.Convert(dateTime);
-				return dateTime.ToString("yyyy-MM-dd H:mm:ss.FFFFFF");
+				return dateTime.FormatId();
 			}
 
 			// use any ToString() that overrides the base
