@@ -9,17 +9,17 @@ public class TabTestLog : ITab
 	public class Instance : TabInstance
 	{
 		private Call? _sampleCall;
-		private int _counter = 0;
+		private int _counter;
 
 		public override void Load(Call call, TabModel model)
 		{
 			TaskInstance = new TaskInstance();
-			TaskInstance.Log!.Add("Double Tag Test", new Tag("Double", 0.5));
+			TaskInstance.Log.Add("Double Tag Test", new Tag("Double", 0.5));
 
 			_sampleCall = new Call(Label);
 			_counter = 0;
 
-			model.Items = new List<ListItem>()
+			model.Items = new List<ListItem>
 			{
 				new("Task Instance Log", TaskInstance.Log),
 				new("Sample Call", _sampleCall),
@@ -27,7 +27,7 @@ public class TabTestLog : ITab
 				new("Log Entry", new LogEntry(null, LogLevel.Info, "test", null)),
 			};
 
-			model.Actions = new List<TaskCreator>()
+			model.Actions = new List<TaskCreator>
 			{
 				new TaskAction("Add 1 Entry", () => AddEntries(1)),
 				new TaskAction("Add 10 Entries",() => AddEntries(10)),
@@ -36,7 +36,7 @@ public class TabTestLog : ITab
 				new TaskAction("Add 10,000 Entries", () => AddEntries(10000)),
 				new TaskDelegate("Reset", Reset),
 				// Tests different threading contexts
-				new TaskAction("System.Timer: Log 1 Entry / second", () => StartSystemTimer()),
+				new TaskAction("System.Timer: Log 1 Entry / second", StartSystemTimer),
 				//new TaskAction("Threading.Timer: Log 1 Entry / second", () => StartThreadTimer()),
 				new TaskDelegate("Task Delegate Thread:  Log 1 Entry / second", SubTaskInstances, true),
 			};
@@ -95,7 +95,7 @@ public class TabTestLog : ITab
 			_timer ??= new Timer(TimerCallback, null, 0, 1000);
 		}*/
 
-		public void TimerCallback(object state)
+		private void TimerCallback(object state)
 		{
 			AddEntries(1);
 		}

@@ -16,13 +16,13 @@ public class TabControlTasks : Grid, IDisposable
 
 	public event EventHandler<TabSelectionChangedEventArgs>? OnSelectionChanged;
 
-	public bool AutoSelectNew = true;
+	public bool AutoSelectNew { get; set; } = true;
 
 	private bool ShowTasks => TabInstance.Model.Tasks
 		.Any(task =>
 			task.ShowTask ||
 			task.TaskStatus == TaskStatus.Faulted ||
-			task.Log!.Level >= LogLevel.Error);
+			task.Log.Level >= LogLevel.Error);
 
 	public IList SelectedItems => _tabControlDataGrid.SelectedItems;
 

@@ -44,7 +44,7 @@ public class TestLogBig
 
 			foreach (Tag tag in Tags)
 			{
-				line += tag.ToString() + " ";
+				line += tag + " ";
 			}
 			return line;
 		}
@@ -54,16 +54,13 @@ public class TestLogBig
 	[InnerValue]
 	public ItemCollection<TestLogBig>? Items; // change to LRU for performance? No Binding?
 
-	public TestLogBig() { }
-
 	// Todo: use caller instead
 	public void Child(string name)
 	{
 		var logEntry = new TestLogBig();
 		//log.Type = logType;
 		//logEntry = new Log(context, contextID, settings, "replacing log with local", new Tag[] { });
-		if (Items == null)
-			Items = new ItemCollection<TestLogBig>();
+		Items ??= new ItemCollection<TestLogBig>();
 		//if (Items.Count > settings.MaxLogItems)
 		//	Items.RemoveAt(0);
 		Items.Add(logEntry);

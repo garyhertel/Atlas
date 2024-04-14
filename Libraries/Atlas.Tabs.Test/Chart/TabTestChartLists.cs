@@ -1,4 +1,5 @@
 using Atlas.Core;
+using Atlas.Core.Charts;
 
 namespace Atlas.Tabs.Test.Chart;
 
@@ -15,7 +16,7 @@ public class TabTestChartLists : ITab
 		{
 			_series = new List<ItemCollection<int>>();
 
-			model.Actions = new List<TaskCreator>()
+			model.Actions = new List<TaskCreator>
 			{
 				new TaskDelegate("Add Entry", AddEntry),
 				new TaskDelegate("Start: 1 Entry / second", StartTask, true),
@@ -44,7 +45,7 @@ public class TabTestChartLists : ITab
 		private void StartTask(Call call)
 		{
 			CancellationToken token = call.TaskInstance!.TokenSource.Token;
-			for (int i = 0; !token.IsCancellationRequested; i++)
+			for (int i = 0; i < 1000 && !token.IsCancellationRequested; i++)
 			{
 				Invoke(AddSampleUI, call);
 				Thread.Sleep(1000);

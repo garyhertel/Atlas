@@ -1,10 +1,11 @@
 using Atlas.Core;
 using Atlas.Tabs;
+using Atlas.UI.Avalonia.Controls.Converters;
 using Atlas.UI.Avalonia.Themes;
+using Atlas.UI.Avalonia.Utilities;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Data;
-using Avalonia.Media;
 using System.Collections;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
@@ -153,20 +154,20 @@ public class DataGridPropertyTextColumn : DataGridTextColumn
 
 	// Styled columns have a different line color, so we have to draw them manually
 	// They also use different background colors, with different shades for links vs non-links
-	private Control AddStyling(DataGridCell cell, TextBlock textBlock)
+	private TextBlock AddStyling(DataGridCell cell, TextBlock textBlock)
 	{
 		if (PropertyInfo.IsDefined(typeof(StyleValueAttribute)) || 
 			(DisplayIndex == 1 && typeof(DictionaryEntry).IsAssignableFrom(PropertyInfo.DeclaringType)))
 		{
 			// Update the cell color based on the object
-			var binding = new Binding()
+			var binding = new Binding
 			{
 				Converter = new ValueToBackgroundBrushConverter(PropertyInfo),
 				Mode = BindingMode.OneWay,
 			};
 			cell.Bind(DataGridCell.BackgroundProperty, binding);
 
-			var foregroundBinding = new Binding()
+			var foregroundBinding = new Binding
 			{
 				Converter = new ValueToForegroundBrushConverter(PropertyInfo),
 				Mode = BindingMode.OneWay,

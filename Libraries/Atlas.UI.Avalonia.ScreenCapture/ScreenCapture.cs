@@ -1,7 +1,10 @@
 using Atlas.Core;
+using Atlas.Core.Utilities;
 using Atlas.Resources;
 using Atlas.UI.Avalonia.Controls;
+using Atlas.UI.Avalonia.ScreenCapture.Unmanaged;
 using Atlas.UI.Avalonia.Themes;
+using Atlas.UI.Avalonia.Viewer;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
@@ -76,7 +79,7 @@ public class ScreenCapture : Grid
 
 	private void AddContent(Control control)
 	{
-		_contentGrid = new Grid()
+		_contentGrid = new Grid
 		{
 			HorizontalAlignment = HorizontalAlignment.Left,
 			VerticalAlignment = VerticalAlignment.Top,
@@ -87,7 +90,7 @@ public class ScreenCapture : Grid
 
 		AddBackgroundImage(control);
 
-		_selectionImage = new Image()
+		_selectionImage = new Image
 		{
 			Stretch = Stretch.None,
 		};
@@ -162,19 +165,19 @@ public class ScreenCapture : Grid
 
 		var folder = await window.StorageProvider.TryGetFolderFromPathAsync(Paths.PicturesPath);
 
-		var result = await window.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions()
+		var result = await window.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
 		{
 			SuggestedStartLocation = folder,
 			SuggestedFileName = $"{TabViewer.Project.Name}.{FileUtils.TimestampString}.png",
 			FileTypeChoices = new[] { FilePickerFileTypes.ImagePng },
 		});
-		if (result != null && result.TryGetLocalPath() is string path)
+		if (result?.TryGetLocalPath() is string path)
 		{
 			bitmap.Save(path);
 		}
 	}
 
-	private Window? GetWindow(StyledElement styledElement)
+	private static Window? GetWindow(StyledElement styledElement)
 	{
 		if (styledElement is Window window)
 			return window;
@@ -205,7 +208,7 @@ public class ScreenCapture : Grid
 			ctx.DrawImage(_originalBitmap, bounds);
 		}
 
-		_backgroundImage = new Image()
+		_backgroundImage = new Image
 		{
 			HorizontalAlignment = HorizontalAlignment.Left,
 			VerticalAlignment = VerticalAlignment.Top,
@@ -224,10 +227,8 @@ public class ScreenCapture : Grid
 
 		var bitmap = new RenderTargetBitmap(new PixelSize((int)destRect.Width, (int)destRect.Height), new Vector(96, 96));
 
-		using (var ctx = bitmap.CreateDrawingContext())
-		{
-			ctx.DrawImage(_originalBitmap!, _selectionRect, destRect);
-		};
+		using var ctx = bitmap.CreateDrawingContext();
+		ctx.DrawImage(_originalBitmap!, _selectionRect, destRect);
 		return bitmap;
 	}
 

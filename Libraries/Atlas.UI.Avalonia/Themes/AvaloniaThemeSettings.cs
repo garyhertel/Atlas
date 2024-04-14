@@ -22,11 +22,11 @@ public class AvaloniaThemeSettings : INotifyPropertyChanged
 	[Required, StringLength(50)]
 	public string? Name { get; set; }
 
-	public static List<string> Variants => new()
-	{
+	public static List<string> Variants =>
+	[
 		"Light",
 		"Dark",
-	};
+	];
 
 	[ReadOnly(true)]
 	public string? Variant { get; set; }
@@ -54,8 +54,8 @@ public class AvaloniaThemeSettings : INotifyPropertyChanged
 
 	public override string? ToString() => Name;
 
-	public List<object> GetSections() => new()
-	{
+	public List<object> GetSections() =>
+	[
 		Font,
 		Tab,
 		Toolbar,
@@ -65,13 +65,13 @@ public class AvaloniaThemeSettings : INotifyPropertyChanged
 		TextControl,
 		TextEditor,
 		Chart,
-	};
+	];
 
 	public IEnumerable<ListProperty> GetProperties() => ListProperty.Create(this);
 
 	public void Update(AvaloniaThemeSettings newSettings)
 	{
-		var newProperties = newSettings.GetProperties().GetEnumerator();
+		using var newProperties = newSettings.GetProperties().GetEnumerator();
 		foreach (ListProperty listProperty in GetProperties())
 		{
 			object? existingValue = listProperty.Value;
@@ -116,8 +116,6 @@ public class AvaloniaThemeSettings : INotifyPropertyChanged
 
 	public bool HasNullValue()
 	{
-		Application.Current!.RequestedThemeVariant = GetVariant();
-
 		return GetProperties()
 			.Any(property => property.GetCustomAttribute<ResourceKeyAttribute>() != null && property.Value == null);
 	}
@@ -125,7 +123,7 @@ public class AvaloniaThemeSettings : INotifyPropertyChanged
 	public void FillMissingValues()
 	{
 		var original = Application.Current!.RequestedThemeVariant;
-		Application.Current!.RequestedThemeVariant = GetVariant();
+		Application.Current.RequestedThemeVariant = GetVariant();
 
 		foreach (ListProperty listProperty in GetProperties())
 		{
@@ -144,7 +142,7 @@ public class AvaloniaThemeSettings : INotifyPropertyChanged
 				listProperty.Value = value;
 			}
 		}
-		Application.Current!.RequestedThemeVariant = original;
+		Application.Current.RequestedThemeVariant = original;
 	}
 
 	public ResourceDictionary CreateDictionary()

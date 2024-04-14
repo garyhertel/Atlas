@@ -1,6 +1,7 @@
 using Atlas.Core;
 using Atlas.Extensions;
 using Atlas.Tabs;
+using Atlas.UI.Avalonia.Utilities;
 using Atlas.UI.Avalonia.View;
 using Avalonia;
 using Avalonia.Controls;
@@ -12,7 +13,7 @@ using System.Reflection;
 
 namespace Atlas.UI.Avalonia.Controls;
 
-public class TabSeparator : Border { }
+public class TabSeparator : Border;
 
 public class TabControlParams : Grid, IValidationControl
 {
@@ -21,7 +22,7 @@ public class TabControlParams : Grid, IValidationControl
 
 	public object? Object;
 
-	private Dictionary<ListProperty, Control> _propertyControls = new();
+	private readonly Dictionary<ListProperty, Control> _propertyControls = [];
 
 	public override string? ToString() => Object?.ToString();
 
@@ -137,7 +138,7 @@ public class TabControlParams : Grid, IValidationControl
 		int rowIndex = AddRowDefinition();
 		int columnIndex = 0;
 
-		List<Control> controls = new();
+		List<Control> controls = [];
 		foreach (PropertyInfo propertyInfo in properties)
 		{
 			var property = new ListProperty(obj, propertyInfo);
@@ -248,24 +249,28 @@ public class TabControlParams : Grid, IValidationControl
 		return control;
 	}
 
-	private Control? CreatePropertyControl(ListProperty property)
+	private static Control? CreatePropertyControl(ListProperty property)
 	{
 		Type type = property.UnderlyingType;
 
 		BindListAttribute? listAttribute = type.GetCustomAttribute<BindListAttribute>();
 		listAttribute ??= property.GetCustomAttribute<BindListAttribute>();
 
+		if (property.Editable)
+		{
+			if (type.IsEnum || listAttribute != null)
+			{
+				return new TabControlFormattedComboBox(property, listAttribute?.PropertyName);
+			}
+			else if (typeof(DateTime).IsAssignableFrom(type))
+			{
+				return new TabDateTimePicker(property);
+			}
+		}
+
 		if (type == typeof(bool))
 		{
 			return new TabControlCheckBox(property);
-		}
-		else if (type.IsEnum || listAttribute != null)
-		{
-			return new TabControlFormattedComboBox(property, listAttribute?.PropertyName);
-		}
-		else if (typeof(DateTime).IsAssignableFrom(type) && property.Editable)
-		{
-			return new TabDateTimePicker(property);
 		}
 		else if (typeof(Color).IsAssignableFrom(type))
 		{

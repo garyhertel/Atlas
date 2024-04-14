@@ -1,3 +1,4 @@
+using Atlas.Core.Utilities;
 using Atlas.Extensions;
 
 namespace Atlas.Core;
@@ -23,7 +24,7 @@ public class TimeRangeValue : ITags
 	public double Value { get; set; }
 
 	//[Tags]
-	public List<Tag> Tags { get; set; } = new();
+	public List<Tag> Tags { get; set; } = [];
 
 	public string Description => string.Join(", ", Tags);
 
@@ -78,7 +79,7 @@ public class TimeRangeValue : ITags
 	}
 
 	// Adds a single NaN point between all gaps greater than minGap so the chart will add gaps in lines
-	public static List<TimeRangeValue> AddGaps(List<TimeRangeValue> input, TimeSpan periodDuration)
+	public static List<TimeRangeValue> AddGaps(IEnumerable<TimeRangeValue> input, TimeSpan periodDuration)
 	{
 		var sorted = input.OrderBy(p => p.StartTime).ToList();
 		TimeSpan minGap = GetMinGap(sorted, periodDuration);
@@ -94,7 +95,7 @@ public class TimeRangeValue : ITags
 				DateTime expectedTime = prevTime.Value.Add(minGap);
 				if (expectedTime < startTime)
 				{
-					var insertedPoint = new TimeRangeValue()
+					var insertedPoint = new TimeRangeValue
 					{
 						StartTime = expectedTime.ToUniversalTime(),
 						Value = double.NaN,
@@ -133,7 +134,7 @@ public class TimeRangeValue : ITags
 		return output;
 	}
 
-	private static List<TimeRangeValue> MergeIdenticalValues(List<TimeRangeValue> input)
+	private static List<TimeRangeValue> MergeIdenticalValues(IEnumerable<TimeRangeValue> input)
 	{
 		var sorted = input.OrderBy(p => p.StartTime).ToList();
 
@@ -156,7 +157,7 @@ public class TimeRangeValue : ITags
 
 	// Merge all continuous identical values, increasing the size of the first and leaving the last
 	// This works better for line graphs since the end point will still be represented
-	private static List<TimeRangeValue> MergeIdenticalMiddleValues(List<TimeRangeValue> input)
+	private static List<TimeRangeValue> MergeIdenticalMiddleValues(IEnumerable<TimeRangeValue> input)
 	{
 		var sorted = input.OrderBy(p => p.StartTime).ToList();
 
@@ -196,7 +197,7 @@ public class TimeRangeValue : ITags
 
 	private static void AddGap(DateTime startTime, DateTime endTime, TimeSpan periodDuration, List<TimeRangeValue> output)
 	{
-		var timeRangeValue = new TimeRangeValue()
+		var timeRangeValue = new TimeRangeValue
 		{
 			StartTime = startTime,
 			EndTime = endTime,

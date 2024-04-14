@@ -8,8 +8,8 @@ namespace Atlas.Serialize;
 
 public class TypeSchema
 {
-	public static HashSet<Type> PublicTypes = new()
-	{
+	public static HashSet<Type> PublicTypes { get; set; } =
+	[
 		typeof(string),
 		typeof(DateTime),
 		typeof(DateTimeOffset),
@@ -17,29 +17,29 @@ public class TypeSchema
 		typeof(TimeZoneInfo),
 		typeof(Type),
 		typeof(object),
-	};
+	];
 
-	public static HashSet<Type> PrivateTypes = new()
-	{
+	public static HashSet<Type> PrivateTypes { get; set; } =
+	[
 		typeof(MemoryStream),
-	};
+	];
 
-	public static HashSet<Type> PublicGenericTypes = new()
-	{
+	public static HashSet<Type> PublicGenericTypes { get; set; } =
+	[
 		typeof(List<>),
 		typeof(Dictionary<,>),
 		typeof(SortedDictionary<,>),
 		typeof(HashSet<>),
-	};
+	];
 
 	public string Name { get; set; }
 	public string AssemblyQualifiedName { get; set; }
 	public bool CanReference { get; set; } // whether the object can reference other types
 	public bool IsCollection;
 
-	public List<FieldSchema> FieldSchemas { get; set; } = new();
-	public List<PropertySchema> PropertySchemas { get; set; } = new();
-	public List<PropertySchema> ReadOnlyPropertySchemas { get; set; } = new();
+	public List<FieldSchema> FieldSchemas { get; set; } = [];
+	public List<PropertySchema> PropertySchemas { get; set; } = [];
+	public List<PropertySchema> ReadOnlyPropertySchemas { get; set; } = [];
 
 	// not really schema, could break out into a records class
 	public int TypeIndex; // -1 if null
@@ -65,11 +65,11 @@ public class TypeSchema
 	public bool HasSubType;
 
 	// Type lookup can take a long time, especially when there's missing types
-	private static readonly Dictionary<string, Type> _typeCache = new();
+	private static readonly Dictionary<string, Type> _typeCache = [];
 
 	private static readonly BindingFlags _bindingFlags = BindingFlags.Public | BindingFlags.Instance | BindingFlags.FlattenHierarchy;
 
-	public override string? ToString() => Name;
+	public override string ToString() => Name;
 
 	public TypeSchema(Type type, Serializer serializer)
 	{
@@ -204,7 +204,7 @@ public class TypeSchema
 
 		foreach (var param in CustomConstructor.GetParameters())
 		{
-			var prop = ReadOnlyPropertySchemas.Where(p => p.PropertyName.ToLower() == param.Name!.ToLower()).FirstOrDefault();
+			var prop = ReadOnlyPropertySchemas.FirstOrDefault(p => p.PropertyName.ToLower() == param.Name!.ToLower());
 			if (prop != null)
 			{
 				prop.IsRequired = true;
@@ -265,7 +265,7 @@ public class TypeSchema
 
 	public void Save(BinaryWriter writer)
 	{
-		writer.Write(Name!);
+		writer.Write(Name);
 		writer.Write(AssemblyQualifiedName);
 		writer.Write(HasSubType);
 		writer.Write(NumObjects);
@@ -326,8 +326,7 @@ public class TypeSchema
 		// Get Type without version
 		try
 		{
-			if (Type == null)
-				Type = Type.GetType(AssemblyQualifiedName, AssemblyResolver, null);
+			Type ??= Type.GetType(AssemblyQualifiedName, AssemblyResolver, null);
 		}
 		catch (Exception e)
 		{
@@ -358,8 +357,7 @@ public class TypeSchema
 
 		lock (_typeCache)
 		{
-			if (!_typeCache.ContainsKey(AssemblyQualifiedName))
-				_typeCache.Add(AssemblyQualifiedName, Type!);
+			_typeCache.TryAdd(AssemblyQualifiedName, Type!);
 		}
 	}
 

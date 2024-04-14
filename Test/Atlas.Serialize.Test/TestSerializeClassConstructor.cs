@@ -20,17 +20,12 @@ public class SerializeClassConstructor : TestSerializeBase
 		_serializer = new SerializerMemoryAtlas();
 	}
 
-	public class NoConstructorBaseClass
+	public class NoConstructorBaseClass(int a)
 	{
-		public int A = 1;
+		public int A = a;
 
 		[PrivateData]
 		public int B = 0;
-
-		public NoConstructorBaseClass(int a)
-		{
-			A = a;
-		}
 	}
 
 	public class DerivedClassWithConstructor : NoConstructorBaseClass
@@ -64,7 +59,7 @@ public class SerializeClassConstructor : TestSerializeBase
 	[Test, Description("Serialize No Default Constructor Base Class Reference")]
 	public void SerializeNoDefaultConstructorBaseClassReference()
 	{
-		var input = new DerivedClassWithConstructorReference()
+		var input = new DerivedClassWithConstructorReference
 		{
 			BaseClass = new DerivedClassWithConstructor(1),
 		};
@@ -121,7 +116,7 @@ public class SerializeClassConstructor : TestSerializeBase
 	public void SerializeCustomConstructorListFieldClass()
 	{
 		var item = new CustomConstructorFieldClass(5);
-		var input = new List<CustomConstructorFieldClass>() { item };
+		var input = new List<CustomConstructorFieldClass> { item };
 
 		_serializer!.Save(Call, input);
 		var output = _serializer.Load<List<CustomConstructorFieldClass>>(Call);

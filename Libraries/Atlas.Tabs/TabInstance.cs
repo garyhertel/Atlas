@@ -25,14 +25,9 @@ public interface IInnerTab
 	ITab? Tab { get; }
 }
 
-public class TabInstanceLoadAsync : TabInstance, ITabAsync
+public class TabInstanceLoadAsync(ILoadAsync loadAsync) : TabInstance, ITabAsync
 {
-	public readonly ILoadAsync LoadMethod;
-
-	public TabInstanceLoadAsync(ILoadAsync loadAsync)
-	{
-		LoadMethod = loadAsync;
-	}
+	public readonly ILoadAsync LoadMethod = loadAsync;
 
 	public async Task LoadAsync(Call call, TabModel model)
 	{
@@ -43,16 +38,11 @@ public class TabInstanceLoadAsync : TabInstance, ITabAsync
 	}
 }
 
-public class TabCreatorAsync : TabInstance, ITabAsync
+public class TabCreatorAsync(ITabCreatorAsync creatorAsync) : TabInstance, ITabAsync
 {
-	public readonly ITabCreatorAsync CreatorAsync;
+	public readonly ITabCreatorAsync CreatorAsync = creatorAsync;
 
 	private TabInstance? _innerChildInstance;
-
-	public TabCreatorAsync(ITabCreatorAsync creatorAsync)
-	{
-		CreatorAsync = creatorAsync;
-	}
 
 	public async Task LoadAsync(Call call, TabModel model)
 	{
@@ -116,7 +106,7 @@ public class TabInstance : IDisposable
 	}
 
 	public TabInstance? ParentTabInstance { get; set; }
-	public Dictionary<object, TabInstance> ChildTabInstances { get; set; } = new();
+	public Dictionary<object, TabInstance> ChildTabInstances { get; set; } = [];
 
 	public SynchronizationContext UiContext;
 	public TabBookmark? FilterBookmarkNode;
@@ -170,7 +160,7 @@ public class TabInstance : IDisposable
 
 	public TabInstance RootInstance => ParentTabInstance?.RootInstance ?? this;
 
-	private bool _settingLoaded = false;
+	private bool _settingLoaded;
 
 	public override string ToString() => Label;
 
@@ -191,7 +181,7 @@ public class TabInstance : IDisposable
 		SetStartLoad();
 	}
 
-	public TabInstance? CreateChildTab(ITab iTab)
+	public TabInstance CreateChildTab(ITab iTab)
 	{
 		TabInstance tabInstance = iTab.Create();
 
@@ -226,7 +216,7 @@ public class TabInstance : IDisposable
 		UiContext ??= SynchronizationContext.Current ?? new SynchronizationContext();
 	}
 
-	private void ActionCallback(object? state)
+	private static void ActionCallback(object? state)
 	{
 		Action action = (Action)state!;
 		action.Invoke();
@@ -517,7 +507,7 @@ public class TabInstance : IDisposable
 		if (OnReload != null)
 		{
 			if (this is ITabAsync tabAsync)
-				OnReload.Invoke(this, EventArgs.Empty);
+				OnReload.Invoke(tabAsync, EventArgs.Empty);
 			else
 				UiContext.Send(_ => OnReload(this, EventArgs.Empty), null);
 		}
@@ -739,7 +729,7 @@ public class TabInstance : IDisposable
 
 	protected SortedDictionary<string, T> GetBookmarkSelectedData<T>()
 	{
-		return TabBookmark?.GetSelectedData<T>() ?? new SortedDictionary<string, T>();
+		return TabBookmark?.GetSelectedData<T>() ?? [];
 	}
 
 	public T? GetBookmarkData<T>(string name = TabBookmark.DefaultDataName)

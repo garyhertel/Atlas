@@ -15,9 +15,8 @@ public interface IDataView
 public class DataViewCollection<TDataType, TViewType> where TViewType : IDataView, new()
 {
 	//public event EventHandler<EventArgs> OnDelete; // todo?
-
-	public string? Path;
-	public ItemCollectionUI<TViewType> Items { get; set; } = new();
+	
+	public ItemCollectionUI<TViewType> Items { get; set; } = [];
 
 	public DataRepoView<TDataType> DataRepoView;
 	public DataRepoView<TDataType>? DataRepoSecondary; // Optional: Saves and Deletes goto a 2nd copy
@@ -79,7 +78,7 @@ public class DataViewCollection<TDataType, TViewType> where TViewType : IDataVie
 		{
 			if (e.OldItems == null || e.NewItems?.Count != e.OldItems.Count) return;
 
-			List<TViewType> viewItems = new();
+			List<TViewType> viewItems = [];
 			int index = 0;
 			foreach (IDataItem oldItem in e.OldItems)
 			{
@@ -111,7 +110,7 @@ public class DataViewCollection<TDataType, TViewType> where TViewType : IDataVie
 	public TViewType Add(IDataItem dataItem)
 	{
 		var itemView = new TViewType();
-		itemView.Load(this, dataItem.Object!, LoadParams);
+		itemView.Load(this, dataItem.Object, LoadParams);
 		itemView.OnDelete += Item_OnDelete;
 
 		Items.Add(itemView);
@@ -136,9 +135,8 @@ public class DataViewCollection<TDataType, TViewType> where TViewType : IDataVie
 		DataRepoView.Delete(call, dataItem.Key);
 		DataRepoSecondary?.Delete(call, dataItem.Key);
 
-		if (_valueLookup.TryGetValue(dataItem, out TViewType? existing))
+		if (_valueLookup.Remove(dataItem, out TViewType? existing))
 		{
-			_valueLookup.Remove(dataItem);
 			_dataItemLookup.Remove(existing);
 			Items.Remove(existing);
 		}

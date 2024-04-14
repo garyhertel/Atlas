@@ -45,7 +45,7 @@ public class LazyClass
 {
 	public Type OriginalType;
 	public Type NewType;
-	public Dictionary<PropertyInfo, LazyProperty> LazyProperties = new();
+	public Dictionary<PropertyInfo, LazyProperty> LazyProperties = [];
 
 	public LazyClass(Type type, List<TypeRepoObject.PropertyRepo> propertyRepos)
 	{
@@ -66,9 +66,9 @@ public class LazyClass
 	public TypeInfo CreateLazyType(List<TypeRepoObject.PropertyRepo> propertyRepos)
 	{
 		TypeBuilder typeBuilder = GetTypeBuilder();
-		ConstructorBuilder constructor = typeBuilder.DefineDefaultConstructor(MethodAttributes.Public | MethodAttributes.SpecialName | MethodAttributes.RTSpecialName);
+		// ConstructorBuilder constructor = typeBuilder.DefineDefaultConstructor(MethodAttributes.Public | MethodAttributes.SpecialName | MethodAttributes.RTSpecialName);
 
-		PropertyInfo[] propertyInfos = OriginalType.GetProperties().OrderBy(x => x.MetadataToken).ToArray();
+		// PropertyInfo[] propertyInfos = OriginalType.GetProperties().OrderBy(x => x.MetadataToken).ToArray();
 
 		foreach (TypeRepoObject.PropertyRepo propertyRepo in propertyRepos)
 		{
@@ -81,7 +81,7 @@ public class LazyClass
 				propertyRepo.LazyProperty = CreateLazyProperty(typeBuilder, propertyInfo);
 		}
 
-		TypeInfo objectType = typeBuilder.CreateTypeInfo()!;
+		TypeInfo objectType = typeBuilder.CreateTypeInfo();
 		return objectType;
 	}
 
@@ -192,7 +192,7 @@ public class LazyClass
 		propertyBuilder.SetGetMethod(getPropertyMethodBuilder);
 		propertyBuilder.SetSetMethod(setPropertyMethodBuilder);
 
-		var lazyProperty = new LazyProperty()
+		var lazyProperty = new LazyProperty
 		{
 			PropertyInfoOriginal = propertyInfo,
 			PropertyBuilder = propertyBuilder,

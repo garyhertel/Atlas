@@ -24,7 +24,7 @@ public class TabBookmark
 	public SelectedRow? SelectedRow { get; set; } // The parent selection that created this bookmark
 
 	public TabViewSettings ViewSettings = new(); // list selections, doesn't know about children
-	public Dictionary<string, TabBookmark> ChildBookmarks { get; set; } = new(); // doesn't know which tabData to use, maps id to child info
+	public Dictionary<string, TabBookmark> ChildBookmarks { get; set; } = []; // doesn't know which tabData to use, maps id to child info
 	public Dictionary<string, object?>? BookmarkData { get; set; }
 
 	public string Address
@@ -61,7 +61,7 @@ public class TabBookmark
 
 	// Temporary, Only FindMatches() uses, refactor these out?
 	[NonSerialized]
-	public HashSet<object> SelectedObjects = new(); // does this work with multiple TabDatas?
+	public HashSet<object> SelectedObjects = []; // does this work with multiple TabDatas?
 
 	[NonSerialized]
 	public TabModel? TabModel;
@@ -82,8 +82,7 @@ public class TabBookmark
 
 			var newBookmark = new TabBookmark();
 			newBookmark.Select(dataKey);
-			if (tabBookmark != null)
-				tabBookmark.ChildBookmarks.Add(prevKey!, newBookmark);
+			tabBookmark?.ChildBookmarks.Add(prevKey!, newBookmark);
 			tabBookmark = newBookmark;
 			rootBookmark ??= tabBookmark;
 			prevKey = dataKey;
@@ -108,7 +107,7 @@ public class TabBookmark
 	// Shallow Clone
 	public TabBookmark Clone()
 	{
-		return new TabBookmark()
+		return new TabBookmark
 		{
 			Bookmark = Bookmark,
 			Name = Name,
@@ -122,7 +121,7 @@ public class TabBookmark
 	{
 		ChildBookmarks.Add(tabBookmark.Name!, tabBookmark);
 
-		var selectedRow = tabBookmark.SelectedRow ?? new SelectedRow()
+		var selectedRow = tabBookmark.SelectedRow ?? new SelectedRow
 		{
 			Label = tabBookmark.Name,
 		};
@@ -176,7 +175,7 @@ public class TabBookmark
 		var selectedRows = new HashSet<SelectedRow>();
 		foreach (string label in labels)
 		{
-			var selectedRow = new SelectedRow()
+			var selectedRow = new SelectedRow
 			{
 				Label = label,
 			};
@@ -187,9 +186,9 @@ public class TabBookmark
 
 	private void SelectRows(HashSet<SelectedRow> selectedRows)
 	{
-		ViewSettings = new TabViewSettings()
+		ViewSettings = new TabViewSettings
 		{
-			TabDataSettings = new List<TabDataSettings>()
+			TabDataSettings = new List<TabDataSettings>
 			{
 				new()
 				{
@@ -202,7 +201,7 @@ public class TabBookmark
 
 	public TabBookmark AddChild(string dataKey)
 	{
-		var childBookmark = new TabBookmark()
+		var childBookmark = new TabBookmark
 		{
 			Bookmark = Bookmark,
 		};
@@ -215,10 +214,7 @@ public class TabBookmark
 		if (ChildBookmarks == null)
 			return null;
 
-		if (ChildBookmarks.TryGetValue(dataKey, out TabBookmark? childBookmark))
-			return childBookmark;
-
-		return null;
+		return ChildBookmarks.GetValueOrDefault(dataKey);
 	}
 
 	public void Import(Project project)

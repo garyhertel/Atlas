@@ -94,8 +94,8 @@ public class TestClone : TestSerializeBase
 
 	private class MultipleArrays
 	{
-		public int[] Array1 = { 1, 2 };
-		//public int[] Array2 = { 3, 4 };
+		public int[] Array1 = [1, 2];
+		//public int[] Array2 = [3, 4];
 	}
 
 	[Test, Description("ArrayMultipleTest")]
@@ -109,8 +109,8 @@ public class TestClone : TestSerializeBase
 	[Test, Description("ArrayTest")]
 	public void ArrayTest()
 	{
-		int[] array1 = Array.Empty<int>();
-		int[] array2 = Array.Empty<int>();
+		int[] array1 = [];
+		int[] array2 = [];
 
 		var idxObjectToIndex = new Dictionary<object, int>(); // for saving, not filled in for loading
 		idxObjectToIndex[array1] = idxObjectToIndex.Count;
@@ -137,7 +137,7 @@ public class TestClone : TestSerializeBase
 	[Test, Description("Clone Properties")]
 	public void CloneProperties()
 	{
-		var input = new Properties()
+		var input = new Properties
 		{
 			UintTest = 5,
 			DoubleTest = 2.5,
@@ -153,7 +153,7 @@ public class TestClone : TestSerializeBase
 	[Test, Description("Clone Primitives")]
 	public void ClonePrimitives()
 	{
-		var input = new Primitives()
+		var input = new Primitives
 		{
 			UintTest = 5,
 			DoubleTest = 2.5,
@@ -174,7 +174,7 @@ public class TestClone : TestSerializeBase
 	[Test, Description("Clone Struct")]
 	public void CloneStruct()
 	{
-		var input = new StructTest()
+		var input = new StructTest
 		{
 			value = 5
 		};
@@ -223,7 +223,7 @@ public class TestClone : TestSerializeBase
 	[Test, Description("Clone Nullable Primitive Properties")]
 	public void CloneNullablePrimitiveProperties()
 	{
-		var input = new NullablePrimitiveProperties()
+		var input = new NullablePrimitiveProperties
 		{
 			UintTest = 5,
 			DoubleTest = 2.5
@@ -247,7 +247,7 @@ public class TestClone : TestSerializeBase
 	[Test, Description("Clone Nullable Primitives")]
 	public void CloneNullablePrimitives()
 	{
-		var input = new NullablePrimitives()
+		var input = new NullablePrimitives
 		{
 			UintTest = 5,
 			DoubleTest = 2.5
@@ -271,7 +271,7 @@ public class TestClone : TestSerializeBase
 	[Test, Description("Clone Enum")]
 	public void CloneEnum()
 	{
-		var input = new EnumTest()
+		var input = new EnumTest
 		{
 			TestEnum = EnumTest.MyEnum.b,
 		};
@@ -342,7 +342,7 @@ public class TestClone : TestSerializeBase
 	[Test, Description("Clone Array")]
 	public void CloneArray()
 	{
-		int[] input = { 1, 2 };
+		int[] input = [1, 2];
 		input[0] = 5;
 
 		int[] output = _serializer.Clone(Log, input)!;
@@ -369,7 +369,7 @@ public class TestClone : TestSerializeBase
 	[Test, Description("Clone Attribute NonSerialized")]
 	public void CloneAttributeNonSerialized()
 	{
-		var input = new NonSerializedTest()
+		var input = new NonSerializedTest
 		{
 			NonSerialized = 5,
 			Serialized = 10,
@@ -424,7 +424,7 @@ public class TestClone : TestSerializeBase
 
 	public class DictionaryTest
 	{
-		public Dictionary<Parent, Child> Items = new();
+		public Dictionary<Parent, Child> Items = [];
 
 		public DictionaryTest()
 		{
@@ -470,7 +470,7 @@ public class TestClone : TestSerializeBase
 	{
 		var input = new List<Base>
 		{
-			new SubClass() { A = 5 }
+			new SubClass { A = 5 }
 		};
 		var output = _serializer.Clone(Log, input)!;
 
@@ -490,7 +490,7 @@ public class TestClone : TestSerializeBase
 		};
 		input[s] = b;
 
-		var output = _serializer!.Clone(Log, input);
+		var output = _serializer.Clone(Log, input);
 
 		Assert.AreEqual(3, s.B);
 	}

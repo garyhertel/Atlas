@@ -13,7 +13,7 @@ public class TabTestGridColumnTypes : ITab
 			var items = new ItemCollection<ManyTypesItem>();
 			for (int i = 0; i < 10; i++)
 			{
-				var testItem = new ManyTypesItem()
+				var testItem = new ManyTypesItem
 				{
 					Integer = i,
 					Long = (long)i * int.MaxValue,
@@ -37,12 +37,12 @@ public class TabTestGridColumnTypes : ITab
 
 	public class ManyTypesItem
 	{
-		public int Integer { get; set; } = 0;
+		public int Integer { get; set; } = 123;
 		public long Long { get; set; } = 1234567890123456789;
 		public decimal Decimal { get; set; } = 123456789.0123456789M;
 		public bool Bool { get; set; }
 		public byte[] ByteArray { get; set; } = new byte[256];
-		public List<int> IntegerList { get; set; } = new();
+		public List<int> IntegerList { get; set; } = [];
 		public DateTime DateTime { get; set; }
 		public TimeSpan TimeSpan { get; set; }
 		public object? Object { get; set; }

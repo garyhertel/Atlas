@@ -1,4 +1,5 @@
 using Atlas.Core;
+using Atlas.Core.Utilities;
 using Atlas.Extensions;
 using System.ComponentModel;
 using System.Reflection;
@@ -24,7 +25,7 @@ public class ListProperty : ListMember, IPropertyEditable
 		get
 		{
 			bool propertyReadOnly = (PropertyInfo.GetCustomAttribute<ReadOnlyAttribute>() != null);
-			return PropertyInfo.CanWrite && !propertyReadOnly;
+			return PropertyInfo.CanWrite && PropertyInfo.SetMethod?.IsPublic == true && !propertyReadOnly;
 		}
 	}
 
@@ -151,7 +152,7 @@ public class ListProperty : ListMember, IPropertyEditable
 	// If a member specifies [Inline], replace this member with all it's members
 	public static ItemCollection<ListProperty> ExpandInlined(ItemCollection<ListProperty> listProperties, bool includeBaseTypes)
 	{
-		ItemCollection<ListProperty> newProperties = new();
+		ItemCollection<ListProperty> newProperties = [];
 		foreach (ListProperty listProperty in listProperties)
 		{
 			if (listProperty.GetCustomAttribute<InlineAttribute>() != null)
@@ -214,7 +215,7 @@ public class ListProperty : ListMember, IPropertyEditable
 	}
 
 	// This can be slow due to lazy property loading
-	public static ItemCollection<ListProperty> Sort(ItemCollection<ListProperty> listProperties)
+	public static ItemCollection<ListProperty> Sort(IEnumerable<ListProperty> listProperties)
 	{
 		var sortedProperties = listProperties
 			.OrderByDescending(i => i.GetCustomAttribute<AutoSelectAttribute>() != null)

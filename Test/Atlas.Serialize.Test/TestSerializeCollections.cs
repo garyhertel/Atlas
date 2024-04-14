@@ -23,7 +23,7 @@ public class TestSerializeCollections : TestSerializeBase
 	[Test, Description("Serialize Array")]
 	public void SerializeArray()
 	{
-		int[] input = { 1, 2 };
+		int[] input = [1, 2];
 		input[0] = 5;
 
 		_serializer.Save(Call, input);
@@ -49,8 +49,8 @@ public class TestSerializeCollections : TestSerializeBase
 
 	private class MultipleArrays
 	{
-		public int[] Array1 = { 1, 2 };
-		//public int[] Array2 = { 3, 4 };
+		public int[] Array1 = [1, 2];
+		//public int[] Array2 = [3, 4];
 	}
 
 	[Test, Description("ArrayMultipleTest")]
@@ -66,8 +66,8 @@ public class TestSerializeCollections : TestSerializeBase
 	[Test, Description("ArrayTest")]
 	public void ArrayTest()
 	{
-		int[] array1 = Array.Empty<int>();
-		int[] array2 = Array.Empty<int>();
+		int[] array1 = [];
+		int[] array2 = [];
 
 		var idxObjectToIndex = new Dictionary<object, int>(); // for saving, not filled in for loading
 		idxObjectToIndex[array1] = idxObjectToIndex.Count;
@@ -231,18 +231,11 @@ public class TestSerializeCollections : TestSerializeBase
 		public bool Pinned;
 	}
 
-	public class TabInstanceConfiguration
-	{
-		public HashSet<SelectedItem> Selected = new();
-		public int? SplitterDistance;
-		public int NumColumns;
-	}
-
 	[Test, Description("Serialize HashSet")]
 	public void SerializeHashSetObject()
 	{
 		var input = new HashSet<SelectedItem>();
-		var inputItem = new SelectedItem()
+		var inputItem = new SelectedItem
 		{
 			Label = "abc",
 			Pinned = true,

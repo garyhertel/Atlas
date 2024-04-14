@@ -14,15 +14,15 @@ public class TestFieldVisibility : TestBase
 		Initialize("Core");
 	}
 
-	private FieldInfo GetFieldInfo(object obj, string fieldName)
+	private static FieldInfo GetFieldInfo(object obj, string fieldName)
 	{
-		return obj.GetType()
+		return obj
+			.GetType()
 			.GetFields()
-			.Where(p => p.Name == fieldName)
-			.Single();
+			.Single(p => p.Name == fieldName);
 	}
 
-	private ListField GetListField(object obj, string fieldName)
+	private static ListField GetListField(object obj, string fieldName)
 	{
 		FieldInfo fieldInfo = GetFieldInfo(obj, fieldName);
 		return new ListField(obj, fieldInfo);

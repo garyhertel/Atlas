@@ -13,7 +13,7 @@ public class TabTestGridColumnOrdering : ITab
 			var items = new ItemCollection<TestChild>();
 			for (int i = 0; i < 2; i++)
 			{
-				var item = new TestChild()
+				var item = new TestChild
 				{
 				};
 
@@ -38,7 +38,7 @@ public class TabTestGridColumnOrdering : ITab
 	public class TestChild : TestParent
 	{
 		public override string Overriden { get; set; } = "5";
-		public override string Abstract { get; } = "6";
+		public override string Abstract => "6";
 
 		public override string ToString() => Original;
 	}

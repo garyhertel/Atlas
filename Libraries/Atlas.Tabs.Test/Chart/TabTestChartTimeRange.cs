@@ -1,4 +1,5 @@
 using Atlas.Core;
+using Atlas.Core.Charts;
 using Atlas.Extensions;
 using System.Drawing;
 
@@ -18,7 +19,7 @@ public class TabTestChartTimeRangeValue : ITab
 			AddToys(model, endTime);
 		}
 
-		private DateTime AddAnimals(TabModel model, DateTime endTime)
+		private static DateTime AddAnimals(TabModel model, DateTime endTime)
 		{
 			var chartView = new ChartView("Animals")
 			{
@@ -29,7 +30,7 @@ public class TabTestChartTimeRangeValue : ITab
 			chartView.AddSeries("Cats", ChartSamples.CreateTimeSeries(endTime), seriesType: SeriesType.Average);
 			chartView.AddSeries("Dogs", ChartSamples.CreateTimeSeries(endTime), seriesType: SeriesType.Average);
 
-			chartView.Annotations.Add(new ChartAnnotation()
+			chartView.Annotations.Add(new ChartAnnotation
 			{
 				Text = "Too Many",
 				Y = 2_000_000_000,
@@ -39,7 +40,7 @@ public class TabTestChartTimeRangeValue : ITab
 			return endTime;
 		}
 
-		private void AddToys(TabModel model, DateTime endTime)
+		private static void AddToys(TabModel model, DateTime endTime)
 		{
 			var chartViewToys = new ChartView("Toys")
 			{

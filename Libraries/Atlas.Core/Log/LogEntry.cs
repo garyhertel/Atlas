@@ -5,7 +5,7 @@ namespace Atlas.Core;
 
 public class EventLogMessage : EventArgs
 {
-	public List<LogEntry> Entries = new(); // 1st is new log message, last is highest parent log message
+	public List<LogEntry> Entries = []; // 1st is new log message, last is highest parent log message
 }
 
 public class LogSettings
@@ -23,7 +23,7 @@ public class LogSettings
 
 	public LogSettings Clone()
 	{
-		return new LogSettings()
+		return new LogSettings
 		{
 			MaxLogItems = MaxLogItems,
 			MinLogLevel = MinLogLevel,
@@ -119,7 +119,7 @@ public class LogEntry : INotifyPropertyChanged
 
 			foreach (Tag tag in Tags)
 			{
-				line += tag.ToString() + " ";
+				line += tag + " ";
 			}
 			return line;
 		}

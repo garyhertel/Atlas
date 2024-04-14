@@ -1,4 +1,5 @@
 using Atlas.Core;
+using Atlas.Core.Utilities;
 using Atlas.Extensions;
 using Atlas.Resources;
 using Atlas.Serialize;
@@ -104,7 +105,7 @@ public class TabDirectory(string path, DataRepoView<NodeView>? dataRepoNodes = n
 				.ToList();
 		}
 
-		private void Delete(Call call)
+		/*private void Delete(Call call)
 		{
 			// todo: Confirmation prompt?
 			List<SelectedRow> selectedRows = GetSelectedRows();
@@ -119,13 +120,16 @@ public class TabDirectory(string path, DataRepoView<NodeView>? dataRepoNodes = n
 					File.Delete(path);
 			}
 			Reload();
-		}
+		}*/
 	}
 }
 
 // Shows if only directories present
 public interface IDirectoryView : IHasLinks
 {
+	[Name("  ★"), Editing]
+	public bool Favorite { get; set; }
+
 	public string Name { get; }
 }
 
@@ -168,11 +172,11 @@ public abstract class NodeView : IHasLinks
 
 	public override string ToString() => Name;
 
-	public NodeView(string path)
+	protected NodeView(string path)
 		: this(path, null)
 	{ }
 
-	public NodeView(string path, DataRepoView<NodeView>? dataRepoNodes = null)
+	protected NodeView(string path, DataRepoView<NodeView>? dataRepoNodes = null)
 	{
 		Path = path;
 		DataRepo = dataRepoNodes;

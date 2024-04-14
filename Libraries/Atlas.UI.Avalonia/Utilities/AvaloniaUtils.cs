@@ -1,4 +1,3 @@
-using Atlas.Extensions;
 using Atlas.Tabs;
 using Atlas.UI.Avalonia.View;
 using Avalonia;
@@ -9,7 +8,7 @@ using Avalonia.Input;
 using Avalonia.Media;
 using System.ComponentModel.DataAnnotations;
 
-namespace Atlas.UI.Avalonia;
+namespace Atlas.UI.Avalonia.Utilities;
 
 public static class AvaloniaUtils
 {
@@ -18,7 +17,7 @@ public static class AvaloniaUtils
 	{
 		var list = new AvaloniaList<object>();
 
-		var menuItemCopy = new TabMenuItem()
+		var menuItemCopy = new TabMenuItem
 		{
 			Header = "_Copy",
 		};
@@ -74,7 +73,7 @@ public static class AvaloniaUtils
 	{
 		var list = new AvaloniaList<object>();
 
-		var menuItemCopy = new TabMenuItem()
+		var menuItemCopy = new TabMenuItem
 		{
 			Header = "_Copy",
 		};
@@ -107,7 +106,7 @@ public static class AvaloniaUtils
 	{
 		foreach (var key in keyGestures)
 		{
-			var args = new KeyEventArgs()
+			var args = new KeyEventArgs
 			{
 				Key = key.Key,
 				KeyModifiers = key.KeyModifiers,

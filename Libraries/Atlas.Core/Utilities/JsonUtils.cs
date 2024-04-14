@@ -1,7 +1,7 @@
 using Newtonsoft.Json;
 using System.Diagnostics.CodeAnalysis;
 
-namespace Atlas.Core;
+namespace Atlas.Core.Utilities;
 
 public static class JsonUtils
 {
@@ -15,7 +15,7 @@ public static class JsonUtils
 	public static bool TryFormat(string text, [NotNullWhen(true)] out string? json)
 	{
 		json = default;
-		if (!text.StartsWith("{")) return false;
+		if (!text.StartsWith('{')) return false;
 
 		try
 		{

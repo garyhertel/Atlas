@@ -17,8 +17,8 @@ public class TypeRepoObject : TypeRepo
 		}
 	}
 
-	public List<FieldRepo> FieldRepos = new();
-	public List<PropertyRepo> PropertyRepos = new();
+	public List<FieldRepo> FieldRepos = [];
+	public List<PropertyRepo> PropertyRepos = [];
 
 	public LazyClass? LazyClass;
 
@@ -72,7 +72,7 @@ public class TypeRepoObject : TypeRepo
 		public readonly TypeRepo? TypeRepo;
 		public LazyProperty? LazyProperty;
 
-		public override string ToString() => PropertySchema.ToString() + " (" + TypeRepo!.ToString() + ")";
+		public override string ToString() => $"{PropertySchema} ({TypeRepo})";
 
 		public PropertyRepo(PropertySchema propertySchema, TypeRepo? typeRepo = null)
 		{
@@ -111,7 +111,7 @@ public class TypeRepoObject : TypeRepo
 				if (TypeRepo.TypeSchema.IsPrimitive)
 				{
 					// todo: construct temp object and store default instead for speed?
-					dynamic? currentValue = PropertySchema.PropertyInfo!.GetValue(obj)!;
+					dynamic? currentValue = PropertySchema.PropertyInfo!.GetValue(obj);
 					if ((dynamic?)valueObject == currentValue)
 						return;
 				}
@@ -251,14 +251,11 @@ public class TypeRepoObject : TypeRepo
 
 			propertySchema.PropertyTypeSchema = typeRepo.TypeSchema;
 
-			if (typeRepo != null)
-			{
-				var propertyRepo = new PropertyRepo(propertySchema, typeRepo);
-				PropertyRepos.Add(propertyRepo);
+			var propertyRepo = new PropertyRepo(propertySchema, typeRepo);
+			PropertyRepos.Add(propertyRepo);
 
-				if (propertySchema.IsWriteable && !propertySchema.Type!.IsPrimitive)
-					lazyPropertyRepos.Add(propertyRepo);
-			}
+			if (propertySchema.IsWriteable && !propertySchema.Type!.IsPrimitive)
+				lazyPropertyRepos.Add(propertyRepo);
 		}
 
 		// should we add an attribute for this instead?
@@ -275,7 +272,7 @@ public class TypeRepoObject : TypeRepo
 		}*/
 	}
 
-	private readonly List<object> _constructorRepos = new();
+	private readonly List<object> _constructorRepos = [];
 
 	public void InitializeConstructor(Log log)
 	{
@@ -317,7 +314,7 @@ public class TypeRepoObject : TypeRepo
 		Dictionary<FieldRepo, object?> fieldValues = FieldRepos.ToDictionary(f => f, f => f.Get());
 		Dictionary<PropertyRepo, object?> propertyValues = PropertyRepos.ToDictionary(p => p, p => p.Get());
 
-		List<object?> parameters = new();
+		List<object?> parameters = [];
 		foreach (var repo in _constructorRepos)
 		{
 			if (repo is FieldRepo fieldRepo)
@@ -325,18 +322,18 @@ public class TypeRepoObject : TypeRepo
 				if (fieldValues.TryGetValue(fieldRepo, out object? value))
 					parameters.Add(value);
 				else
-					throw new Exception("Missing FieldRepo: " + fieldRepo.ToString());
+					throw new Exception("Missing FieldRepo: " + fieldRepo);
 			}
 			else if (repo is PropertyRepo propertyRepo)
 			{
 				if (propertyValues.TryGetValue(propertyRepo, out object? value))
 					parameters.Add(value);
 				else
-					throw new Exception("Missing PropertyRepo: " + propertyRepo.ToString());
+					throw new Exception("Missing PropertyRepo: " + propertyRepo);
 			}
 			else
 			{
-				throw new Exception("Unhandled repo type: " + repo.ToString());
+				throw new Exception("Unhandled repo type: " + repo);
 			}
 		}
 
@@ -414,7 +411,7 @@ public class TypeRepoObject : TypeRepo
 		{
 			if (!propertySchema.ShouldWrite) continue;
 
-			object? propertyValue = propertySchema.PropertyInfo!.GetValue(value)!;
+			object? propertyValue = propertySchema.PropertyInfo!.GetValue(value);
 			Serializer.AddObjectRef(propertyValue);
 		}
 

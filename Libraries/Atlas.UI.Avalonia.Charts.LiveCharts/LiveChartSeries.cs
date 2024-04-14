@@ -1,4 +1,5 @@
 using Atlas.Core;
+using Atlas.Core.Utilities;
 using Atlas.Extensions;
 using Avalonia.Media;
 using Avalonia.Threading;
@@ -27,7 +28,7 @@ public class LiveChartSeries //: ChartSeries<ISeries>
 	public readonly bool UseDateTimeAxis;
 
 	public LiveChartLineSeries LineSeries;
-	public List<LiveChartPoint> DataPoints = new();
+	public List<LiveChartPoint> DataPoints = [];
 
 	public override string? ToString() => ListSeries?.ToString();
 
@@ -73,7 +74,7 @@ public class LiveChartSeries //: ChartSeries<ISeries>
 		}
 	}
 
-	private bool HasSinglePoint(List<LiveChartPoint> dataPoints)
+	private static bool HasSinglePoint(List<LiveChartPoint> dataPoints)
 	{
 		bool prevNan1 = false;
 		bool prevNan2 = false;
@@ -101,7 +102,7 @@ public class LiveChartSeries //: ChartSeries<ISeries>
 
 	public string[] GetTooltipLines(ChartPoint point)
 	{
-		List<string> lines = new();
+		List<string> lines = [];
 
 		if (point.Context.DataSource is LiveChartPoint liveChartPoint)
 		{
@@ -222,7 +223,7 @@ public class LiveChartSeries //: ChartSeries<ISeries>
 
 		double firstX = dataPoints.First().X!.Value;
 		double firstBinX = ((int)(firstX / xBinSize)) * xBinSize; // use start of interval
-		double lastBinX = dataPoints.Last()!.X!.Value;
+		double lastBinX = dataPoints.Last().X!.Value;
 		int numBins = (int)Math.Ceiling((lastBinX - firstBinX) / xBinSize) + 1;
 		double[] bins = new double[numBins];
 		foreach (LiveChartPoint dataPoint in dataPoints)

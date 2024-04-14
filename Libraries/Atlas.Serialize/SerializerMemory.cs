@@ -9,8 +9,6 @@ public abstract class SerializerMemory
 	protected MemoryStream Stream { get; set; } = new(); // move to atlas class?
 	public bool PublicOnly { get; set; } // Whether to save classes with the [PublicData] attribute
 
-	public SerializerMemory() { }
-
 	public abstract void Save(Call call, object obj);
 
 	public abstract bool TryLoad<T>(out T? obj, Call? call = null) where T : class;
@@ -95,7 +93,7 @@ public abstract class SerializerMemory
 		ConvertEncodedToStream(base64, Stream);
 	}
 
-	public static string? ToBase64String(Call call, object obj, bool publicOnly = false)
+	public static string ToBase64String(Call call, object obj, bool publicOnly = false)
 	{
 		call ??= new Call();
 

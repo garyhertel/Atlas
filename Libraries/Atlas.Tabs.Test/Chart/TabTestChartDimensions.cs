@@ -1,4 +1,5 @@
 using Atlas.Core;
+using Atlas.Core.Charts;
 using Atlas.Extensions;
 
 namespace Atlas.Tabs.Test.Chart;
@@ -30,13 +31,13 @@ public class TabTestChartDimensions : ITab
 	{
 		private const int MaxValue = 100;
 
-		private readonly ItemCollection<ChartSample> _samples = new();
+		private readonly ItemCollection<ChartSample> _samples = [];
 		private readonly Random _random = new();
 		private readonly DateTime _baseDateTime = DateTime.Now.Trim(TimeSpan.FromMinutes(1));
 
 		public override void Load(Call call, TabModel model)
 		{
-			model.Actions = new List<TaskCreator>()
+			model.Actions = new List<TaskCreator>
 			{
 				new TaskDelegate("Add Entry", AddEntry),
 				new TaskDelegate("Start: 1 Entry / second", StartTask, true),
@@ -56,7 +57,7 @@ public class TabTestChartDimensions : ITab
 		{
 			for (int i = 0; i < 10; i++)
 			{
-				if (i == 4 || i == 6)
+				if (i is 4 or 6)
 				{
 					AddNullSample(dimension, i);
 				}
@@ -91,7 +92,7 @@ public class TabTestChartDimensions : ITab
 				Animal = animal,
 				TimeStamp = _baseDateTime.AddMinutes(i),
 				Value = _random.Next(50, MaxValue),
-				TestItem = new TestItem()
+				TestItem = new TestItem
 				{
 					Amount = _random.Next(0, MaxValue),
 				},
@@ -105,7 +106,7 @@ public class TabTestChartDimensions : ITab
 			{
 				Animal = animal,
 				TimeStamp = _baseDateTime.AddMinutes(i),
-				TestItem = new TestItem()
+				TestItem = new TestItem
 				{
 					Amount = _random.Next(0, MaxValue),
 				},

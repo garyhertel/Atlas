@@ -1,11 +1,11 @@
-using Atlas.Core;
+using Atlas.Core.Utilities;
 using Atlas.UI.Avalonia;
 using Avalonia.Controls;
 using Avalonia.Data;
 using System.Collections;
 using System.Reflection;
 using System.Text;
-using static Atlas.UI.Avalonia.DataGridUtils;
+using static Atlas.UI.Avalonia.Utilities.DataGridUtils;
 
 namespace Atlas.Extensions;
 
@@ -15,8 +15,8 @@ public static class DataGridExtensions
 
 	public static string ColumnToStringTable(this DataGrid dataGrid, DataGridBoundColumn column)
 	{
-		if (dataGrid == null) throw new ArgumentNullException(nameof(dataGrid));
-		if (column == null) throw new ArgumentNullException(nameof(column));
+		ArgumentNullException.ThrowIfNull(dataGrid);
+		ArgumentNullException.ThrowIfNull(column);
 
 		var sb = new StringBuilder();
 		foreach (var item in dataGrid.ItemsSource)
@@ -29,8 +29,8 @@ public static class DataGridExtensions
 
 	public static string SelectedColumnToString(this DataGrid dataGrid, DataGridBoundColumn column)
 	{
-		if (dataGrid == null) throw new ArgumentNullException(nameof(dataGrid));
-		if (column == null) throw new ArgumentNullException(nameof(column));
+		ArgumentNullException.ThrowIfNull(dataGrid);
+		ArgumentNullException.ThrowIfNull(column);
 
 		var sb = new StringBuilder();
 		foreach (var item in dataGrid.SelectedItems)
@@ -62,7 +62,7 @@ public static class DataGridExtensions
 
 	public static string? RowToString(this DataGrid dataGrid, object? obj)
 	{
-		if (dataGrid == null) throw new ArgumentNullException(nameof(dataGrid));
+		ArgumentNullException.ThrowIfNull(dataGrid);
 
 		if (obj == null)
 			return null;
@@ -94,7 +94,7 @@ public static class DataGridExtensions
 
 	public static string SelectedToString(this DataGrid dataGrid)
 	{
-		if (dataGrid == null) throw new ArgumentNullException(nameof(dataGrid));
+		ArgumentNullException.ThrowIfNull(dataGrid);
 
 		GetDataGridContents(dataGrid, dataGrid.SelectedItems,
 			out List<ColumnInfo> columns,
@@ -105,7 +105,7 @@ public static class DataGridExtensions
 
 	public static string SelectedToCsv(this DataGrid dataGrid)
 	{
-		if (dataGrid == null) throw new ArgumentNullException(nameof(dataGrid));
+		ArgumentNullException.ThrowIfNull(dataGrid);
 
 		GetDataGridContents(dataGrid, dataGrid.SelectedItems,
 			out List<ColumnInfo> columns,
@@ -116,7 +116,7 @@ public static class DataGridExtensions
 
 	public static string ToStringTable(this DataGrid dataGrid)
 	{
-		if (dataGrid == null) throw new ArgumentNullException(nameof(dataGrid));
+		ArgumentNullException.ThrowIfNull(dataGrid);
 
 		GetDataGridContents(dataGrid, dataGrid.ItemsSource,
 			out List<ColumnInfo> columns,
@@ -127,7 +127,7 @@ public static class DataGridExtensions
 
 	public static string ToCsv(this DataGrid dataGrid)
 	{
-		if (dataGrid == null) throw new ArgumentNullException(nameof(dataGrid));
+		ArgumentNullException.ThrowIfNull(dataGrid);
 
 		GetDataGridContents(dataGrid, dataGrid.ItemsSource,
 			out List<ColumnInfo> columns,
@@ -172,8 +172,8 @@ public static class DataGridExtensions
 
 	private static void GetDataGridContents(DataGrid dataGrid, IEnumerable items, out List<ColumnInfo> columns, out List<List<string>> contentRows, int maxValueLength = MaxValueLength)
 	{
-		columns = new List<ColumnInfo>();
-		contentRows = new List<List<string>>();
+		columns = [];
+		contentRows = [];
 		if (dataGrid == null || items == null) return;
 
 		var visibleColumns = new Dictionary<int, DataGridColumn>();

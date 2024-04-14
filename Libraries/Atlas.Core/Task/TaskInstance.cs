@@ -23,7 +23,7 @@ public class TaskInstance : INotifyPropertyChanged
 	public Call Call { get; set; } = new();
 
 	[InnerValue, HiddenColumn]
-	public Log? Log => Call.Log;
+	public Log Log => Call.Log;
 
 	[HiddenColumn]
 	public bool ShowTask { get; set; }
@@ -37,13 +37,13 @@ public class TaskInstance : INotifyPropertyChanged
 	public string Status { get; set; } = "Running";
 	public string? Message { get; set; }
 
-	public long ProgressMax { get; set; } = 0;
+	public long ProgressMax { get; set; }
 
 	public bool Errored { get; set; }
 	public bool Finished { get; set; }
 
 	public TaskInstance? ParentTask { get; set; }
-	public List<TaskInstance> SubTasks { get; set; } = new();
+	public List<TaskInstance> SubTasks { get; set; } = [];
 
 	private int? _taskCount;
 	public int TaskCount
@@ -97,7 +97,7 @@ public class TaskInstance : INotifyPropertyChanged
 				return;
 
 			_percent = value;
-			NotifyPropertyChanged(nameof(Percent));
+			NotifyPropertyChanged();
 		}
 	}
 	private double _percent;
@@ -116,7 +116,7 @@ public class TaskInstance : INotifyPropertyChanged
 				return;
 
 			_progress = Math.Min(value, ProgressMax);
-			NotifyPropertyChanged(nameof(Progress));
+			NotifyPropertyChanged();
 
 			UpdatePercent();
 
@@ -170,7 +170,7 @@ public class TaskInstance : INotifyPropertyChanged
 	// allows having progress broken down into multiple tasks
 	public TaskInstance AddSubTask(Call call)
 	{
-		var subTask = new TaskInstance()
+		var subTask = new TaskInstance
 		{
 			Label = call.Name,
 			Creator = Creator,
@@ -237,7 +237,7 @@ public class TaskInstance : INotifyPropertyChanged
 			else
 			{
 				Status = TaskStatus.ToString();
-				Message = Log!.Text; // todo: First log entry with highest log level?
+				Message = Log.Text; // todo: First log entry with highest log level?
 			}
 		}
 

@@ -1,4 +1,5 @@
 using Atlas.Core;
+using Atlas.Core.Utilities;
 using Atlas.Extensions;
 using Atlas.Resources;
 
@@ -38,7 +39,7 @@ public class TabTestToolbar : ITab
 			Reload();
 		}
 
-		private void OpenBrowser(Call call)
+		private static void OpenBrowser(Call call)
 		{
 			string uri = "https://www.wikipedia.org/";
 			ProcessUtils.OpenBrowser(uri);

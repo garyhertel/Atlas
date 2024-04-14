@@ -13,7 +13,7 @@ public class TestTabItemCollection : TestBase
 		Initialize("TabItemCollection");
 	}
 
-	public void TestSelected(IList list, params object[] selectedObjects)
+	private static void TestSelected(IList list, params object[] selectedObjects)
 	{
 		TabItemCollection collection = new(list);
 
@@ -59,76 +59,61 @@ public class TestTabItemCollection : TestBase
 		}
 	}
 
-	public class ToStringClass
+	public class ToStringClass(int id)
 	{
-		public int Id { get; set; }
+		public int Id { get; set; } = id;
 
 		public override string ToString() => Id.ToString();
-
-		public ToStringClass(int id)
-		{
-			Id = id;
-		}
 	}
 
 	[Test]
 	public void TestToString()
 	{
-		List<ToStringClass> Items = new()
-		{
+		List<ToStringClass> Items =
+		[
 			new(1),
 			new(2),
 			new(3),
-		};
+		];
 
 		TestSelected(Items, Items[1]);
 	}
 
-	public class DataKeyClass
+	public class DataKeyClass(int id)
 	{
 		[DataKey]
-		public int Id { get; set; }
-
-		public DataKeyClass(int id)
-		{
-			Id = id;
-		}
+		public int Id { get; set; } = id;
 	}
 
 	[Test]
 	public void TestDataKey()
 	{
-		List<DataKeyClass> Items = new()
-		{
+		List<DataKeyClass> items =
+		[
 			new(1),
 			new(2),
 			new(3),
-		};
+		];
 
-		TestSelected(Items, Items[1]);
+		TestSelected(items, items[1]);
 	}
 
-	public class DataValueClass
+	public class DataValueClass(int id)
 	{
 		[DataValue]
-		public DataKeyClass DataKeyClass { get; set; }
-
-		public DataValueClass(int id)
-		{
-			DataKeyClass = new DataKeyClass(id);
-		}
+		public DataKeyClass DataKeyClass { get; set; } = new(id);
 	}
 
 	[Test]
 	public void TestDataValue()
 	{
-		List<DataValueClass> Items = new()
-		{
+		List<DataValueClass> items =
+		[
 			new DataValueClass(1),
 			new DataValueClass(2),
 			new DataValueClass(3),
-		};
+		];
 
-		TestSelected(Items, Items[1]);
+		TestSelected(items, items[1]);
 	}
 }

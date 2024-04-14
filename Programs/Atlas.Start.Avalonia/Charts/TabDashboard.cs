@@ -1,4 +1,5 @@
 using Atlas.Core;
+using Atlas.Core.Charts;
 using Atlas.Tabs;
 using Atlas.Tabs.Test.Chart;
 using Atlas.UI.Avalonia.Charts.LiveCharts;
@@ -22,7 +23,7 @@ public class TabDashboard : ITab
 		{
 			model.MinDesiredWidth = 1400;
 
-			var grid = new Grid()
+			var grid = new Grid
 			{
 				ColumnDefinitions = new("*, *"),
 			};

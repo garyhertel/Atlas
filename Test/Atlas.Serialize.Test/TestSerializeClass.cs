@@ -30,7 +30,7 @@ public class SerializeClass : TestSerializeBase
 	[Test, Description("Serialize Field Primitives")]
 	public void SerializeFields()
 	{
-		var input = new Fields()
+		var input = new Fields
 		{
 			UintTest = 5,
 			DoubleTest = 2.5,
@@ -56,7 +56,7 @@ public class SerializeClass : TestSerializeBase
 	[Test, Description("Serialize Properties")]
 	public void SerializeProperties()
 	{
-		var input = new Properties()
+		var input = new Properties
 		{
 			UintTest = 5,
 			DoubleTest = 2.5,
@@ -86,7 +86,7 @@ public class SerializeClass : TestSerializeBase
 	[Test, Description("Serialize Nullable Field Primitives")]
 	public void SerializeNullableFieldPrimitives()
 	{
-		var input = new NullableFieldPrimitives()
+		var input = new NullableFieldPrimitives
 		{
 			UintTest = 5,
 			DoubleTest = 2.5,
@@ -102,7 +102,7 @@ public class SerializeClass : TestSerializeBase
 	[Test, Description("Serialize Nullable Properties Primitive")]
 	public void SerializeNullablePropertyPrimitives()
 	{
-		var input = new NullablePropertyPrimitives()
+		var input = new NullablePropertyPrimitives
 		{
 			UintTest = 5,
 			DoubleTest = 2.5,
@@ -139,9 +139,7 @@ public class SerializeClass : TestSerializeBase
 		public int A = 1;
 	}
 
-	public class DerivedClass : BaseClass
-	{
-	}
+	public class DerivedClass : BaseClass;
 
 	public class DerivedClassReference
 	{
@@ -151,7 +149,7 @@ public class SerializeClass : TestSerializeBase
 	[Test, Description("Serialize Field Subclass")]
 	public void SerializeFieldSubclass()
 	{
-		var input = new DerivedClassReference()
+		var input = new DerivedClassReference
 		{
 			BaseClass = new DerivedClass(),
 		};
@@ -240,7 +238,7 @@ public class SerializeClass : TestSerializeBase
 	{
 		var input = new List<Base>
 		{
-			new SubClass() { A = 5 }
+			new SubClass { A = 5 }
 		};
 		_serializer.Save(Call, input);
 		var output = _serializer.Load<List<Base>>(Call);
@@ -279,7 +277,7 @@ public class SerializeClass : TestSerializeBase
 
 	public class DictionaryTest
 	{
-		public Dictionary<Parent, Child> Items = new();
+		public Dictionary<Parent, Child> Items = [];
 
 		public DictionaryTest()
 		{
@@ -301,7 +299,7 @@ public class SerializeClass : TestSerializeBase
 			StringTest = "abc",
 		};
 
-		string base64 = SerializerMemory.ToBase64String(Call, input)!;
+		string base64 = SerializerMemory.ToBase64String(Call, input);
 		Assert.AreEqual(408, base64.Length);
 	}
 }

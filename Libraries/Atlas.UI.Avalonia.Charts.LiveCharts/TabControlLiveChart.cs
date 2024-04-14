@@ -1,8 +1,10 @@
 using Atlas.Core;
+using Atlas.Core.Charts;
 using Atlas.Extensions;
 using Atlas.Tabs;
 using Atlas.UI.Avalonia.Controls;
 using Atlas.UI.Avalonia.Themes;
+using Atlas.UI.Avalonia.Utilities;
 using Atlas.UI.Avalonia.View;
 using Avalonia;
 using Avalonia.Controls;
@@ -55,11 +57,11 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 	public Axis XAxis { get; set; }
 	public Axis YAxis { get; set; } // left/right?
 
-	public List<LiveChartSeries> LiveChartSeries { get; private set; } = new();
+	public List<LiveChartSeries> LiveChartSeries { get; private set; } = [];
 
 	public ChartSeries<ISeries>? HoverSeries;
 
-	private List<RectangularSection> _sections = new();
+	private List<RectangularSection> _sections = [];
 	private RectangularSection? _trackerSection;
 	private RectangularSection? _zoomSection;
 
@@ -88,14 +90,14 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 		XAxis = CreateXAxis();
 		YAxis = CreateYAxis();
 
-		Chart = new CartesianChart()
+		Chart = new CartesianChart
 		{
 			HorizontalAlignment = HorizontalAlignment.Stretch,
 			VerticalAlignment = VerticalAlignment.Stretch,
 			XAxes = new List<Axis> { XAxis },
 			YAxes = new List<Axis> { YAxis },
 			TooltipBackgroundPaint = new SolidColorPaint(TooltipBackgroundColor),
-			TooltipTextPaint = new SolidColorPaint(AtlasTheme.TitleForeground.Color.AsSkColor()),
+			TooltipTextPaint = new SolidColorPaint(AtlasTheme.ToolTipForeground.Color.AsSkColor()),
 			TooltipFindingStrategy = TooltipFindingStrategy.CompareAllTakeClosest,
 			Tooltip = new LiveChartTooltip(this),
 			LegendPosition = LegendPosition.Hidden,
@@ -126,12 +128,12 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 		Children.Add(Chart);
 
 		Legend = new TabControlLiveChartLegend(this);
-		if (ChartView!.LegendPosition == ChartLegendPosition.Bottom)
+		if (ChartView.LegendPosition == ChartLegendPosition.Bottom)
 		{
 			SetRow(Legend, 2);
 			Legend.MaxHeight = 100;
 		}
-		else if (ChartView!.LegendPosition == ChartLegendPosition.Right)
+		else if (ChartView.LegendPosition == ChartLegendPosition.Right)
 		{
 			SetRow(Legend, 1);
 			SetColumn(Legend, 1);
@@ -224,7 +226,7 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 		}
 		else
 		{
-			axis = new Axis()
+			axis = new Axis
 			{
 				Labeler = NumberExtensions.FormattedShortDecimal,
 			};
@@ -359,7 +361,7 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 
 	public override void InvalidateChart()
 	{
-		Dispatcher.UIThread.Post(Chart!.InvalidateVisual, DispatcherPriority.Background);
+		Dispatcher.UIThread.Post(Chart.InvalidateVisual, DispatcherPriority.Background);
 	}
 
 	public void UpdateAxis()
@@ -469,7 +471,7 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 		else
 		{
 			double difference = maximum - minimum;
-			if (difference > 10 || hasFraction)
+			if (difference > 10 || (difference != 0 && hasFraction))
 			{
 				YAxis.UnitWidth = (difference * 0.2).RoundToSignificantFigures(1);
 			}
@@ -561,17 +563,16 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 
 			foreach (var dataPoint in series.LineSeries.Values!)
 			{
-				double? y = dataPoint.Y;
-				if (y == null || double.IsNaN(y.Value))
-					continue;
+				if (dataPoint.Y is double y && !double.IsNaN(y))
+				{
+					if (XAxis != null && (dataPoint.X < XAxis.MinLimit || dataPoint.X > XAxis.MaxLimit))
+						continue;
 
-				if (XAxis != null && (dataPoint.X < XAxis.MinLimit || dataPoint.X > XAxis.MaxLimit))
-					continue;
+					hasFraction |= (y % 1 != 0.0);
 
-				hasFraction |= (y % 1 != 0.0);
-
-				minimum = Math.Min(minimum, y.Value);
-				maximum = Math.Max(maximum, y.Value);
+					minimum = Math.Min(minimum, y);
+					maximum = Math.Max(maximum, y);
+				}
 			}
 		}
 		return (minimum, maximum, hasFraction);
@@ -592,7 +593,7 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 	{
 		if (IdxNameToChartSeries.TryGetValue(chartPoint.Context.Series.Name!, out var series))
 		{
-			OnSelectionChanged(new SeriesSelectedEventArgs(new List<ListSeries>() { series.ListSeries }));
+			OnSelectionChanged(new SeriesSelectedEventArgs(new List<ListSeries> { series.ListSeries }));
 			Legend.SelectSeries(series.LineSeries, series.ListSeries);
 		}
 	}
@@ -715,7 +716,7 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 				}
 			}
 
-			LvcPointD dataPoint = Chart!.ScalePixelsToData(new LvcPointD(point.X, point.Y));
+			LvcPointD dataPoint = Chart.ScalePixelsToData(new LvcPointD(point.X, point.Y));
 
 			var moveEvent = new MouseCursorMovedEventArgs(dataPoint.X);
 			_mouseCursorChangedEventSource?.Raise(sender, moveEvent);
@@ -737,7 +738,7 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 	{
 		var point = e.GetPosition(Chart);
 		_startScreenPoint = point;
-		_startDataPoint = Chart!.ScalePixelsToData(new LvcPointD(point.X, point.Y));
+		_startDataPoint = Chart.ScalePixelsToData(new LvcPointD(point.X, point.Y));
 
 		if (!_selecting)
 		{
@@ -756,7 +757,7 @@ public class TabControlLiveChart : TabControlChart<ISeries>, IDisposable
 		if (_selecting && _startDataPoint != null)
 		{
 			var point = e.GetPosition(Chart);
-			_endDataPoint = Chart!.ScalePixelsToData(new LvcPointD(point.X, point.Y));
+			_endDataPoint = Chart.ScalePixelsToData(new LvcPointD(point.X, point.Y));
 			double width = Math.Abs(point.X - _startScreenPoint.X);
 			if (width > MinSelectionWidth)
 			{

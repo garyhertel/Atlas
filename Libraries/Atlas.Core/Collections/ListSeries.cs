@@ -20,7 +20,7 @@ public class ListSeries
 {
 	public string? Name { get; set; }
 	public string? Description { get; set; }
-	public Dictionary<string, string> Tags { get; set; } = new(); // todo: next schema change, replace with TagCollection
+	public Dictionary<string, string> Tags { get; set; } = []; // todo: next schema change, replace with TagCollection
 
 	public IList List; // List to start with, any elements added will also trigger an event to add new points
 
@@ -105,7 +105,7 @@ public class ListSeries
 		YPropertyInfo = elementType.GetPropertyWithAttribute<YAxisAttribute>();
 	}
 
-	private double GetObjectValue(object obj)
+	private static double GetObjectValue(object obj)
 	{
 		double value = Convert.ToDouble(obj);
 		if (double.IsNaN(value))

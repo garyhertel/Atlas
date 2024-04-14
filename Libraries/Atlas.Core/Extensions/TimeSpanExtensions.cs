@@ -4,10 +4,10 @@ namespace Atlas.Extensions;
 
 public static class TimeSpanExtensions
 {
-	public record class TimeUnit(TimeSpan TimeSpan, string Name);
+	public record TimeUnit(TimeSpan TimeSpan, string Name);
 
-	public static List<TimeUnit> TimeUnits { get; set; } = new()
-	{
+	public static List<TimeUnit> TimeUnits { get; set; } =
+	[
 		new(TimeSpan.FromDays(365.25), "Year"),
 		new(TimeSpan.FromDays(7), "Week"),
 		new(TimeSpan.FromDays(1), "Day"),
@@ -15,7 +15,7 @@ public static class TimeSpanExtensions
 		new(TimeSpan.FromMinutes(1), "Minute"),
 		new(TimeSpan.FromSeconds(1), "Second"),
 		new(TimeSpan.FromMilliseconds(1), "Millisecond"),
-	};
+	];
 
 	public static string FormattedDecimal(this TimeSpan timeSpan)
 	{
@@ -58,13 +58,13 @@ public static class TimeSpanExtensions
 
 		if ((int)timeSpan.TotalMinutes > 0)
 		{
-			sb.Append(timeSpan.Minutes.ToString());
+			sb.Append(timeSpan.Minutes);
 			sb.Append(':');
 			if (timeSpan.Seconds < 10)
 				sb.Append('0');
 		}
 
-		sb.Append(timeSpan.Seconds.ToString());
+		sb.Append(timeSpan.Seconds);
 
 		int millis = timeSpan.Milliseconds;
 		if (millis > 0)
@@ -76,8 +76,8 @@ public static class TimeSpanExtensions
 		return sb.ToString();
 	}
 
-	public static List<TimeSpan> CommonTimeSpans { get; set; } = new()
-	{
+	public static List<TimeSpan> CommonTimeSpans { get; set; } =
+	[
 		TimeSpan.FromSeconds(1),
 		TimeSpan.FromSeconds(5),
 		TimeSpan.FromSeconds(10),
@@ -95,7 +95,7 @@ public static class TimeSpanExtensions
 		TimeSpan.FromDays(3),
 		TimeSpan.FromDays(7),
 		TimeSpan.FromDays(28),
-	};
+	];
 
 	public static TimeSpan PeriodDuration(this TimeSpan timeSpan, int numPeriods = 100)
 	{

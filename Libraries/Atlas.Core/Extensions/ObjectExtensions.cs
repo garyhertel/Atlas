@@ -32,10 +32,7 @@ public static class ObjectExtensions
 			MethodInfo toStringMethod = type.GetMethod("ToString", new Type[] { typeof(string) })!;
 			string format = type.IsDecimal() ? "G" : "N0";
 			object? result = toStringMethod.Invoke(obj, new object[] { format });
-			if (result == null)
-				return null;
-
-			return (string)result;
+			return (string?)result;
 		}
 
 		if (type.IsPrimitive == false)
@@ -86,7 +83,7 @@ public static class ObjectExtensions
 		else if (obj is ICollection collection)
 		{
 			Type? elementType = type.GetElementTypeForAll();
-			if (elementType != null && elementType.GetCustomAttribute<ToStringAttribute>() != null)
+			if (elementType?.GetCustomAttribute<ToStringAttribute>() != null)
 			{
 				return CollectionToString(collection);
 			}
@@ -175,10 +172,7 @@ public static class ObjectExtensions
 			MethodInfo toStringMethod = type.GetMethod("ToString", new Type[] { typeof(string) })!;
 			string format = type.IsDecimal() ? "N" : "N0";
 			object? result = toStringMethod.Invoke(obj, new object[] { format });
-			if (result == null)
-				return null;
-
-			return (string)result;
+			return (string?)result;
 		}
 
 		if (obj is DictionaryEntry dictionaryEntry)

@@ -29,16 +29,17 @@ public interface IMaxDesiredHeight
 	int? MaxDesiredHeight { get; }
 }
 
-public abstract class ListMember : IListPair, IListItem, INotifyPropertyChanged, IListAutoSelect, IMaxDesiredWidth, IMaxDesiredHeight
+public abstract class ListMember(object obj, MemberInfo memberInfo) : IListPair, IListItem, INotifyPropertyChanged,
+	IListAutoSelect, IMaxDesiredWidth, IMaxDesiredHeight
 {
 	public const int MaxStringLength = 1000;
 	private const int DefaultMaxDesiredHeight = 500;
 
 	public event PropertyChangedEventHandler? PropertyChanged;
 
-	public MemberInfo MemberInfo;
+	public readonly MemberInfo MemberInfo = memberInfo;
 
-	public object Object;
+	public readonly object Object = obj;
 
 	[AutoSize]
 	public string? Name { get; set; }
@@ -100,12 +101,6 @@ public abstract class ListMember : IListPair, IListItem, INotifyPropertyChanged,
 
 	public override string? ToString() => Name;
 
-	public ListMember(object obj, MemberInfo memberInfo)
-	{
-		Object = obj;
-		MemberInfo = memberInfo;
-	}
-
 	protected void ValueChanged()
 	{
 		PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Value)));
@@ -116,7 +111,7 @@ public abstract class ListMember : IListPair, IListItem, INotifyPropertyChanged,
 		return MemberInfo.GetCustomAttribute<T>();
 	}
 
-	public static ItemCollection<ListMember> Sort(ItemCollection<ListMember> items)
+	public static ItemCollection<ListMember> Sort(IEnumerable<ListMember> items)
 	{
 		var sortedMembers = items
 			.OrderByDescending(i => i.MemberInfo.GetCustomAttribute<AutoSelectAttribute>() != null)
@@ -159,7 +154,7 @@ public abstract class ListMember : IListPair, IListItem, INotifyPropertyChanged,
 	// If a member specifies [Inline], replace this member with all it's members
 	public static ItemCollection<ListMember> ExpandInlined(List<ListMember> listMembers, bool includeBaseTypes)
 	{
-		ItemCollection<ListMember> newMembers = new();
+		ItemCollection<ListMember> newMembers = [];
 		foreach (ListMember listMember in listMembers)
 		{
 			if (listMember.GetCustomAttribute<InlineAttribute>() != null)

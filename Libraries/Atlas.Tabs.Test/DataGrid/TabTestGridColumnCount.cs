@@ -15,7 +15,7 @@ public class TabTestGridColumnCount : ITab
 			model.Items = _items = new ItemCollectionUI<TestItem>();
 			AddEntries(50);
 
-			model.Actions = new List<TaskCreator>()
+			model.Actions = new List<TaskCreator>
 			{
 				new TaskAction("Add 100 Entries", () => AddEntries(100)),
 				new TaskAction("Add 1,000 Entries", () => AddEntries(1000)),
@@ -39,7 +39,7 @@ public class TabTestGridColumnCount : ITab
 
 	public class TestItem
 	{
-		public int Index { get; set; } = 0;
+		public int Index { get; set; }
 
 		public int Num0 { get; set; } = 0;
 		public int Num1 { get; set; } = 1;

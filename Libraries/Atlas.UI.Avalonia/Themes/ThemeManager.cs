@@ -1,11 +1,10 @@
 using Atlas.Core;
 using Atlas.Serialize;
 using Atlas.Tabs;
-using Atlas.UI.Avalonia.Themes;
 using Avalonia;
 using Avalonia.Styling;
 
-namespace Atlas.UI.Avalonia;
+namespace Atlas.UI.Avalonia.Themes;
 
 public class ThemeManager
 {
@@ -64,7 +63,7 @@ public class ThemeManager
 	{
 		if (GetTheme(variant) != null) return;
 
-		Add(new Call(), new AvaloniaThemeSettings()
+		Add(new Call(), new AvaloniaThemeSettings
 		{
 			Name = variant,
 			Variant = variant,
@@ -74,11 +73,11 @@ public class ThemeManager
 	public void Add(Call call, AvaloniaThemeSettings themeSettings)
 	{
 		var original = Application.Current!.RequestedThemeVariant;
-		Application.Current!.RequestedThemeVariant = themeSettings.GetVariant();
+		Application.Current.RequestedThemeVariant = themeSettings.GetVariant();
 		themeSettings.LoadFromCurrent();
-		Application.Current!.RequestedThemeVariant = original;
+		Application.Current.RequestedThemeVariant = original;
 
-		DataRepoThemes!.Save(call, themeSettings);
+		DataRepoThemes.Save(call, themeSettings);
 		UserSettings.Themes = Names;
 	}
 

@@ -1,4 +1,5 @@
 using Atlas.Core;
+using Atlas.Core.Charts;
 
 namespace Atlas.Tabs.Test.Chart;
 
@@ -8,7 +9,7 @@ public class TabTestChartProperties : ITab
 
 	public class Instance : TabInstance
 	{
-		private readonly ItemCollection<ChartSample> _samples = new();
+		private readonly ItemCollection<ChartSample> _samples = [];
 		private readonly Random _random = new();
 
 		public class TestItem
@@ -32,7 +33,7 @@ public class TabTestChartProperties : ITab
 
 		public override void Load(Call call, TabModel model)
 		{
-			model.Actions = new List<TaskCreator>()
+			model.Actions = new List<TaskCreator>
 			{
 				new TaskDelegate("Add Entry", AddEntry),
 				new TaskDelegate("Start: 1 Entry / second", StartTask, true),
@@ -59,7 +60,7 @@ public class TabTestChartProperties : ITab
 		private void StartTask(Call call)
 		{
 			CancellationToken token = call.TaskInstance!.TokenSource.Token;
-			for (int i = 0; !token.IsCancellationRequested; i++)
+			for (int i = 0; i < 1000 && !token.IsCancellationRequested; i++)
 			{
 				Invoke(AddSampleCallback, call);
 				Thread.Sleep(1000);
@@ -70,12 +71,12 @@ public class TabTestChartProperties : ITab
 		{
 			ChartSample sample = new()
 			{
-				Name = "Name " + i.ToString(),
+				Name = "Name " + i,
 				Alpha = _random.Next(0, 100000),
 				Beta = _random.Next(0, 100000000),
 				Gamma = _random.Next(0, 1000000000),
 				Epsilon = 1000000000 + _random.Next(0, 10),
-				TestItem = new TestItem()
+				TestItem = new TestItem
 				{
 					Amount = _random.Next(0, 100),
 				},

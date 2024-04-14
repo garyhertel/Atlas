@@ -1,14 +1,14 @@
 using System.Reflection;
 
-namespace Atlas.Core;
+namespace Atlas.Core.Utilities;
 
 // https://stackoverflow.com/questions/366332/best-way-to-get-sub-properties-using-getproperty
 public static class ReflectorUtil
 {
 	public static object? FollowPropertyPath(object value, string path)
 	{
-		if (value == null) throw new ArgumentNullException(nameof(value));
-		if (path == null) throw new ArgumentNullException(nameof(path));
+		ArgumentNullException.ThrowIfNull(value);
+		ArgumentNullException.ThrowIfNull(path);
 
 		Type? currentType = value.GetType();
 
@@ -17,8 +17,8 @@ public static class ReflectorUtil
 		{
 			if (currentType != null)
 			{
-				int brackStart = propertyName.IndexOf("[");
-				int brackEnd = propertyName.IndexOf("]");
+				int brackStart = propertyName.IndexOf('[');
+				int brackEnd = propertyName.IndexOf(']');
 				string subPropertyName = brackStart > 0 ? propertyName[..brackStart] : propertyName;
 
 				var properties = currentType.GetProperties().Where(x => x.Name == subPropertyName);

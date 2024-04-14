@@ -12,7 +12,8 @@ namespace Atlas.UI.Avalonia.Tabs;
 
 public class TabFileImage : ITab, IFileTypeView
 {
-	public static readonly string[] DefaultExtensions = { ".png", ".jpg", ".jpeg", ".gif", ".bmp", ".webp", ".svg" };
+	public static readonly string[] DefaultExtensions = 
+		[".png", ".jpg", ".jpeg", ".gif", ".bmp", ".webp", ".svg", ".ico"];
 
 	public string? Path { get; set; }
 
@@ -49,7 +50,7 @@ public class TabFileImage : ITab, IFileTypeView
 				return;
 			}
 
-			Image = new Image()
+			Image = new Image
 			{
 				VerticalAlignment = VerticalAlignment.Top,
 			};
@@ -66,7 +67,7 @@ public class TabFileImage : ITab, IFileTypeView
 				}
 				else
 				{
-					Bitmap bitmap = ImageUtils.LoadImage(Image, Path)!;
+					Bitmap bitmap = ImageUtils.LoadImage(Image, Path);
 					model.MaxDesiredWidth = Math.Max(100, (int)bitmap.Size.Width);
 				}
 				model.AddObject(Image, true);

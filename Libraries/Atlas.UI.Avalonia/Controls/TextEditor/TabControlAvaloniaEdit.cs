@@ -1,4 +1,4 @@
-using Atlas.Core;
+using Atlas.Core.Utilities;
 using Atlas.Tabs;
 using Atlas.UI.Avalonia.Themes;
 using Avalonia;
@@ -65,7 +65,7 @@ public class TabControlAvaloniaEdit : Grid
 		HorizontalAlignment = HorizontalAlignment.Stretch;
 		VerticalAlignment = VerticalAlignment.Stretch;
 
-		TextEditor = new TabControlTextEditor()
+		TextEditor = new TabControlTextEditor
 		{
 			IsReadOnly = true,
 			HorizontalAlignment = HorizontalAlignment.Stretch,
@@ -149,7 +149,10 @@ public class TabControlAvaloniaEdit : Grid
 
 	public void EnableMonospace()
 	{
-		TextEditor.FontFamily = AtlasTheme.MonospaceFontFamily;
+		if (AtlasTheme.MonospaceFontFamily is FontFamily fontFamily)
+		{
+			TextEditor.FontFamily = fontFamily;
+		}
 	}
 
 	private void EnableJsonSyntaxHighlighting()

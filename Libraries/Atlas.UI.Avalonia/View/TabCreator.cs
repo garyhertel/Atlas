@@ -1,4 +1,5 @@
 using Atlas.Core;
+using Atlas.Core.Utilities;
 using Atlas.Extensions;
 using Atlas.UI.Avalonia.Tabs;
 using Atlas.Tabs;
@@ -12,7 +13,7 @@ public static class TabCreator
 	public static Control? CreateChildControl(TabInstance parentTabInstance, object obj, string? label = null, ITabSelector? tabControl = null)
 	{
 		object? value = obj.GetInnerValue();
-		if (value == null || value is bool)
+		if (value == null || (value is bool && !parentTabInstance.Model.Skippable))
 			return null;
 
 		if (label == null)
@@ -41,7 +42,7 @@ public static class TabCreator
 		TabBookmark? tabBookmark = null; // Also assigned to child TabView's, tabView.tabInstance.tabBookmark = tabBookmark;
 		if (parentTabInstance.TabBookmark is TabBookmark parentTabBookmark && parentTabBookmark.ChildBookmarks != null)
 		{
-			string dataKey = new SelectedRow(obj).ToString() ?? label!;
+			string dataKey = new SelectedRow(obj).ToString() ?? label;
 			if (parentTabBookmark.ChildBookmarks.TryGetValue(dataKey, out tabBookmark))
 			{
 				// FindMatches only
@@ -74,7 +75,7 @@ public static class TabCreator
 				Project = parentTabInstance.Project,
 				TabBookmark = tabBookmark,
 			};
-			childTabInstance.Model.Name = label!;
+			childTabInstance.Model.Name = label;
 			value = new TabView(childTabInstance);
 		}
 
@@ -99,7 +100,7 @@ public static class TabCreator
 
 			childTabInstance.TabBookmark ??= tabBookmark;
 			//childTabInstance.Reinitialize(); // todo: fix, called in TabView
-			childTabInstance.Model.Name = label!;
+			childTabInstance.Model.Name = label;
 			var tabView = new TabView(childTabInstance);
 			tabView.Load();
 			return tabView;
@@ -108,7 +109,7 @@ public static class TabCreator
 		{
 			tabView.Instance.ParentTabInstance = parentTabInstance;
 			tabView.Instance.TabBookmark = tabBookmark ?? tabView.Instance.TabBookmark;
-			tabView.Label = label!;
+			tabView.Label = label;
 			tabView.Load();
 			return tabView;
 		}
@@ -125,18 +126,18 @@ public static class TabCreator
 			if (value is TabModel tabModel)
 			{
 				childTabModel = tabModel;
-				childTabModel.Name = label!;
+				childTabModel.Name = label;
 			}
 			else
 			{
-				childTabModel = TabModel.Create(label!, value!);
+				childTabModel = TabModel.Create(label, value!);
 				if (childTabModel == null)
 					return null;
 			}
 			childTabModel.Editing = parentTabInstance.Model.Editing;
 
 			TabInstance childTabInstance = parentTabInstance.CreateChild(childTabModel);
-			childTabInstance.Label = label!;
+			childTabInstance.Label = label;
 
 			var tabModelView = new TabView(childTabInstance);
 			tabModelView.Load();

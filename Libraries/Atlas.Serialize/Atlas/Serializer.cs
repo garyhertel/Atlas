@@ -10,7 +10,7 @@ public class Header
 	public string Version = LatestVersion;
 	public string Name = "<Default>";
 
-	public override string ToString() => Version.ToString();
+	public override string ToString() => Version;
 
 	public void Save(BinaryWriter writer)
 	{
@@ -32,10 +32,10 @@ public class Serializer : IDisposable
 
 	public Header Header = new();
 
-	public List<TypeSchema> TypeSchemas = new();
+	public List<TypeSchema> TypeSchemas = [];
 
-	public List<TypeRepo> TypeRepos = new();
-	public Dictionary<Type, TypeRepo> IdxTypeToRepo = new();
+	public List<TypeRepo> TypeRepos = [];
+	public Dictionary<Type, TypeRepo> IdxTypeToRepo = [];
 
 	public TypeRepoString? TypeRepoString; // Reuse string instances to reduce memory use when deep cloning
 
@@ -45,10 +45,10 @@ public class Serializer : IDisposable
 
 	// Convert to Parser class?
 	// Use a queue so we don't exceed the stack size due to cross references (i.e. a list with values that refer back to the list)
-	public Queue<object> ParserQueue = new();
-	public List<object?> Primitives = new(); // primitives are usually serialized inline, but that doesn't work if that's the primary type
+	public Queue<object> ParserQueue = [];
+	public List<object?> Primitives = []; // primitives are usually serialized inline, but that doesn't work if that's the primary type
 
-	public Dictionary<object, object> Clones = new();
+	public Dictionary<object, object> Clones = [];
 	public Queue<Action> CloneQueue = new();
 	public TaskInstance? TaskInstance;
 
@@ -58,12 +58,10 @@ public class Serializer : IDisposable
 		public int Index;
 		public bool Preloaded; // set after IPreloadRepo preloads data
 
-		public override string ToString() => TypeRepo.ToString() + " - " + Index;
+		public override string ToString() => $"{TypeRepo} - {Index}";
 	}
 
 	private readonly Queue<LoadItem> _loadQueue = new();
-
-	public Serializer() { }
 
 	public object? BaseObject(Call call)
 	{
@@ -119,7 +117,7 @@ public class Serializer : IDisposable
 
 	public void LogLoadedTypes(Call call)
 	{
-		List<ObjectsLoaded> loaded = new();
+		List<ObjectsLoaded> loaded = [];
 		foreach (TypeRepo typeRepo in TypeRepos)
 		{
 			ObjectsLoaded typeInfo = new()
@@ -135,6 +133,7 @@ public class Serializer : IDisposable
 	// todo: only add types that are used
 	private void AddObjectMemberTypes(Log log)
 	{
+		// TypeSchemas can grow as members are added, don't use enumerable
 		for (int i = 0; i < TypeSchemas.Count; i++)
 		{
 			TypeSchema typeSchema = TypeSchemas[i];
@@ -145,14 +144,15 @@ public class Serializer : IDisposable
 			{
 				Type type = fieldSchema.NonNullableType!;
 				TypeRepo typeRepo = GetOrCreateRepo(log, type);
-				fieldSchema.FieldTypeSchema = GetOrCreateRepo(log, type).TypeSchema;
+				fieldSchema.FieldTypeSchema = typeRepo.TypeSchema;
 				fieldSchema.TypeIndex = fieldSchema.FieldTypeSchema.TypeIndex;
 			}
 
 			foreach (PropertySchema propertySchema in typeSchema.PropertySchemas)
 			{
 				Type type = propertySchema.NonNullableType!;
-				propertySchema.PropertyTypeSchema = GetOrCreateRepo(log, type).TypeSchema;
+				TypeRepo typeRepo = GetOrCreateRepo(log, type);
+				propertySchema.PropertyTypeSchema = typeRepo.TypeSchema;
 				propertySchema.TypeIndex = propertySchema.PropertyTypeSchema.TypeIndex;
 			}
 		}
@@ -184,14 +184,14 @@ public class Serializer : IDisposable
 	{
 		using CallTimer callSaving = call.Timer("Saving object");
 
-		AddObjectMemberTypes(callSaving.Log!);
+		AddObjectMemberTypes(callSaving.Log);
 		//UpdateTypeSchemaDerived();
 		Header.Save(writer);
 		long schemaPosition = writer.BaseStream.Position;
 		writer.Write((long)0); // will write correct value at end
 		SaveSchemas(writer);
 		SavePrimitives(callSaving, writer);
-		SaveObjects(callSaving.Log!, writer);
+		SaveObjects(callSaving.Log, writer);
 
 		// write out schema again for file offsets and size
 		writer.Seek((int)schemaPosition, SeekOrigin.Begin);
@@ -317,9 +317,9 @@ public class Serializer : IDisposable
 	{
 		get
 		{
-			List<TypeRepo> primitives = new();
-			List<TypeRepo> collections = new();
-			List<TypeRepo> others = new();
+			List<TypeRepo> primitives = [];
+			List<TypeRepo> collections = [];
+			List<TypeRepo> others = [];
 
 			foreach (TypeRepo typeRepo in TypeRepos)
 			{
@@ -334,10 +334,7 @@ public class Serializer : IDisposable
 					others.Add(typeRepo);
 			}
 
-			List<TypeRepo> orderedTypes = new();
-			orderedTypes.AddRange(primitives);
-			orderedTypes.AddRange(others);
-			orderedTypes.AddRange(collections);
+			List<TypeRepo> orderedTypes = [.. primitives, .. others, .. collections];
 
 			return orderedTypes;
 		}
@@ -366,7 +363,7 @@ public class Serializer : IDisposable
 			if (typeRepo.LoadableType == null)
 				continue;
 
-			var typeRepoWriter = new TypeRepoWriter()
+			var typeRepoWriter = new TypeRepoWriter
 			{
 				TypeRepo = typeRepo,
 			};
@@ -571,10 +568,11 @@ public class Serializer : IDisposable
 		Log log = new();
 		TypeRepo typeRepo = GetOrCreateRepo(log, type);
 
-		if (typeRepo is TypeRepoPrimitive ||
-			typeRepo is TypeRepoString ||
-			typeRepo is TypeRepoEnum ||
-			typeRepo is TypeRepoType)
+		if (typeRepo is
+		    TypeRepoPrimitive or
+		    Serialize.TypeRepoString or
+		    TypeRepoEnum or
+		    TypeRepoType)
 		{
 			Clones[obj] = obj; // optional
 			return obj;
@@ -586,7 +584,7 @@ public class Serializer : IDisposable
 			return obj;
 		}
 
-		if (typeRepo is TypeRepoArray || typeRepo is TypeRepoArrayBytes)
+		if (typeRepo is TypeRepoArray or TypeRepoArrayBytes)
 		{
 			clone = Array.CreateInstance(type.GetElementType()!, ((Array)obj).Length);
 		}
@@ -629,7 +627,7 @@ public class Serializer : IDisposable
 
 	public void LogClonedTypes(Log log)
 	{
-		List<ObjectsLoaded> loaded = new();
+		List<ObjectsLoaded> loaded = [];
 		foreach (TypeRepo typeRepo in TypeRepos)
 		{
 			ObjectsLoaded typeInfo = new()
@@ -658,7 +656,6 @@ public class Serializer : IDisposable
 		foreach (TypeRepo typeRepo in TypeRepos)
 			typeRepo.Dispose();
 
-		if (Reader != null)
-			Reader.Dispose();
+		Reader?.Dispose();
 	}
 }

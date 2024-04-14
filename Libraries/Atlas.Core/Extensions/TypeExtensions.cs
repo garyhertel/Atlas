@@ -5,8 +5,8 @@ namespace Atlas.Extensions;
 
 public static class TypeExtensions
 {
-	private static readonly HashSet<Type> NumericTypes = new()
-	{
+	private static readonly HashSet<Type> NumericTypes =
+	[
 		typeof(byte),
 		typeof(sbyte),
 
@@ -22,14 +22,14 @@ public static class TypeExtensions
 		typeof(float),
 		typeof(double),
 		typeof(decimal),
-	};
+	];
 
-	private static readonly HashSet<Type> DecimalTypes = new()
-	{
+	private static readonly HashSet<Type> DecimalTypes =
+	[
 		typeof(float),
 		typeof(double),
 		typeof(decimal),
-	};
+	];
 
 	public static bool IsNumeric(this Type type)
 	{
@@ -88,6 +88,7 @@ public static class TypeExtensions
 			.Where(p => p.GetCustomAttribute<HiddenAttribute>() == null)
 			.Where(p => p.GetCustomAttribute<HiddenColumnAttribute>() == null)
 			.Where(p => p.GetIndexParameters().Any() == false)
+			.Where(p => !p.GetAccessors(nonPublic: true)[0].IsStatic)
 			.OrderBy(x => x.MetadataToken)
 			.ToList();
 	}

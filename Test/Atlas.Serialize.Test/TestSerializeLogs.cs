@@ -111,18 +111,12 @@ public class TestSerializeLogs : TestSerializeBase
 		LogTimer output = _serializer.Load<LogTimer>(Call);
 	}
 
-	private class MultipleArrays
-	{
-		public int[] array1 = { 1, 2 };
-		//public int[] array2 = { 3, 4 };
-	}
-
 	[Test, Description("Serialize Log Entry Tags")]
 	public void SerializeLogEntryTags()
 	{
 		var input = new LogEntryTest2
 		{
-			Tags = new Tag[] { new Tag("abc", 123) }
+			Tags = [new Tag("abc", 123)]
 		};
 
 		_serializer.Save(Call, input);
@@ -149,19 +143,6 @@ public class TestSerializeLogs : TestSerializeBase
 		Log output = _serializer.Load<Log>(Call);
 	}
 
-	public class SelectedItem
-	{
-		public string? Label;
-		public bool Pinned;
-	}
-
-	public class TabInstanceConfiguration
-	{
-		public HashSet<SelectedItem> Selected = new();
-		public int? SplitterDistance;
-		public int NumColumns;
-	}
-
 	public class LogEntryUnknown
 	{
 		public string? Type { get; set; }
@@ -169,7 +150,7 @@ public class TestSerializeLogs : TestSerializeBase
 
 	public class LogUnknown : LogEntryUnknown
 	{
-		public List<LogEntryUnknown> Items = new();
+		public List<LogEntryUnknown> Items = [];
 	}
 
 	public class LogEntryTest2
@@ -186,9 +167,7 @@ public class TestSerializeLogs : TestSerializeBase
 
 	public class LogTest2
 	{
-		public List<LogEntryTest2> Items = new();
-
-		public LogTest2() { }
+		public List<LogEntryTest2> Items = [];
 
 		public void Add(params Tag[] tags)
 		{

@@ -1,6 +1,7 @@
 using Atlas.Core;
 using Atlas.Extensions;
 using Atlas.Tabs;
+using Atlas.UI.Avalonia.Utilities;
 using Atlas.UI.Avalonia.View;
 using Avalonia;
 using Avalonia.Collections;
@@ -21,7 +22,7 @@ using System.Reflection;
 
 namespace Atlas.UI.Avalonia.Controls;
 
-public class TabControlDataGrid : Grid, IDisposable, ITabSelector, ITabItemSelector, ITabDataControl
+public class TabControlDataGrid : Grid, ITabSelector, ITabItemSelector, ITabDataControl
 {
 	private const int ColumnPercentBased = 150;
 	private const int MaxMinColumnWidth = 200;
@@ -44,16 +45,16 @@ public class TabControlDataGrid : Grid, IDisposable, ITabSelector, ITabItemSelec
 
 	public event EventHandler<TabSelectionChangedEventArgs>? OnSelectionChanged;
 
-	private Dictionary<string, DataGridColumn> _columnObjects = new();
-	private Dictionary<DataGridColumn, string> _columnNames = new();
-	private List<PropertyInfo> _columnProperties = new(); // makes filtering faster, could change other Dictionaries strings to PropertyInfo
+	private Dictionary<string, DataGridColumn> _columnObjects = [];
+	private Dictionary<DataGridColumn, string> _columnNames = [];
+	private List<PropertyInfo> _columnProperties = []; // makes filtering faster, could change other Dictionaries strings to PropertyInfo
 
-	private int _disableSaving = 0; // enables saving if > 0
-	private bool _ignoreSelectionChanged = false;
+	private int _disableSaving; // enables saving if > 0
+	private bool _ignoreSelectionChanged;
 
 	private readonly Stopwatch _notifyItemChangedStopwatch = new();
 	private DispatcherTimer? _dispatcherTimer;  // delays auto selection to throttle updates
-	private object? _autoSelectItem = null;
+	private object? _autoSelectItem;
 	private NotifyCollectionChangedAction? _autoSelectAction;
 
 	private Filter? _filter;
@@ -151,7 +152,7 @@ public class TabControlDataGrid : Grid, IDisposable, ITabSelector, ITabItemSelec
 
 	private void AddSearch()
 	{
-		SearchControl = new TabControlSearch()
+		SearchControl = new TabControlSearch
 		{
 			IsVisible = false,
 		};
@@ -165,7 +166,7 @@ public class TabControlDataGrid : Grid, IDisposable, ITabSelector, ITabItemSelec
 	[MemberNotNull(nameof(DataGrid))]
 	private void AddDataGrid()
 	{
-		DataGrid = new DataGrid()
+		DataGrid = new DataGrid
 		{
 			SelectionMode = DataGridSelectionMode.Extended, // No MultiSelect support :( (use right click for copy/paste)
 
@@ -216,7 +217,7 @@ public class TabControlDataGrid : Grid, IDisposable, ITabSelector, ITabItemSelec
 	private void DataGrid_KeyDown(object? sender, KeyEventArgs e)
 	{
 		// These keys are used for navigating in the TabViewer
-		if (e.Key == Key.Left || e.Key == Key.Right)
+		if (e.Key is Key.Left or Key.Right)
 		{
 			RaiseEvent(e);
 		}
@@ -232,7 +233,7 @@ public class TabControlDataGrid : Grid, IDisposable, ITabSelector, ITabItemSelec
 			// Invoking was happening at bad times in the data binding
 			if (_dispatcherTimer == null)
 			{
-				_dispatcherTimer = new DispatcherTimer()
+				_dispatcherTimer = new DispatcherTimer
 				{
 					Interval = TimeSpan.FromSeconds(1), // Tick event doesn't fire if set to < 1 second
 				};
@@ -250,7 +251,8 @@ public class TabControlDataGrid : Grid, IDisposable, ITabSelector, ITabItemSelec
 
 		var autoSizeColumns = DataGrid.Columns
 			.Where(c => c.IsVisible)
-			.Where(c => c is DataGridTextColumn || c is DataGridCheckBoxColumn);
+			.Where(c => c is DataGridTextColumn or DataGridCheckBoxColumn)
+			.ToList();
 
 		// The star column widths will change as other column widths are changed
 		var originalWidths = new Dictionary<DataGridColumn, DataGridLength>();
@@ -311,15 +313,14 @@ public class TabControlDataGrid : Grid, IDisposable, ITabSelector, ITabItemSelec
 		}
 	}
 
-	private bool _selectionModified = false;
+	private bool _selectionModified;
 
 	private void INotifyCollectionChanged_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
 	{
 		if (List == null) // reloading detaches list temporarily?
 			return;
 
-		if (e.Action == NotifyCollectionChangedAction.Add ||
-			e.Action == NotifyCollectionChangedAction.Replace)
+		if (e.Action is NotifyCollectionChangedAction.Add or NotifyCollectionChangedAction.Replace)
 		{
 			// Group up any new items after the 1st one
 			if (TabModel.AutoSelectNew && SearchControl!.Text.IsNullOrEmpty())
@@ -417,18 +418,17 @@ public class TabControlDataGrid : Grid, IDisposable, ITabSelector, ITabItemSelec
 			bookmark.Changed = string.Join(",", TabDataSettings.SelectedRows);
 	}
 
-	private DataGridRow? GetControlRow(object? obj, int depth)
+	private static DataGridRow? GetControlRow(object? obj, int depth)
 	{
 		if (depth == 0)
 			return null;
 
-		if (obj is DataGridRow row)
-			return row;
-
-		if (obj is Control control)
-			return GetControlRow(control.Parent, depth - 1);
-
-		return null;
+		return obj switch
+		{
+			DataGridRow row => row,
+			Control control => GetControlRow(control.Parent, depth - 1),
+			_ => null
+		};
 	}
 
 	// Single click deselect
@@ -464,13 +464,12 @@ public class TabControlDataGrid : Grid, IDisposable, ITabSelector, ITabItemSelec
 
 	private static DataGrid? GetOwningDataGrid(StyledElement? control)
 	{
-		if (control == null)
-			return null;
-
-		if (control is DataGrid dataGrid)
-			return dataGrid;
-
-		return GetOwningDataGrid(control.Parent);
+		return control switch
+		{
+			null => null,
+			DataGrid dataGrid => dataGrid,
+			_ => GetOwningDataGrid(control.Parent)
+		};
 	}
 
 	// Single click deselect (cells don't always occupy their entire contents)
@@ -604,7 +603,7 @@ public class TabControlDataGrid : Grid, IDisposable, ITabSelector, ITabItemSelec
 
 		bool isReadOnly = true;
 
-		int maxDesiredWidth = attributeMaxWidth != null ? attributeMaxWidth.MaxWidth : MaxColumnWidth;
+		int maxDesiredWidth = attributeMaxWidth?.MaxWidth ?? MaxColumnWidth;
 		DataGridBoundColumn column;
 		/*if (tabModel.Editing == false)
 		{
@@ -647,7 +646,7 @@ public class TabControlDataGrid : Grid, IDisposable, ITabSelector, ITabItemSelec
 		}
 		column.Header = label;
 		column.IsReadOnly = isReadOnly;
-		column.MaxWidth = attributeMaxWidth != null ? attributeMaxWidth.MaxWidth : MaxColumnWidth;
+		column.MaxWidth = attributeMaxWidth?.MaxWidth ?? MaxColumnWidth;
 		if (attributeMinWidth != null)
 			column.Width = new DataGridLength(1, DataGridLengthUnitType.Auto, attributeMinWidth.MinWidth, double.NaN);
 

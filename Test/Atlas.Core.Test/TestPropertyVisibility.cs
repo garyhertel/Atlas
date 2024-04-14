@@ -16,10 +16,10 @@ public class TestPropertyVisibility : TestBase
 
 	private static PropertyInfo GetPropertyInfo(object obj, string propertyName)
 	{
-		return obj.GetType()
+		return obj
+			.GetType()
 			.GetProperties()
-			.Where(p => p.Name == propertyName)
-			.Single();
+			.Single(p => p.Name == propertyName);
 	}
 
 	private static ListProperty GetListProperty(object obj, string propertyName)
@@ -184,7 +184,7 @@ public class TestPropertyVisibility : TestBase
 	[Test]
 	public void TestHideNullEmptyListVisible()
 	{
-		List<HideableClassData> list = new();
+		List<HideableClassData> list = [];
 		TabDataSettings tabDataSettings = new();
 		var propertyColumns = tabDataSettings.GetPropertiesAsColumns(typeof(HideableClassData));
 

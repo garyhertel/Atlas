@@ -24,7 +24,7 @@ public class LinkUri
 
 	public string ToUri()
 	{
-		string uri = @$"{Prefix}://{Type}/";
+		string uri = $"{Prefix}://{Type}/";
 
 		if (Version != null)
 		{
@@ -68,7 +68,7 @@ public class LinkUri
 		Match match = regex.Match(url);
 		if (!match.Success) return false;
 
-		linkUri = new LinkUri()
+		linkUri = new LinkUri
 		{
 			Url = url,
 			Prefix = match.Groups["prefix"].Value.ToLower(),
@@ -90,7 +90,7 @@ public class LinkUri
 		Match match = regex.Match(url);
 		if (!match.Success) return false;
 
-		linkUri = new LinkUri()
+		linkUri = new LinkUri
 		{
 			Url = url,
 			Prefix = match.Groups["prefix"].Value.ToLower(),

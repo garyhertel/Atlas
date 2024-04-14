@@ -1,6 +1,9 @@
 using Atlas.Core;
+using Atlas.Core.Utilities;
 using Atlas.Tabs;
+using Atlas.UI.Avalonia.Controls.Converters;
 using Atlas.UI.Avalonia.Themes;
+using Atlas.UI.Avalonia.Utilities;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Presenters;
@@ -182,7 +185,7 @@ public class TabControlTextBox : TextBox
 		get => base.Text;
 		set
 		{
-			if (value is string s && s.StartsWith("{") && s.Contains("\n"))
+			if (value is string s && s.StartsWith('{') && s.Contains('\n'))
 			{
 				FontFamily = AtlasTheme.MonospaceFontFamily; // Use monospaced font for Json
 			}

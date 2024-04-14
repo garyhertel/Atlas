@@ -1,7 +1,9 @@
-using Atlas.Core;
+using Atlas.Core.Utilities;
 using Atlas.Resources;
 using Atlas.Tabs;
+using Atlas.UI.Avalonia.Controls.Converters;
 using Atlas.UI.Avalonia.Themes;
+using Atlas.UI.Avalonia.Utilities;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Data;
@@ -69,7 +71,7 @@ public class TabDateTimePicker : Grid
 	[MemberNotNull(nameof(_datePicker))]
 	private void AddDatePicker()
 	{
-		_datePicker = new TabCalendarDatePicker()
+		_datePicker = new TabCalendarDatePicker
 		{
 			HorizontalAlignment = HorizontalAlignment.Stretch,
 			VerticalAlignment = VerticalAlignment.Top, // Validation errors appear below controls
@@ -94,7 +96,7 @@ public class TabDateTimePicker : Grid
 	[MemberNotNull(nameof(_timeTextBox))]
 	private void AddTimeTextBox()
 	{
-		_timeTextBox = new TabControlTextBox()
+		_timeTextBox = new TabControlTextBox
 		{
 			IsReadOnly = !Property.Editable,
 			Watermark = "15:30:45",
@@ -124,7 +126,7 @@ public class TabDateTimePicker : Grid
 		{
 			DateTime? newDateTime = _dateTimeConverter.Convert(timeSpan, typeof(string), null, CultureInfo.InvariantCulture) as DateTime?;
 			Property.PropertyInfo.SetValue(Property.Object, newDateTime);
-			_timeTextBox.Text = timeSpan.ToString()!;
+			_timeTextBox.Text = timeSpan.ToString();
 			e.Handled = true;
 		}
 		else
@@ -150,14 +152,14 @@ public class TabDateTimePicker : Grid
 			bitmap = new Bitmap(resource);
 		}
 
-		var image = new Image()
+		var image = new Image
 		{
 			Source = bitmap,
 			Width = 16,
 			Height = 16,
 		};
 
-		var button = new Button()
+		var button = new Button
 		{
 			Content = image,
 			//Command = command,
@@ -185,14 +187,14 @@ public class TabDateTimePicker : Grid
 	}
 
 	// DefaultTheme.xaml is overriding this currently
-	private void Button_PointerEnter(object? sender, PointerEventArgs e)
+	private static void Button_PointerEnter(object? sender, PointerEventArgs e)
 	{
 		Button button = (Button)sender!;
 		button.BorderBrush = Brushes.Black; // can't overwrite hover border :(
 		button.Background = AtlasTheme.ToolbarButtonBackgroundPointerOver;
 	}
 
-	private void Button_PointerExited(object? sender, PointerEventArgs e)
+	private static void Button_PointerExited(object? sender, PointerEventArgs e)
 	{
 		Button button = (Button)sender!;
 		button.Background = AtlasTheme.TabBackground;

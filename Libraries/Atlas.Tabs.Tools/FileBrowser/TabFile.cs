@@ -1,4 +1,5 @@
 using Atlas.Core;
+using Atlas.Core.Utilities;
 using Atlas.Resources;
 
 namespace Atlas.Tabs.Tools;
@@ -10,7 +11,7 @@ public interface IFileTypeView
 
 public class TabFile : ITab
 {
-	public static Dictionary<string, Type> ExtensionTypes = new();
+	public static Dictionary<string, Type> ExtensionTypes = [];
 
 	public delegate void SelectFile(Call call, string path);
 

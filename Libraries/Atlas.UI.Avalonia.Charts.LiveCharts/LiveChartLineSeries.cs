@@ -23,16 +23,11 @@ public class LiveChartPoint : ObservablePoint
 	}
 }
 
-public class LiveChartLineSeries : LineSeries<LiveChartPoint>, ISeries
+public class LiveChartLineSeries(LiveChartSeries liveChartSeries) : LineSeries<LiveChartPoint>, ISeries
 {
-	public LiveChartSeries LiveChartSeries;
+	public LiveChartSeries LiveChartSeries = liveChartSeries;
 
 	public override string? ToString() => LiveChartSeries.ToString();
-
-	public LiveChartLineSeries(LiveChartSeries liveChartSeries)
-	{
-		LiveChartSeries = liveChartSeries;
-	}
 
 	public new IEnumerable<ChartPoint> Fetch(IChart chart) => base.Fetch(chart);
 
@@ -41,16 +36,15 @@ public class LiveChartLineSeries : LineSeries<LiveChartPoint>, ISeries
 		return FindHitPoints(chart, pointerPosition, LiveChartSeries.Chart.MaxFindDistance);
 	}
 
-	List<ChartPoint> FindHitPoints(IChart chart, LvcPoint pointerPosition, double maxDistance)
+	IEnumerable<ChartPoint> FindHitPoints(IChart chart, LvcPoint pointerPosition, double maxDistance)
 	{
-		if (!IsVisible) return new();
+		if (!IsVisible) return [];
 
 		return Fetch(chart)
 			.Select(x => new { distance = GetDistanceTo(x, pointerPosition), point = x })
 			.Where(x => x.distance < maxDistance)
 			.OrderBy(x => x.distance)
-			.SelectFirst(x => x.point)
-			.ToList();
+			.SelectFirst(x => x.point);
 	}
 
 	public static double GetDistanceTo(ChartPoint target, LvcPoint location)

@@ -3,6 +3,8 @@ using Atlas.Extensions;
 using Atlas.Tabs;
 using Atlas.UI.Avalonia.Controls;
 using Atlas.UI.Avalonia.Themes;
+using Atlas.UI.Avalonia.Utilities;
+using Atlas.UI.Avalonia.Viewer;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
@@ -31,7 +33,7 @@ public class TabView : Grid, IDisposable
 	private const int MinDesiredSplitterDistance = 50;
 
 	// Model.Objects
-	public static Dictionary<Type, IControlCreator> ControlCreators { get; set; } = new();
+	public static Dictionary<Type, IControlCreator> ControlCreators { get; set; } = [];
 
 	// Maybe this control should own it's own settings?
 	//private TabViewSettings _tabViewSettings = new TabViewSettings();
@@ -61,10 +63,10 @@ public class TabView : Grid, IDisposable
 	// Created Controls
 	public TabControlActions? TabActions;
 	public TabControlTasks? TabTasks;
-	public List<ITabDataControl> TabDatas = new();
-	public List<ITabSelector> CustomTabControls { get; set; } = new(); // should everything use this?
+	public List<ITabDataControl> TabDatas = [];
+	public List<ITabSelector> CustomTabControls { get; set; } = []; // should everything use this?
 
-	private List<ToolbarButton> _hotKeys = new();
+	private List<ToolbarButton> _hotKeys = [];
 
 	// Layout Controls
 	private Grid? _containerGrid;
@@ -162,7 +164,7 @@ public class TabView : Grid, IDisposable
 			// Use Grid instead of StackPanel
 			// StackPanel doesn't translate layouts, and we want splitters if we want multiple children?
 			// not filling the height vertically? splitter inside isn't
-			_containerGrid = new Grid()
+			_containerGrid = new Grid
 			{
 				ColumnDefinitions = new ColumnDefinitions("Auto,Auto,Auto"), // Controls, Splitter, Child Tabs
 				RowDefinitions = new RowDefinitions("*"), // Single Row
@@ -217,7 +219,7 @@ public class TabView : Grid, IDisposable
 
 	private void AddParentControls()
 	{
-		_tabParentControls = new TabControlSplitContainer()
+		_tabParentControls = new TabControlSplitContainer
 		{
 			ColumnDefinitions = new ColumnDefinitions("*"),
 			MinDesiredWidth = Model.MinDesiredWidth,
@@ -411,7 +413,7 @@ public class TabView : Grid, IDisposable
 		{
 			_containerGrid.ColumnDefinitions[0].Width = new GridLength((int)splitterDistance);
 			if (_tabParentControls != null)
-				_tabParentControls.Width = (double)splitterDistance;
+				_tabParentControls.Width = splitterDistance;
 		}
 		else
 		{
@@ -781,7 +783,7 @@ public class TabView : Grid, IDisposable
 		// Add a filler panel so the grid splitter can drag to the right
 		if (orderedChildControls.Count == 0)
 		{
-			_fillerPanel = new Panel()
+			_fillerPanel = new Panel
 			{
 				Width = GetFillerPanelWidth(), // should update this after moving grid splitter
 			};
@@ -800,7 +802,7 @@ public class TabView : Grid, IDisposable
 
 	private List<Control> CreateAllChildControls(bool recreate, out Dictionary<object, Control> newChildControls)
 	{
-		Dictionary<object, Control> oldChildControls = recreate ? new() : _tabChildControls!.GridControls;
+		Dictionary<object, Control> oldChildControls = recreate ? [] : _tabChildControls!.GridControls;
 		newChildControls = new Dictionary<object, Control>();
 		var orderedChildControls = new List<Control>();
 		//AddNotes(newChildControls, oldChildControls, orderedChildControls);
@@ -857,18 +859,16 @@ public class TabView : Grid, IDisposable
 		if (selectedRow != null)
 			obj = selectedRow.Object!;
 
-		if (oldChildControls.ContainsKey(obj))
+		if (oldChildControls.TryGetValue(obj, out var oldControl))
 		{
 			// Reuse existing control
-			Control control = oldChildControls[obj];
-			if (newChildControls.ContainsKey(obj))
+			if (newChildControls.TryAdd(obj, oldControl))
 			{
-				Debug.WriteLine("TabView has already added child control " + obj.ToString());
+				orderedChildControls.Add(oldControl);
 			}
 			else
 			{
-				newChildControls.Add(obj, control);
-				orderedChildControls.Add(control);
+				Debug.WriteLine("TabView has already added child control " + obj);
 			}
 		}
 		else
@@ -995,7 +995,7 @@ public class TabView : Grid, IDisposable
 		}
 		CustomTabControls.Clear();
 
-		_hotKeys = new();
+		_hotKeys = [];
 
 		Children.Clear();
 	}
@@ -1038,7 +1038,7 @@ public class TabView : Grid, IDisposable
 					.Cast<object>()
 					.ToHashSet();
 
-				List<object> matching = new();
+				List<object> matching = [];
 				foreach (var obj in TabDatas[0].Items!)
 				{
 					if (newItems.Contains(obj) || newItems.Contains(obj.GetInnerValue()!))
@@ -1103,7 +1103,7 @@ public class TabView : Grid, IDisposable
 	}
 
 	#region IDisposable Support
-	private bool _disposedValue = false; // To detect redundant calls
+	private bool _disposedValue; // To detect redundant calls
 
 	protected virtual void Dispose(bool disposing)
 	{

@@ -1,4 +1,5 @@
 using Atlas.Core;
+using Atlas.Core.Charts;
 using Atlas.UI.Avalonia.Controls;
 using Avalonia;
 using Avalonia.Controls;
@@ -12,8 +13,8 @@ public abstract class TabControlChartLegend<TSeries> : Grid
 	public TabControlChart<TSeries> TabControlChart;
 	public ChartView ChartView => TabControlChart.ChartView;
 
-	public List<TabChartLegendItem<TSeries>> LegendItems = new();
-	protected readonly Dictionary<string, TabChartLegendItem<TSeries>> _idxLegendItems = new();
+	public List<TabChartLegendItem<TSeries>> LegendItems = [];
+	protected readonly Dictionary<string, TabChartLegendItem<TSeries>> _idxLegendItems = [];
 
 	protected readonly ScrollViewer _scrollViewer;
 	protected readonly WrapPanel _wrapPanel;
@@ -24,14 +25,14 @@ public abstract class TabControlChartLegend<TSeries> : Grid
 
 	public override string? ToString() => ChartView.ToString();
 
-	public TabControlChartLegend(TabControlChart<TSeries> tabControlChart)
+	protected TabControlChartLegend(TabControlChart<TSeries> tabControlChart)
 	{
 		TabControlChart = tabControlChart;
 
 		HorizontalAlignment = HorizontalAlignment.Stretch;
 		VerticalAlignment = VerticalAlignment.Stretch;
 
-		_wrapPanel = new WrapPanel()
+		_wrapPanel = new WrapPanel
 		{
 			Orientation = ChartView.LegendPosition == ChartLegendPosition.Right ? Orientation.Vertical : Orientation.Horizontal,
 			HorizontalAlignment = HorizontalAlignment.Stretch,
@@ -39,7 +40,7 @@ public abstract class TabControlChartLegend<TSeries> : Grid
 			Margin = new Thickness(6),
 		};
 
-		_scrollViewer = new ScrollViewer()
+		_scrollViewer = new ScrollViewer
 		{
 			HorizontalAlignment = HorizontalAlignment.Stretch,
 			VerticalAlignment = VerticalAlignment.Stretch,
@@ -52,7 +53,7 @@ public abstract class TabControlChartLegend<TSeries> : Grid
 
 		if (ChartView.ShowOrder && ChartView.LegendPosition == ChartLegendPosition.Right)
 		{
-			_textBlockTotal = new TabControlTextBlock()
+			_textBlockTotal = new TabControlTextBlock
 			{
 				Margin = new Thickness(2),
 				HorizontalAlignment = HorizontalAlignment.Right,
@@ -77,7 +78,7 @@ public abstract class TabControlChartLegend<TSeries> : Grid
 		return seriesType.ToString();
 	}
 
-	abstract public TabChartLegendItem<TSeries> AddSeries(ChartSeries<TSeries> chartSeries);
+	protected abstract TabChartLegendItem<TSeries> AddSeries(ChartSeries<TSeries> chartSeries);
 
 	// Show items in order of count, retaining original order for unused values
 	private void UpdatePositions()

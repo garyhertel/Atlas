@@ -2,7 +2,7 @@ using Atlas.Extensions;
 using Avalonia.Data.Converters;
 using System.Globalization;
 
-namespace Atlas.UI.Avalonia;
+namespace Atlas.UI.Avalonia.Controls.Converters;
 
 public class EditValueConverter : IValueConverter
 {
@@ -31,7 +31,7 @@ public class EditValueConverter : IValueConverter
 		if (value == null)
 			return null;
 
-		if (targetType.IsGenericType && targetType.GetGenericTypeDefinition().Equals(typeof(Nullable<>)))
+		if (targetType.IsGenericType && targetType.GetGenericTypeDefinition() == typeof(Nullable<>))
 		{
 			targetType = Nullable.GetUnderlyingType(targetType)!;
 		}

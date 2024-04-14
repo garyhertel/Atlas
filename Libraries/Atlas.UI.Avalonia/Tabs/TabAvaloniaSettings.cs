@@ -2,6 +2,7 @@ using Atlas.Core;
 using Atlas.Resources;
 using Atlas.Serialize;
 using Atlas.Tabs;
+using Atlas.UI.Avalonia.Themes;
 using Atlas.UI.Avalonia.Themes.Tabs;
 using Avalonia;
 using Avalonia.Styling;
@@ -43,7 +44,7 @@ public class TabAvaloniaSettings : ITab
 			}
 			model.AddObject(UserSettings);
 
-			model.Items = new List<ListItem>()
+			model.Items = new List<ListItem>
 			{
 				new("Themes", new TabAvaloniaThemes()),
 			};

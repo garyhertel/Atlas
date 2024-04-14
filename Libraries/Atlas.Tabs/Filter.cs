@@ -57,8 +57,8 @@ public class SearchFilter
 public class Filter
 {
 	public string FilterText { get; set; }
-	public int Depth { get; set; } = 0;
-	public List<FilterExpression> FilterExpressions { get; set; } = new();
+	public int Depth { get; set; }
+	public List<FilterExpression> FilterExpressions { get; set; } = [];
 	public bool IsAnd { get; set; }
 
 	// "ABC" | 123
@@ -136,10 +136,8 @@ public class Filter
 		foreach (PropertyInfo propertyInfo in columnProperties)
 		{
 			object? value = propertyInfo.GetValue(obj);
-			if (value == null)
-				continue;
 
-			string? valueText = value.ToString();
+			string? valueText = value?.ToString();
 			if (valueText == null)
 				continue;
 

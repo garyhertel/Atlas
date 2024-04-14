@@ -91,7 +91,7 @@ public static class HttpUtils
 
 				if (exception.Response != null)
 				{
-					string response = new StreamReader(exception.Response.GetResponseStream()).ReadToEnd();
+					string response = await new StreamReader(exception.Response.GetResponseStream()).ReadToEndAsync();
 					getCall.Log.AddError("Exception: " + response);
 				}
 
@@ -109,7 +109,7 @@ public static class HttpUtils
 			return await content.ReadAsByteArrayAsync();
 		}
 
-		using var contentStream = await content.ReadAsStreamAsync();
+		await using var contentStream = await content.ReadAsStreamAsync();
 		using var memoryStream = new MemoryStream();
 
 		var buffer = new byte[ReadBufferSize];
@@ -118,7 +118,7 @@ public static class HttpUtils
 		while ((bytes = await contentStream.ReadAsync(buffer)) > 0)
 		{
 			memoryStream.Write(buffer, 0, bytes);
-			progress.Report(new HttpGetProgress()
+			progress.Report(new HttpGetProgress
 			{
 				Downloaded = memoryStream.Position,
 				TotalLength = content.Headers.ContentLength.Value,
@@ -163,7 +163,7 @@ public static class HttpUtils
 
 				if (exception.Response != null)
 				{
-					string response = new StreamReader(exception.Response.GetResponseStream()).ReadToEnd();
+					string response = await new StreamReader(exception.Response.GetResponseStream()).ReadToEndAsync();
 					headCall.Log.AddError("Exception: " + response);
 				}
 

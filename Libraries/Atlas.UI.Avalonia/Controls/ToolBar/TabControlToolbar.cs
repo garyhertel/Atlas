@@ -12,7 +12,7 @@ using System.Windows.Input;
 
 namespace Atlas.UI.Avalonia.Controls;
 
-public class ToolbarSeparator : Border { }
+public class ToolbarSeparator : Border;
 
 public class TabControlToolbar : Grid, IDisposable
 {
@@ -149,7 +149,7 @@ public class TabControlToolbar : Grid, IDisposable
 	// Read Only
 	public TextBox AddLabelText(string text, bool fill = false)
 	{
-		var textBox = new TextBox()
+		var textBox = new TextBox
 		{
 			Text = text,
 			TextWrapping = TextWrapping.NoWrap,
@@ -213,13 +213,7 @@ public class ToolbarTextBlock : TextBlock
 	}
 }
 
-public class ToolbarHeaderTextBlock : ToolbarTextBlock
-{
-	public ToolbarHeaderTextBlock(string text = "")
-		: base(text)
-	{
-	}
-}
+public class ToolbarHeaderTextBlock(string text = "") : ToolbarTextBlock(text);
 
 public class ToolbarRadioButton : RadioButton
 {
@@ -248,7 +242,7 @@ public class RelayCommand : ICommand
 
 	public event EventHandler? CanExecuteChanged;
 
-	private bool? _prevCanExecute = null;
+	private bool? _prevCanExecute;
 	public bool CanExecute(object? parameter)
 	{
 		var ce = CanExecuteFunc(parameter);

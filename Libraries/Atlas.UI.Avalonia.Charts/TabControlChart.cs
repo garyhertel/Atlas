@@ -1,4 +1,5 @@
 using Atlas.Core;
+using Atlas.Core.Charts;
 using Atlas.Tabs;
 using Atlas.UI.Avalonia.Controls;
 using Atlas.UI.Avalonia.Themes;
@@ -13,26 +14,19 @@ using WeakEvent;
 
 namespace Atlas.UI.Avalonia.Charts;
 
-public class ChartSeries<TSeries>
+public class ChartSeries<TSeries>(ListSeries listSeries, TSeries lineSeries, Color color)
 {
-	public ListSeries ListSeries { get; set; }
-	public TSeries LineSeries { get; set; }
-	public Color Color { get; set; }
+	public ListSeries ListSeries => listSeries;
+	public TSeries LineSeries => lineSeries;
+	public Color Color => color;
 
 	public bool IsSelected { get; set; } = true; // Visible = Selected
 
 	public override string? ToString() => ListSeries.Name;
 
-	public ChartSeries(ListSeries listSeries, TSeries lineSeries, Color color)
-	{
-		ListSeries = listSeries;
-		LineSeries = lineSeries;
-		Color = color;
-	}
-
 	public SeriesInfo GetInfo()
 	{
-		return new SeriesInfo()
+		return new SeriesInfo
 		{
 			Name = ListSeries.Name,
 			Color = Color,
@@ -74,8 +68,8 @@ public abstract class TabControlChart<TSeries> : Grid, ITabControlChart
 	public static Color TextColor = Colors.LightGray;
 
 	private static readonly System.Drawing.Color NowColor = System.Drawing.Color.Green;
-	public static Color[] DefaultColors { get; set; } = new Color[]
-	{
+	public static Color[] DefaultColors { get; set; } =
+	[
 		Colors.LawnGreen,
 		Colors.Fuchsia,
 		Colors.DodgerBlue,
@@ -86,15 +80,15 @@ public abstract class TabControlChart<TSeries> : Grid, ITabControlChart
 		Colors.Orange,
 		Colors.Salmon,
 		Colors.MediumSpringGreen,
-	};
+	];
 	public static Color GetColor(int index) => DefaultColors[index % DefaultColors.Length];
 
 	protected static readonly WeakEventSource<MouseCursorMovedEventArgs> _mouseCursorChangedEventSource = new();
 
 	public static event EventHandler<MouseCursorMovedEventArgs> OnMouseCursorChanged
 	{
-		add { _mouseCursorChangedEventSource.Subscribe(value); }
-		remove { _mouseCursorChangedEventSource.Unsubscribe(value); }
+		add => _mouseCursorChangedEventSource.Subscribe(value);
+		remove => _mouseCursorChangedEventSource.Unsubscribe(value);
 	}
 
 	public event EventHandler<SeriesSelectedEventArgs>? SelectionChanged;
@@ -107,10 +101,10 @@ public abstract class TabControlChart<TSeries> : Grid, ITabControlChart
 	public bool FillHeight { get; set; }
 	public int SeriesLimit { get; set; } = 25;
 
-	public List<ChartSeries<TSeries>> ChartSeries { get; private set; } = new();
-	protected Dictionary<string, ChartSeries<TSeries>> IdxNameToChartSeries { get; set; } = new();
-	protected Dictionary<IList, ListSeries> IdxListToListSeries { get; set; } = new();
-	protected Dictionary<string, SeriesInfo> IdxSeriesInfo = new();
+	public List<ChartSeries<TSeries>> ChartSeries { get; private set; } = [];
+	protected Dictionary<string, ChartSeries<TSeries>> IdxNameToChartSeries { get; set; } = [];
+	protected Dictionary<IList, ListSeries> IdxListToListSeries { get; set; } = [];
+	protected Dictionary<string, SeriesInfo> IdxSeriesInfo = [];
 
 	public List<ListSeries> SelectedSeries
 	{
@@ -134,11 +128,11 @@ public abstract class TabControlChart<TSeries> : Grid, ITabControlChart
 	public bool UseDateTimeAxis => (XAxisPropertyInfo?.PropertyType == typeof(DateTime)) ||
 									(ChartView.TimeWindow != null);
 
-	public List<ChartAnnotation> Annotations { get; set; } = new();
+	public List<ChartAnnotation> Annotations { get; set; } = [];
 
 	public override string? ToString() => ChartView.ToString();
 
-	public TabControlChart(TabInstance tabInstance, ChartView chartView, bool fillHeight = false)
+	protected TabControlChart(TabInstance tabInstance, ChartView chartView, bool fillHeight = false)
 	{
 		TabInstance = tabInstance;
 		ChartView = chartView;
@@ -171,7 +165,7 @@ public abstract class TabControlChart<TSeries> : Grid, ITabControlChart
 		string? title = ChartView.Name;
 		if (title == null) return;
 		
-		TitleTextBlock = new TabControlTextBlock()
+		TitleTextBlock = new TabControlTextBlock
 		{
 			Text = ChartView.Name,
 			FontSize = 16,

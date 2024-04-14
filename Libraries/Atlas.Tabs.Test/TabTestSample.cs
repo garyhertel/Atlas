@@ -26,22 +26,14 @@ public class TabSample : ITab
 				new("Recursive Copy", new TabSample()),
 			};
 
-			model.Actions = new List<TaskCreator>()
+			model.Actions = new List<TaskCreator>
 			{
 				new TaskDelegate("Sleep 10s", Sleep, true),
 				new TaskAction("Add 5 Items", () => AddItems(5), false), // Foreground task so we can modify collection
 			};
-
-			model.Notes =
-@"
-This is a sample tab that shows some of the different tab features
-
-Actions
-DataGrids
-";
 		}
 
-		private void Sleep(Call call)
+		private static void Sleep(Call call)
 		{
 			call.TaskInstance!.ProgressMax = 10;
 			for (int i = 0; i < 10; i++)
@@ -63,16 +55,10 @@ DataGrids
 	}
 }
 
-public class SampleItem
+public class SampleItem(int id, string name)
 {
-	public int Id { get; set; }
-	public string Name { get; set; }
+	public int Id { get; set; } = id;
+	public string Name { get; set; } = name;
 
 	public override string ToString() => Name;
-
-	public SampleItem(int id, string name)
-	{
-		Id = id;
-		Name = name;
-	}
 }

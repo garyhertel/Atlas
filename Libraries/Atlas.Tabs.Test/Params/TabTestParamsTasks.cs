@@ -11,14 +11,14 @@ public class TabTestParamsTasks : ITab
 	{
 		private const string DataKey = "Params";
 
-		private readonly ItemCollectionUI<ParamTestResult> _items = new();
+		private readonly ItemCollectionUI<ParamTestResult> _items = [];
 		private ParamTestItem? _paramTestItem;
 
 		public override void Load(Call call, TabModel model)
 		{
 			model.Items = _items;
 
-			model.Actions = new List<TaskCreator>()
+			model.Actions = new List<TaskCreator>
 			{
 				new TaskDelegate("Add", Add),
 				new TaskDelegateAsync("Task with Progress", ShowProgressAsync, true),

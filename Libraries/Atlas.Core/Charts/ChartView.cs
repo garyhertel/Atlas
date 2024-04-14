@@ -3,7 +3,7 @@ using System.Collections;
 using System.Drawing;
 using System.Reflection;
 
-namespace Atlas.Core;
+namespace Atlas.Core.Charts;
 
 public class ChartAnnotation
 {
@@ -43,14 +43,14 @@ public class ChartView
 
 	public TimeWindow? TimeWindow { get; set; }
 
-	public ItemCollection<ListSeries> Series { get; set; } = new();
+	public ItemCollection<ListSeries> Series { get; set; } = [];
 
-	public List<ChartAnnotation> Annotations { get; set; } = new();
+	public List<ChartAnnotation> Annotations { get; set; } = [];
 
 	public IList? SourceList { get; set; }
 
-	private Dictionary<string, IList> _dimensions = new();
-	private List<PropertyInfo> _dimensionPropertyInfos = new();
+	private Dictionary<string, IList> _dimensions = [];
+	private List<PropertyInfo> _dimensionPropertyInfos = [];
 
 	private string? _xPropertyName;
 	private string? _yPropertyName;
@@ -88,7 +88,7 @@ public class ChartView
 			.Select(name => elementType.GetProperty(name)!)
 			.ToList();
 
-		_dimensions = new();
+		_dimensions = [];
 		foreach (var obj in iList)
 		{
 			AddDimensionValue(obj);
@@ -101,7 +101,7 @@ public class ChartView
 		var values = _dimensionPropertyInfos.Select(propertyInfo => propertyInfo.GetValue(obj)!);
 		string name = string.Join(" - ", values);
 
-		if (!_dimensions!.TryGetValue(name, out IList? dimensionList))
+		if (!_dimensions.TryGetValue(name, out IList? dimensionList))
 		{
 			dimensionList = (IList)Activator.CreateInstance(SourceList!.GetType())!;
 			_dimensions.Add(name, dimensionList);

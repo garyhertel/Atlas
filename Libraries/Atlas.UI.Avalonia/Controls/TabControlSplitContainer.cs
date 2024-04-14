@@ -21,15 +21,15 @@ public enum SeparatorType
 // Vertical only right now
 public class TabControlSplitContainer : Grid
 {
-	public Dictionary<object, Control> GridControls = new();
-	public List<GridSplitter> GridSplitters = new(); // reattach each time controls change
+	public Dictionary<object, Control> GridControls = [];
+	public List<GridSplitter> GridSplitters = []; // reattach each time controls change
 
 	public double MinDesiredWidth = 100;
 	public double MaxDesiredWidth = double.MaxValue;
 
 	public new bool IsArrangeValid;
 
-	private List<Item> _gridItems = new();
+	private List<Item> _gridItems = [];
 
 	public class Item
 	{
@@ -80,7 +80,7 @@ public class TabControlSplitContainer : Grid
 			control = scrollViewer;
 		}
 
-		var item = new Item()
+		var item = new Item
 		{
 			Control = control,
 			Fill = fill,
@@ -181,7 +181,7 @@ public class TabControlSplitContainer : Grid
 	{
 		//AddRowDefinition(false, rowIndex);
 
-		var gridSplitter = new GridSplitter()
+		var gridSplitter = new GridSplitter
 		{
 			HorizontalAlignment = HorizontalAlignment.Stretch,
 			Background = Brushes.Black,
@@ -197,7 +197,7 @@ public class TabControlSplitContainer : Grid
 
 	private void AddVerticalGridSplitter(int columnIndex)
 	{
-		var gridSplitter = new GridSplitter()
+		var gridSplitter = new GridSplitter
 		{
 			VerticalAlignment = VerticalAlignment.Stretch,
 			Background = Brushes.Black,
@@ -256,7 +256,7 @@ public class TabControlSplitContainer : Grid
 		int newIndex = 1;
 		foreach (Control control in orderedControls)
 		{
-			var item = new Item()
+			var item = new Item
 			{
 				Control = control,
 				Fill = true,
@@ -314,7 +314,7 @@ public class TabControlSplitContainer : Grid
 		_gridItems.Clear();
 	}
 
-	private void DisposeControl(Control control)
+	private static void DisposeControl(Control control)
 	{
 		if (control is IDisposable disposable)
 		{

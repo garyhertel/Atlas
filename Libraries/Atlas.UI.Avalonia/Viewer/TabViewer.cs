@@ -1,7 +1,9 @@
 using Atlas.Core;
 using Atlas.Tabs;
 using Atlas.UI.Avalonia.Controls;
+using Atlas.UI.Avalonia.Tabs;
 using Atlas.UI.Avalonia.Themes;
+using Atlas.UI.Avalonia.Utilities;
 using Atlas.UI.Avalonia.View;
 using Avalonia;
 using Avalonia.Controls;
@@ -12,7 +14,7 @@ using Avalonia.Layout;
 using Avalonia.Threading;
 using System.Diagnostics.CodeAnalysis;
 
-namespace Atlas.UI.Avalonia;
+namespace Atlas.UI.Avalonia.Viewer;
 
 public class EventTabLoaded(object obj) : EventArgs
 {
@@ -129,13 +131,13 @@ public class TabViewer : Grid
 		TabView!.Instance.Reload();
 	}
 
-	private void ShowFlyout(Control control, Flyout flyout, string text)
+	private static void ShowFlyout(Control control, Flyout flyout, string text)
 	{
 		flyout.Content = text;
 		flyout.ShowAt(control);
 	}
 
-	private void PostShowFlyout(Control control, Flyout flyout, string text)
+	private static void PostShowFlyout(Control control, Flyout flyout, string text)
 	{
 		Dispatcher.UIThread.Post(() => ShowFlyout(control, flyout, text));
 	}
@@ -149,7 +151,7 @@ public class TabViewer : Grid
 		PostShowFlyout(Toolbar!.ButtonLink!, flyout, "Creating Link ...");
 
 		Bookmark bookmark = TabView!.Instance.CreateBookmark();
-		TabBookmark? leafNode = bookmark!.TabBookmark.GetLeaf(); // Get the shallowest root node
+		TabBookmark? leafNode = bookmark.TabBookmark.GetLeaf(); // Get the shallowest root node
 		if (leafNode != bookmark.TabBookmark)
 		{
 			bookmark.Name = leafNode!.Tab?.ToString();

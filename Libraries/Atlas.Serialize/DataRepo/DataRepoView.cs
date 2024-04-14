@@ -1,4 +1,5 @@
 using Atlas.Core;
+using Atlas.Core.Utilities;
 
 namespace Atlas.Serialize;
 
@@ -78,7 +79,7 @@ public class DataRepoView<T> : DataRepoInstance<T>
 		Delete(call, key);
 	}
 
-	public override void Delete(Call? call, string? key = null)
+	public override void Delete(Call? call = null, string? key = null)
 	{
 		key ??= DefaultKey;
 		lock (DataRepo)

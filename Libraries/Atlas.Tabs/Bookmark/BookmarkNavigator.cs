@@ -6,7 +6,7 @@ public class BookmarkNavigator
 {
 	public int CurrentIndex { get; set; } = -1;
 
-	public List<Bookmark> History { get; set; } = new();
+	public List<Bookmark> History { get; set; } = [];
 
 	public Bookmark? Current
 	{
@@ -24,7 +24,7 @@ public class BookmarkNavigator
 
 	//public event EventHandler<EventArgs> OnSelectionChanged;
 
-	public override string ToString() => CurrentIndex.ToString() + " / " + History.Count;
+	public override string ToString() => $"{CurrentIndex} / {History.Count}";
 
 	public BookmarkNavigator()
 	{

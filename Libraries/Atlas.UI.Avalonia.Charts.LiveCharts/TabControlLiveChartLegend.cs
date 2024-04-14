@@ -3,17 +3,13 @@ using LiveChartsCore.SkiaSharpView.Avalonia;
 
 namespace Atlas.UI.Avalonia.Charts.LiveCharts;
 
-public class TabControlLiveChartLegend : TabControlChartLegend<ISeries>
+public class TabControlLiveChartLegend(TabControlLiveChart liveChart)
+	: TabControlChartLegend<ISeries>(liveChart)
 {
-	public TabControlLiveChart LiveChart;
+	public TabControlLiveChart LiveChart = liveChart;
 	public CartesianChart Chart => LiveChart.Chart;
 
-	public TabControlLiveChartLegend(TabControlLiveChart liveChart) : base(liveChart)
-	{
-		LiveChart = liveChart;
-	}
-
-	public override TabChartLegendItem<ISeries> AddSeries(ChartSeries<ISeries> chartSeries)
+	protected override TabChartLegendItem<ISeries> AddSeries(ChartSeries<ISeries> chartSeries)
 	{
 		var legendItem = new TabLiveChartLegendItem(this, chartSeries);
 		legendItem.OnSelectionChanged += LegendItem_SelectionChanged;

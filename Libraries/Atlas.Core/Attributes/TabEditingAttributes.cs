@@ -2,9 +2,7 @@ namespace Atlas.Core;
 
 // Allows property to be edited in UI
 [AttributeUsage(AttributeTargets.Property)]
-public class EditingAttribute : Attribute
-{
-}
+public class EditingAttribute : Attribute;
 
 /*[AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
 public class ReadOnlyAttribute : Attribute
@@ -21,16 +19,10 @@ public class AcceptsReturnAttribute(bool allow = true) : Attribute
 
 // [Watermark("0123456789abcdef")]
 [AttributeUsage(AttributeTargets.Property)]
-public class WatermarkAttribute : Attribute
+public class WatermarkAttribute(string text, string? memberName = null) : Attribute
 {
-	public readonly string Text;
-	public readonly string? MemberName; // Field or Property name, overrides Text if set
-
-	public WatermarkAttribute(string text, string? memberName = null)
-	{
-		Text = text;
-		MemberName = memberName;
-	}
+	public readonly string Text = text;
+	public readonly string? MemberName = memberName; // Field or Property name, overrides Text if set
 }
 
 [AttributeUsage(AttributeTargets.Property)]
@@ -48,9 +40,7 @@ public class BindListAttribute(string propertyName) : Attribute
 
 // ->Toolbar: Show a separator before this item
 [AttributeUsage(AttributeTargets.Property)]
-public class SeparatorAttribute : Attribute
-{
-}
+public class SeparatorAttribute : Attribute;
 
 // If set, this method will appear as an Action (rename to [Action]?)
 /*[AttributeUsage(AttributeTargets.Method)]

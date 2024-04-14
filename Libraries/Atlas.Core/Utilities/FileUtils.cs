@@ -1,15 +1,10 @@
 using System.Runtime.InteropServices;
 
-namespace Atlas.Core;
+namespace Atlas.Core.Utilities;
 
-public struct FilePath
+public struct FilePath(string path)
 {
-	public string Path;
-
-	public FilePath(string path)
-	{
-		Path = path;
-	}
+	public string Path = path;
 }
 
 public static class FileUtils
@@ -121,15 +116,15 @@ public static class FileUtils
 		return false;
 	}
 
-	public static HashSet<string> TextExtensions = new()
-	{
+	public static HashSet<string> TextExtensions =
+	[
 		".csv",
 		".html",
 		".ini",
 		".log",
 		".md",
 		".txt",
-	};
+	];
 
 	public static bool IsTextFile(string path)
 	{

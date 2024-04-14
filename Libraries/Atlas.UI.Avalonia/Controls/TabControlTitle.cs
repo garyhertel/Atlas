@@ -1,5 +1,6 @@
 using Atlas.Core;
 using Atlas.Tabs;
+using Atlas.UI.Avalonia.Utilities;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
@@ -16,7 +17,7 @@ public class TabControlTitle : Border, IDisposable
 	public string Label { get; set; }
 
 	public TextBlock? TextBlock;
-	private Grid _containerGrid;
+	private readonly Grid _containerGrid;
 
 	public string Text
 	{

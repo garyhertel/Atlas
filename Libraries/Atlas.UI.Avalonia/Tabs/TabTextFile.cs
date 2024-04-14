@@ -1,17 +1,13 @@
 using Atlas.Core;
+using Atlas.Core.Utilities;
 using Atlas.Tabs;
 using Atlas.UI.Avalonia.Controls;
 
 namespace Atlas.UI.Avalonia.Tabs;
 
-public class TabTextFile : ITab
+public class TabTextFile(FilePath filePath) : ITab
 {
-	public FilePath FilePath;
-
-	public TabTextFile(FilePath filePath)
-	{
-		FilePath = filePath;
-	}
+	public FilePath FilePath = filePath;
 
 	public TabInstance Create() => new Instance(this);
 

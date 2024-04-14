@@ -26,6 +26,8 @@ public static class AtlasTheme
 	public static SolidColorBrush ToolbarTextForeground => GetBrush("ToolbarTextForegroundBrush");
 	public static SolidColorBrush ToolbarTextCaret => GetBrush("ToolbarTextCaretBrush");
 
+	public static SolidColorBrush ToolTipForeground => GetBrush("ToolTipForeground");
+
 	// Icon
 	public static SolidColorBrush IconForeground => GetBrush("IconForegroundBrush");
 	public static SolidColorBrush IconForegroundHighlight => GetBrush("IconForegroundHighlightBrush");
@@ -105,7 +107,7 @@ public static class AtlasTheme
 			}
 		}
 
-		if (Application.Current!.TryGetResource(colorName, ThemeVariant, out object? obj))
+		if (Application.Current.TryGetResource(colorName, ThemeVariant, out object? obj))
 		{
 			return (Color)obj!;
 		}
@@ -123,7 +125,7 @@ public static class AtlasTheme
 			}
 		}
 
-		if (Application.Current!.TryGetResource(brushName, ThemeVariant, out object? obj))
+		if (Application.Current.TryGetResource(brushName, ThemeVariant, out object? obj))
 		{
 			return (SolidColorBrush)obj!;
 		}
@@ -141,7 +143,7 @@ public static class AtlasTheme
 			}
 		}
 
-		if (Application.Current!.TryGetResource(name, ThemeVariant, out object? value))
+		if (Application.Current.TryGetResource(name, ThemeVariant, out object? value))
 		{
 			return (double)value!;
 		}

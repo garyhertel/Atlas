@@ -19,7 +19,7 @@ public class TabTestDataRepoCollection : ITab
 			LoadSavedItems(call);
 			model.Items = _sampleItems;
 
-			model.Actions = new List<TaskCreator>()
+			model.Actions = new List<TaskCreator>
 			{
 				new TaskDelegate("Add", Add), // Foreground task so we can modify collection
 				new TaskDelegate("Add 10", Add10),
@@ -42,7 +42,7 @@ public class TabTestDataRepoCollection : ITab
 		private void Add(Call call)
 		{
 			var sampleItem = new SampleItem(_sampleItems!.Count, "Item " + _sampleItems.Count);
-			RemoveItem(call, sampleItem!.Name!); // Remove previous result so refocus works
+			RemoveItem(call, sampleItem.Name!); // Remove previous result so refocus works
 			_dataRepoItems!.Save(call, sampleItem.ToString()!, sampleItem);
 			_sampleItems.Add(sampleItem);
 		}
@@ -80,7 +80,7 @@ public class TabTestDataRepoCollection : ITab
 			_sampleItems!.Clear();
 		}
 
-		public void RemoveItem(Call call, string key)
+		private void RemoveItem(Call call, string key)
 		{
 			_dataRepoItems!.Delete(call, key);
 			SampleItem? existing = _sampleItems!.SingleOrDefault(i => i.Name == key);

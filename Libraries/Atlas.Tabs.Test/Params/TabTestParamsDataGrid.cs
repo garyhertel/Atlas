@@ -1,6 +1,6 @@
 using Atlas.Core;
 
-namespace Atlas.Tabs.Test.Actions;
+namespace Atlas.Tabs.Test.Params;
 
 public class TabParamsDataGrid : ITab
 {
@@ -19,7 +19,7 @@ public class TabParamsDataGrid : ITab
 			model.AddData(_logEntry);
 			model.Editing = true;
 
-			model.Actions = new List<TaskCreator>()
+			model.Actions = new List<TaskCreator>
 			{
 				new TaskDelegate("Add Log Entry", AddEntry),
 			};

@@ -12,7 +12,7 @@ public class UserSettings
 	public string? BookmarkPath { get; set; }
 
 	[Hidden]
-	public string SettingsPath => Paths.Combine(ProjectPath, @"Settings.atlas");
+	public string SettingsPath => Paths.Combine(ProjectPath, "Settings.atlas");
 
 	public bool AutoLoad { get; set; } = true;
 
@@ -23,7 +23,7 @@ public class UserSettings
 
 	//public int MaxLogItems { get; set; } = 100000;
 
-	public static List<string> Themes { get; set; } = new();
+	public static List<string> Themes { get; set; } = [];
 
 	[BindList(nameof(Themes))]
 	public string? Theme { get; set; }

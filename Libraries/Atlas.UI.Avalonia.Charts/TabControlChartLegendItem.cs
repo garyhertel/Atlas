@@ -1,4 +1,4 @@
-using Atlas.Core;
+using Atlas.Core.Charts;
 using Atlas.Extensions;
 using Atlas.UI.Avalonia.Controls;
 using Atlas.UI.Avalonia.Themes;
@@ -53,13 +53,11 @@ public abstract class TabChartLegendItem<TSeries> : Grid
 		}
 	}
 
-	public IEnumerable? ItemsSource { get; internal set; }
-
 	private SolidColorBrush _colorBrush;
 
 	public override string? ToString() => ChartSeries.ToString();
 
-	public TabChartLegendItem(TabControlChartLegend<TSeries> legend, ChartSeries<TSeries> chartSeries)
+	protected TabChartLegendItem(TabControlChartLegend<TSeries> legend, ChartSeries<TSeries> chartSeries)
 	{
 		Legend = legend;
 		ChartSeries = chartSeries;
