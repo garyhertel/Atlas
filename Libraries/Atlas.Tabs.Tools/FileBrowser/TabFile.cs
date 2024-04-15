@@ -11,7 +11,7 @@ public interface IFileTypeView
 
 public class TabFile : ITab
 {
-	public static Dictionary<string, Type> ExtensionTypes = [];
+	public static Dictionary<string, Type> ExtensionTypes { get; set; } = [];
 
 	public delegate void SelectFile(Call call, string path);
 
