@@ -88,7 +88,6 @@ public static class ObjectExtensions
 				return CollectionToString(collection);
 			}
 			return collection.Count.ToString("N0");
-			//return "[" + collection.Count.ToString("N0") + "]";
 		}
 
 		if (typeof(IEnumerable).IsAssignableFrom(type))
@@ -97,7 +96,7 @@ public static class ObjectExtensions
 			if (countProp != null)
 			{
 				int count = (int)countProp.GetValue(obj, null)!;
-				return "[" + count.ToString("N0") + "]";
+				return count.ToString("N0");
 			}
 		}
 
