@@ -24,14 +24,14 @@ public class DataRepo
 		Debug.Assert(repoPath != null);
 	}
 
-	public DataRepoInstance<T> Open<T>(string groupId)
+	public DataRepoInstance<T> Open<T>(string groupId, bool indexed = false)
 	{
-		return new DataRepoInstance<T>(this, groupId);
+		return new DataRepoInstance<T>(this, groupId, indexed);
 	}
 
-	public DataRepoView<T> OpenView<T>(string groupId)
+	public DataRepoView<T> OpenView<T>(string groupId, bool indexed = false, int? maxItems = null)
 	{
-		return new DataRepoView<T>(this, groupId);
+		return new DataRepoView<T>(this, groupId, indexed, maxItems);
 	}
 
 	public DataRepoView<T> LoadView<T>(Call call, string groupId)
@@ -45,6 +45,13 @@ public class DataRepo
 	{
 		var view = new DataRepoView<T>(this, groupId);
 		view.LoadAllOrderBy(call, orderByMemberName, ascending);
+		return view;
+	}
+
+	public DataRepoView<T> LoadIndexedView<T>(Call call, string groupId, bool ascending = true)
+	{
+		var view = new DataRepoView<T>(this, groupId, true);
+		view.LoadAllIndexed(call, ascending);
 		return view;
 	}
 
@@ -145,6 +152,22 @@ public class DataRepo
 		return Load<T>(typeof(T).FullName!, call, createIfNeeded, lazy);
 	}
 
+	public DataItem<T>? LoadPath<T>(Call? call, string path, bool lazy = false)
+	{
+		call ??= new Call();
+
+		var serializerFile = SerializerFile.Create(path);
+		if (serializerFile.Exists)
+		{
+			T? obj = serializerFile.Load<T>(call, lazy);
+			if (obj != null)
+			{
+				return new DataItem<T>(serializerFile.LoadHeader(call).Name, obj);
+			}
+		}
+		return null;
+	}
+
 	public DataItemCollection<T> LoadAll<T>(Call? call = null, string? groupId = null, bool lazy = false)
 	{
 		call ??= new Call();
@@ -159,7 +182,7 @@ public class DataRepo
 			if (item != null)
 				list.Add(item);
 		}*/
-		DataItemCollection<T> entries = new(this);
+		DataItemCollection<T> entries = [];
 
 		string groupPath = GetGroupPath(typeof(T), groupId);
 		if (Directory.Exists(groupPath))

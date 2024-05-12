@@ -1,4 +1,5 @@
 using Atlas.Core;
+using Atlas.Core.Tasks;
 
 namespace Atlas.Serialize;
 
@@ -14,116 +15,93 @@ public class DataRepoIndex
 	}
 }
 
-public class DataRepoIndexInstance<T>
+public class DataRepoIndexInstance<T>(DataRepoInstance<T> dataRepoInstance, int? maxItems = null)
 {
 	public static readonly TimeSpan MutexTimeout = TimeSpan.FromSeconds(5);
 
-	public DataRepoInstance<T> DataRepoInstance { get; set; }
+	public DataRepoInstance<T> DataRepoInstance { get; set; } = dataRepoInstance;
+	public int? MaxItems { get; set; } = maxItems;
 
 	public string GroupId => DataRepoInstance.GroupId;
 	public string GroupPath => DataRepoInstance.GroupPath;
 
-	public string DataPath => Paths.Combine(GroupPath, "Index.dat");
+	public string IndexPath => Paths.Combine(GroupPath, "Index.dat");
 
 	public record Item(long Index, string Key);
 
 	public class Indices
 	{
-		public List<Item> Items { get; set; } = new();
+		public List<Item> Items { get; set; } = [];
 		public long NextIndex { get; set; }
 	}
 
-	public DataRepoIndexInstance(DataRepoInstance<T> dataRepoInstance)
-	{
-		DataRepoInstance = dataRepoInstance;
-	}
-
-	// todo: Simplify
 	public Item? Add(Call call, string key)
 	{
-		using var mutex = new Mutex(false, DataRepoInstance.GroupId);
-
-		try
-		{
-			if (!mutex.WaitOne(MutexTimeout)) return null;
-		}
-		catch (AbandonedMutexException e)
-		{
-			// Mutex acquired
-			call.Log.Add(e);
-		}
-		catch (Exception e)
-		{
-			call.Log.Add(e);
-			return null;
-		}
-
-		try
-		{
-			// Do operation
-			Indices indices = Load(call);
-			long index = indices.NextIndex++;
-			Item item = new(index, key);
-
-			indices.Items.Add(item);
-			Save(indices);
-			return item;
-		}
-		catch (ApplicationException e)
-		{
-			call.Log.Add(e);
-		}
-		finally
-		{
-			mutex.ReleaseMutex();
-		}
-		return null;
+		return LockedGetCall(call, () => AddInternal(call, key));
 	}
 
-	// todo: Simplify
+	private Item? AddInternal(Call call, string key)
+	{
+		Indices indices = Load(call);
+		long index = indices.NextIndex++;
+		Item item = new(index, key);
+
+		indices.Items.RemoveAll(item => item.Key == key);
+		indices.Items.Add(item);
+		Save(indices);
+
+		PruneMaxItems(call, indices);
+
+		return item;
+	}
+
+	private void PruneMaxItems(Call call, Indices indices)
+	{
+		if (MaxItems is int maxItems)
+		{
+			while (indices.Items.Count > maxItems)
+			{
+				DataRepoInstance.Delete(call, indices.Items[0].Key);
+				indices.Items.RemoveAt(0);
+				Save(indices);
+			}
+		}
+	}
+
 	public void Remove(Call call, string key)
 	{
-		using var mutex = new Mutex(false, DataRepoInstance.GroupId);
+		LockedSetCall(call, (c) => RemoveInternal(c, key));
+	}
 
-		try
-		{
-			if (!mutex.WaitOne(MutexTimeout)) return;
-		}
-		catch (AbandonedMutexException e)
-		{
-			// Mutex acquired
-			call.Log.Add(e);
-		}
-		catch (Exception e)
-		{
-			call.Log.Add(e);
-			return;
-		}
-
-		try
-		{
-			// Do operation
-			Indices indices = Load(call);
-			indices.Items.RemoveAll(item => item.Key == key);
-			Save(indices);
-		}
-		catch (ApplicationException e)
-		{
-			call.Log.Add(e);
-		}
-		finally
-		{
-			mutex.ReleaseMutex();
-		}
+	private void RemoveInternal(Call call, string key)
+	{
+		Indices indices = Load(call);
+		indices.Items.RemoveAll(item => item.Key == key);
+		Save(indices);
 	}
 
 	public void RemoveAll(Call call)
 	{
+		LockedSetCall(call, RemoveAllInternal);
+	}
+
+	private void RemoveAllInternal(Call call)
+	{
+		Indices indices = Load(call);
+		indices.Items.Clear();
+		Save(indices);
+	}
+
+	public T? LockedGetCall<T>(Call call, Func<T> func)
+	{
 		using var mutex = new Mutex(false, DataRepoInstance.GroupId);
 
 		try
 		{
-			if (!mutex.WaitOne(MutexTimeout)) return;
+			if (!mutex.WaitOne(MutexTimeout))
+			{
+				throw new Exception($"Index timed out waiting for mutex after [{MutexTimeout}] for {func}");
+			}
 		}
 		catch (AbandonedMutexException e)
 		{
@@ -133,15 +111,52 @@ public class DataRepoIndexInstance<T>
 		catch (Exception e)
 		{
 			call.Log.Add(e);
-			return;
+			throw;
 		}
 
 		try
 		{
 			// Do operation
-			Indices indices = Load(call);
-			indices.Items.Clear();
-			Save(indices);
+			T result = func();
+			return result;
+		}
+		catch (ApplicationException e)
+		{
+			call.Log.Add(e);
+		}
+		finally
+		{
+			mutex.ReleaseMutex();
+		}
+		return default;
+	}
+
+	public void LockedSetCall(Call call, CallAction callAction)
+	{
+		using var mutex = new Mutex(false, DataRepoInstance.GroupId);
+
+		try
+		{
+			if (!mutex.WaitOne(MutexTimeout))
+			{
+				throw new Exception($"Index timed out waiting for mutex after [{MutexTimeout}] for {callAction}");
+			}
+		}
+		catch (AbandonedMutexException e)
+		{
+			// Mutex acquired
+			call.Log.Add(e);
+		}
+		catch (Exception e)
+		{
+			call.Log.Add(e);
+			throw;
+		}
+
+		try
+		{
+			// Do operation
+			callAction(call);
 		}
 		catch (ApplicationException e)
 		{
@@ -159,7 +174,7 @@ public class DataRepoIndexInstance<T>
 		{
 			Directory.CreateDirectory(GroupPath);
 		}
-		using var stream = new FileStream(DataPath!, FileMode.Create, FileAccess.ReadWrite, FileShare.Read);
+		using var stream = new FileStream(IndexPath!, FileMode.Create, FileAccess.ReadWrite, FileShare.Read);
 		using var writer = new BinaryWriter(stream);
 
 		writer.Write(indices.Items.Count);
@@ -174,12 +189,12 @@ public class DataRepoIndexInstance<T>
 
 	public Indices Load(Call call)
 	{
-		if (!File.Exists(DataPath!)) return BuildIndices(call);
+		if (!File.Exists(IndexPath!)) return BuildIndices(call);
 
-		using var stream = new FileStream(DataPath!, FileMode.Open, FileAccess.Read, FileShare.Read);
+		using var stream = new FileStream(IndexPath!, FileMode.Open, FileAccess.Read, FileShare.Read);
 		using var reader = new BinaryReader(stream);
 
-		List<Item> items = new();
+		List<Item> items = [];
 		int count = reader.ReadInt32();
 		long nextIndex = reader.ReadInt64();
 		for (int i = 0; i < count; i++)

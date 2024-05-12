@@ -22,20 +22,23 @@ public class DataRepoInstance<T> : IDataRepoInstance
 	public string GroupPath => DataRepo.GetGroupPath(typeof(T), GroupId);
 	public Type DataType => typeof(T);
 
-	//public bool Indexed { get; set; }
-	public DataRepoIndexInstance<T>? Index;
+	public DataRepoIndexInstance<T>? Index { get; set; }
 
 	public override string ToString() => GroupId;
 
-	public DataRepoInstance(DataRepo dataRepo, string groupId)
+	public DataRepoInstance(DataRepo dataRepo, string groupId, bool indexed = false, int? maxItems = null)
 	{
 		DataRepo = dataRepo;
 		GroupId = groupId;
+		if (indexed)
+		{
+			AddIndex(maxItems);
+		}
 	}
 
-	public void AddIndex()
+	public void AddIndex(int? maxItems = null)
 	{
-		Index = new(this);
+		Index ??= new(this, maxItems);
 	}
 
 	public virtual void Save(Call? call, T item)
@@ -60,9 +63,10 @@ public class DataRepoInstance<T> : IDataRepoInstance
 		return new DataPageView<T>(this, ascending);
 	}
 
-	public DataItemCollection<T> LoadAll(Call? call = null, bool lazy = false)
+	public DataItemCollection<T> LoadAll(Call? call = null, bool ascending = true)
 	{
-		return DataRepo.LoadAll<T>(call, GroupId, lazy);
+		call ??= new();
+		return new DataItemCollection<T>(LoadAllDataItems(call, ascending));
 	}
 
 	public ItemCollection<Header> LoadHeaders(Call? call = null)
@@ -89,5 +93,43 @@ public class DataRepoInstance<T> : IDataRepoInstance
 		call ??= new();
 		Index?.RemoveAll(call);
 		DataRepo.DeleteAll<T>(call, GroupId);
+	}
+
+	public IEnumerable<string>? GetPathEnumerable(bool ascending)
+	{
+		if (!Directory.Exists(GroupPath)) return null;
+
+		IEnumerable<string> enumerable;
+		if (Index != null)
+		{
+			var indices = Index.Load(new());
+			enumerable = indices.Items
+				.Select(i => DataRepo.GetDataPath(DataType, GroupId, i.Key));
+		}
+		else
+		{
+			enumerable = Directory.EnumerateDirectories(GroupPath)
+				.Select(path => path);
+		}
+
+		if (ascending)
+		{
+			return enumerable;
+		}
+		else
+		{
+			return enumerable.Reverse();
+		}
+	}
+
+	public IEnumerable<DataItem<T>> LoadAllDataItems(Call call, bool ascending = false)
+	{
+		var pathIterator = GetPathEnumerable(ascending);
+		if (pathIterator == null) return [];
+
+		return pathIterator
+			.Select(path => DataRepo.LoadPath<T>(call, path))
+			.OfType<DataItem<T>>()
+			.Select(dataItem => new DataItem<T>(dataItem.Key, dataItem.Value));
 	}
 }

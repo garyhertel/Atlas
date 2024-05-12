@@ -13,15 +13,11 @@ public class DataItemCollection<T> : ItemCollection<DataItem<T>>
 	public IEnumerable<T> Values => this.Select(o => o.Value);
 	public IEnumerable<T> SortedValues => Lookup.Values.Select(o => o.Value);
 
-	public DataItemCollection(DataRepo dataRepo) : base()
-	{
-		DataRepo = dataRepo;
-	}
+	public DataItemCollection() { }
 
 	// Don't implement List<T>, it isn't sortable
-	public DataItemCollection(DataRepo dataRepo, IEnumerable<DataItem<T>> iEnumerable) : base(iEnumerable)
+	public DataItemCollection(IEnumerable<DataItem<T>> iEnumerable) : base(iEnumerable)
 	{
-		DataRepo = dataRepo;
 		Lookup = CreateLookup();
 	}
 

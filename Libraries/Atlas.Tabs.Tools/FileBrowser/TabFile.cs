@@ -1,6 +1,8 @@
 using Atlas.Core;
 using Atlas.Core.Utilities;
 using Atlas.Resources;
+using Atlas.Tabs.Toolbar;
+using static Atlas.Tabs.Tools.TabFile;
 
 namespace Atlas.Tabs.Tools;
 
@@ -9,13 +11,20 @@ public interface IFileTypeView
 	string? Path { get; set; }
 }
 
-public class TabFile : ITab
+public class TabFile(FileView fileView, SelectFile? selectFileDelegate = null) : ITab
 {
+	public TabFile(string filePath, SelectFile? selectFileDelegate = null)
+		: this(new FileView(filePath), selectFileDelegate) { }
+
+	public FileView FileView = fileView;
+
+	public string Path = fileView.Path;
+
 	public static Dictionary<string, Type> ExtensionTypes { get; set; } = [];
 
 	public delegate void SelectFile(Call call, string path);
 
-	public SelectFile? SelectFileDelegate;
+	public SelectFile? SelectFileDelegate = selectFileDelegate;
 
 	public static void RegisterType<T>(params string[] extensions)
 	{
@@ -25,29 +34,27 @@ public class TabFile : ITab
 		}
 	}
 
-	public string Path;
-
-	public TabFile(string path, SelectFile? selectFileDelegate = null)
-	{
-		Path = path;
-		SelectFileDelegate = selectFileDelegate;
-	}
-
 	public TabInstance Create() => new Instance(this);
 
 	public class Toolbar : TabToolbar
 	{
-		public ToolButton? ButtonSelect { get; set; }
+		public ToolToggleButton? ButtonStar { get; set; }
 
 		[Separator]
 		public ToolButton ButtonOpenFolder { get; set; } = new("Open Folder", Icons.Svg.OpenFolder);
 
 		[Separator]
 		public ToolButton ButtonDelete { get; set; } = new("Delete", Icons.Svg.Delete);
+
+		[Separator]
+		public ToolButton? ButtonSelect { get; set; }
+
 	}
 
 	public class Instance(TabFile tab) : TabInstance
 	{
+		public FileView FileView => tab.FileView;
+
 		public override void Load(Call call, TabModel model)
 		{
 			string path = tab.Path;
@@ -63,6 +70,7 @@ public class TabFile : ITab
 				toolbar.ButtonSelect = new("Select", Icons.Svg.Enter);
 				toolbar.ButtonSelect.Action = SelectClicked;
 			}
+			toolbar.ButtonStar = new("Favorite", Icons.Svg.StarFilled, Icons.Svg.Star, new ListProperty(FileView, nameof(FileView.Favorite)));
 			toolbar.ButtonOpenFolder.Action = OpenFolder;
 			toolbar.ButtonDelete.Action = Delete;
 			model.AddObject(toolbar);

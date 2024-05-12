@@ -2,64 +2,42 @@ using Atlas.Core;
 
 namespace Atlas.Serialize;
 
-public class DataPageView<T>
+public class DataPageView<T>(DataRepoInstance<T> dataRepoInstance, bool ascending, int pageSize = 100) : object()
 {
-	public DataRepoInstance<T> DataRepoInstance;
-	public bool Ascending;
-	public int PageSize = 100;
+	public DataRepoInstance<T> DataRepoInstance = dataRepoInstance;
+	public bool Ascending { get; set; } = ascending;
+	public int PageSize { get; set; } = pageSize;
+	public int PageIndex { get; set; }
+	public int Pages => ((_allPaths?.Count + PageSize - 1) ?? 0) / PageSize;
 
-	private IEnumerable<string>? _keyIterator;
+	private List<string>? _allPaths;
 
-	public List<string>? Keys => GetEnumerable()?.ToList();
+	public IEnumerable<string>? Paths => DataRepoInstance.GetPathEnumerable(Ascending);
 
-	public DataPageView(DataRepoInstance<T> dataRepoInstance, bool ascending) : base()
+	public List<DataItem<T>> GetPage(int page, Call? call = null)
 	{
-		DataRepoInstance = dataRepoInstance;
-		Ascending = ascending;
+		_allPaths ??= Paths?.ToList();
+		if (_allPaths == null) return [];
+
+		call ??= new();
+		return _allPaths
+			.Skip(PageSize * page)
+			.Take(PageSize)
+			.Select(path => DataRepoInstance.DataRepo.LoadPath<T>(call, path))
+			.OfType<DataItem<T>>()
+			.Select(dataItem => new DataItem<T>(dataItem.Key, dataItem.Value))
+			.ToList();
 	}
 
-	public IEnumerable<string>? GetEnumerable()
+	public List<DataItem<T>> Next(Call? call = null)
 	{
-		string groupPath = DataRepoInstance.GroupPath;
-		if (!Directory.Exists(groupPath)) return null;
-
-		IEnumerable<string> enumerable;
-		if (DataRepoInstance.Index != null)
-		{
-			var indices = DataRepoInstance.Index.Load(new());
-			enumerable = indices.Items.Select(i => i.Key);
-		}
-		else
-		{
-			enumerable = Directory.EnumerateDirectories(groupPath);
-		}
-
-		if (Ascending)
-		{
-			return enumerable;
-		}
-		else
-		{
-			return enumerable.Reverse();
-		}
+		PageIndex = Math.Min(Math.Max(0, Pages - 1), PageIndex + 1);
+		return GetPage(PageIndex, call);
 	}
 
-	public IEnumerable<DataItem<T>> Next()
+	public List<DataItem<T>> Previous(Call? call = null)
 	{
-		List<DataItem<T>> items = new();
-
-		_keyIterator ??= GetEnumerable();
-		if (_keyIterator == null) return items;
-
-		Call call = new();
-		foreach (string key in _keyIterator.Take(PageSize))
-		{
-			T? value = DataRepoInstance.Load(call, key);
-			if (value != null)
-			{
-				items.Add(new DataItem<T>(key, value));
-			}
-		}
-		return items;
+		PageIndex = Math.Max(0, PageIndex - 1);
+		return GetPage(PageIndex, call);
 	}
 }
