@@ -71,7 +71,7 @@ public class TabDirectory(DirectoryView directoryView, TabFile.SelectFile? selec
 			try
 			{
 				return Directory.EnumerateFiles(tab.Path)
-					.Select(f => new FileView(f, tab.DataRepoFavorites))
+					.Select(f => new FileView(f, tab.DataRepoFavorites, tab.SelectFileDelegate))
 					.ToList();
 			}
 			catch (Exception ex)
@@ -87,7 +87,7 @@ public class TabDirectory(DirectoryView directoryView, TabFile.SelectFile? selec
 			try
 			{
 				return Directory.EnumerateDirectories(tab.Path)
-					.Select(f => new DirectoryView(f, tab.DataRepoFavorites))
+					.Select(f => new DirectoryView(f, tab.DataRepoFavorites, tab.SelectFileDelegate))
 					.ToList();
 			}
 			catch (Exception ex)

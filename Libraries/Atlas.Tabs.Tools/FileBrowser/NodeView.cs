@@ -97,13 +97,13 @@ public class DirectoryView : NodeView, IDirectoryView
 		: this(path, null)
 	{ }
 
-	public DirectoryView(string path, DataRepoView<NodeView>? dataRepoFavorites = null) :
+	public DirectoryView(string path, DataRepoView<NodeView>? dataRepoFavorites = null, TabFile.SelectFile? selectFileDelegate = null) :
 		base(path, dataRepoFavorites)
 	{
 		Directory = System.IO.Path.GetFileName(path);
 		var info = new DirectoryInfo(path);
 		LastWriteTime = info.LastWriteTime.Trim();
-		Tab = new TabDirectory(this);
+		Tab = new TabDirectory(this, selectFileDelegate);
 	}
 }
 
@@ -123,7 +123,7 @@ public class FileView : NodeView
 		: this(path, null)
 	{ }
 
-	public FileView(string path, DataRepoView<NodeView>? dataRepoFavorites = null)
+	public FileView(string path, DataRepoView<NodeView>? dataRepoFavorites = null, TabFile.SelectFile? selectFileDelegate = null)
 		: base(path, dataRepoFavorites)
 	{
 		FileInfo = new FileInfo(path);
@@ -134,6 +134,6 @@ public class FileView : NodeView
 		if (Filename.EndsWith(".atlas"))
 			Tab = new TabFileSerialized(path);
 		else
-			Tab = new TabFile(this);
+			Tab = new TabFile(this, selectFileDelegate);
 	}
 }
