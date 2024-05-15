@@ -71,7 +71,7 @@ public class TabDirectory(DirectoryView directoryView, TabFile.SelectFile? selec
 			try
 			{
 				return Directory.EnumerateFiles(tab.Path)
-					.Select(f => new FileView(f, tab.DataRepoFavorites, tab.SelectFileDelegate))
+					.Select(name => new FileView(name, tab.DataRepoFavorites, tab.SelectFileDelegate))
 					.ToList();
 			}
 			catch (Exception ex)
@@ -79,7 +79,7 @@ public class TabDirectory(DirectoryView directoryView, TabFile.SelectFile? selec
 				call.Log.Add(ex);
 			}
 
-			return new List<FileView>();
+			return [];
 		}
 
 		private List<DirectoryView> GetDirectories(Call call)
@@ -87,7 +87,7 @@ public class TabDirectory(DirectoryView directoryView, TabFile.SelectFile? selec
 			try
 			{
 				return Directory.EnumerateDirectories(tab.Path)
-					.Select(f => new DirectoryView(f, tab.DataRepoFavorites, tab.SelectFileDelegate))
+					.Select(name => new DirectoryView(name, tab.DataRepoFavorites, tab.SelectFileDelegate))
 					.ToList();
 			}
 			catch (Exception ex)
@@ -95,7 +95,7 @@ public class TabDirectory(DirectoryView directoryView, TabFile.SelectFile? selec
 				call.Log.Add(ex);
 			}
 
-			return new List<DirectoryView>();
+			return [];
 		}
 
 		private void OpenFolder(Call call)
