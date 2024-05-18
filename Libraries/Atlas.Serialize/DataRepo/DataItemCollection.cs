@@ -7,11 +7,10 @@ namespace Atlas.Serialize;
 // Collection of DataRepo items with a key/value lookup
 public class DataItemCollection<T> : ItemCollection<DataItem<T>>
 {
-	public DataRepo DataRepo;
 	public SortedDictionary<string, DataItem<T>> Lookup { get; set; } = [];
 
-	public IEnumerable<T> Values => this.Select(o => o.Value);
-	public IEnumerable<T> SortedValues => Lookup.Values.Select(o => o.Value);
+	public IEnumerable<T> Values => this.Select(o => o.Value)!;
+	public IEnumerable<T> SortedValues => Lookup.Values.Select(o => o.Value)!;
 
 	public DataItemCollection() { }
 

@@ -69,8 +69,6 @@ public class ImageButton : Button
 			Source = sourceImage,
 			Width = 24,
 			Height = 24,
-			//MaxWidth = 24,
-			//MaxHeight = 24,
 			Stretch = Stretch.None,
 			Margin = new Thickness(0),
 		};
