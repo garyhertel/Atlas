@@ -6,17 +6,16 @@ using Atlas.Tabs.Toolbar;
 
 namespace Atlas.Tabs.Tools;
 
-public class TabDirectory(DirectoryView directoryView, TabFile.SelectFile? selectFileDelegate = null) : ITab
+public class TabDirectory(DirectoryView directoryView) : ITab
 {
 	public DirectoryView DirectoryView = directoryView;
-	public TabFile.SelectFile? SelectFileDelegate = selectFileDelegate;
 	public string Path => DirectoryView.Path;
-	public DataRepoView<NodeView>? DataRepoFavorites => DirectoryView.DataRepoFavorites;
+	public FileSelectorOptions? FileSelectorOptions => DirectoryView.FileSelectorOptions;
 
 	public override string ToString() => Path;
 
-	public TabDirectory(string path, DataRepoView<NodeView>? dataRepoFavorites = null, TabFile.SelectFile? selectFileDelegate = null) :
-		this(new DirectoryView(path, dataRepoFavorites), selectFileDelegate)
+	public TabDirectory(string path, FileSelectorOptions? fileSelectorOptions = null) :
+		this(new DirectoryView(path, fileSelectorOptions))
 	{ }
 
 	public TabInstance Create() => new Instance(this);
@@ -71,7 +70,7 @@ public class TabDirectory(DirectoryView directoryView, TabFile.SelectFile? selec
 			try
 			{
 				return Directory.EnumerateFiles(tab.Path)
-					.Select(name => new FileView(name, tab.DataRepoFavorites, tab.SelectFileDelegate))
+					.Select(name => new FileView(name, tab.FileSelectorOptions))
 					.ToList();
 			}
 			catch (Exception ex)
@@ -87,7 +86,7 @@ public class TabDirectory(DirectoryView directoryView, TabFile.SelectFile? selec
 			try
 			{
 				return Directory.EnumerateDirectories(tab.Path)
-					.Select(name => new DirectoryView(name, tab.DataRepoFavorites, tab.SelectFileDelegate))
+					.Select(name => new DirectoryView(name, tab.FileSelectorOptions))
 					.ToList();
 			}
 			catch (Exception ex)

@@ -2,7 +2,6 @@ using Atlas.Core;
 using Atlas.Core.Utilities;
 using Atlas.Resources;
 using Atlas.Tabs.Toolbar;
-using static Atlas.Tabs.Tools.TabFile;
 
 namespace Atlas.Tabs.Tools;
 
@@ -11,10 +10,9 @@ public interface IFileTypeView
 	string? Path { get; set; }
 }
 
-public class TabFile(FileView fileView, SelectFile? selectFileDelegate = null) : ITab
+public class TabFile(FileView fileView) : ITab
 {
-	public TabFile(string filePath, SelectFile? selectFileDelegate = null)
-		: this(new FileView(filePath), selectFileDelegate) { }
+	public TabFile(string filePath) : this(new FileView(filePath)) { }
 
 	public FileView FileView = fileView;
 
@@ -22,11 +20,7 @@ public class TabFile(FileView fileView, SelectFile? selectFileDelegate = null) :
 
 	public static Dictionary<string, Type> ExtensionTypes { get; set; } = [];
 
-	public delegate void SelectFile(Call call, string path);
-
-	public SelectFile? SelectFileDelegate = selectFileDelegate;
-
-	public static void RegisterType<T>(params string[] extensions)
+	public static void RegisterType<T>(params string[] extensions) where T : new()
 	{
 		foreach (string extension in extensions)
 		{
@@ -48,12 +42,12 @@ public class TabFile(FileView fileView, SelectFile? selectFileDelegate = null) :
 
 		[Separator]
 		public ToolButton? ButtonSelect { get; set; }
-
 	}
 
 	public class Instance(TabFile tab) : TabInstance
 	{
 		public FileView FileView => tab.FileView;
+		public SelectFileDelegate? SelectFileDelegate => tab.FileView.FileSelectorOptions?.SelectFileDelegate;
 
 		public override void Load(Call call, TabModel model)
 		{
@@ -64,18 +58,22 @@ public class TabFile(FileView fileView, SelectFile? selectFileDelegate = null) :
 				return;
 			}
 
-			Toolbar toolbar = new();
-			if (tab.SelectFileDelegate != null)
+			Toolbar toolbar = new()
 			{
-				toolbar.ButtonSelect = new("Select", Icons.Svg.Enter);
-				toolbar.ButtonSelect.Action = SelectClicked;
-			}
-			toolbar.ButtonStar = new("Favorite", Icons.Svg.StarFilled, Icons.Svg.Star, new ListProperty(FileView, nameof(FileView.Favorite)));
+				ButtonStar = new("Favorite", Icons.Svg.StarFilled, Icons.Svg.Star, new ListProperty(FileView, nameof(FileView.Favorite)))
+			};
 			toolbar.ButtonOpenFolder.Action = OpenFolder;
 			toolbar.ButtonDelete.Action = Delete;
+
+			if (SelectFileDelegate != null)
+			{
+				toolbar.ButtonSelect = new("Select", Icons.Svg.Enter);
+				toolbar.ButtonSelect.Action = SelectFile;
+			}
+
 			model.AddObject(toolbar);
 
-			List<ListItem> items = new();
+			List<ListItem> items = [];
 
 			string extension = System.IO.Path.GetExtension(path).ToLower();
 
@@ -104,11 +102,6 @@ public class TabFile(FileView fileView, SelectFile? selectFileDelegate = null) :
 			model.Items = items;
 		}
 
-		private void SelectClicked(Call call)
-		{
-			tab.SelectFileDelegate!(call, tab.Path);
-		}
-
 		private void OpenFolder(Call call)
 		{
 			ProcessUtils.OpenFolder(tab.Path);
@@ -120,6 +113,11 @@ public class TabFile(FileView fileView, SelectFile? selectFileDelegate = null) :
 				File.Delete(tab.Path);
 
 			Refresh();
+		}
+
+		private void SelectFile(Call call)
+		{
+			SelectFileDelegate!(call, tab.Path);
 		}
 	}
 }
