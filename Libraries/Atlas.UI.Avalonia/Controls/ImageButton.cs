@@ -16,15 +16,15 @@ public class ImageButton : Button
 
 	public ImageButton(ResourceView imageResource)
 	{
-		IImage image = LoadImageStream(imageResource.Stream);
+		IImage image = LoadImageStream(imageResource);
 		Initialize(image);
 	}
 
-	public ImageButton(Stream bitmapStream)
+	/*public ImageButton(Stream bitmapStream)
 	{
 		IImage image = LoadImageStream(bitmapStream);
 		Initialize(image);
-	}
+	}*/
 
 	public ImageButton(IImage image)
 	{
@@ -74,19 +74,16 @@ public class ImageButton : Button
 		};
 	}
 
-	private static IImage LoadImageStream(Stream bitmapStream)
+	private static IImage LoadImageStream(ResourceView imageResource)
 	{
-		IImage sourceImage;
-		try
+		if (imageResource.ResourceType == "svg")
 		{
-			bitmapStream.Position = 0;
-			sourceImage = new Bitmap(bitmapStream);
+			return SvgUtils.GetSvgColorImage(imageResource);
 		}
-		catch (Exception)
+		else
 		{
-			sourceImage = SvgUtils.GetSvgColorImage(bitmapStream);
+			Stream stream = imageResource.Stream;
+			return new Bitmap(stream);
 		}
-
-		return sourceImage;
 	}
 }
