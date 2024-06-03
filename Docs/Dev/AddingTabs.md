@@ -13,7 +13,7 @@
   - `public override void LoadUI(Call call, TabModel model)`
     - Use when you need to create an Avalonia control, since those can only be created on the UI thread.
 ```csharp
-namespace Atlas.Tabs.Test
+namespace Atlas.Tabs.Samples
 {
 	public class TabSample : ITab
 	{
@@ -23,10 +23,10 @@ namespace Atlas.Tabs.Test
 		{
 			public override void Load(Call call, TabModel model)
 			{
-				model.Items = new ItemCollection<ListItem>()
+				model.Items = new List<ListItem>()
 				{
-					new ListItem("Tab 1", new Tab1()),
-					new ListItem("Tab 2", new Tab2()),
+					new("Tab 1", new Tab1()),
+					new("Tab 2", new Tab2()),
 				};
 
 				model.Actions = new List<TaskCreator>()
@@ -79,40 +79,28 @@ public void UpdateStatus(Call call, string text)
 * ItemCollectionUI
   - This is a User Interface version of the ItemCollection, which allows you to add items to a collection that appears in the user interface from a background thread. Adding an item to a List or ItemCollection from a background thread normally isn't safe and can cause an exception.
 ```csharp
-namespace Atlas.Tabs.Test
+namespace Atlas.Tabs.Samples
 {
-	public class TabSample : ITab
+	public class TabSample(int count) : ITab
 	{
-		private int Count;
-
-		public TabSample(int count)
-		{
-			Count = count;
-		}
+		private int Count = count;
 
 		public TabInstance Create() => new Instance();
 
-		public class Instance : TabInstance
+		public class Instance(TabSample tab) : TabInstance
 		{
-			private TabSample Tab;
-
 			private ItemCollectionUI<SampleItem> _sampleItems;
-
-			public Instance(TabSample tab)
-			{
-				Tab = tab;
-			}
 
 			public override void Load(Call call, TabModel model)
 			{
 				_sampleItems = new ItemCollectionUI<SampleItem>();
-				AddItems(Tab.Count);
+				AddItems(tab.Count);
 
-				model.Items = new ItemCollection<ListItem>("Items")
+				model.Items = new List<ListItem>()
 				{
-					new ListItem("Sample Items", _sampleItems),
-					new ListItem("Collections", new TabTestGridCollectionSize()),
-					new ListItem("Recursive Tab", new TabSample()), // recursive
+					new("Sample Items", _sampleItems),
+					new("Collections", new TabTestGridCollectionSize()),
+					new("Copy", new TabSample()), // Recursive
 				};
 
 				model.Actions = new List<TaskCreator>()
@@ -143,18 +131,12 @@ namespace Atlas.Tabs.Test
 		}
 	}
 
-	public class SampleItem
+	public class SampleItem(int id, string name)
 	{
-		public int Id { get; set; }
-		public string Name { get; set; }
+		public int Id { get; set; } = id;
+		public string Name { get; set; } = name;
 
 		public override string ToString() => Name;
-
-		public SampleItem(int id, string name)
-		{
-			Id = id;
-			Name = name;
-		}
 	}
 }
 ```
@@ -169,9 +151,9 @@ namespace Atlas.Tabs.Test
   - You can also make calls async by using `TaskDelegateAsync`
     - These are useful when you need to make lots of parallel async calls
 ```csharp
-namespace Atlas.Tabs.Test.Actions
+namespace Atlas.Tabs.Samples.Actions
 {
-	public class TabTestAsync : ITab
+	public class TabSampleAsync : ITab
 	{
 		public TabInstance Create() { return new Instance(); }
 

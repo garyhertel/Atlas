@@ -1,7 +1,7 @@
 # Logs
 
 ```csharp
-Log log = new Log();
+Log log = new();
 log.Add("New Log entry", new Tag("Name", "value"), new Tag("Count", 123));
 ```
 * Logs have a tree structure and can be nested as deep as necessary.
@@ -17,9 +17,14 @@ log.Add("New Log entry",
 ```
 
 # Timer
-* You can time any operation by using a log or call Timer with the `using` operator
+* You can time any operation by using a Log or Call Timer with the `using` operator
 ```csharp
 	using (LogTimer logTimer = call.Log.Timer("Doing work"))
+	{
+		...
+	}
+
+	using (CallTimer callTimer = call.Timer("Doing work"))
 	{
 		...
 	}
