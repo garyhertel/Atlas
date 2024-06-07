@@ -5,7 +5,7 @@ using Avalonia.Layout;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 
-namespace Atlas.UI.Avalonia;
+namespace Atlas.UI.Avalonia.Controls.DataGrids;
 
 public class DataGridPropertyCheckBoxColumn : DataGridCheckBoxColumn
 {

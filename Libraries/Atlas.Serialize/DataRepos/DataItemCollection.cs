@@ -2,7 +2,7 @@ using Atlas.Core;
 using System.Collections.Specialized;
 using System.Reflection;
 
-namespace Atlas.Serialize;
+namespace Atlas.Serialize.DataRepos;
 
 // Collection of DataRepo items with a key/value lookup
 public class DataItemCollection<T> : ItemCollection<DataItem<T>>
