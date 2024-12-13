@@ -1,6 +1,9 @@
 # Atlas
 Atlas is an AvaloniaUI library for exploring multiple paths of a tree at once
 
+# Migrated
+This project now has a new name and has migrated to [SideScroll](https://github.com/SideScrollUI/SideScroll)
+
 # Features
 * .NET Cross Platform UI Framework that can run on any Windows, MacOS, or Linux system
 * Follow multiple tabs 20 or more levels deep. New tabs will load as you scroll to the right
