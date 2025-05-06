@@ -1,3 +1,5 @@
+using Atlas.Extensions;
+
 namespace Atlas.Core;
 
 // Use the specified name instead of the field/property name
@@ -86,7 +88,15 @@ public class StyleValueAttribute : Attribute;
 
 // Round value when displaying (i.e. show TimeSpan as short value like "1.6 Days")
 [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
-public class FormattedAttribute : Attribute;
+public class FormattedAttribute : Attribute
+{
+	public readonly FormatType Type;
+
+	public FormattedAttribute(FormatType type = FormatType.Short)
+	{
+		Type = type;
+	}
+}
 
 // Displayed string formatter
 [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]

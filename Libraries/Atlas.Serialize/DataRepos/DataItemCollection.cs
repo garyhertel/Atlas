@@ -9,8 +9,8 @@ public class DataItemCollection<T> : ItemCollection<DataItem<T>>
 {
 	public SortedDictionary<string, DataItem<T>> Lookup { get; set; } = [];
 
-	public IEnumerable<T> Values => this.Select(o => o.Value);
-	public IEnumerable<T> SortedValues => Lookup.Values.Select(o => o.Value);
+	public IEnumerable<T> Values => this.Select(o => o.Value)!;
+	public IEnumerable<T> SortedValues => Lookup.Values.Select(o => o.Value)!;
 
 	public DataItemCollection() { }
 
@@ -58,7 +58,7 @@ public class DataItemCollection<T> : ItemCollection<DataItem<T>>
 			if (Equals(existingDataItem.Value, value)) return;
 
 			int indexOfItem = IndexOf(existingDataItem);
-			existingDataItem.Value = value;
+			existingDataItem!.Value = value;
 			OnCollectionChanged(
 				new NotifyCollectionChangedEventArgs(
 					NotifyCollectionChangedAction.Replace,
@@ -104,12 +104,12 @@ public interface IDataItem
 	object Object { get; }
 }
 
-public class DataItem<T>(string key, T value, string? path = null) : IDataItem
+public class DataItem<T> : IDataItem
 {
-	public string Key { get; set; } = key;
-	public T Value { get; set; } = value;
+	public string Key { get; set; }
+	public T? Value { get; set; }
 	public object Object => Value!;
-	public string? Path { get; set; } = path;
+	public string? Path { get; set; }
 
 	public FileInfo? FileInfo => _fileInfo ??= File.Exists(Path) ? new FileInfo(Path) : null;
 	private FileInfo? _fileInfo;
@@ -117,4 +117,13 @@ public class DataItem<T>(string key, T value, string? path = null) : IDataItem
 	public DateTime? ModifiedUtc => FileInfo?.LastWriteTimeUtc;
 
 	public override string ToString() => Key;
+
+	public DataItem() { }
+
+	public DataItem(string key, T? value, string? path = null)
+	{
+		Key = key;
+		Value = value;
+		Path = path;
+	}
 }

@@ -28,6 +28,7 @@ public class ToolbarButton : Button, IDisposable
 	public CallActionAsync? CallActionAsync;
 
 	public bool ShowTask;
+	public bool DisableWhileRunning = true;
 	public bool IsActive; // Only allow one task at once (modifying IsEnabled doesn't update elsewhere)
 
 	public KeyGesture? KeyGesture;
@@ -66,6 +67,7 @@ public class ToolbarButton : Button, IDisposable
 		Label = toolButton.Label;
 		Tooltip = toolButton.Tooltip;
 		ShowTask = toolButton.ShowTask;
+		DisableWhileRunning = toolButton.DisableWhileRunning;
 		ImageResource = toolButton.ImageResource;
 
 		CallAction = toolButton.Action;
@@ -180,7 +182,7 @@ public class ToolbarButton : Button, IDisposable
 
 	public virtual void Invoke(bool canDelay = true)
 	{
-		if (!IsEnabled || IsActive)
+		if (!IsEnabled || (DisableWhileRunning && IsActive))
 			return;
 
 		if (_lastInvoked != null)
